@@ -1,0 +1,9 @@
+
+Debug/
+lib/
+Release/
+x64/
+
+VD_GAME_ENGINE.vcxproj
+VD_GAME_ENGINE.vcxproj.filters
+VD_GAME_ENGINE.vcxproj.user
