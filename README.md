@@ -19,7 +19,7 @@ C++ 3D Open World Game Engine using OpenGL.
 
 ## Features
 
-* SOLID architecture (I tried, at least)
+* SOLID architecture
 * Terrain with heights and multiple textures, each texture defining a different biome
 * Biome System (up to 32 biomes, with posibility to combine multiple biome)
 * Static Objects
