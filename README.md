@@ -11,7 +11,9 @@ C++ 3D Open World Game Engine using OpenGL.
 
 Optional* Use any IDE which supports CMake (CLion, Visual Studio, Qt Creator etc.) and import the root folder.
 
-Artifact downloader coming soon. 
+Also:
+* UNIX GNU GCC and MinGW (posix build) cannot start the application (gray screen). 
+* Use Visual C on Windows.
 
 ## Libraries used
 
@@ -47,6 +49,10 @@ Artifact downloader coming soon.
 * Weather effects (raining, snowing using particle system)
 * Post-rendering effects
 * Lens flare effect
+
+## Meta-project related TODOs
+* Artifact downloader
+* Successfully built on UNIX systems
 
 ## Goals
 
