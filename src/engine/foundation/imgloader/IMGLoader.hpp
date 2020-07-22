@@ -10,30 +10,27 @@
 #include "IIMGLoader.hpp"
 #include "model/Image.hpp"
 
-namespace vd
+namespace vd::imgloader
 {
-	namespace imgloader
-	{
-		class IMGLoader
-		{
-		public:
-			IMGLoader();
-			~IMGLoader();
+    class IMGLoader
+    {
+    public:
+        IMGLoader();
+        ~IMGLoader();
 
-			ImageBPtr loadByteImage(const std::string& path);
-			ImageFPtr loadFloatImage(const std::string& path);
+        ImageBPtr loadByteImage(const std::string& path);
+        ImageFPtr loadFloatImage(const std::string& path);
 
-			// Debugging purposes
-			static void showByteImage(const ImageB& imagePtr);
-		private:
-			/// Change Impl here
-			// typedef internal::impl::OpenCVIMGLoader	IMGLoaderImpl;
-			typedef internal::impl::stbiIMGLoader	IMGLoaderImpl;
+        // Debugging purposes
+        static void showByteImage(const ImageB& imagePtr);
+    private:
+        /// Change Impl here
+        // typedef internal::impl::OpenCVIMGLoader	IMGLoaderImpl;
+        typedef internal::impl::stbiIMGLoader	IMGLoaderImpl;
 
-			internal::IIMGLoaderPtr loaderImplPtr;
-		};
-		typedef std::shared_ptr<IMGLoader>	IMGLoaderPtr;
-	}
+        internal::IIMGLoaderPtr loaderImplPtr;
+    };
+    typedef std::shared_ptr<IMGLoader>	IMGLoaderPtr;
 }
 
 #endif // !__IMGLOADER_HPP_

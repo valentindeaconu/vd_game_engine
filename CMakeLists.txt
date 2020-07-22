@@ -51,13 +51,10 @@ add_executable(vd_game_engine src/engine/component/impl/EntityRenderer.cpp
         src/engine/foundation/imgloader/IIMGLoader.hpp
         src/engine/foundation/imgloader/IMGLoader.cpp
         src/engine/foundation/imgloader/IMGLoader.hpp
-        src/engine/foundation/imgloader/stb_image.c
-        src/engine/foundation/imgloader/stb_image.h
         src/engine/foundation/math/Transform.cpp
         src/engine/foundation/math/Transform.hpp
         src/engine/foundation/objloader/OBJLoader.cpp
         src/engine/foundation/objloader/OBJLoader.hpp
-        src/engine/foundation/objloader/tiny_obj_loader.h
         src/engine/foundation/GL.hpp
         src/engine/glmodel/buffer/Buffer.hpp
         src/engine/glmodel/buffer/MeshBuffer.cpp
@@ -117,12 +114,14 @@ find_package(OpenGL REQUIRED)
 target_include_directories(vd_game_engine PRIVATE ${OPENGL_INCLUDE_DIRS} ${CMAKE_SOURCE_DIR}/include)
 
 if (WIN32)
-    find_library(FREETYPE_LIBRARY freetype HINTS ${CMAKE_SOURCE_DIR}/lib/win)
+    # find_library(FREETYPE_LIBRARY freetype HINTS ${CMAKE_SOURCE_DIR}/lib/win)
     find_library(GLEW_LIBRARY glew32s HINTS ${CMAKE_SOURCE_DIR}/lib/win)
     find_library(GLFW_LIBRARY glfw3dll HINTS ${CMAKE_SOURCE_DIR}/lib/win)
+    find_library(STB_IMAGE_LIBRARY stb_image HINTS ${CMAKE_SOURCE_DIR}/lib/win)
 
     target_link_libraries(vd_game_engine PRIVATE
-            ${FREETYPE_LIBRARY}
+            ${STB_IMAGE_LIBRARY}
+            # ${FREETYPE_LIBRARY}
             ${GLEW_LIBRARY}
             ${GLFW_LIBRARY}
             opengl32)
