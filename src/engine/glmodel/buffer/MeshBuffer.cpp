@@ -1,8 +1,6 @@
 #include "MeshBuffer.hpp"
 
-namespace vd
-{
-	namespace buffer
+namespace vd::buffer
 	{
 		MeshBuffer::MeshBuffer()
 		{
@@ -48,46 +46,11 @@ namespace vd
 
 		void MeshBuffer::render()
 		{
-			//set textures
-			/*if (!meshPtr->materials.empty())
-			{
-				vd::model::Material& material = meshPtr->materials.front();
-
-				if (material.diffusemap != nullptr)
-				{
-					vd::model::activeTexture(0);
-					meshPtr->materials.front().diffusemap->bind();
-				}
-
-				if (material.specularmap != nullptr)
-				{
-					vd::model::activeTexture(1);
-					meshPtr->materials.front().specularmap->bind();
-				}
-			}*/
-
 			std::vector<GLuint>& indices = meshPtr->indices;
 
 			glBindVertexArray(vaoId);
 			glDrawElements(GL_TRIANGLES, (GLsizei)indices.size(), GL_UNSIGNED_INT, 0);
 			glBindVertexArray(0);
-
-			/*if (!meshPtr->materials.empty())
-			{
-				vd::model::Material& material = meshPtr->materials.front();
-
-				if (material.diffusemap != nullptr)
-				{
-					vd::model::activeTexture(0);
-					meshPtr->materials.front().diffusemap->unbind();
-				}
-
-				if (material.specularmap != nullptr)
-				{
-					vd::model::activeTexture(1);
-					meshPtr->materials.front().specularmap->unbind();
-				}
-			}*/
 		}		
 
 		void MeshBuffer::cleanUp()
@@ -101,4 +64,3 @@ namespace vd
 			glBindVertexArray(0);
 		}
 	}
-}

@@ -26,7 +26,9 @@ namespace vd
 
 		void IMGLoader::showByteImage(const ImageB& image)
 		{
-			cv::Mat img(image.width, image.height, CV_8UC4);
+		    // TODO: Show image with stbi
+
+			/* cv::Mat img(image.width, image.height, CV_8UC4);
 			for (size_t i = 0; i < img.rows; ++i)
 			{
 				for (size_t j = 0; j < img.cols; ++j)
@@ -36,10 +38,10 @@ namespace vd
 				}
 			}
 
-			static int x = 0;
-			std::stringstream ss;
-			ss << "Test " << x++;
-			cv::imshow(ss.str(), img);
+			//static int x = 0;
+			//std::stringstream ss;
+			//ss << "Test " << x++;
+			//cv::imshow(ss.str(), img);*/
 		}
 	}
 }

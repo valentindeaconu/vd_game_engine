@@ -30,4 +30,4 @@ namespace mod
 	}
 }
 
-#endif __TERRAIN_HPP_
+#endif // __TERRAIN_HPP_

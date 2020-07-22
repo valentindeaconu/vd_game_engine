@@ -143,7 +143,7 @@ namespace vd
 			{
 				for (size_t j = 0; j < _img.width; ++j)
 				{
-					Pixel<E> _pixel = this->at(i, j, eRGBA).cast<E>();
+					Pixel<E> _pixel = this->at(i, j, eRGBA).template cast<E>();
 					_img.expand(_pixel);
 				}
 			}

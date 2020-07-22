@@ -1,9 +1,7 @@
+/.idea/
 
-Debug/
-lib/
-Release/
-x64/
+/cmake-build-debug/
+/cmake-build-release/
 
-VD_GAME_ENGINE.vcxproj
-VD_GAME_ENGINE.vcxproj.filters
-VD_GAME_ENGINE.vcxproj.user
+/include/
+/lib/

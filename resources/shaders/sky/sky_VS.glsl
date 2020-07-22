@@ -1,4 +1,5 @@
-#version 330
+#version 410 core
+// #version 330
 
 layout (location = 0) in vec3 vPosition;
 

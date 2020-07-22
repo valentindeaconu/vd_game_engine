@@ -39,7 +39,7 @@ namespace mod
 			float getMaxHeight() const;
 
 			float getHeight(float x, float z) const;
-			const std::string& getBiome(float x, float z) const;
+			std::string getBiome(float x, float z) const;
 			size_t getBiomeIndex(float x, float z) const;
 		private:
 			void onTokenReceived(const std::string& key, const std::vector<std::string>& tokens);

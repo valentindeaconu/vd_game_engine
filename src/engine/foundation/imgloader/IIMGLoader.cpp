@@ -8,7 +8,7 @@ namespace vd
 		{
 			namespace impl
 			{
-				ImageBPtr OpenCVIMGLoader::loadByteImage(const std::string& path)
+				/*ImageBPtr OpenCVIMGLoader::loadByteImage(const std::string& path)
 				{
 					cv::Mat img = cv::imread(path, CV_LOAD_IMAGE_UNCHANGED);
 					  
@@ -114,7 +114,7 @@ namespace vd
 					imagePtr->reverse();
 
 					return imagePtr;
-				}
+				}*/
 
 				ImageBPtr stbiIMGLoader::loadByteImage(const std::string& path)
 				{

@@ -89,7 +89,7 @@ namespace mod
 			return 0.0f;
 		}
 
-		const std::string& TerrainConfig::getBiome(float x, float z) const
+		std::string TerrainConfig::getBiome(float x, float z) const
 		{
 			std::swap(x, z);
 

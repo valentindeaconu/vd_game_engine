@@ -2,6 +2,7 @@
 #define __RENDER_CONFIG_HPP_
 
 #include <engine/foundation/GL.hpp>
+#include <memory>
 
 namespace vd
 {

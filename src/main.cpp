@@ -30,7 +30,7 @@
 #include <modules/sobj/StaticObjectPlacer.hpp>
 #include <modules/sobj/StaticObjectShader.hpp>
 
-int main(int argc, unsigned char ** argv)
+int main(int argc, char ** argv)
 {
 	vd::EnginePtr enginePtr = std::make_shared<vd::Engine>();
 	enginePtr->setup(1280, 720, "VD Game Engine");

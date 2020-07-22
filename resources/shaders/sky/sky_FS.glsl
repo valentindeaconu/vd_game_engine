@@ -1,4 +1,5 @@
-#version 430
+#version 410 core
+// #version 430
 
 in vec3 fPosition;
 in float fVisibility;

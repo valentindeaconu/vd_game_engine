@@ -22,9 +22,9 @@ namespace vd
 			void render();
 			void cleanUp();
 		private:
-			GLuint vaoId;
-			GLuint vbId;
-			GLuint ebId;
+			GLuint vaoId{};
+			GLuint vbId{};
+			GLuint ebId{};
 
 			vd::model::MeshPtr meshPtr;
 		};

@@ -39,7 +39,8 @@ void main()
 	float total = 0.0f;
 	for (uint i = 0; i < MAX_TEXTURES; ++i)
 	{
-		if ((splatMask & (1 << i)) > 0)
+		uint msk = (1 << i);
+		if ((splatMask & msk) > 0)
 		{
 			totalColor += textureColors[i];
 			total = total + 1.0f;
