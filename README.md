@@ -3,28 +3,27 @@
 C++ 3D Open World Game Engine using OpenGL.
 
 ## Installation
-
 1. Download the repository.
-2. Create 2 folders, "include" and "lib".
-3. Inside "lib", create 2 folders "win" and "unix".
-4. Download the binaries according to your operating system and put them into the according folder.
+2. Open a command line and navigate to the repository root folder.
+3. Execute `python dpdmgr.py`.
 
 Optional* Use any IDE which supports CMake (CLion, Visual Studio, Qt Creator etc.) and import the root folder.
 
 Also:
-* UNIX GNU GCC and MinGW (posix build) cannot start the application (gray screen). 
-* Use Visual C on Windows.
+* Use VC++ on Windows (mingw is not working)
+* Select VC++ version on dpdmgr before running it
 
 ## Libraries used
 
 * [OpenGL](https://www.opengl.org/)
 * [GLEW](http://glew.sourceforge.net/)
 * [GLFW](https://www.glfw.org/)
-* [freetype](https://www.freetype.org/) - not used yet
 * [glm](https://glm.g-truc.net/0.9.9/index.html)
-* [OpenCV](https://opencv.org/) - not used anymore
 * [tinyobjloader](https://github.com/tinyobjloader/tinyobjloader)
 * [stb_image.h](https://github.com/nothings/stb/blob/master/stb_image.h)
+
+* [freetype](https://www.freetype.org/)
+* [OpenCV](https://opencv.org/)
 
 ## Features
 
@@ -51,7 +50,7 @@ Also:
 * Lens flare effect
 
 ## Meta-project related TODOs
-* Artifact downloader
+* Artifact downloader (for now, available only for windows)
 * Successfully built on UNIX systems
 
 ## Goals
