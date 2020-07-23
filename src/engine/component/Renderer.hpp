@@ -10,35 +10,32 @@
 
 #include "RenderConfig.hpp"
 
-namespace vd
+namespace vd::component
 {
-	namespace component
-	{
-		class Renderer : public kernel::Observer
-		{
-		public:
-			Renderer();
-			~Renderer();
+    class Renderer : public kernel::Observer
+    {
+    public:
+        Renderer();
+        ~Renderer();
 
-			virtual void init() = 0;
-			virtual void update() = 0;
-			virtual void cleanUp() = 0;
+        virtual void init() = 0;
+        virtual void update() = 0;
+        virtual void cleanUp() = 0;
 
-			RenderConfigPtr& getRenderConfig();
-			const RenderConfigPtr& getRenderConfig() const;
-			void setRenderConfig(const RenderConfigPtr& renderConfigPtr);
+        RenderConfigPtr& getRenderConfig();
+        const RenderConfigPtr& getRenderConfig() const;
+        void setRenderConfig(const RenderConfigPtr& renderConfigPtr);
 
-			vd::shader::ShaderPtr& getShader();
-			const vd::shader::ShaderPtr& getShader() const;
-			void setShader(const vd::shader::ShaderPtr& shaderPtr);
-		protected:
-			virtual bool isReady();
+        vd::shader::ShaderPtr& getShader();
+        const vd::shader::ShaderPtr& getShader() const;
+        void setShader(const vd::shader::ShaderPtr& shaderPtr);
+    protected:
+        virtual bool isReady();
 
-			RenderConfigPtr renderConfigPtr;
-			vd::shader::ShaderPtr shaderPtr;
-		};
-		typedef std::shared_ptr<Renderer>	RendererPtr;
-	}
+        RenderConfigPtr renderConfigPtr;
+        vd::shader::ShaderPtr shaderPtr;
+    };
+    typedef std::shared_ptr<Renderer>	RendererPtr;
 }
 
 #endif // !__RENDERER_HPP_

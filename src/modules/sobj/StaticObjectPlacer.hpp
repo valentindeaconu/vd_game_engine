@@ -9,41 +9,38 @@
 #include <vector>
 #include <random>
 
-namespace mod
+namespace mod::sobj
 {
-	namespace sobj
-	{
-		struct PlacementInfo
-		{
-			glm::vec3 location;
-			size_t objectIndex;
-		};
-		typedef std::vector<PlacementInfo>		PlacementInfoVec;
-		typedef std::vector<PlacementInfoVec>	PlacementInfoMat;
+    struct PlacementInfo
+    {
+        glm::vec3 location;
+        size_t objectIndex;
+    };
+    typedef std::vector<PlacementInfo>		PlacementInfoVec;
+    typedef std::vector<PlacementInfoVec>	PlacementInfoMat;
 
-		class StaticObjectPlacer
-		{
-		public:
-			StaticObjectPlacer(const mod::sky::SkyPtr& skyPtr, size_t objectCount, float marginOffset);
-			~StaticObjectPlacer();
+    class StaticObjectPlacer
+    {
+    public:
+        StaticObjectPlacer(const mod::sky::SkyPtr& skyPtr, size_t objectCount, float marginOffset);
+        ~StaticObjectPlacer();
 
-			void place();
+        void place();
 
-			const PlacementInfoMat& getPlacementInfosForBiomes() const;
+        const PlacementInfoMat& getPlacementInfosForBiomes() const;
 
-			mod::sky::SkyPtr& getSky();
-			const mod::sky::SkyPtr& getSky() const;
-			void setSky(const mod::sky::SkyPtr& skyPtr);
-		private:
-			const size_t objectCount;
-			const float marginOffset;
+        mod::sky::SkyPtr& getSky();
+        const mod::sky::SkyPtr& getSky() const;
+        void setSky(const mod::sky::SkyPtr& skyPtr);
+    private:
+        const size_t objectCount;
+        const float marginOffset;
 
-			mod::sky::SkyPtr skyPtr;
+        mod::sky::SkyPtr skyPtr;
 
-			PlacementInfoMat placementInfosForBiomes;
-		};
-		typedef std::shared_ptr<StaticObjectPlacer> StaticObjectPlacerPtr;
-	}
+        PlacementInfoMat placementInfosForBiomes;
+    };
+    typedef std::shared_ptr<StaticObjectPlacer> StaticObjectPlacerPtr;
 }
 
 #endif // !__STATIC_OBJECT_PLACER_HPP_

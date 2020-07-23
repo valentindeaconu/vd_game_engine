@@ -5,25 +5,22 @@
 
 #include "Terrain.hpp"
 
-namespace mod
+namespace mod::terrain
 {
-	namespace terrain
-	{
-		class TerrainShader : public vd::shader::Shader
-		{
-		public:
-			TerrainShader();
-			~TerrainShader();
+    class TerrainShader : public vd::shader::Shader
+    {
+    public:
+        TerrainShader();
+        ~TerrainShader();
 
-			void updateUniforms(vd::object::EntityPtr entityPtr, size_t meshIndex);
-		private:
-			const int kMaxTextures;
-			const int kMaxLights;
+        void updateUniforms(vd::object::EntityPtr entityPtr, size_t meshIndex) override;
+    private:
+        const int kMaxTextures;
+        const int kMaxLights;
 
-			std::vector<std::string> texturePackUniformNames;
-		};
-		typedef std::shared_ptr<TerrainShader>	TerrainShaderPtr;
-	}
+        std::vector<std::string> texturePackUniformNames;
+    };
+    typedef std::shared_ptr<TerrainShader>	TerrainShaderPtr;
 }
 
 #endif // !__TERRAIN_SHADER_HPP_

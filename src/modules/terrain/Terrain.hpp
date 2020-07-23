@@ -5,29 +5,26 @@
 
 #include "TerrainConfig.hpp"
 
-namespace mod
+namespace mod::terrain
 {
-	namespace terrain
-	{
-		class Terrain : public vd::object::Entity
-		{
-		public:
-			Terrain(const vd::EnginePtr& enginePtr, const std::string& configFilePath);
-			~Terrain();
+    class Terrain : public vd::object::Entity
+    {
+    public:
+        Terrain(const vd::EnginePtr& enginePtr, const std::string& configFilePath);
+        ~Terrain();
 
-			void init();
-			void update();
-			void cleanUp();
+        void init() override;
+        void update() override;
+        void cleanUp() override;
 
-			const TerrainConfigPtr& getTerrainConfig() const;
-		private:
-			void generatePatch();
+        const TerrainConfigPtr& getTerrainConfig() const;
+    private:
+        void generatePatch();
 
-			TerrainConfigPtr	configPtr;
-		};
-		typedef std::shared_ptr<Terrain>	TerrainPtr;
+        TerrainConfigPtr	configPtr;
+    };
+    typedef std::shared_ptr<Terrain>	TerrainPtr;
 
-	}
 }
 
 #endif // __TERRAIN_HPP_

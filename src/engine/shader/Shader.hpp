@@ -3,6 +3,7 @@
 
 #include <engine/foundation/GL.hpp>
 #include <engine/object/Entity.hpp>
+#include <engine/logger/Logger.hpp>
 
 #include <vector>
 #include <unordered_map>
@@ -16,67 +17,53 @@
 
 #include "GLSLWrapper.hpp"
 
-namespace vd
+namespace vd::shader
 {
-	namespace shader
-	{
-		enum ShaderType
-		{
-			eVertexShader = GL_VERTEX_SHADER,
-			eGeometryShader = GL_GEOMETRY_SHADER,
-			eFragmentShader = GL_FRAGMENT_SHADER,
-			eTesselationControlShader = GL_TESS_CONTROL_SHADER,
-			eTesselationEvaluationShader = GL_TESS_EVALUATION_SHADER,
-			eComputeShader = GL_COMPUTE_SHADER
-		};
+    enum ShaderType
+    {
+        eVertexShader = GL_VERTEX_SHADER,
+        eGeometryShader = GL_GEOMETRY_SHADER,
+        eFragmentShader = GL_FRAGMENT_SHADER,
+        eTessellationControlShader = GL_TESS_CONTROL_SHADER,
+        eTessellationEvaluationShader = GL_TESS_EVALUATION_SHADER,
+        eComputeShader = GL_COMPUTE_SHADER
+    };
 
-		/*class ShaderLoader
-		{
-		public:
-			static ShaderLoader& getInstance();
+    class Shader
+    {
+    public:
+        Shader();
 
-			void load(const std::string& path, std::string& shaderProgram);
+        void bind() const;
 
-		private:
-			static ShaderLoader instance;
-		};*/
+        void addUniform(const std::string& uniformName);
+        void addUniformBlock(const std::string& uniformBlockName);
 
-		class Shader
-		{
-		public:
-			Shader();
+        void loadAndAddShader(const std::string& path, uint32_t type);
+        void addShader(const std::string& shaderProgram, uint32_t type);
+        void compileShader();
 
-			void bind() const;
+        void setUniformi(const std::string& uniformName, int32_t value) const;
+        void setUniformf(const std::string& uniformName, float value) const;
+        void setUniform(const std::string& uniformName, const glm::vec2& value) const;
+        void setUniform(const std::string& uniformName, const glm::vec3& value) const;
+        void setUniform(const std::string& uniformName, const glm::quat& value) const;
+        void setUniform(const std::string& uniformName, const glm::mat3& value) const;
+        void setUniform(const std::string& uniformName, const glm::mat4& value) const;
 
-			void addUniform(const std::string& uniformName);
-			void addUniformBlock(const std::string& uniformBlockName);
+        void bindUniformBlock(const std::string& uniformBlockName, uint32_t uniformBlockBinding) const;
+        void bindFragDataLocation(const std::string& name, uint32_t index) const;
 
-			void loadAndAddShader(const std::string& path, uint32_t type);
-			void addShader(const std::string& shaderProgram, uint32_t type);
-			void compileShader();
+        uint32_t getProgram() const;
 
-			void setUniformi(const std::string& uniformName, int32_t value) const;
-			void setUniformf(const std::string& uniformName, float value) const;
-			void setUniform(const std::string& uniformName, const glm::vec2& value) const;
-			void setUniform(const std::string& uniformName, const glm::vec3& value) const;
-			void setUniform(const std::string& uniformName, const glm::quat& value) const;
-			void setUniform(const std::string& uniformName, const glm::mat3& value) const;
-			void setUniform(const std::string& uniformName, const glm::mat4& value) const;
+        virtual void updateUniforms(vd::object::EntityPtr entityPtr, size_t meshIndex) = 0;
+    private:
+        GLSLWrapper glslWrapper;
 
-			void bindUniformBlock(const std::string& uniformBlockName, uint32_t uniformBlockBinding) const;
-			void bindFragDataLocation(const std::string& name, uint32_t index) const;
-
-			uint32_t getProgram() const;
-
-			virtual void updateUniforms(vd::object::EntityPtr entityPtr, size_t meshIndex) = 0;
-		private:
-			GLSLWrapper glslWrapper;
-
-			uint32_t program;
-			std::unordered_map<std::string, uint32_t> uniforms;
-		};
-		typedef std::shared_ptr<Shader>	ShaderPtr;
-	}
+        uint32_t program;
+        std::unordered_map<std::string, uint32_t> uniforms;
+    };
+    typedef std::shared_ptr<Shader>	ShaderPtr;
 }
 
 #endif // !__SHADER_HPP_

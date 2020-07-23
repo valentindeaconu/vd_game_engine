@@ -10,22 +10,20 @@
 #include <mutex>
 
 #include <engine/model/Mesh.hpp>
+#include <engine/logger/Logger.hpp>
 
-namespace vd
+namespace vd::objloader
 {
-	namespace objloader
-	{
-		class OBJLoader
-		{
-		public:
-			OBJLoader();
-			~OBJLoader();
-			
-			void load(const std::string& basePath, const std::string& objFile, vd::model::MeshPtrVec& meshes);
-		private:
-		};
-		typedef std::shared_ptr<OBJLoader>	OBJLoaderPtr;
-	}
+    class OBJLoader
+    {
+    public:
+        OBJLoader();
+        ~OBJLoader();
+
+        void load(const std::string& basePath, const std::string& objFile, vd::model::MeshPtrVec& meshes);
+    private:
+    };
+    typedef std::shared_ptr<OBJLoader>	OBJLoaderPtr;
 }
 
 #endif // !__OBJLOADER_HPP_

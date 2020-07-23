@@ -3,20 +3,17 @@
 
 #include <engine/shader/Shader.hpp>
 
-namespace mod
+namespace mod::sky
 {
-	namespace sky
-	{
-		class SkyShader : public vd::shader::Shader
-		{
-		public:
-			SkyShader();
-			~SkyShader();
+    class SkyShader : public vd::shader::Shader
+    {
+    public:
+        SkyShader();
+        ~SkyShader();
 
-			void updateUniforms(vd::object::EntityPtr entityPtr, size_t meshIndex);
-		};
-		typedef std::shared_ptr<SkyShader>	SkyShaderPtr;
-	}
+        void updateUniforms(vd::object::EntityPtr entityPtr, size_t meshIndex) override;
+    };
+    typedef std::shared_ptr<SkyShader>	SkyShaderPtr;
 }
 
 #endif // !__SKY_SHADER_HPP_

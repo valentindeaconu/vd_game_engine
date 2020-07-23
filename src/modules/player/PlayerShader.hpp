@@ -3,22 +3,19 @@
 
 #include <engine/shader/Shader.hpp>
 
-namespace mod
+namespace mod::player
 {
-	namespace player
-	{
-		class PlayerShader : public vd::shader::Shader
-		{
-		public:
-			PlayerShader();
-			~PlayerShader();
+    class PlayerShader : public vd::shader::Shader
+    {
+    public:
+        PlayerShader();
+        ~PlayerShader();
 
-			void updateUniforms(vd::object::EntityPtr entityPtr, size_t meshIndex);
-		private:
-			const size_t kMaxLights;
-		};
-		typedef std::shared_ptr<PlayerShader>	PlayerShaderPtr;
-	}
+        void updateUniforms(vd::object::EntityPtr entityPtr, size_t meshIndex) override;
+    private:
+        const size_t kMaxLights;
+    };
+    typedef std::shared_ptr<PlayerShader>	PlayerShaderPtr;
 }
 
 #endif // !__PLAYER_SHADER_HPP_

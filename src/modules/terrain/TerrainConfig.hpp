@@ -9,64 +9,61 @@
 
 #include <modules/sobj/StaticObject.hpp>
 
-namespace mod
+namespace mod::terrain
 {
-	namespace terrain
-	{
-		struct Biome
-		{
-			std::string name;
-			struct { float min, max; } height;
-			vd::model::Material material;
-			std::vector<sobj::StaticObjectPtr> objects;
-		};
-		typedef std::vector<Biome>	BiomeAtlas;
+    struct Biome
+    {
+        std::string name;
+        struct { float min, max; } height;
+        vd::model::Material material;
+        std::vector<sobj::StaticObjectPtr> objects;
+    };
+    typedef std::vector<Biome>	BiomeAtlas;
 
-		class TerrainConfig : public vd::config::ConfigurationFile
-		{
-		public:
-			TerrainConfig(const std::string& filePath);
-			~TerrainConfig();
+    class TerrainConfig : public vd::config::ConfigurationFile
+    {
+    public:
+        TerrainConfig(const std::string& filePath);
+        ~TerrainConfig();
 
-			void initializeObjects(const vd::EnginePtr& enginePtr);
+        void initializeObjects(const vd::EnginePtr& enginePtr);
 
-			size_t getSize() const;
+        size_t getSize() const;
 
-			const BiomeAtlas& getBiomeAtlas() const;
+        const BiomeAtlas& getBiomeAtlas() const;
 
-			vd::model::UTexture2DPtr getSplatmap() const;
+        vd::model::UTexture2DPtr getSplatmap() const;
 
-			float getMaxHeight() const;
+        float getMaxHeight() const;
 
-			float getHeight(float x, float z) const;
-			std::string getBiome(float x, float z) const;
-			size_t getBiomeIndex(float x, float z) const;
-		private:
-			void onTokenReceived(const std::string& key, const std::vector<std::string>& tokens);
-			void onParseFinish();
+        float getHeight(float x, float z) const;
+        std::string getBiome(float x, float z) const;
+        size_t getBiomeIndex(float x, float z) const;
+    private:
+        void onTokenReceived(const std::string& key, const std::vector<std::string>& tokens) override;
+        void onParseFinish() override;
 
-			void generateBlendmap();
+        void generateBlendmap();
 
-			vd::imgloader::IMGLoaderPtr imgLoaderPtr;
+        vd::imgloader::IMGLoaderPtr imgLoaderPtr;
 
-			size_t size;
+        size_t size;
 
-			float maxHeight;
+        float maxHeight;
 
-			BiomeAtlas biomeAtlas;
+        BiomeAtlas biomeAtlas;
 
-			std::unordered_map<std::string, size_t> biomeIndices;
+        std::unordered_map<std::string, size_t> biomeIndices;
 
-			struct
-			{
-				vd::model::UTexture2DPtr texture;
-				std::vector<uint16_t> data;
-			} blendmap;
+        struct
+        {
+            vd::model::UTexture2DPtr texture;
+            std::vector<uint16_t> data;
+        } blendmap;
 
-			vd::imgloader::ImageFPtr heightmap;
-		};
-		typedef std::shared_ptr<TerrainConfig>	TerrainConfigPtr;
-	}
+        vd::imgloader::ImageFPtr heightmap;
+    };
+    typedef std::shared_ptr<TerrainConfig>	TerrainConfigPtr;
 }
 
 #endif // !__TERRAIN_CONFIG_HPP_

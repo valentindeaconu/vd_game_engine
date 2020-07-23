@@ -3,17 +3,14 @@
 
 #include <glm/glm.hpp>
 
-namespace vd
+namespace vd::model
 {
-	namespace model
-	{
-		struct Vertex
-		{
-			glm::vec3 Position;
-			glm::vec3 Normal;
-			glm::vec2 TexCoords;
-		};
-	}
+    struct Vertex
+    {
+        glm::vec3 Position;
+        glm::vec3 Normal;
+        glm::vec2 TexCoords;
+    };
 }
 
 #endif // !__VERTEX_HPP_

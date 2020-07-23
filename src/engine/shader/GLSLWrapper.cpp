@@ -2,13 +2,9 @@
 
 namespace vd::shader
 {
-    GLSLWrapper::GLSLWrapper()
-    {
-    }
+    GLSLWrapper::GLSLWrapper() = default;
 
-    GLSLWrapper::~GLSLWrapper()
-    {
-    }
+    GLSLWrapper::~GLSLWrapper() = default;
 
     std::string GLSLWrapper::parseGLSL(const std::string& fileName)
     {

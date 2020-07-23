@@ -10,31 +10,28 @@
 
 #include "Terrain.hpp"
 
-namespace mod
+namespace mod::terrain
 {
-	namespace terrain
-	{
-		class TerrainRenderer : public vd::component::Renderer
-		{
-		public:
-			TerrainRenderer();
-			~TerrainRenderer();
+    class TerrainRenderer : public vd::component::Renderer
+    {
+    public:
+        TerrainRenderer();
+        ~TerrainRenderer();
 
-			void init();
-			void update();
-			void cleanUp();
+        void init() override;
+        void update() override;
+        void cleanUp() override;
 
-			TerrainPtr& getTerrain();
-			const TerrainPtr& getTerrain() const;
-			void setTerrain(const TerrainPtr& terrainPtr);
+        TerrainPtr& getTerrain();
+        const TerrainPtr& getTerrain() const;
+        void setTerrain(const TerrainPtr& terrainPtr);
 
-		private:
-			bool isReady();
+    private:
+        bool isReady() override;
 
-			TerrainPtr terrainPtr;
-		};
-		typedef std::shared_ptr<TerrainRenderer>	TerrainRendererPtr;
-	}
+        TerrainPtr terrainPtr;
+    };
+    typedef std::shared_ptr<TerrainRenderer>	TerrainRendererPtr;
 }
 
 #endif // !__TERRAIN_RENDERER_HPP_

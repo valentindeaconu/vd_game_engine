@@ -8,29 +8,26 @@
 
 #include "Buffer.hpp"
 
-namespace vd
+namespace vd::buffer
 {
-	namespace buffer
-	{
-		class MeshBuffer : public Buffer
-		{
-		public:
-			MeshBuffer();
-			~MeshBuffer();
+    class MeshBuffer : public Buffer
+    {
+    public:
+        MeshBuffer();
+        ~MeshBuffer();
 
-			void allocate(const vd::model::MeshPtr& meshPtr);
-			void render();
-			void cleanUp();
-		private:
-			GLuint vaoId{};
-			GLuint vbId{};
-			GLuint ebId{};
+        void allocate(const vd::model::MeshPtr& meshPtr) override;
+        void render() override;
+        void cleanUp() override;
+    private:
+        GLuint vaoId{};
+        GLuint vbId{};
+        GLuint ebId{};
 
-			vd::model::MeshPtr meshPtr;
-		};
-		typedef std::shared_ptr<MeshBuffer>	MeshBufferPtr;
-		typedef std::vector<MeshBufferPtr>	MeshBufferPtrVec;
-	}
+        vd::model::MeshPtr meshPtr;
+    };
+    typedef std::shared_ptr<MeshBuffer>	MeshBufferPtr;
+    typedef std::vector<MeshBufferPtr>	MeshBufferPtrVec;
 }
 
 #endif // !__MESH_BUFFER_HPP_

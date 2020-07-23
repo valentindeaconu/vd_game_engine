@@ -8,40 +8,37 @@
 
 #include <engine/model/Light.hpp>
 
-namespace vd
+namespace vd::config
 {
-	namespace config
-	{
-		namespace internal
-		{
-			struct FogInfo
-			{
-				glm::vec3 color;
-				float density;
-				float gradient;
-			};
-		}
+    namespace internal
+    {
+        struct FogInfo
+        {
+            glm::vec3 color;
+            float density;
+            float gradient;
+        };
+    }
 
-		class EngineConfig : public ConfigurationFile
-		{
-		public:
-			EngineConfig(const std::string& filePath);
-			~EngineConfig();
+    class EngineConfig : public ConfigurationFile
+    {
+    public:
+        EngineConfig(const std::string& filePath);
+        ~EngineConfig();
 
-			const glm::vec3& getFogColor() const;
-			const float& getFogDensity() const;
-			const float& getFogGradient() const;
+        const glm::vec3& getFogColor() const;
+        const float& getFogDensity() const;
+        const float& getFogGradient() const;
 
-			const std::vector<model::LightPtr>& getLights() const;
-		private:
-			void onTokenReceived(const std::string& command, const std::vector<std::string>& tokens);
-			void onParseFinish();
+        const std::vector<model::LightPtr>& getLights() const;
+    private:
+        void onTokenReceived(const std::string& command, const std::vector<std::string>& tokens) override;
+        void onParseFinish() override;
 
-			internal::FogInfo fogInfo;
-			std::vector<model::LightPtr> lights;
-		};
-		typedef std::shared_ptr<EngineConfig>	EngineConfigPtr;
-	}
+        internal::FogInfo fogInfo;
+        std::vector<model::LightPtr> lights;
+    };
+    typedef std::shared_ptr<EngineConfig>	EngineConfigPtr;
 }
 
 #endif // !__ENGINE_CONFIG_HPP_

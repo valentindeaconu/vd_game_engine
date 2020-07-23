@@ -1,38 +1,33 @@
 #include "StaticObject.hpp"
 
-namespace mod
+namespace mod::sobj
 {
-	namespace sobj
-	{
-		StaticObject::StaticObject(const std::string& path, const std::string& objFile)
-			: Entity(nullptr)
-			, path(path)
-			, objFile(objFile)
-		{
-		}
+    StaticObject::StaticObject(const std::string& path, const std::string& objFile)
+        : Entity(nullptr)
+        , path(path)
+        , objFile(objFile)
+    {
+    }
 
-		StaticObject::~StaticObject()
-		{
-		}
+    StaticObject::~StaticObject() = default;
 
-		void StaticObject::init()
-		{
-			vd::objloader::OBJLoader objLoader;
+    void StaticObject::init()
+    {
+        vd::objloader::OBJLoader objLoader;
 
-			vd::model::MeshPtrVec& meshPtrVec = getMeshes();
-			objLoader.load(path, objFile, meshPtrVec);
+        vd::model::MeshPtrVec& meshPtrVec = getMeshes();
+        objLoader.load(path, objFile, meshPtrVec);
 
-			Entity::init(); // call super.init() to initialize meshBuffers;
-		}
+        Entity::init(); // call super.init() to initialize meshBuffers;
+    }
 
-		void StaticObject::update()
-		{
-			// no update for this kind of objects
-		}
-		
-		void StaticObject::cleanUp()
-		{
-			Entity::cleanUp();
-		}
-	}
+    void StaticObject::update()
+    {
+        // no update for this kind of objects
+    }
+
+    void StaticObject::cleanUp()
+    {
+        Entity::cleanUp();
+    }
 }

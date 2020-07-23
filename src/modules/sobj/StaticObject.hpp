@@ -4,25 +4,22 @@
 #include <engine/object/Entity.hpp>
 #include <engine/foundation/objloader/OBJLoader.hpp>
 
-namespace mod
+namespace mod::sobj
 {
-	namespace sobj
-	{
-		class StaticObject : public vd::object::Entity
-		{
-		public:
-			StaticObject(const std::string& path, const std::string& objFile);
-			~StaticObject();
+    class StaticObject : public vd::object::Entity
+    {
+    public:
+        StaticObject(const std::string& path, const std::string& objFile);
+        ~StaticObject();
 
-			void init();
-			void update();
-			void cleanUp();
-		private:
-			std::string path;
-			std::string objFile;
-		};
-		typedef std::shared_ptr<StaticObject>	StaticObjectPtr;
-	}
+        void init() override;
+        void update() override;
+        void cleanUp() override;
+    private:
+        std::string path;
+        std::string objFile;
+    };
+    typedef std::shared_ptr<StaticObject>	StaticObjectPtr;
 }
 
 #endif // !__STATIC_OBJECT_HPP_

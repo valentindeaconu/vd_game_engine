@@ -10,36 +10,33 @@
 
 #include "../Renderer.hpp"
 
-namespace vd
+namespace vd::component
 {
-	namespace component
-	{
-		namespace impl
-		{
-			class EntityRenderer : public Renderer
-			{
-			public:
-				EntityRenderer();
-				~EntityRenderer();
+    namespace impl
+    {
+        class EntityRenderer : public Renderer
+        {
+        public:
+            EntityRenderer();
+            ~EntityRenderer();
 
-				void init();
-				void update();
-				void cleanUp();
+            void init() override;
+            void update() override;
+            void cleanUp() override;
 
-				vd::object::EntityPtr& getEntity();
-				const vd::object::EntityPtr& getEntity() const;
-				void setEntity(const vd::object::EntityPtr& entityPtr);
+            vd::object::EntityPtr& getEntity();
+            const vd::object::EntityPtr& getEntity() const;
+            void setEntity(const vd::object::EntityPtr& entityPtr);
 
-			private:
-				bool isReady();
+        private:
+            bool isReady() override;
 
-				vd::object::EntityPtr entityPtr;
-			};
-		}
+            vd::object::EntityPtr entityPtr;
+        };
+    }
 
-		typedef impl::EntityRenderer			EntityRenderer;
-		typedef std::shared_ptr<EntityRenderer>	EntityRendererPtr;
-	}
+    typedef impl::EntityRenderer			EntityRenderer;
+    typedef std::shared_ptr<EntityRenderer>	EntityRendererPtr;
 }
 
 #endif // !__REND__ENTITY_RENDERER_HPP_ERER_HPP_

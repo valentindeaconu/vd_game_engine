@@ -6,32 +6,28 @@
 
 #include <modules/terrain/Terrain.hpp>
 
-namespace mod
+namespace mod::sky
 {
-	namespace sky
-	{
-		class Sky : public vd::object::Entity
-		{
-		public:
-			Sky(const vd::EnginePtr& enginePtr, const mod::terrain::TerrainPtr& terrainPtr);
-			~Sky();
+    class Sky : public vd::object::Entity
+    {
+    public:
+        Sky(const vd::EnginePtr& enginePtr, const mod::terrain::TerrainPtr& terrainPtr);
+        ~Sky();
 
-			void init();
-			void update();
-			void cleanUp();
+        void init() override;
+        void update() override;
+        void cleanUp() override;
 
-			mod::terrain::TerrainPtr& getTerrain();
-			const mod::terrain::TerrainPtr& getTerrain() const;
+        mod::terrain::TerrainPtr& getTerrain();
+        const mod::terrain::TerrainPtr& getTerrain() const;
 
-			float getRadius();
-			const float getRadius() const;
-		private:
-			float radius;
+        float getRadius() const;
+    private:
+        float radius;
 
-			mod::terrain::TerrainPtr terrainPtr;
-		};
-		typedef std::shared_ptr<Sky>	SkyPtr;
-	}
+        mod::terrain::TerrainPtr terrainPtr;
+    };
+    typedef std::shared_ptr<Sky>	SkyPtr;
 }
 
 #endif // !__SKY_HPP_

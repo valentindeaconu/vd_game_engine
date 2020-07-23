@@ -10,135 +10,132 @@
 #include <algorithm>
 #include <memory>
 
-namespace vd
+namespace vd::core
 {
-	namespace core
-	{
-		struct WindowInfo
-		{
-			int width;
-			int height;
-		};
+    struct WindowInfo
+    {
+        int width;
+        int height;
+    };
 
-		class InputHandler
-		{
-		public:
-			InputHandler();
-			~InputHandler();
+    class InputHandler
+    {
+    public:
+        InputHandler();
+        ~InputHandler();
 
-			void update();
-			void clear();
+        void update();
+        void clear();
 
-			bool getKeyDown(int key);
-			bool getKeyReleased(int key);
-			bool getKeyHolding(int key);
-			bool getButtonReleased(int button);
-			bool getButtonDown(int button);
-			bool getButtonHolding(int button);
+        bool getKeyDown(int key);
+        bool getKeyReleased(int key);
+        bool getKeyHolding(int key);
+        bool getButtonReleased(int button);
+        bool getButtonDown(int button);
+        bool getButtonHolding(int button);
 
-			bool getMouseMoved();
-			bool getMouseScrolled();
+        bool getMouseMoved() const;
+        bool getMouseScrolled() const;
 
-			double getMouseDX();
-			double getMouseDY();
-			double getMouseDWheel();
+        double getMouseDX() const;
+        double getMouseDY() const;
+        double getMouseDWheel() const;
 
-			glm::vec2 getMousePosition();
+        glm::vec2 getMousePosition() const;
 
-			bool getWindowResized();
-			WindowInfo getWindowSize();
+        bool getWindowResized() const;
+        WindowInfo getWindowSize() const;
 
-			void windowResizeCallback(GLFWwindow* window, int32_t width, int32_t height);
-			void keyboardCallback(GLFWwindow* window, int key, int scancode, int action, int mode);
-			void mouseCallback(GLFWwindow* window, double xpos, double ypos);
-			void mouseClickCallback(GLFWwindow* window, int button, int action, int mods);
-			void mouseScrollCallback(GLFWwindow* window, double xoffset, double yoffset);
+        void windowResizeCallback(GLFWwindow* window, int32_t width, int32_t height);
+        void keyboardCallback(GLFWwindow* window, int key, int scancode, int action, int mode);
+        void mouseCallback(GLFWwindow* window, double xpos, double ypos);
+        void mouseClickCallback(GLFWwindow* window, int button, int action, int mods);
+        void mouseScrollCallback(GLFWwindow* window, double xoffset, double yoffset);
 
-		private:
-			enum KeyStatus
-			{
-				eKeyFree = 0,
-				eKeyPressed,
-				eKeyPostPressed,
-				eKeyHolding,
-				eKeyReleased,
-				eKeyPostReleased
-			};
+    private:
+        enum KeyStatus
+        {
+            eKeyFree = 0,
+            eKeyPressed,
+            eKeyPostPressed,
+            eKeyHolding,
+            eKeyReleased,
+            eKeyPostReleased
+        };
 
-			enum ButtonStatus
-			{
-				eButtonFree = 0,
-				eButtonPressed,
-				eButtonPostPressed,
-				eButtonHolding,
-				eButtonReleased,
-				eButtonPostReleased
-			};
+        enum ButtonStatus
+        {
+            eButtonFree = 0,
+            eButtonPressed,
+            eButtonPostPressed,
+            eButtonHolding,
+            eButtonReleased,
+            eButtonPostReleased
+        };
 
-			enum MouseWheelStatus
-			{
-				eWheelFree = 0,
-				eWheelPreUpdated,
-				eWheelPostUpdated
-			};
+        enum MouseWheelStatus
+        {
+            eWheelFree = 0,
+            eWheelPreUpdated,
+            eWheelPostUpdated
+        };
 
-			struct
-			{
-				struct
-				{
-					double x;
-					double y;
-				} offset;
+        struct
+        {
+            struct
+            {
+                double x;
+                double y;
+            } offset;
 
-				MouseWheelStatus status;
-			} mouseScroll;
+            MouseWheelStatus status;
+        } mouseScroll;
 
-			enum MouseMoveStatus
-			{
-				eMoveFree = 0,
-				eMovePreUpdated,
-				eMovePostUpdated
-			};
+        enum MouseMoveStatus
+        {
+            eMoveFree = 0,
+            eMovePreUpdated,
+            eMovePostUpdated
+        };
 
-			struct
-			{
-				struct
-				{
-					double x;
-					double y;
-				} curr;
+        struct
+        {
+            struct
+            {
+                double x;
+                double y;
+            } curr;
 
-				struct
-				{
-					double x;
-					double y;
-				} offset;
+            struct
+            {
+                double x;
+                double y;
+            } offset;
 
-				MouseMoveStatus status;
-			} mouseMovement;
+            MouseMoveStatus status;
+        } mouseMovement;
 
-			const float kMouseSensivity = 0.03f;
+        const float kMouseSensitivity = 0.03f;
 
-			enum WindowStatus
-			{
-				eWindowFree = 0,
-				eWindowPreResize,
-				eWindowPostResize
-			};
+        enum WindowStatus
+        {
+            eWindowFree = 0,
+            eWindowPreResize,
+            eWindowPostResize
+        };
 
-			struct
-			{
-				WindowInfo info;
+        struct
+        {
+            WindowInfo info;
 
-				WindowStatus status;
-			} windowInfo;
+            WindowStatus status;
+        } windowInfo;
 
-			std::vector<KeyStatus> keysStatus;
-			std::vector<ButtonStatus> buttonsStatus;
-		};
-		typedef std::shared_ptr<InputHandler>	InputHandlerPtr;
+        std::vector<KeyStatus> keysStatus;
+        std::vector<ButtonStatus> buttonsStatus;
+    };
+    typedef std::shared_ptr<InputHandler>	InputHandlerPtr;
 
-	}
 }
 
 #endif // !__INPUT_HANDLER_HPP_

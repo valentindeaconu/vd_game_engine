@@ -1,265 +1,262 @@
 ﻿#include "Texture.hpp"
 
-namespace vd
+namespace vd::model
 {
-	namespace model
-	{
-		void activeTexture(GLuint index)
-		{
-			glActiveTexture(GL_TEXTURE0 + index);
-		}
+    void activeTexture(GLuint index)
+    {
+        glActiveTexture(GL_TEXTURE0 + index);
+    }
 
-		template class Texture<GL_TEXTURE_2D>;
+    template class Texture<GL_TEXTURE_2D>;
 
-		template<GLuint type>
-		Texture<type>::Texture()
-			: width(width)
-			, height(height)
-			, id(0)
-		{
-		}
+    template<GLuint type>
+    Texture<type>::Texture()
+        : width(width)
+        , height(height)
+        , id(0)
+    {
+    }
 
-		template<GLuint type>
-		Texture<type>::Texture(const Texture<type>& other)
-			: width(other.width)
-			, height(other.height)
-		{
-			this->id = other.id;
-		}
+    template<GLuint type>
+    Texture<type>::Texture(const Texture<type>& other)
+        : width(other.width)
+        , height(other.height)
+    {
+        this->id = other.id;
+    }
 
-		template<GLuint type>
-		Texture<type>::Texture(const vd::imgloader::ImageBPtr& imagePtr)
-			: width(imagePtr->width)
-			, height(imagePtr->height)
-		{
-			generate();
-			bind();
+    template<GLuint type>
+    Texture<type>::Texture(const vd::imgloader::ImageBPtr& imagePtr)
+        : width(imagePtr->width)
+        , height(imagePtr->height)
+    {
+        generate();
+        bind();
 
-			// GL_SRGB, GL_RGBA
-			glTexImage2D(type, 0, GL_SRGB_ALPHA, (GLsizei)width, (GLsizei)height, 0, GL_RGBA, GL_UNSIGNED_BYTE, &(imagePtr->data[0]));
+        // GL_SRGB, GL_RGBA
+        glTexImage2D(type, 0, GL_SRGB_ALPHA, (GLsizei)width, (GLsizei)height, 0, GL_RGBA, GL_UNSIGNED_BYTE, &(imagePtr->data[0]));
 
-			wrapRepeat();
-			unbind();
-		}
-		
-		template<GLuint type>
-		Texture<type>::Texture(size_t width, size_t height)
-			: width(width)
-			, height(height)
-		{
-		}
+        wrapRepeat();
+        unbind();
+    }
 
-		template<GLuint type>
-		Texture<type>& Texture<type>::operator=(const Texture<type>& other)
-		{
-			this->id = other.id;
-			this->width = other.width;
-			this->height = other.height;
+    template<GLuint type>
+    Texture<type>::Texture(size_t width, size_t height)
+        : width(width)
+        , height(height)
+    {
+    }
 
-			return *this;
-		}
+    template<GLuint type>
+    Texture<type>& Texture<type>::operator=(const Texture<type>& other)
+    {
+        this->id = other.id;
+        this->width = other.width;
+        this->height = other.height;
 
-		template<GLuint type>
-		Texture<type>::~Texture()
-		{
-			glDeleteTextures(1, &id);
-		}
+        return *this;
+    }
 
-		template<GLuint type>
-		void Texture<type>::generate()
-		{
-			glGenTextures(1, &id);
-		}
+    template<GLuint type>
+    Texture<type>::~Texture()
+    {
+        glDeleteTextures(1, &id);
+    }
 
-		template<GLuint type>
-		void Texture<type>::bind() const
-		{
-			glBindTexture(type, id);
-		}
+    template<GLuint type>
+    void Texture<type>::generate()
+    {
+        glGenTextures(1, &id);
+    }
 
-		template<GLuint type>
-		void Texture<type>::unbind() const
-		{
-			glBindTexture(type, 0);
-		}
+    template<GLuint type>
+    void Texture<type>::bind() const
+    {
+        glBindTexture(type, id);
+    }
 
-		template<GLuint type>
-		void Texture<type>::noFilter()
-		{
-			glTexParameteri(type, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-			glTexParameteri(type, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-		}
+    template<GLuint type>
+    void Texture<type>::unbind() const
+    {
+        glBindTexture(type, 0);
+    }
 
-		template<GLuint type>
-		void Texture<type>::bilinearFilter()
-		{
-			glTexParameteri(type, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-			glTexParameteri(type, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		}
+    template<GLuint type>
+    void Texture<type>::noFilter()
+    {
+        glTexParameteri(type, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glTexParameteri(type, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    }
 
-		template<GLuint type>
-		void Texture<type>::trilinearFilter()
-		{
-			glGenerateMipmap(type);
-			glTexParameteri(type, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-			glTexParameteri(type, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		}
+    template<GLuint type>
+    void Texture<type>::bilinearFilter()
+    {
+        glTexParameteri(type, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(type, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    }
 
-		template<GLuint type>
-		void Texture<type>::wrapRepeat()
-		{
-			glTexParameteri(type, GL_TEXTURE_WRAP_S, GL_REPEAT);
-			glTexParameteri(type, GL_TEXTURE_WRAP_T, GL_REPEAT);
-			//glTexParameteri(type, GL_TEXTURE_WRAP_R, GL_REPEAT);
-		}
+    template<GLuint type>
+    void Texture<type>::trilinearFilter()
+    {
+        glGenerateMipmap(type);
+        glTexParameteri(type, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+        glTexParameteri(type, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    }
 
-		template<GLuint type>
-		void Texture<type>::wrapMirroredRepeat()
-		{
-			glTexParameteri(type, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
-			glTexParameteri(type, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
-			//glTexParameteri(type, GL_TEXTURE_WRAP_R, GL_MIRRORED_REPEAT);
-		}
+    template<GLuint type>
+    void Texture<type>::wrapRepeat()
+    {
+        glTexParameteri(type, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glTexParameteri(type, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        //glTexParameteri(type, GL_TEXTURE_WRAP_R, GL_REPEAT);
+    }
 
-		template<GLuint type>
-		void Texture<type>::wrapClampToEdge()
-		{
-			glTexParameteri(type, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-			glTexParameteri(type, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-			//glTexParameteri(type, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-		}
+    template<GLuint type>
+    void Texture<type>::wrapMirroredRepeat()
+    {
+        glTexParameteri(type, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
+        glTexParameteri(type, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
+        //glTexParameteri(type, GL_TEXTURE_WRAP_R, GL_MIRRORED_REPEAT);
+    }
 
-		template<GLuint type>
-		void Texture<type>::wrapClampToBorder()
-		{
-			glTexParameteri(type, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-			glTexParameteri(type, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
-			//glTexParameteri(type, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_BORDER);
-		}
+    template<GLuint type>
+    void Texture<type>::wrapClampToEdge()
+    {
+        glTexParameteri(type, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameteri(type, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        //glTexParameteri(type, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+    }
 
-		template<GLuint type>
-		uint32_t Texture<type>::getId() const
-		{
-			return id;
-		}
+    template<GLuint type>
+    void Texture<type>::wrapClampToBorder()
+    {
+        glTexParameteri(type, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+        glTexParameteri(type, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+        //glTexParameteri(type, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_BORDER);
+    }
 
-		template<GLuint type>
-		size_t Texture<type>::getWidth() const
-		{
-			return width;
-		}
+    template<GLuint type>
+    uint32_t Texture<type>::getId() const
+    {
+        return id;
+    }
 
-		template<GLuint type>
-		size_t Texture<type>::getHeight() const
-		{
-			return height;
-		}
+    template<GLuint type>
+    size_t Texture<type>::getWidth() const
+    {
+        return width;
+    }
 
-		ShadowTexture::ShadowTexture(size_t width, size_t height)
-			: Texture<GL_TEXTURE_2D>(width, height)
-		{
-			generate();
-			bind();
+    template<GLuint type>
+    size_t Texture<type>::getHeight() const
+    {
+        return height;
+    }
 
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, (GLsizei)width, (GLsizei)height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+    ShadowTexture::ShadowTexture(size_t width, size_t height)
+        : Texture<GL_TEXTURE_2D>(width, height)
+    {
+        generate();
+        bind();
 
-			noFilter();
-			wrapClampToEdge();
-			unbind();
-		}
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, (GLsizei)width, (GLsizei)height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
 
-		UTexture2D::UTexture2D(size_t width, size_t height, const std::vector<uint16_t>& data)
-			: Texture2D(width, height)
-		{
-			generate();
-			bind();
-				
-			// GL_SRGB, GL_RGBA
-			glTexImage2D(GL_TEXTURE_2D, 
-				0,
-				GL_R16UI,
-				(GLsizei)width,
-				(GLsizei)height,
-				0, 
-				GL_RED_INTEGER,
-				GL_UNSIGNED_SHORT,
-				&data[0]); 
+        noFilter();
+        wrapClampToEdge();
+        unbind();
+    }
 
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 0);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 0);
+    UTexture2D::UTexture2D(size_t width, size_t height, const std::vector<uint16_t>& data)
+        : Texture2D(width, height)
+    {
+        generate();
+        bind();
 
-			noFilter();
-			wrapRepeat();
-			unbind();
-		}
+        // GL_SRGB, GL_RGBA
+        glTexImage2D(GL_TEXTURE_2D,
+            0,
+            GL_R16UI,
+            (GLsizei)width,
+            (GLsizei)height,
+            0,
+            GL_RED_INTEGER,
+            GL_UNSIGNED_SHORT,
+            &data[0]);
 
-		TextureService::TextureService()
-		{
-			imgLoaderPtr = std::make_shared<imgloader::IMGLoader>();
-		}
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 0);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 0);
 
-		TextureService& TextureService::getInstance()
-		{
-			static TextureService instance;
+        noFilter();
+        wrapRepeat();
+        unbind();
+    }
 
-			return instance;
-		}
+    TextureService::TextureService()
+    {
+        imgLoaderPtr = std::make_shared<imgloader::IMGLoader>();
+    }
 
-		TextureService::~TextureService()
-		{
-			imgLoaderPtr = nullptr;
-			cache.clear();
-		}
+    TextureService& TextureService::getInstance()
+    {
+        static TextureService instance;
 
-		Texture2DPtr TextureService::get(const std::string& path)
-		{
-			TextureService& instance = getInstance();
+        return instance;
+    }
 
-			if (instance.cache.find(path) != instance.cache.end())
-			{
-				return instance.cache[path];
-			}
+    TextureService::~TextureService()
+    {
+        imgLoaderPtr = nullptr;
+        cache.clear();
+    }
 
-			vd::imgloader::ImageBPtr imagePtr = instance.imgLoaderPtr->loadByteImage(path);
+    Texture2DPtr TextureService::get(const std::string& path)
+    {
+        TextureService& instance = getInstance();
 
-			Texture2DPtr texture = std::make_shared<Texture2D>(imagePtr);
+        if (instance.cache.find(path) != instance.cache.end())
+        {
+            return instance.cache[path];
+        }
 
-			instance.cache[path] = texture;
+        vd::imgloader::ImageBPtr imagePtr = instance.imgLoaderPtr->loadByteImage(path);
 
-			return texture;
-		}
+        Texture2DPtr texture = std::make_shared<Texture2D>(imagePtr);
 
-		Texture2DPtr TextureService::get(const imgloader::ImageBPtr& imagePtr)
-		{
-			Texture2DPtr texture = std::make_shared<Texture2D>(imagePtr);
-			return texture;
-		}
+        instance.cache[path] = texture;
 
-		UTexture2DPtr TextureService::get(size_t width, size_t height, const std::vector<uint16_t>& data)
-		{
-			UTexture2DPtr texture = std::make_shared<UTexture2D>(width, height, data);
-			return texture;
-		}
+        return texture;
+    }
 
-		void TextureService::remove(Texture2DPtr& texture)
-		{
-			TextureService& instance = getInstance();
+    Texture2DPtr TextureService::get(const imgloader::ImageBPtr& imagePtr)
+    {
+        Texture2DPtr texture = std::make_shared<Texture2D>(imagePtr);
+        return texture;
+    }
 
-			auto it = instance.cache.begin();
-			for (; it != instance.cache.end(); ++it)
-			{
-				if (it->second->getId() == texture->getId())
-				{
-					break;
-				}
-			}
+    UTexture2DPtr TextureService::get(size_t width, size_t height, const std::vector<uint16_t>& data)
+    {
+        UTexture2DPtr texture = std::make_shared<UTexture2D>(width, height, data);
+        return texture;
+    }
 
-			if (it != instance.cache.end())
-			{
-				instance.cache.erase(it);
-			}
+    void TextureService::remove(Texture2DPtr& texture)
+    {
+        TextureService& instance = getInstance();
 
-			texture = nullptr;
-		}
-	}
+        auto it = instance.cache.begin();
+        for (; it != instance.cache.end(); ++it)
+        {
+            if (it->second->getId() == texture->getId())
+            {
+                break;
+            }
+        }
+
+        if (it != instance.cache.end())
+        {
+            instance.cache.erase(it);
+        }
+
+        texture = nullptr;
+    }
 }

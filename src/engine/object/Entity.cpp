@@ -1,116 +1,111 @@
 #include "Entity.hpp"
 
-namespace vd
+namespace vd::object
 {
-	namespace object
-	{
-		Entity::Entity(const vd::EnginePtr& enginePtr)
-			: parentEnginePtr(enginePtr)
-		{
-		}
+    Entity::Entity(const vd::EnginePtr& enginePtr)
+        : parentEnginePtr(enginePtr)
+    {
+    }
 
-		Entity::~Entity()
-		{
-		}
+    Entity::~Entity() = default;
 
-		void Entity::init()
-		{
-			if (meshBuffers.empty())
-			{
-				generateBuffers();
-			}
-		}
+    void Entity::init()
+    {
+        if (meshBuffers.empty())
+        {
+            generateBuffers();
+        }
+    }
 
-		void Entity::cleanUp()
-		{
-			for (auto it = meshBuffers.begin(); it != meshBuffers.end(); ++it)
-			{
-				(*it)->cleanUp();
-			}
-			meshBuffers.clear();
-		}
+    void Entity::cleanUp()
+    {
+        for (auto& meshBuffer : meshBuffers)
+        {
+            meshBuffer->cleanUp();
+        }
+        meshBuffers.clear();
+    }
 
-		vd::math::Transform& Entity::getLocalTransform()
-		{
-			return localTransform;
-		}
+    vd::math::Transform& Entity::getLocalTransform()
+    {
+        return localTransform;
+    }
 
-		const vd::math::Transform& Entity::getLocalTransform() const
-		{
-			return localTransform;
-		}
+    const vd::math::Transform& Entity::getLocalTransform() const
+    {
+        return localTransform;
+    }
 
-		void Entity::getLocalTransform(const vd::math::Transform& transform)
-		{
-			localTransform = transform;
-		}
+    void Entity::getLocalTransform(const vd::math::Transform& transform)
+    {
+        localTransform = transform;
+    }
 
-		vd::math::Transform& Entity::getWorldTransform()
-		{
-			return worldTransform;
-		}
+    vd::math::Transform& Entity::getWorldTransform()
+    {
+        return worldTransform;
+    }
 
-		const vd::math::Transform& Entity::getWorldTransform() const
-		{
-			return worldTransform;
-		}
+    const vd::math::Transform& Entity::getWorldTransform() const
+    {
+        return worldTransform;
+    }
 
-		void Entity::getWorldTransform(const vd::math::Transform& transform)
-		{
-			worldTransform = transform;
-		}
+    void Entity::getWorldTransform(const vd::math::Transform& transform)
+    {
+        worldTransform = transform;
+    }
 
-		vd::model::MeshPtrVec& Entity::getMeshes()
-		{
-			return meshes;
-		}
+    vd::model::MeshPtrVec& Entity::getMeshes()
+    {
+        return meshes;
+    }
 
-		const vd::model::MeshPtrVec& Entity::getMeshes() const
-		{
-			return meshes;
-		}
-		
-		void Entity::setMeshes(const vd::model::MeshPtrVec& meshes)
-		{
-			this->meshes = meshes;
+    const vd::model::MeshPtrVec& Entity::getMeshes() const
+    {
+        return meshes;
+    }
 
-			generateBuffers();
-		}
+    void Entity::setMeshes(const vd::model::MeshPtrVec& meshes)
+    {
+        this->meshes = meshes;
 
-		vd::buffer::MeshBufferPtrVec& Entity::getMeshBuffers()
-		{
-			return meshBuffers;
-		}
+        generateBuffers();
+    }
 
-		const vd::buffer::MeshBufferPtrVec& Entity::getMeshBuffers() const
-		{
-			return meshBuffers;
-		}
+    vd::buffer::MeshBufferPtrVec& Entity::getMeshBuffers()
+    {
+        return meshBuffers;
+    }
 
-		vd::EnginePtr& Entity::getParentEngine()
-		{
-			return parentEnginePtr;
-		}
+    const vd::buffer::MeshBufferPtrVec& Entity::getMeshBuffers() const
+    {
+        return meshBuffers;
+    }
 
-		const vd::EnginePtr& Entity::getParentEngine() const
-		{
-			return parentEnginePtr;
-		}
-		
-		void Entity::setParentEngine(const vd::EnginePtr& enginePtr)
-		{
-			this->parentEnginePtr = enginePtr;
-		}
+    vd::EnginePtr& Entity::getParentEngine()
+    {
+        return parentEnginePtr;
+    }
 
-		void Entity::generateBuffers()
-		{
-			cleanUp();
+    const vd::EnginePtr& Entity::getParentEngine() const
+    {
+        return parentEnginePtr;
+    }
 
-			for (auto it = meshes.begin(); it != meshes.end(); ++it)
-			{
-				meshBuffers.push_back(std::make_shared<vd::buffer::MeshBuffer>());
-				meshBuffers.back()->allocate(*it);
-			}
-		}
-	}
+    void Entity::setParentEngine(const vd::EnginePtr& enginePtr)
+    {
+        this->parentEnginePtr = enginePtr;
+    }
+
+    void Entity::generateBuffers()
+    {
+        cleanUp();
+
+        for (auto& mesh : meshes)
+        {
+            meshBuffers.push_back(std::make_shared<vd::buffer::MeshBuffer>());
+            meshBuffers.back()->allocate(mesh);
+        }
+    }
 }

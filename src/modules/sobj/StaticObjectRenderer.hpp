@@ -8,31 +8,28 @@
 
 #include "StaticObjectPlacer.hpp"
 
-namespace mod
+namespace mod::sobj
 {
-	namespace sobj
-	{
-		class StaticObjectRenderer : public vd::component::Renderer
-		{
-		public:
-			StaticObjectRenderer();
-			~StaticObjectRenderer();
+    class StaticObjectRenderer : public vd::component::Renderer
+    {
+    public:
+        StaticObjectRenderer();
+        ~StaticObjectRenderer();
 
-			void init();
-			void update();
-			void cleanUp();
+        void init() override;
+        void update() override;
+        void cleanUp() override;
 
-			StaticObjectPlacerPtr& getStaticObjectPlacer();
-			const StaticObjectPlacerPtr& getStaticObjectPlacer() const;
-			void setStaticObjectPlacer(const StaticObjectPlacerPtr& staticObjectPlacerPtr);
+        StaticObjectPlacerPtr& getStaticObjectPlacer();
+        const StaticObjectPlacerPtr& getStaticObjectPlacer() const;
+        void setStaticObjectPlacer(const StaticObjectPlacerPtr& staticObjectPlacerPtr);
 
-		private:
-			bool isReady();
+    private:
+        bool isReady() override;
 
-			StaticObjectPlacerPtr staticObjectPlacerPtr;
-		};
-		typedef std::shared_ptr<StaticObjectRenderer>	StaticObjectRendererPtr;
-	}
+        StaticObjectPlacerPtr staticObjectPlacerPtr;
+    };
+    typedef std::shared_ptr<StaticObjectRenderer>	StaticObjectRendererPtr;
 }
 
 #endif // !__STATIC_OBJECT_RENDERER_HPP_

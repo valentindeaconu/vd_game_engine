@@ -4,13 +4,10 @@
 #include "../Camera.hpp"
 
 // Forward declaration for terrain
-namespace mod
+namespace mod::terrain
 {
-	namespace terrain
-	{
-		class Terrain;
-		typedef std::shared_ptr<Terrain> TerrainPtr;
-	}
+    class Terrain;
+    typedef std::shared_ptr<Terrain> TerrainPtr;
 }
 
 namespace vd 
@@ -39,21 +36,21 @@ namespace vd
 				EntityCamera(const InputHandlerPtr& inputHandlerPtr);
 				~EntityCamera();
 
-				void init(CameraInitParametersPtr parameters);
-				void update();
+				void init(CameraInitParametersPtr parameters) override;
+				void update() override;
 
 			private:
 				void computeZoom();
 				void computePitch();
 				void computeAngleAroundPlayer();
 
-				float computeHorizontalDistance();
-				float computeVerticalDistance();
+				float computeHorizontalDistance() const;
+				float computeVerticalDistance() const;
 
 				glm::vec3 computeCameraPosition(const glm::vec3& playerPosition,
 					float playerAngle,
 					float horizontalDistance,
-					float verticalDistance);
+					float verticalDistance) const;
 
 				float pitch;
 				float distanceFromPlayer;

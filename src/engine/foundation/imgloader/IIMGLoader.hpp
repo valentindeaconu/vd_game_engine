@@ -3,6 +3,8 @@
 
 #include "model/Image.hpp"
 
+#include <engine/logger/Logger.hpp>
+
 /* #include <opencv2/opencv.hpp>
 #include <opencv2/core/core.hpp>
 #include <opencv2/imgproc/imgproc.hpp> */
@@ -31,8 +33,8 @@ namespace vd::imgloader::internal
         class stbiIMGLoader : public IIMGLoader
         {
         public:
-            ImageBPtr loadByteImage(const std::string& path);
-            ImageFPtr loadFloatImage(const std::string& path);
+            ImageBPtr loadByteImage(const std::string& path) override;
+            ImageFPtr loadFloatImage(const std::string& path) override;
         };
         typedef std::shared_ptr<stbiIMGLoader>		stbiIMGLoaderPtr;
     }

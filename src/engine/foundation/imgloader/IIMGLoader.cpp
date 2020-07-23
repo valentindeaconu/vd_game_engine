@@ -120,14 +120,14 @@ namespace vd::imgloader::internal::impl
         unsigned char* image_data = stbi_load(path.c_str(), &x, &y, &n, force_channels);
         if (!image_data)
         {
-            std::cerr << "could not load " << path << "\n";
-            return 0;
+            vd::Logger::log("Could not load " + path);
+            return nullptr;
         }
 
 
         if ((x & (x - 1)) != 0 || (y & (y - 1)) != 0)
         {
-            std::cout << "texture " << path << " is not power-of-2 dimension\n";
+            vd::Logger::log("Texture " + path + " is not power-of-2 dimension");
         }
 
         ImageB _img(x, y);
@@ -154,14 +154,14 @@ namespace vd::imgloader::internal::impl
         unsigned char* image_data = stbi_load(path.c_str(), &x, &y, &n, force_channels);
         if (!image_data)
         {
-            std::cerr << "could not load " << path << "\n";
+            vd::Logger::warn("Could not load " + path);
             return nullptr;
         }
 
 
         if ((x & (x - 1)) != 0 || (y & (y - 1)) != 0)
         {
-            std::cout << "texture " << path << " is not power-of-2 dimension\n";
+            vd::Logger::log("Texture " + path + " is not power-of-2 dimension");
         }
 
         ImageF _img(x, y);

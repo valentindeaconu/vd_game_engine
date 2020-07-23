@@ -5,13 +5,9 @@
 
 namespace vd::objloader
 {
-    OBJLoader::OBJLoader()
-    {
-    }
+    OBJLoader::OBJLoader() = default;
 
-    OBJLoader::~OBJLoader()
-    {
-    }
+    OBJLoader::~OBJLoader() = default;
 
     void OBJLoader::load(const std::string& basePath, const std::string& objFile, vd::model::MeshPtrVec& meshes)
     {
@@ -36,21 +32,16 @@ namespace vd::objloader
                 GL_TRUE);
 
         if (!warn.empty()) {
-            std::cout << warn << "\n";
+            vd::Logger::warn(warn);
         }
 
-        if (!err.empty()) {
-            std::cerr << err << "\n";
-        }
-
-        if (!ret)
-        {
-            exit(1);
+        if (!ret) {
+            vd::Logger::terminate(err, 1);
         }
 
         std::stringstream ss;
-        ss << "[" << objFile << "] " << shapes.size() << " shape(s), " << materials.size() << " material(s)\n";
-        std::cout << ss.str();
+        ss << "[" << objFile << "] " << shapes.size() << " shape(s), " << materials.size() << " material(s)";
+        vd::Logger::log(ss.str());
 
         meshes.reserve(shapes.size());
         // Loop over shapes

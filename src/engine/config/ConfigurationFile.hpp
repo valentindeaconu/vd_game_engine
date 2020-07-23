@@ -9,26 +9,23 @@
 
 #include <engine/logger/Logger.hpp>
 
-namespace vd
+namespace vd::config
 {
-	namespace config
-	{
-		class ConfigurationFile
-		{
-		public:
-			ConfigurationFile(const std::string& filePath);
-			~ConfigurationFile();
+    class ConfigurationFile
+    {
+    public:
+        ConfigurationFile(const std::string& filePath);
+        ~ConfigurationFile();
 
-			void parse();
+        void parse();
 
-			const std::string& getFilePath() const;
-		private:
-			const std::string filePath;
+        const std::string& getFilePath() const;
+    private:
+        const std::string filePath;
 
-			virtual void onTokenReceived(const std::string& command, const std::vector<std::string>& tokens) = 0;
-			virtual void onParseFinish() = 0;
-		};
-	}
+        virtual void onTokenReceived(const std::string& command, const std::vector<std::string>& tokens) = 0;
+        virtual void onParseFinish() = 0;
+    };
 }
 
 #endif // !__CONFIGURATION_FILE_HPP_
