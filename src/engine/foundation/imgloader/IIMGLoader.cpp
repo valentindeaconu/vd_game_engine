@@ -1,5 +1,8 @@
 #include "IIMGLoader.hpp"
 
+#define STB_IMAGE_IMPLEMENTATION
+#include <stb_image.h>
+
 namespace vd::imgloader::internal::impl
 {
     /*ImageBPtr OpenCVIMGLoader::loadByteImage(const std::string& path)

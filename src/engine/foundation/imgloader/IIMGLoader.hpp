@@ -7,8 +7,6 @@
 #include <opencv2/core/core.hpp>
 #include <opencv2/imgproc/imgproc.hpp> */
 
-#include <stb_image.h>
-
 namespace vd::imgloader::internal
 {
     class IIMGLoader

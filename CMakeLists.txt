@@ -109,19 +109,13 @@ add_executable(vd_game_engine src/engine/component/impl/EntityRenderer.cpp
 # opengl
 find_package(OpenGL REQUIRED)
 
-# includes
-
 target_include_directories(vd_game_engine PRIVATE ${OPENGL_INCLUDE_DIRS} ${CMAKE_SOURCE_DIR}/include)
 
 if (WIN32)
-    # find_library(FREETYPE_LIBRARY freetype HINTS ${CMAKE_SOURCE_DIR}/lib/win)
     find_library(GLEW_LIBRARY glew32s HINTS ${CMAKE_SOURCE_DIR}/lib/win)
-    find_library(GLFW_LIBRARY glfw3dll HINTS ${CMAKE_SOURCE_DIR}/lib/win)
-    find_library(STB_IMAGE_LIBRARY stb_image HINTS ${CMAKE_SOURCE_DIR}/lib/win)
+    find_library(GLFW_LIBRARY glfw3 HINTS ${CMAKE_SOURCE_DIR}/lib/win)
 
     target_link_libraries(vd_game_engine PRIVATE
-            ${STB_IMAGE_LIBRARY}
-            # ${FREETYPE_LIBRARY}
             ${GLEW_LIBRARY}
             ${GLFW_LIBRARY}
             opengl32)
@@ -132,6 +126,7 @@ if (WIN32)
     configure_file(${CMAKE_CURRENT_SOURCE_DIR}/lib/win/glfw3.dll ${CMAKE_CURRENT_BINARY_DIR}/glfw3.dll COPYONLY)
 endif (WIN32)
 
+# TODO: UNIX OS build system
 if (UNIX)
     target_link_libraries(vd_game_engine PRIVATE ${FREETYPE_LIBRARY} glfw3 GLEW GL dl X11 pthread)
 

@@ -25,10 +25,21 @@ namespace vd::objloader
         uint32_t materialId;
 
         std::string err;
-        bool ret = tinyobj::LoadObj(&attrib, &shapes, &materials, &err, fullObjPath.c_str(), fullPath.c_str(), GL_TRUE);
+        std::string warn;
+        bool ret = tinyobj::LoadObj(&attrib,
+                &shapes,
+                &materials,
+                &warn,
+                &err,
+                fullObjPath.c_str(),
+                fullPath.c_str(),
+                GL_TRUE);
 
-        if (!err.empty())
-        {
+        if (!warn.empty()) {
+            std::cout << warn << "\n";
+        }
+
+        if (!err.empty()) {
             std::cerr << err << "\n";
         }
 

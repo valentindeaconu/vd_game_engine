@@ -4,7 +4,7 @@
 #define __GL_IMPL_GLEW_HPP_
 
 #define GLEW_STATIC
-#include <GLEW/glew.h>
+#include <GL/glew.h>
 
 #include <GLFW/glfw3.h>
 
