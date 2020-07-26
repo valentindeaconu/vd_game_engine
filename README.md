@@ -3,15 +3,20 @@
 C++ 3D Open World Game Engine using OpenGL.
 
 ## Installation
+Note*: Project is developed (respectively tested) under Windows 10 and Ubuntu 20.04.
+
+Dependency Manager requirements:
+1. Python
+2. cmake >= 3.13
+3. (UNIX only) Super user privileges.
+
+Steps for the installation:
 1. Download the repository.
 2. Open a command line and navigate to the repository root folder.
-3. Execute `python dpdmgr.py`.
+3. (Windows Only) Select VC++ version on `dpdmgr.py`.
+4. Run `python dpdmgr.py`.
 
 Optional* Use any IDE which supports CMake (CLion, Visual Studio, Qt Creator etc.) and import the root folder.
-
-Also:
-* Use VC++ on Windows (mingw is not working)
-* Select VC++ version on dpdmgr before running it
 
 ## Libraries used
 
@@ -22,8 +27,9 @@ Also:
 * [tinyobjloader](https://github.com/tinyobjloader/tinyobjloader)
 * [stb_image.h](https://github.com/nothings/stb/blob/master/stb_image.h)
 
+## Plan-to-use libraries
+
 * [freetype](https://www.freetype.org/)
-* [OpenCV](https://opencv.org/)
 
 ## Features
 
@@ -50,13 +56,16 @@ Also:
 * Lens flare effect
 
 ## Meta-project related TODOs
-* Artifact downloader (for now, available only for windows)
 * Successfully built on UNIX systems
 
 ## Goals
 
 * Average of 50-60 fps
 * No frame drops
+
+## Known bugs
+
+* Working only using VisualC++ compiler
 
 ## Authors
 
