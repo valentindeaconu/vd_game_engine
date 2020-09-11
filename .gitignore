@@ -5,3 +5,6 @@
 
 /include/
 /lib/
+
+/refresh_resources.cmd
+/refresh_resources.py

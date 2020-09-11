@@ -25,7 +25,7 @@ Optional* Use any IDE which supports CMake (CLion, Visual Studio, Qt Creator etc
 * [GLFW](https://www.glfw.org/)
 * [glm](https://glm.g-truc.net/0.9.9/index.html)
 * [tinyobjloader](https://github.com/tinyobjloader/tinyobjloader)
-* [stb_image.h](https://github.com/nothings/stb/blob/master/stb_image.h)
+* [stb_image](https://github.com/nothings/stb/blob/master/stb_image.h)
 
 ## Plan-to-use libraries
 
@@ -38,14 +38,16 @@ Optional* Use any IDE which supports CMake (CLion, Visual Studio, Qt Creator etc
 * Biome System (up to 32 biomes, with possibility to combine multiple biome)
 * Static Objects
 * Random Object Generator with possibility to spawn a certain object in a certain biome
-* Skydome
+* Skybox
 * Free Camera and 3rd Person Camera (actually using only 3rd Person Camera, but the switch will be available soon.
 * Player object with following basic movement: forward, backward, left, right, jumping with gravity and collision with the terrain
-* Multiple lights (only point lights for now, spot and directional will be added soon)
+* Multiple lights (point lights and directional lights)
+* Shadows
+* Support for GUI Textures
 
 ## Available soon
 
-* Shadows
+* Spot lighting
 * Day-night time
 * Water
 * Animations
@@ -54,6 +56,7 @@ Optional* Use any IDE which supports CMake (CLion, Visual Studio, Qt Creator etc
 * Weather effects (raining, snowing using particle system)
 * Post-rendering effects
 * Lens flare effect
+* Support for GUI Text
 
 ## Meta-project related TODOs
 * Successfully built on UNIX systems
