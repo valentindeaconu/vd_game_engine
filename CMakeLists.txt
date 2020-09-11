@@ -139,14 +139,18 @@ if (WIN32)
     configure_file(${CMAKE_CURRENT_SOURCE_DIR}/lib/win/glfw3.dll ${CMAKE_CURRENT_BINARY_DIR}/glfw3.dll COPYONLY)
 endif (WIN32)
 
-# TODO: UNIX OS build system
 if (UNIX)
-    target_link_libraries(vd_game_engine PRIVATE ${FREETYPE_LIBRARY} glfw3 GLEW GL dl X11 pthread)
+    find_library(GLEW_LIBRARY GLEW HINTS ${CMAKE_SOURCE_DIR}/lib/unix)
+    find_library(GLFW_LIBRARY glfw3 HINTS ${CMAKE_SOURCE_DIR}/lib/unix)
 
-    if (EXISTS ${CMAKE_CURRENT_BINARY_DIR}/libGLEW.a)
-        file(REMOVE ${CMAKE_CURRENT_BINARY_DIR}/libGLEW.a)
-    endif()
-    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/lib/unix/libGLEW.a ${CMAKE_CURRENT_BINARY_DIR}/libGLEW.a COPYONLY)
+    target_link_libraries(vd_game_engine PRIVATE ${GLFW_LIBRARY} ${GLEW_LIBRARY} GL dl X11 pthread)
+
+    add_definitions(-DGLEW_NO_GLU)
+
+    #if (EXISTS ${CMAKE_CURRENT_BINARY_DIR}/libGLEW.a)
+    #    file(REMOVE ${CMAKE_CURRENT_BINARY_DIR}/libGLEW.a)
+    #endif()
+    #configure_file(${CMAKE_CURRENT_SOURCE_DIR}/lib/unix/libGLEW.a ${CMAKE_CURRENT_BINARY_DIR}/libGLEW.a COPYONLY)
 endif (UNIX)
 
 # Copy resources to binary
