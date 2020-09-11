@@ -41,6 +41,10 @@ namespace mod::terrain
         return maxHeight;
     }
 
+    float TerrainConfig::getNormalStrength() const {
+        return normalStrength;
+    }
+
     float TerrainConfig::getHeight(float x, float z) const
     {
         // TODO: Take care of this
@@ -129,9 +133,13 @@ namespace mod::terrain
             heightmap = imgLoaderPtr->loadFloatImage(tokens[0]);
             size = heightmap->height;
         }
-        else if (command == "maxheight")
+        else if (command == "maxHeight")
         {
             maxHeight = std::stof(tokens[0]);
+        }
+        else if (command == "normalStrength")
+        {
+            normalStrength = std::stof(tokens[0]);
         }
         else if (command == "biome")
         {

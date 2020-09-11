@@ -36,6 +36,8 @@ namespace mod::terrain
 
         float getMaxHeight() const;
 
+        float getNormalStrength() const;
+
         float getHeight(float x, float z) const;
         std::string getBiome(float x, float z) const;
         size_t getBiomeIndex(float x, float z) const;
@@ -50,6 +52,8 @@ namespace mod::terrain
         size_t size;
 
         float maxHeight;
+
+        float normalStrength;
 
         BiomeAtlas biomeAtlas;
 

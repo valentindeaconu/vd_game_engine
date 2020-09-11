@@ -29,6 +29,9 @@ uniform Light lights[MAX_LIGHTS];
 
 float computeShadow(vec4 fragPosLightSpace, vec3 lightDirection, float shadowDistance)
 {
+	const int pcfCount = 2;
+	const float totalTexels = (pcfCount * 2.0f + 1.0f) * (pcfCount * 2.0f + 1.0f);
+
 	// perform perspective divide
 	vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
 
@@ -44,27 +47,26 @@ float computeShadow(vec4 fragPosLightSpace, vec3 lightDirection, float shadowDis
 	// get depth of current fragment from light's perspective
 	float currentDepth = projCoords.z;
 
-	//float bias = max(0.05f * (1.0f - dot(fNormal, lightDirection)), 0.005f);
-	const float bias = 0.002f;
+	float bias = max(0.05f * (1.0f - dot(fNormal, -lightDirection)), 0.005f);
 
 	// check whether current frag pos is in shadow
 	float shadow = 0.0;
 	vec2 texelSize = 1.0 / textureSize(shadowMap, 0);
-	for (int x = -1; x <= 1; ++x)
+	for (int x = -pcfCount; x <= pcfCount; ++x)
 	{
-		for (int y = -1; y <= 1; ++y)
+		for (int y = -pcfCount; y <= pcfCount; ++y)
 		{
 			float pcfDepth = texture(shadowMap, projCoords.xy + vec2(x, y) * texelSize).r;
 
 			if (currentDepth - bias > pcfDepth)
 			{
-				shadow += (1.0f - shadowDistance * 0.4f);
+				shadow += 1.0f;
 			}
 		}
 	}
-	shadow /= 9.0;
+	shadow /= totalTexels;
 
-	return shadow;
+	return shadow * shadowDistance;
 }
 
 void main() 
