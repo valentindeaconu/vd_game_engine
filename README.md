@@ -34,7 +34,7 @@ Optional* Use any IDE which supports CMake (CLion, Visual Studio, Qt Creator etc
 ## Features
 
 * SOLID architecture
-* Terrain with heights and multiple textures, each texture defining a different biome
+* Terrain with heights, normals and multiple textures, each texture defining a different biome
 * Biome System (up to 32 biomes, with possibility to combine multiple biome)
 * Static Objects
 * Random Object Generator with possibility to spawn a certain object in a certain biome
