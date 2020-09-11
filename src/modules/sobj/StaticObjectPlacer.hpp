@@ -3,7 +3,7 @@
 
 #include <engine/foundation/objloader/OBJLoader.hpp>
 
-#include <modules/sky/Sky.hpp>
+#include <modules/terrain/Terrain.hpp>
 
 #include <unordered_map>
 #include <vector>
@@ -22,21 +22,20 @@ namespace mod::sobj
     class StaticObjectPlacer
     {
     public:
-        StaticObjectPlacer(const mod::sky::SkyPtr& skyPtr, size_t objectCount, float marginOffset);
+        StaticObjectPlacer(const mod::terrain::TerrainPtr& terrainPtr, size_t objectCount, float marginOffset);
         ~StaticObjectPlacer();
 
         void place();
 
-        const PlacementInfoMat& getPlacementInfosForBiomes() const;
+        [[nodiscard]] const PlacementInfoMat& getPlacementInfosForBiomes() const;
 
-        mod::sky::SkyPtr& getSky();
-        const mod::sky::SkyPtr& getSky() const;
-        void setSky(const mod::sky::SkyPtr& skyPtr);
+        terrain::TerrainPtr& getTerrain();
+        [[nodiscard]] const terrain::TerrainPtr& getTerrain() const;
     private:
         const size_t objectCount;
         const float marginOffset;
 
-        mod::sky::SkyPtr skyPtr;
+        mod::terrain::TerrainPtr terrainPtr;
 
         PlacementInfoMat placementInfosForBiomes;
     };

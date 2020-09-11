@@ -14,8 +14,8 @@ namespace mod::sobj
         addUniform("view");
         addUniform("projection");
 
-        addUniform("diffusemap");
-        addUniform("specularmap");
+        addUniform("diffuseMap");
+        addUniform("specularMap");
 
         addUniform("fogDensity");
         addUniform("fogGradient");

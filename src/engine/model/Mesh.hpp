@@ -16,6 +16,13 @@ namespace vd::model
         std::vector<Vertex>	vertices;
         std::vector<GLuint>	indices;
         std::vector<Material> materials;
+
+        Mesh()
+            : vertices()
+            , indices()
+            , materials()
+        {
+        }
     };
     typedef std::shared_ptr<Mesh>	MeshPtr;
     typedef std::vector<MeshPtr>	MeshPtrVec;

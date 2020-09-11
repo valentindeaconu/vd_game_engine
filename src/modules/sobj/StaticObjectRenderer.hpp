@@ -17,11 +17,11 @@ namespace mod::sobj
         ~StaticObjectRenderer();
 
         void init() override;
-        void update() override;
+        void update(bool shadowUpdate) override;
         void cleanUp() override;
 
         StaticObjectPlacerPtr& getStaticObjectPlacer();
-        const StaticObjectPlacerPtr& getStaticObjectPlacer() const;
+        [[nodiscard]] const StaticObjectPlacerPtr& getStaticObjectPlacer() const;
         void setStaticObjectPlacer(const StaticObjectPlacerPtr& staticObjectPlacerPtr);
 
     private:

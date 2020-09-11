@@ -18,7 +18,7 @@ namespace vd::core
 
     glm::mat4 Camera::getViewMatrix()
     {
-        return glm::lookAt(position, position + forward, kUpVector);
+        return glm::lookAt(position, position + forward, CameraConstants::kUpVector);
     }
 
     bool Camera::isCameraMoved() const
@@ -61,9 +61,71 @@ namespace vd::core
         this->target = target;
     }
 
+    glm::vec3& Camera::getDirection() {
+        return forward;
+    }
+
+    const glm::vec3& Camera::getDirection() const {
+        return forward;
+    }
+
+    glm::vec3& Camera::getRightDirection() {
+        return right;
+    }
+
+    const glm::vec3& Camera::getRightDirection() const {
+        return right;
+    }
+
+    glm::vec3& Camera::getUpDirection() {
+        return up;
+    }
+
+    const glm::vec3& Camera::getUpDirection() const {
+        return up;
+    }
+
     void Camera::updatePositionVectors()
     {
-        right = glm::normalize(glm::cross(forward, kUpVector));
+        right = glm::normalize(glm::cross(forward, CameraConstants::kUpVector));
         up = glm::normalize(glm::cross(right, forward));
     }
+
+    float Camera::getPitch() const {
+        // cos(pitch) = dot(up, forward) / (len(up) * len(forward))
+        // up, forward - normalised => len(up) = len(forward) = 1
+        // => pitch = acos(dot(up, forward))
+        // acos returns radians
+        // return glm::degrees(std::acos(glm::dot(up, forward)));
+
+
+        return glm::degrees(-asin(dot(forward, glm::vec3(0.0f, 1.0f, 0.0f))));
+    }
+
+    float Camera::getYaw() const {
+        // cos(yaw) = dot(forward, right) / (len(forward) * len(right))
+        // forward, right - normalised => len(forward) = len(right) = 1
+        // => yaw = acos(dot(forward, right))
+        // acos returns radians
+        // return glm::degrees(std::acos(glm::dot(forward, right)));
+
+        glm::vec3 fwrd = forward;
+        fwrd.y = 0.0f;
+        fwrd = glm::normalize(fwrd);
+        float yaw = glm::degrees(acos(dot(forward, glm::vec3(1.0f, 0.0f, 0.0f))));
+        if (dot(forward, glm::vec3(0.0f, 0.0f, 1.0f)) > 0.0f)
+            yaw = 360 - yaw;
+
+        return yaw;
+    }
+
+    float Camera::getRoll() const {
+        // cos(yaw) = dot(up, right) / (len(up) * len(right))
+        // up, right - normalised => len(up) = len(right) = 1
+        // => roll = acos(dot(up, right))
+        // acos returns radians
+        return glm::degrees(std::acos(glm::dot(up, right)));
+    }
+
+
 }

@@ -20,9 +20,9 @@ namespace vd::buffer
         void render() override;
         void cleanUp() override;
     private:
-        GLuint vaoId{};
-        GLuint vbId{};
-        GLuint ebId{};
+        GLuint vaoId;
+        GLuint vbId;
+        GLuint ebId;
 
         vd::model::MeshPtr meshPtr;
     };

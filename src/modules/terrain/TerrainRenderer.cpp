@@ -15,32 +15,22 @@ namespace mod::terrain
         terrainPtr->init();
     }
 
-    void TerrainRenderer::update()
+    void TerrainRenderer::update(bool shadowUpdate)
     {
-        if (isReady())
-        {
+        if (isReady()) {
             terrainPtr->update();
 
-            if (renderConfigPtr != nullptr)
-            {
+            if (renderConfigPtr != nullptr) {
                 renderConfigPtr->enable();
             }
 
-            shaderPtr->bind();
+            vd::shader::ShaderPtr _shaderPtr = shadowUpdate ? this->getShadowShader() : shaderPtr;
 
-            //const size_t patchSize = terrainPtr->getTerrainConfig()->getPatchSize();
-            //for (size_t i = 0; i < terrainPtr->getGridY(); ++i)
-            //{
-                //for (size_t j = 0; j < terrainPtr->getGridX(); ++j)
-                //{
-                    //terrainPtr->getLocalTransform().setTranslation(i * patchSize, 0.0f, j * patchSize);
-                    shaderPtr->updateUniforms(terrainPtr, 0);
-                    terrainPtr->getMeshBuffers()[0]->render();
-                //}
-            //}
+            _shaderPtr->bind();
+            _shaderPtr->updateUniforms(terrainPtr, 0);
+            terrainPtr->getMeshBuffers()[0]->render();
 
-            if (renderConfigPtr != nullptr)
-            {
+            if (renderConfigPtr != nullptr) {
                 renderConfigPtr->disable();
             }
         }

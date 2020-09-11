@@ -4,6 +4,10 @@ namespace vd::core
 {
     Window::Window(const InputHandlerPtr& inputHandlerPtr)
         : inputHandlerPtr(inputHandlerPtr)
+        , window(nullptr)
+        , width(1280)
+        , height(720)
+        , hasChanged(false)
     {
     }
 
@@ -43,11 +47,6 @@ namespace vd::core
         this->width = width;
         this->height = height;
 
-        // setting default values
-        this->Near_Plane = 0.1f;
-        this->Far_Plane = 1000.0f;
-        this->fov = 45.0f;
-
         glfwSetKeyCallback(window, Window::keyboardCallback);
         glfwSetCursorPosCallback(window, Window::mouseCallback);
         glfwSetMouseButtonCallback(window, Window::mouseClickCallback);
@@ -64,9 +63,15 @@ namespace vd::core
         std::stringstream openGlVersionStream;
         openGlVersionStream << "OpenGL version supported " << version;
         vd::Logger::log(openGlVersionStream.str());
+
+        hasChanged = true;
     }
 
     void Window::update() {
+        if (hasChanged) {
+            hasChanged = false;
+        }
+
         glfwSwapBuffers(window);
 
         if (inputHandlerPtr->getWindowResized())
@@ -74,14 +79,6 @@ namespace vd::core
             WindowInfo info = inputHandlerPtr->getWindowSize();
             resize(info.width, info.height);
         }
-
-        /*if (inputHandlerPtr->getMouseDWheel())
-        {
-            if (this->fov >= 1.0f && this->fov <= 45.0f)
-                this->fov -= (float)inputHandlerPtr->getMouseDWheel();
-
-            this->fov = std::clamp(this->fov, 1.0f, 45.0f);
-        }*/
     }
 
     void Window::dispose()
@@ -96,6 +93,10 @@ namespace vd::core
     bool Window::isCloseRequested()
     {
         return glfwWindowShouldClose(window);
+    }
+
+    bool Window::isPerspectiveChanged() const {
+        return hasChanged;
     }
 
     void Window::resize(int width, int height)
@@ -114,6 +115,8 @@ namespace vd::core
         glViewport(0, 0, width, height);
 
         vd::Logger::log("Window resized to " + std::to_string(width) + " x " + std::to_string(height));
+
+        hasChanged = true;
     }
 
     int Window::getWidth() const
@@ -126,10 +129,13 @@ namespace vd::core
         return height;
     }
 
+    float Window::getAspectRatio() const {
+        return (float) width / (float) height;
+    }
+
     glm::mat4 Window::getProjectionMatrix() const
     {
-        float ratio = static_cast<float>(width) / height;
-        return glm::perspective(glm::radians(fov), ratio, Near_Plane, Far_Plane);
+        return glm::perspective(glm::radians(fov), this->getAspectRatio(), Near_Plane, Far_Plane);
     }
 
     float Window::getFieldOfView() const
@@ -139,6 +145,7 @@ namespace vd::core
 
     void Window::setFieldOfView(float fov)
     {
+        hasChanged = true;
         this->fov = fov;
     }
 

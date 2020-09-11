@@ -13,8 +13,7 @@ namespace vd::core
     class Camera
     {
     public:
-
-        Camera(const InputHandlerPtr& inputHandlerPtr);
+        explicit Camera(const InputHandlerPtr& inputHandlerPtr);
         ~Camera();
 
         virtual void init(CameraInitParametersPtr parameters) = 0;
@@ -22,16 +21,33 @@ namespace vd::core
 
         glm::mat4 getViewMatrix();
 
-        bool isCameraMoved() const;
-        bool isCameraRotated() const;
+        [[nodiscard]] bool isCameraMoved() const;
+        [[nodiscard]] bool isCameraRotated() const;
 
         glm::vec3& getPosition();
-        const glm::vec3& getPosition() const;
+        [[nodiscard]] const glm::vec3& getPosition() const;
         void setPosition(const glm::vec3& position);
 
         glm::vec3& getTarget();
-        const glm::vec3& getTarget() const;
+        [[nodiscard]] const glm::vec3& getTarget() const;
         void setTarget(const glm::vec3& target);
+
+        glm::vec3& getDirection();
+        [[nodiscard]] const glm::vec3& getDirection() const;
+
+        glm::vec3& getRightDirection();
+        [[nodiscard]] const glm::vec3& getRightDirection() const;
+
+        glm::vec3& getUpDirection();
+        [[nodiscard]] const glm::vec3& getUpDirection() const;
+
+        [[nodiscard]] float getPitch() const;
+        [[nodiscard]] float getYaw() const;
+        [[nodiscard]] float getRoll() const;
+
+        struct CameraConstants {
+            constexpr static const glm::vec3 kUpVector = glm::vec3(0.0f, 1.0f, 0.0f);
+        };
 
     protected:
         void updatePositionVectors();
@@ -46,8 +62,6 @@ namespace vd::core
         InputHandlerPtr inputHandlerPtr;
 
     private:
-        const glm::vec3 kUpVector = glm::vec3(0.0f, 1.0f, 0.0f);
-
         glm::vec3 prevPosition;
         glm::vec3 prevForward;
     };

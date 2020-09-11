@@ -18,7 +18,7 @@ namespace mod::sobj
         }
     }
 
-    void StaticObjectRenderer::update()
+    void StaticObjectRenderer::update(bool shadowUpdate)
     {
         if (isReady())
         {
@@ -27,74 +27,63 @@ namespace mod::sobj
                 renderConfigPtr->enable();
             }
 
-            shaderPtr->bind();
+            vd::shader::ShaderPtr _shaderPtr = shadowUpdate ? this->getShadowShader() : shaderPtr;
 
-            const PlacementInfoMat& placementInfosForBiomes = staticObjectPlacerPtr->getPlacementInfosForBiomes();
-            const terrain::BiomeAtlas& biomeAtlas = staticObjectPlacerPtr->getSky()->getTerrain()->getTerrainConfig()->getBiomeAtlas();
+            _shaderPtr->bind();
 
-            for (size_t biomeIndex = 0; biomeIndex < biomeAtlas.size(); ++biomeIndex)
-            {
-                const terrain::Biome& biome = biomeAtlas[biomeIndex];
-                const PlacementInfoVec& placementInfos = placementInfosForBiomes[biomeIndex];
+            const PlacementInfoMat &placementInfosForBiomes = staticObjectPlacerPtr->getPlacementInfosForBiomes();
+            const terrain::BiomeAtlas &biomeAtlas =
+                    staticObjectPlacerPtr->getTerrain()->getTerrainConfig()->getBiomeAtlas();
 
-                if (!placementInfos.empty())
-                {
-                    for (auto it = placementInfos.begin(); it != placementInfos.end(); ++it)
-                    {
-                        StaticObjectPtr staticObjectPtr = biome.objects[it->objectIndex];
-                        staticObjectPtr->getWorldTransform().setTranslation(it->location);
+            for (size_t biomeIndex = 0; biomeIndex < biomeAtlas.size(); ++biomeIndex) {
+                const terrain::Biome &biome = biomeAtlas[biomeIndex];
+                const PlacementInfoVec &placementInfos = placementInfosForBiomes[biomeIndex];
+
+                if (!placementInfos.empty()) {
+                    for (const auto& placementInfo : placementInfos) {
+                        StaticObjectPtr staticObjectPtr = biome.objects[placementInfo.objectIndex];
+                        staticObjectPtr->getWorldTransform().setTranslation(placementInfo.location);
                         staticObjectPtr->update();
 
-                        for (size_t meshIndex = 0; meshIndex < staticObjectPtr->getMeshBuffers().size(); ++meshIndex)
-                        {
-                            shaderPtr->updateUniforms(staticObjectPtr, meshIndex);
+                        for (size_t meshIndex = 0;
+                            meshIndex < staticObjectPtr->getMeshBuffers().size(); ++meshIndex) {
+                            _shaderPtr->updateUniforms(staticObjectPtr, meshIndex);
                             staticObjectPtr->getMeshBuffers()[meshIndex]->render();
                         }
                     }
                 }
             }
 
-            if (renderConfigPtr != nullptr)
-            {
+            if (renderConfigPtr != nullptr) {
                 renderConfigPtr->disable();
             }
         }
     }
 
-    void StaticObjectRenderer::cleanUp()
-    {
-        const terrain::BiomeAtlas& biomeAtlas = staticObjectPlacerPtr->getSky()->getTerrain()->getTerrainConfig()->getBiomeAtlas();
-        for (size_t biomeIndex = 0; biomeIndex < biomeAtlas.size(); ++biomeIndex)
-        {
-            const terrain::Biome& biome = biomeAtlas[biomeIndex];
-
-            if (!biome.objects.empty())
-            {
-                for (auto it = biome.objects.begin(); it != biome.objects.end(); ++it)
-                {
-                    (*it)->cleanUp();
+    void StaticObjectRenderer::cleanUp() {
+        const terrain::BiomeAtlas& biomeAtlas = staticObjectPlacerPtr->getTerrain()->getTerrainConfig()->getBiomeAtlas();
+        for (const auto& biome : biomeAtlas) {
+            if (!biome.objects.empty()) {
+                for (const auto& object : biome.objects) {
+                    object->cleanUp();
                 }
             }
         }
     }
 
-    StaticObjectPlacerPtr& StaticObjectRenderer::getStaticObjectPlacer()
-    {
+    StaticObjectPlacerPtr& StaticObjectRenderer::getStaticObjectPlacer() {
         return staticObjectPlacerPtr;
     }
 
-    const StaticObjectPlacerPtr& StaticObjectRenderer::getStaticObjectPlacer() const
-    {
+    const StaticObjectPlacerPtr& StaticObjectRenderer::getStaticObjectPlacer() const {
         return staticObjectPlacerPtr;
     }
 
-    void StaticObjectRenderer::setStaticObjectPlacer(const StaticObjectPlacerPtr& staticObjectPlacerPtr)
-    {
+    void StaticObjectRenderer::setStaticObjectPlacer(const StaticObjectPlacerPtr& staticObjectPlacerPtr) {
         this->staticObjectPlacerPtr = staticObjectPlacerPtr;
     }
 
-    bool StaticObjectRenderer::isReady()
-    {
+    bool StaticObjectRenderer::isReady() {
         return Renderer::isReady() && staticObjectPlacerPtr != nullptr;
     }
 }

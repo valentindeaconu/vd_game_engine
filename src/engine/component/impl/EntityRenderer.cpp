@@ -15,22 +15,21 @@ namespace vd::component::impl
         entityPtr->init();
     }
 
-    void EntityRenderer::update()
+    void EntityRenderer::update(bool shadowUpdate)
     {
-        if (isReady())
-        {
+        if (isReady()) {
             entityPtr->update();
 
-            if (renderConfigPtr != nullptr)
-            {
+            if (renderConfigPtr != nullptr) {
                 renderConfigPtr->enable();
             }
 
-            shaderPtr->bind();
-            buffer::MeshBufferPtrVec& meshBuffers = entityPtr->getMeshBuffers();
-            for (size_t meshIndex = 0; meshIndex < meshBuffers.size(); ++meshIndex)
-            {
-                shaderPtr->updateUniforms(entityPtr, meshIndex);
+            shader::ShaderPtr _shaderPtr = shadowUpdate ? this->getShadowShader() : shaderPtr;
+
+            _shaderPtr->bind();
+            buffer::MeshBufferPtrVec &meshBuffers = entityPtr->getMeshBuffers();
+            for (size_t meshIndex = 0; meshIndex < meshBuffers.size(); ++meshIndex) {
+                _shaderPtr->updateUniforms(entityPtr, meshIndex);
                 meshBuffers[meshIndex]->render();
             }
 

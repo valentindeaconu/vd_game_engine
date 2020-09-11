@@ -9,58 +9,48 @@ namespace vd::kernel
 
     void Observable::unsubscribe(const ObserverPtr& observer)
     {
-        auto it = observers.begin();
-        for (; it != observers.end(); ++it)
-        {
-            if (*it == observer)
-            {
-                break;
-            }
+        auto it = std::find(observers.begin(), observers.end(), observer);
+        if (it != observers.end()) {
+            observers.erase(it);
         }
-
-        observers.erase(it);
     }
 
     void Observable::broadcastInit()
     {
-        for (auto it = observers.begin(); it != observers.end(); ++it)
+        for (auto& observer : observers)
         {
-            (*it)->init();
+            observer->init();
         }
     }
 
-    void Observable::broadcastUpdate()
+    void Observable::broadcastUpdate(bool shadowUpdate)
     {
-        for (auto it = observers.begin(); it != observers.end(); ++it)
+        for (auto& observer : observers)
         {
-            (*it)->update();
+            observer->update(shadowUpdate);
         }
     }
 
     void Observable::broadcastCleanUp()
     {
-        for (auto it = observers.begin(); it != observers.end(); ++it)
+        for (auto& observer : observers)
         {
-            (*it)->cleanUp();
+            observer->cleanUp();
         }
     }
 
-    EngineWorker::EngineWorker()
-    {
-    }
+    EngineWorker::EngineWorker() = default;
 
-    EngineWorker::~EngineWorker()
-    {
-    }
+    EngineWorker::~EngineWorker() = default;
 
     void EngineWorker::init()
     {
         broadcastInit();
     }
 
-    void EngineWorker::update()
+    void EngineWorker::update(bool shadowUpdate)
     {
-        broadcastUpdate();
+        broadcastUpdate(shadowUpdate);
     }
 
     void EngineWorker::cleanUp()

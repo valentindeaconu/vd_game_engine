@@ -9,12 +9,10 @@ namespace mod::sky
         loadAndAddShader("./resources/shaders/sky/sky_FS.glsl", vd::shader::eFragmentShader);
         compileShader();
 
-        addUniform("model");
         addUniform("view");
         addUniform("projection");
 
         addUniform("fogDensity");
-        addUniform("fogGradient");
         addUniform("fogColor");
     }
 
@@ -22,18 +20,15 @@ namespace mod::sky
 
     void SkyShader::updateUniforms(vd::object::EntityPtr entityPtr, size_t meshIndex)
     {
-        setUniform("model", entityPtr->getWorldTransform().get());
-
         auto& enginePtr = entityPtr->getParentEngine();
-        setUniform("view", enginePtr->getCamera()->getViewMatrix());
+        setUniform("view", glm::mat4(glm::mat3(enginePtr->getCamera()->getViewMatrix())));
         setUniform("projection", enginePtr->getWindow()->getProjectionMatrix());
 
         static bool loadedBasics = false;
         if (!loadedBasics)
         {
             auto& engineConfigPtr = enginePtr->getEngineConfig();
-            setUniformf("fogDensity", engineConfigPtr->getFogDensity());
-            setUniformf("fogGradient", engineConfigPtr->getFogGradient());
+            setUniformf("fogDensity", engineConfigPtr->getFogSkyDensity());
             setUniform("fogColor", engineConfigPtr->getFogColor());
             loadedBasics = true;
         }

@@ -14,8 +14,8 @@ namespace mod::player
         addUniform("view");
         addUniform("projection");
 
-        addUniform("diffusemap");
-        addUniform("specularmap");
+        addUniform("diffuseMap");
+        addUniform("specularMap");
 
         addUniform("fogDensity");
         addUniform("fogGradient");
@@ -54,14 +54,14 @@ namespace mod::player
             {
                 vd::model::activeTexture(0);
                 meshMaterial.diffusemap->bind();
-                setUniformi("diffusemap", 0);
+                setUniformi("diffuseMap", 0);
             }
 
             if (meshMaterial.specularmap != nullptr)
             {
                 vd::model::activeTexture(1);
                 meshMaterial.specularmap->bind();
-                setUniformi("specularmap", 1);
+                setUniformi("specularMap", 1);
             }
         }
 

@@ -44,4 +44,8 @@ namespace vd::component
     {
         return shaderPtr != nullptr;
     }
+
+    shadow::ShadowShaderPtr& Renderer::getShadowShader() const {
+        return shadow::GetShadowShader();
+    }
 }

@@ -18,7 +18,7 @@ struct Material
 	vec3 specular;
 };
 
-Material computeLight(Light light, vec3 normalEye, vec3 viewDirN)
+Material computePointLight(Light light, vec3 normalEye, vec3 viewDirN)
 {
 	Material material;
 
@@ -49,12 +49,39 @@ Material computeLight(Light light, vec3 normalEye, vec3 viewDirN)
 	return material;
 }
 
-Material intersectAllLights(Light lights[MAX_LIGHTS], vec3 normalEye, vec3 viewDirN)
+Material computeDirectionalLight(Light light, vec3 normalEye, vec3 viewDirN, mat3 lightDirMatrix)
+{
+	Material material;
+
+	//compute light direction
+	vec3 lightDirN = normalize(lightDirMatrix * light.position);
+
+	//compute half vector
+	vec3 halfVector = normalize(lightDirN + viewDirN);
+
+	//compute ambient light
+	material.ambient = light.ambientStrength * light.color;
+
+	//compute diffuse light
+	material.diffuse = max(dot(normalEye, lightDirN), 0.0f) * light.color;
+
+	//compute specular light
+	float specCoeff = pow(max(dot(halfVector, normalEye), 0.0f), light.shininess);
+	material.specular = light.specularStrength * specCoeff * light.color;
+
+	return material;
+}
+
+Material intersectAllLights(Light lights[MAX_LIGHTS], vec3 normalEye, vec3 viewDirN, mat3 lightDirMatrix)
 {
 	Material sum;
 	for (int i = 0; i < MAX_LIGHTS; ++i)
 	{
-		Material curr = computeLight(lights[i], normalEye, viewDirN);
+		Material curr;
+		if (i == 0)
+			curr = computeDirectionalLight(lights[i], normalEye, viewDirN, lightDirMatrix);
+		else
+			curr = computePointLight(lights[i], normalEye, viewDirN);
 		
 		sum.ambient += curr.ambient;
 		sum.diffuse += curr.diffuse;

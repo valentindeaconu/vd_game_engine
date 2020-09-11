@@ -15,6 +15,8 @@
 
 #include <engine/config/EngineConfig.hpp>
 
+#include <engine/shadow/ShadowManager.hpp>
+
 namespace vd
 {
 	class Engine
@@ -27,25 +29,28 @@ namespace vd
 		void start();
 
 		// Get the number of frames per second of the engine
-		int getFramesPerSecond() const;
+		[[nodiscard]] int getFramesPerSecond() const;
 
 		// Get the time necessary by a frame to be completely rendered
-		float getFrameTime() const;
+		[[nodiscard]] float getFrameTime() const;
 
 		kernel::EngineWorkerPtr& getWorker();
-		const kernel::EngineWorkerPtr& getWorker() const;
+		[[nodiscard]] const kernel::EngineWorkerPtr& getWorker() const;
 
 		core::InputHandlerPtr& getInputHandler();
-		const core::InputHandlerPtr& getInputHandler() const;
+		[[nodiscard]] const core::InputHandlerPtr& getInputHandler() const;
 
 		core::WindowPtr& getWindow();
-		const core::WindowPtr& getWindow() const;
+		[[nodiscard]] const core::WindowPtr& getWindow() const;
 
 		core::CameraPtr& getCamera();
-		const core::CameraPtr& getCamera() const;
+		[[nodiscard]] const core::CameraPtr& getCamera() const;
+
+        shadow::ShadowManagerPtr& getShadowManager();
+        [[nodiscard]] const shadow::ShadowManagerPtr& getShadowManager() const;
 
 		config::EngineConfigPtr& getEngineConfig();
-		const config::EngineConfigPtr& getEngineConfig() const;
+		[[nodiscard]] const config::EngineConfigPtr& getEngineConfig() const;
 	private:
 		void run();
 		void stop();
@@ -53,9 +58,9 @@ namespace vd
 		void cleanUp();
 
 		int fps; // frames per second
-		float ftis; // frame time (in seconds)
+		float frameTimeInSeconds; // frame time (in seconds)
 
-		float frametime;
+		float frameTime;
 		bool isRunning;
 
 		core::InputHandlerPtr inputHandlerPtr;
@@ -63,6 +68,8 @@ namespace vd
 
 		typedef core::impl::EntityCamera	CameraImpl;
 		core::CameraPtr cameraPtr;
+
+		shadow::ShadowManagerPtr shadowManagerPtr;
 
 		config::EngineConfigPtr configPtr;
 

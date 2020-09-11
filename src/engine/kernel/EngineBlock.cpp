@@ -6,7 +6,7 @@ namespace vd
 {
 	Engine::Engine()
 		: isRunning(false)
-		, frametime(1 / 100.0f)
+		, frameTime(1 / 100.0f)
 		, fps(0)
 	{
 	}
@@ -21,6 +21,9 @@ namespace vd
 
 		// Camera creation
 		cameraPtr = std::make_shared<CameraImpl>(inputHandlerPtr);
+
+		// ShadowManager creation
+		shadowManagerPtr = std::make_shared<shadow::ShadowManager>();
 
 		// Worker creation
 		engineWorkerPtr = std::make_shared<kernel::EngineWorker>();
@@ -49,6 +52,14 @@ namespace vd
 
 		// Worker init
 		engineWorkerPtr->init();
+
+		// Shadow Manager init
+		shadowManagerPtr->init(windowPtr,
+                         cameraPtr,
+                         configPtr->getShadowMapSize(),
+                         configPtr->getShadowDistance(),
+                         configPtr->getShadowTransitionDistance(),
+                         configPtr->getShadowOffset());
 	}
 
 	void Engine::start() {
@@ -77,12 +88,12 @@ namespace vd
 			unprocessedTime += passedTime / (double)1000000000;
 			frameCounter += passedTime;
 
-			ftis = (float)passedTime / (double)1000000000;
+            frameTimeInSeconds = (float) passedTime / (double)1000000000;
 
-			while (unprocessedTime > frametime)
+			while (unprocessedTime > frameTime)
 			{
 				renderFrame = true;
-				unprocessedTime -= frametime;
+				unprocessedTime -= frameTime;
 
 				if (windowPtr->isCloseRequested())
 					stop();
@@ -121,8 +132,6 @@ namespace vd
 		inputHandlerPtr->update();
 		cameraPtr->update();
 
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
 		if (inputHandlerPtr->getKeyDown(GLFW_KEY_M))
 		{
 			static bool isWireframeMode = false;
@@ -138,13 +147,28 @@ namespace vd
 			}
 		}
 
-		this->engineWorkerPtr->update();
+		shadowManagerPtr->update(configPtr->getLights().front());
+
+		glViewport(0, 0, configPtr->getShadowMapSize(), configPtr->getShadowMapSize());
+        glDisable(GL_CULL_FACE);
+        shadowManagerPtr->bindFramebuffer();
+        glClear(GL_DEPTH_BUFFER_BIT);
+        this->engineWorkerPtr->update(true);
+        shadowManagerPtr->unbindFramebuffer();
+
+        glViewport(0, 0, windowPtr->getWidth(), windowPtr->getHeight());
+        glEnable(GL_CULL_FACE);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        shadowManagerPtr->getShadowTexture()->bind();
+		this->engineWorkerPtr->update(false);
 	}
 
 	void Engine::cleanUp() {
 		windowPtr->dispose();
 
 		engineWorkerPtr->cleanUp();
+
+		shadowManagerPtr->cleanUp();
 
 		glfwTerminate();
 	}
@@ -156,7 +180,7 @@ namespace vd
 
 	float Engine::getFrameTime() const
 	{
-		return ftis;
+		return frameTimeInSeconds;
 	}
 
 	kernel::EngineWorkerPtr& Engine::getWorker()
@@ -197,6 +221,14 @@ namespace vd
 	const core::CameraPtr& Engine::getCamera() const
 	{
 		return cameraPtr;
+	}
+
+    shadow::ShadowManagerPtr& Engine::getShadowManager() {
+	    return shadowManagerPtr;
+	}
+
+    [[nodiscard]] const shadow::ShadowManagerPtr& Engine::getShadowManager() const {
+	    return shadowManagerPtr;
 	}
 
 	config::EngineConfigPtr& Engine::getEngineConfig()

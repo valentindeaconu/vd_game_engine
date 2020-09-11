@@ -25,7 +25,8 @@ include_directories(src/modules/sky)
 include_directories(src/modules/sobj)
 include_directories(src/modules/terrain)
 
-add_executable(vd_game_engine src/engine/component/impl/EntityRenderer.cpp
+add_executable(vd_game_engine
+        src/engine/component/impl/EntityRenderer.cpp
         src/engine/component/impl/EntityRenderer.hpp
         src/engine/component/RenderConfig.cpp
         src/engine/component/RenderConfig.hpp
@@ -102,6 +103,18 @@ add_executable(vd_game_engine src/engine/component/impl/EntityRenderer.cpp
         src/modules/terrain/TerrainRenderer.hpp
         src/modules/terrain/TerrainShader.cpp
         src/modules/terrain/TerrainShader.hpp
+        src/engine/shadow/ShadowBox.cpp
+        src/engine/shadow/ShadowBox.hpp
+        src/engine/shadow/ShadowShader.cpp
+        src/engine/shadow/ShadowShader.hpp
+        src/engine/shadow/ShadowManager.cpp
+        src/engine/shadow/ShadowManager.hpp
+        src/modules/gui/GuiQuad.cpp
+        src/modules/gui/GuiQuad.hpp
+        src/modules/gui/GuiRenderer.cpp
+        src/modules/gui/GuiRenderer.hpp
+        src/modules/gui/GuiShader.cpp
+        src/modules/gui/GuiShader.hpp
         src/main.cpp)
 
 # dependencies

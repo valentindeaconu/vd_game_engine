@@ -3,6 +3,7 @@
 
 #include <memory>
 #include <vector>
+#include <algorithm>
 
 namespace vd::kernel
 {
@@ -10,7 +11,7 @@ namespace vd::kernel
     {
     public:
         virtual void init() = 0;
-        virtual void update() = 0;
+        virtual void update(bool shadowUpdate) = 0;
         virtual void cleanUp() = 0;
     };
     typedef std::shared_ptr<Observer>	ObserverPtr;
@@ -22,7 +23,7 @@ namespace vd::kernel
         void unsubscribe(const ObserverPtr& observer);
 
         void broadcastInit();
-        void broadcastUpdate();
+        void broadcastUpdate(bool shadowUpdate);
         void broadcastCleanUp();
     private:
         std::vector<ObserverPtr> observers;
@@ -35,7 +36,7 @@ namespace vd::kernel
         ~EngineWorker();
 
         void init();
-        void update();
+        void update(bool shadowUpdate);
         void cleanUp();
     };
     typedef std::shared_ptr<EngineWorker>	EngineWorkerPtr;

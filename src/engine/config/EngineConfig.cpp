@@ -4,11 +4,28 @@ namespace vd::config
 {
     EngineConfig::EngineConfig(const std::string& filePath)
         : ConfigurationFile(filePath)
+        , shadowInfo()
+        , fogInfo()
     {
-
     }
 
     EngineConfig::~EngineConfig() = default;
+
+    int EngineConfig::getShadowMapSize() const {
+        return shadowInfo.mapSize;
+    }
+
+    float EngineConfig::getShadowDistance() const {
+        return shadowInfo.distance;
+    }
+
+    float EngineConfig::getShadowTransitionDistance() const {
+        return shadowInfo.transitionDistance;
+    }
+
+    float EngineConfig::getShadowOffset() const {
+        return shadowInfo.offset;
+    }
 
     const glm::vec3& EngineConfig::getFogColor() const
     {
@@ -18,6 +35,11 @@ namespace vd::config
     const float& EngineConfig::getFogDensity() const
     {
         return fogInfo.density;
+    }
+
+    const float& EngineConfig::getFogSkyDensity() const
+    {
+        return fogInfo.skyDensity;
     }
 
     const float& EngineConfig::getFogGradient() const
@@ -32,7 +54,23 @@ namespace vd::config
 
     void EngineConfig::onTokenReceived(const std::string& command, const std::vector<std::string>& tokens)
     {
-        if (command == "fogColor")
+        if (command == "shadowMapSize")
+        {
+            shadowInfo.mapSize = std::stoi(tokens[0]);
+        }
+        else if (command == "shadowDistance")
+        {
+            shadowInfo.distance = std::stof(tokens[0]);
+        }
+        else if (command == "shadowTransitionDistance")
+        {
+            shadowInfo.transitionDistance = std::stof(tokens[0]);
+        }
+        else if (command == "shadowOffset")
+        {
+            shadowInfo.offset = std::stof(tokens[0]);
+        }
+        else if (command == "fogColor")
         {
             fogInfo.color.r = std::stof(tokens[0]);
             fogInfo.color.g = std::stof(tokens[1]);
@@ -41,6 +79,10 @@ namespace vd::config
         else if (command == "fogDensity")
         {
             fogInfo.density = std::stof(tokens[0]);
+        }
+        else if (command == "fogSkyDensity")
+        {
+            fogInfo.skyDensity = std::stof(tokens[0]);
         }
         else if (command == "fogGradient")
         {

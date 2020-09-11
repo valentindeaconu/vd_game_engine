@@ -25,20 +25,23 @@ namespace vd::core
         void dispose();
         GLFWwindow* getWindow();
 
-        int getWidth() const;
-        int getHeight() const;
+        [[nodiscard]] int getWidth() const;
+        [[nodiscard]] int getHeight() const;
+
+        [[nodiscard]] float getAspectRatio() const;
 
         void resize(int width, int height);
 
-        float getFieldOfView() const;
+        [[nodiscard]] float getFieldOfView() const;
         void setFieldOfView(float fov);
 
-        float getNearPlane() const;
-        float getFarPlane() const;
+        [[nodiscard]] float getNearPlane() const;
+        [[nodiscard]] float getFarPlane() const;
 
         bool isCloseRequested();
+        bool isPerspectiveChanged() const;
 
-        glm::mat4 getProjectionMatrix() const;
+        [[nodiscard]] glm::mat4 getProjectionMatrix() const;
     private:
         static void windowResizeCallback(GLFWwindow* window, int32_t width, int32_t height);
         static void keyboardCallback(GLFWwindow* window, int key, int scancode, int action, int mode);
@@ -47,12 +50,14 @@ namespace vd::core
         static void mouseScrollCallback(GLFWwindow* window, double xoffset, double yoffset);
 
         float Near_Plane = 0.1f;
-        float Far_Plane = 10000.0f;
+        float Far_Plane = 1000.0f;
         float fov = 45.0f;
 
         GLFWwindow* window;
         int width;
         int height;
+
+        bool hasChanged;
 
         InputHandlerPtr inputHandlerPtr;
     };

@@ -12,30 +12,44 @@ namespace vd::config
 {
     namespace internal
     {
-        struct FogInfo
-        {
+        struct FogInfo {
             glm::vec3 color;
             float density;
+            float skyDensity;
             float gradient;
+        };
+
+        struct ShadowInfo {
+            int mapSize;
+            float distance;
+            float transitionDistance;
+            float offset;
         };
     }
 
     class EngineConfig : public ConfigurationFile
     {
     public:
-        EngineConfig(const std::string& filePath);
+        explicit EngineConfig(const std::string& filePath);
         ~EngineConfig();
 
-        const glm::vec3& getFogColor() const;
-        const float& getFogDensity() const;
-        const float& getFogGradient() const;
+        [[nodiscard]] int getShadowMapSize() const;
+        [[nodiscard]] float getShadowDistance() const;
+        [[nodiscard]] float getShadowTransitionDistance() const;
+        [[nodiscard]] float getShadowOffset() const;
 
-        const std::vector<model::LightPtr>& getLights() const;
+        [[nodiscard]] const glm::vec3& getFogColor() const;
+        [[nodiscard]] const float& getFogDensity() const;
+        [[nodiscard]] const float& getFogSkyDensity() const;
+        [[nodiscard]] const float& getFogGradient() const;
+
+        [[nodiscard]] const std::vector<model::LightPtr>& getLights() const;
     private:
         void onTokenReceived(const std::string& command, const std::vector<std::string>& tokens) override;
         void onParseFinish() override;
 
         internal::FogInfo fogInfo;
+        internal::ShadowInfo shadowInfo;
         std::vector<model::LightPtr> lights;
     };
     typedef std::shared_ptr<EngineConfig>	EngineConfigPtr;

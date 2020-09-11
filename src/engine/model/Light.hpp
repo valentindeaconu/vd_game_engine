@@ -19,7 +19,7 @@ namespace vd::model
         Light(const _type& type,
             const glm::vec3& position = glm::vec3(0.0f),
             const glm::vec3& color = glm::vec3(1.0f),
-            const glm::vec3& attenunation = glm::vec3(1.0f),
+            const glm::vec3& attenuation = glm::vec3(1.0f),
             float ambientStrength = 0.0f,
             float specularStrength = 0.0f,
             float shininess = 0.0f);

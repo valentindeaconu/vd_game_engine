@@ -16,7 +16,14 @@ namespace mod::terrain
         addUniform("view");
         addUniform("projection");
 
-        addUniform("splatmap");
+        addUniform("lightView");
+        addUniform("lightProjection");
+
+        addUniform("shadowDistance");
+        addUniform("shadowTransitionDistance");
+
+        addUniform("splatMap");
+        addUniform("shadowMap");
 
         for (int i = 0; i < kMaxTextures; ++i)
         {
@@ -47,29 +54,39 @@ namespace mod::terrain
         TerrainPtr terrainPtr = std::dynamic_pointer_cast<Terrain>(entityPtr);
 
         setUniform("model", terrainPtr->getLocalTransform().get());
-        setUniform("view", terrainPtr->getParentEngine()->getCamera()->getViewMatrix());
-        setUniform("projection", terrainPtr->getParentEngine()->getWindow()->getProjectionMatrix());
+
+        auto& enginePtr = entityPtr->getParentEngine();
+        setUniform("view", enginePtr->getCamera()->getViewMatrix());
+        setUniform("projection", enginePtr->getWindow()->getProjectionMatrix());
+
+        setUniform("lightView", enginePtr->getShadowManager()->getViewMatrix());
+        setUniform("lightProjection", enginePtr->getShadowManager()->getProjectionMatrix());
+
+        auto shadowManagerPtr = entityPtr->getParentEngine()->getShadowManager();
+        setUniformf("shadowDistance", shadowManagerPtr->getDistance());
+        setUniformf("shadowTransitionDistance", shadowManagerPtr->getTransitionDistance());
+
+        vd::model::activeTexture(0);
+        enginePtr->getShadowManager()->getShadowTexture()->bind();
+        setUniformi("shadowMap", 0);
 
         auto terrainConfig = terrainPtr->getTerrainConfig();
 
-        static bool loadedBasics = false;
+        vd::model::activeTexture(1);
+        terrainConfig->getSplatmap()->bind();
+        setUniformi("splatMap", 1);
 
-
-        if (loadedBasics == false)
+        const size_t textureUnit = 2;
+        for (size_t i = 0; i < kMaxTextures; ++i)
         {
-            vd::model::activeTexture(1);
-            terrainConfig->getSplatmap()->bind();
-            setUniformi("splatmap", 1);
+            vd::model::activeTexture(textureUnit + i);
+            terrainConfig->getBiomeAtlas()[i].material.diffusemap->bind();
+            setUniformi("textures[" + std::to_string(i) + "]", textureUnit + i);
+        }
 
-            const size_t textureUnit = 2;
-            for (size_t i = 0; i < kMaxTextures; ++i)
-            {
-                vd::model::activeTexture(textureUnit + i);
-                terrainConfig->getBiomeAtlas()[i].material.diffusemap->bind();
-                setUniformi("textures[" + std::to_string(i) + "]", textureUnit + i);
-            }
-
-            auto& enginePtr = entityPtr->getParentEngine();
+        static bool loadedBasics = false;
+        if (!loadedBasics)
+        {
             auto& engineConfigPtr = enginePtr->getEngineConfig();
             setUniformf("fogDensity", engineConfigPtr->getFogDensity());
             setUniformf("fogGradient", engineConfigPtr->getFogGradient());

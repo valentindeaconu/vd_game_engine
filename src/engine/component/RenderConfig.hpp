@@ -29,6 +29,14 @@ namespace vd::component
         void disable() override;
     };
     typedef std::shared_ptr<CWConfig> CWConfigPtr;
+
+    class SkyConfig : public RenderConfig
+    {
+    public:
+        void enable() override;
+        void disable() override;
+    };
+    typedef std::shared_ptr<SkyConfig> SkyConfigPtr;
 }
 
 #endif // !__RENDER_CONFIG_HPP_

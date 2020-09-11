@@ -21,7 +21,7 @@ namespace vd::component
             ~EntityRenderer();
 
             void init() override;
-            void update() override;
+            void update(bool shadowUpdate) override;
             void cleanUp() override;
 
             vd::object::EntityPtr& getEntity();

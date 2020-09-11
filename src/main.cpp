@@ -30,6 +30,11 @@
 #include <modules/sobj/StaticObjectPlacer.hpp>
 #include <modules/sobj/StaticObjectShader.hpp>
 
+// gui
+#include <modules/gui/GuiQuad.hpp>
+#include <modules/gui/GuiShader.hpp>
+#include <modules/gui/GuiRenderer.hpp>
+
 int main(int argc, char ** argv)
 {
 	vd::EnginePtr enginePtr = std::make_shared<vd::Engine>();
@@ -80,24 +85,27 @@ int main(int argc, char ** argv)
 	
 	// sky creation
 	{
-		mod::sky::SkyPtr skyPtr = std::make_shared<mod::sky::Sky>(enginePtr, terrainPtr);
+        vd::component::SkyConfigPtr skyConfigPtr = std::make_shared<vd::component::SkyConfig>();
+
+		mod::sky::SkyPtr skyPtr = std::make_shared<mod::sky::Sky>(enginePtr);
 		mod::sky::SkyShaderPtr skyShaderPtr = std::make_shared<mod::sky::SkyShader>();
 
 		vd::component::EntityRendererPtr skyRendererPtr = std::make_shared<vd::component::EntityRenderer>();
 		skyRendererPtr->setEntity(skyPtr);
-		skyRendererPtr->setRenderConfig(cwConfigPtr);
+		skyRendererPtr->setRenderConfig(skyConfigPtr);
 		skyRendererPtr->setShader(skyShaderPtr);
 
 		enginePtr->getWorker()->subscribe(skyRendererPtr);
 
 		// object generator
 		{
-			mod::sobj::StaticObjectPlacerPtr staticObjectPlacerPtr = std::make_shared<mod::sobj::StaticObjectPlacer>(skyPtr, 7000, 10.0f);
+			mod::sobj::StaticObjectPlacerPtr staticObjectPlacerPtr =
+			        std::make_shared<mod::sobj::StaticObjectPlacer>(terrainPtr, 7000, 10.0f);
 			mod::sobj::StaticObjectShaderPtr staticObjectShaderPtr = std::make_shared<mod::sobj::StaticObjectShader>();
 
 			mod::sobj::StaticObjectRendererPtr staticObjectRendererPtr = std::make_shared<mod::sobj::StaticObjectRenderer>();
 			staticObjectRendererPtr->setStaticObjectPlacer(staticObjectPlacerPtr);
-			staticObjectRendererPtr->setRenderConfig(nullptr);
+			staticObjectRendererPtr->setRenderConfig(ccwConfigPtr);
 			staticObjectRendererPtr->setShader(staticObjectShaderPtr);
 
 			enginePtr->getWorker()->subscribe(staticObjectRendererPtr);
@@ -114,6 +122,24 @@ int main(int argc, char ** argv)
 		// send init signal
 		enginePtr->init(&cameraInitParameters);
 	}
+
+    /*{
+        mod::gui::GuiQuadPtr guiQuadPtr =
+                std::make_shared<mod::gui::GuiQuad>(enginePtr,
+                                                    enginePtr->getShadowManager()->getShadowTexture(),
+                                                    glm::vec2(0.75f, 0.75f),
+                                                    glm::vec2(0.250f, 0.250f));
+        mod::gui::GuiShaderPtr guiShaderPtr = std::make_shared<mod::gui::GuiShader>();
+
+        mod::gui::GuiRendererPtr  guiRendererPtr = std::make_shared<mod::gui::GuiRenderer>();
+        guiRendererPtr->setRenderConfig(ccwConfigPtr);
+        guiRendererPtr->setGuiQuad(guiQuadPtr);
+        guiRendererPtr->setShader(guiShaderPtr);
+
+        guiRendererPtr->init();
+
+        enginePtr->getWorker()->subscribe(guiRendererPtr);
+    }*/
 
 	// start mainloop
 	enginePtr->start();

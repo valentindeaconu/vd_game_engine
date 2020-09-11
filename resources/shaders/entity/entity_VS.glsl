@@ -4,8 +4,8 @@ layout (location = 0) in vec3 vPosition;
 layout (location = 1) in vec3 vNormal;
 layout (location = 2) in vec2 vTexCoords;
 
-out vec3 fNormal;
 out vec4 fPosition;
+out vec3 fNormal;
 out vec2 fTexCoords;
 
 out mat3 fNormalMatrix;
@@ -26,11 +26,14 @@ void main()
 	// pass normal and texcoords
 	fNormal = vNormal;
 	fTexCoords = vTexCoords;
-	
-	//compute eye space coordinates
-	vec4 cameraPosition = view * model * vec4(vPosition, 1.0f);
+
+	// world coordinates
+	vec4 worldPosition = model * vec4(vPosition, 1.0f);
+
+	// compute eye space coordinates
+	vec4 cameraPosition = view * worldPosition;
 	fPosition = cameraPosition;
-	
+
 	// compute normal matrix
 	fNormalMatrix = transpose(inverse(mat3(view * model)));
 	

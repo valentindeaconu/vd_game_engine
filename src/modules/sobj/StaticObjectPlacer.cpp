@@ -2,8 +2,8 @@
 
 namespace mod::sobj
 {
-    StaticObjectPlacer::StaticObjectPlacer(const mod::sky::SkyPtr& skyPtr, size_t objectCount, float marginOffset)
-        : skyPtr(skyPtr)
+    StaticObjectPlacer::StaticObjectPlacer(const mod::terrain::TerrainPtr& terrainPtr, size_t objectCount, float marginOffset)
+        : terrainPtr(terrainPtr)
         , objectCount(objectCount)
         , marginOffset(marginOffset)
     {
@@ -13,14 +13,16 @@ namespace mod::sobj
 
     void StaticObjectPlacer::place()
     {
-        auto& terrainConfig = skyPtr->getTerrain()->getTerrainConfig();
+        auto& terrainConfig = terrainPtr->getTerrainConfig();
         const mod::terrain::BiomeAtlas& biomeAtlas = terrainConfig->getBiomeAtlas();
         const size_t noOfBiomes = biomeAtlas.size();
         const size_t terrainSize = terrainConfig->getSize();
-        const float skyRadius = skyPtr->getRadius();
-        const float maximumDist = skyRadius - marginOffset;
 
         placementInfosForBiomes.resize(noOfBiomes);
+
+        auto onSurface = [&terrainSize](const float x, const float z) -> bool {
+            return (x >= 0.0f && z >= 0.0f && x <= terrainSize && z <= terrainSize);
+        };
 
         std::random_device rd{};
         std::mt19937 gen{ rd() };
@@ -30,9 +32,6 @@ namespace mod::sobj
         {
             PlacementInfo placementInfo;
             size_t biomeIndex = 0;
-
-            glm::vec3 skyCenter(skyRadius, 0.0f, skyRadius);
-            float dist = skyRadius;
 
             do
             {
@@ -45,8 +44,7 @@ namespace mod::sobj
                     biomeIndex = terrainConfig->getBiomeIndex(placementInfo.location.x, placementInfo.location.z);
                 } while (biomeAtlas[biomeIndex].objects.empty());
 
-                dist = glm::length(skyCenter - placementInfo.location);
-            } while (dist > maximumDist);
+            } while (!onSurface(placementInfo.location.x, placementInfo.location.z));
 
             placementInfo.location.y = terrainConfig->getHeight(placementInfo.location.x, placementInfo.location.z);
 
@@ -62,18 +60,11 @@ namespace mod::sobj
         return placementInfosForBiomes;
     }
 
-    mod::sky::SkyPtr& StaticObjectPlacer::getSky()
-    {
-        return skyPtr;
+    terrain::TerrainPtr &StaticObjectPlacer::getTerrain() {
+        return terrainPtr;
     }
 
-    const mod::sky::SkyPtr& StaticObjectPlacer::getSky() const
-    {
-        return skyPtr;
-    }
-
-    void StaticObjectPlacer::setSky(const mod::sky::SkyPtr& skyPtr)
-    {
-        this->skyPtr = skyPtr;
+    const terrain::TerrainPtr &StaticObjectPlacer::getTerrain() const {
+        return terrainPtr;
     }
 }

@@ -19,7 +19,7 @@ namespace mod::terrain
         ~TerrainRenderer();
 
         void init() override;
-        void update() override;
+        void update(bool shadowUpdate) override;
         void cleanUp() override;
 
         TerrainPtr& getTerrain();

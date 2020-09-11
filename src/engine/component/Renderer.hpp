@@ -8,6 +8,8 @@
 
 #include <engine/kernel/EngineWorker.hpp>
 
+#include <engine/shadow/ShadowShader.hpp>
+
 #include "RenderConfig.hpp"
 
 namespace vd::component
@@ -19,21 +21,24 @@ namespace vd::component
         ~Renderer();
 
         virtual void init() = 0;
-        virtual void update() = 0;
+        virtual void update(bool shadowUpdate) = 0;
         virtual void cleanUp() = 0;
 
         RenderConfigPtr& getRenderConfig();
-        const RenderConfigPtr& getRenderConfig() const;
+        [[nodiscard]] const RenderConfigPtr& getRenderConfig() const;
         void setRenderConfig(const RenderConfigPtr& renderConfigPtr);
 
-        vd::shader::ShaderPtr& getShader();
-        const vd::shader::ShaderPtr& getShader() const;
+        shader::ShaderPtr& getShader();
+        [[nodiscard]] const shader::ShaderPtr& getShader() const;
         void setShader(const vd::shader::ShaderPtr& shaderPtr);
+
     protected:
         virtual bool isReady();
 
+        [[nodiscard]] shadow::ShadowShaderPtr& getShadowShader() const;
+
         RenderConfigPtr renderConfigPtr;
-        vd::shader::ShaderPtr shaderPtr;
+        shader::ShaderPtr shaderPtr;
     };
     typedef std::shared_ptr<Renderer>	RendererPtr;
 }

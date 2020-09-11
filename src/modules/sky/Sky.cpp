@@ -2,9 +2,8 @@
 
 namespace mod::sky
 {
-    Sky::Sky(const vd::EnginePtr& enginePtr, const mod::terrain::TerrainPtr& terrainPtr)
+    Sky::Sky(const vd::EnginePtr& enginePtr)
         : Entity(enginePtr)
-        , terrainPtr(terrainPtr)
     {
     }
 
@@ -12,16 +11,22 @@ namespace mod::sky
 
     void Sky::init()
     {
-        float terrainSize = (float)terrainPtr->getTerrainConfig()->getSize();
-        radius = terrainSize / 2.0f;
-        float terrainMinHeight = -terrainPtr->getTerrainConfig()->getMaxHeight();
-
-        getWorldTransform().setTranslation(radius, terrainMinHeight, radius);
-        getWorldTransform().setScaling(radius, radius, radius);
-        vd::objloader::OBJLoaderPtr objLoaderPtr = std::make_shared<vd::objloader::OBJLoader>();
-
         vd::model::MeshPtrVec& meshPtrVec = getMeshes();
-        objLoaderPtr->load("./resources/objects/dome", "dome.obj", meshPtrVec);
+
+        vd::model::MeshPtr meshPtr = std::make_shared<vd::model::Mesh>();
+
+        for (int i = 0; i < 24; i += 3) {
+            meshPtr->vertices.emplace_back();
+            vd::model::Vertex& vertex = meshPtr->vertices.back();
+
+            vertex.Position = glm::vec3(kSkyboxVertices[i], kSkyboxVertices[i + 1], kSkyboxVertices[i + 2]);
+            vertex.Normal = glm::vec3(0.0f, 1.0f, 0.0f);
+            vertex.TexCoords = glm::vec2(kSkyboxVertices[i], kSkyboxVertices[i + 1]);
+        }
+
+        meshPtr->indices = kSkyboxIndices;
+
+        meshPtrVec.push_back(meshPtr);
 
         Entity::init(); // call super.init() to initialize meshBuffers;
     }
@@ -34,20 +39,5 @@ namespace mod::sky
     void Sky::cleanUp()
     {
         Entity::cleanUp(); // call super.cleanUp() to clear meshBuffers;
-    }
-
-    mod::terrain::TerrainPtr& Sky::getTerrain()
-    {
-        return terrainPtr;
-    }
-
-    const mod::terrain::TerrainPtr& Sky::getTerrain() const
-    {
-        return terrainPtr;
-    }
-
-    float Sky::getRadius() const
-    {
-        return radius;
     }
 }

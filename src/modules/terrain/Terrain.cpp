@@ -47,7 +47,7 @@ namespace mod::terrain
         {
             for (size_t j = 0; j <= size; ++j)
             {
-                meshPtr->vertices.push_back(vd::model::Vertex());
+                meshPtr->vertices.emplace_back();
                 vd::model::Vertex& v = meshPtr->vertices.back();
 
                 float x = ((float)i / size);

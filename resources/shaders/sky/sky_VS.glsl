@@ -10,22 +10,13 @@ uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
 
-// fog constants
-uniform float fogDensity;
-uniform float fogGradient;
-
-#include "../lib/fog_VS.glsl"
-
 void main()
 {
-	vec4 worldPosition = model * vec4(vPosition, 1.0f);
-	fPosition = worldPosition.xyz;
-	
-	vec4 cameraPosition = view * worldPosition;
-	
-	fVisibility = getObjectVisibilityThruFog(cameraPosition.xyz, fogDensity, fogGradient);
-	
-	gl_Position = projection * cameraPosition;
+	vec4 skyPosition = projection * view * vec4(vPosition, 1.0f);
+
+	gl_Position = skyPosition.xyww;
+
+	fPosition = vPosition;
 }
 
 
