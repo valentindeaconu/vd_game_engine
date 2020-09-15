@@ -35,6 +35,11 @@
 #include <modules/gui/GuiShader.hpp>
 #include <modules/gui/GuiRenderer.hpp>
 
+// water
+#include <modules/water/Water.hpp>
+#include <modules/water/WaterRenderer.hpp>
+#include <modules/water/WaterShader.hpp>
+
 int main(int argc, char ** argv)
 {
 	vd::EnginePtr enginePtr = std::make_shared<vd::Engine>();
@@ -111,6 +116,22 @@ int main(int argc, char ** argv)
 			enginePtr->getWorker()->subscribe(staticObjectRendererPtr);
 		}
 	}
+
+	/** Water must be the last element to draw, but before GUI */
+
+	// water creation
+    {
+        mod::water::WaterPtr waterPtr =
+                std::make_shared<mod::water::Water>(enginePtr, "./resources/water_settings.cfg");
+        mod::water::WaterShaderPtr waterShaderPtr = std::make_shared<mod::water::WaterShader>();
+
+        mod::water::WaterRendererPtr waterRendererPtr = std::make_shared<mod::water::WaterRenderer>();
+        waterRendererPtr->setWater(waterPtr);
+        waterRendererPtr->setRenderConfig(ccwConfigPtr);
+        waterRendererPtr->setShader(waterShaderPtr);
+
+        enginePtr->getWorker()->subscribe(waterRendererPtr);
+    }
 
 	// engine init
 	{

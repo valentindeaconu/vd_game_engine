@@ -12,7 +12,8 @@ namespace mod::player
 
     void Player::init()
     {
-        // getWorldTransform().setTranslation(256.0f, 0.0f, 256.0f);
+        //getWorldTransform().setTranslation(256.0f, 0.0f, 256.0f);
+        //getWorldTransform().setTranslation(0.0f, 0.0f, 0.0f);
         getWorldTransform().setTranslation(512.0f, 0.0f, 512.0f);
         getWorldTransform().setScaling(0.5f, 0.5f, 0.5f);
         vd::objloader::OBJLoaderPtr objLoaderPtr = std::make_shared<vd::objloader::OBJLoader>();
