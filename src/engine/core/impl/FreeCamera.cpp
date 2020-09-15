@@ -4,12 +4,13 @@ namespace vd::core::impl
 {
     FreeCamera::FreeCamera(const InputHandlerPtr& inputHandlerPtr)
         : Camera(inputHandlerPtr)
+        , pitch(0.0f)
+        , yaw(0.0f)
+        , speed(0.0f)
     {
     }
 
-    FreeCamera::~FreeCamera()
-    {
-    }
+    FreeCamera::~FreeCamera() = default;
 
     void FreeCamera::init(CameraInitParametersPtr parameters)
     {
@@ -42,8 +43,8 @@ namespace vd::core::impl
 
     void FreeCamera::update()
     {
-        float movAmt = speed * 0.5f;
-        float rotAmt = speed * 2.0f;
+        float movAmt = speed;
+        float rotAmt = speed * 0.5;
 
         if (inputHandlerPtr->getKeyHolding(GLFW_KEY_W))
             move(forward, movAmt);
@@ -63,7 +64,7 @@ namespace vd::core::impl
         if (inputHandlerPtr->getKeyHolding(GLFW_KEY_G))
             move(up, -movAmt);
 
-        if (inputHandlerPtr->getKeyHolding(GLFW_KEY_LEFT))
+        /*if (inputHandlerPtr->getKeyHolding(GLFW_KEY_LEFT))
             rotate(0.0f, -rotAmt);
 
         if (inputHandlerPtr->getKeyHolding(GLFW_KEY_RIGHT))
@@ -73,7 +74,21 @@ namespace vd::core::impl
             rotate(rotAmt, 0.0f);
 
         if (inputHandlerPtr->getKeyHolding(GLFW_KEY_DOWN))
-            rotate(-rotAmt, 0.0f);
+            rotate(-rotAmt, 0.0f);*/
+
+        if (inputHandlerPtr->getButtonHolding(GLFW_MOUSE_BUTTON_LEFT)) {
+            if (inputHandlerPtr->getMouseMoved()) {
+                float yawChange = (float) inputHandlerPtr->getMouseDX() * rotAmt;
+                rotate(0.0f, -yawChange);
+            }
+        }
+
+        if (inputHandlerPtr->getButtonHolding(GLFW_MOUSE_BUTTON_LEFT)) {
+            if (inputHandlerPtr->getMouseMoved()) {
+                float pitchChange = (float) inputHandlerPtr->getMouseDY() * rotAmt;
+                rotate(-pitchChange, 0.0f);
+            }
+        }
 
         Camera::update();
     }

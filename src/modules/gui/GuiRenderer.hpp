@@ -26,6 +26,8 @@ namespace mod::gui {
     private:
         bool isReady() override;
 
+        bool firstTime;
+
         GuiQuadPtr guiQuadPtr;
     };
     typedef std::shared_ptr<GuiRenderer>	GuiRendererPtr;

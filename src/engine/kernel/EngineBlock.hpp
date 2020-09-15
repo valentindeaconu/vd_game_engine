@@ -6,16 +6,22 @@
 #include <thread>
 #include <iostream>
 #include <string>
+#include <vector>
 
 #include "EngineWorker.hpp"
 
 #include <engine/core/Window.hpp>
 
 #include <engine/core/impl/EntityCamera.hpp>
+#include <engine/core/impl/FreeCamera.hpp>
 
 #include <engine/config/EngineConfig.hpp>
 
 #include <engine/shadow/ShadowManager.hpp>
+
+#include <engine/glmodel/buffer/FrameBuffer.hpp>
+
+#include <engine/config/MetaConfig.hpp>
 
 namespace vd
 {
@@ -51,6 +57,8 @@ namespace vd
 
 		config::EngineConfigPtr& getEngineConfig();
 		[[nodiscard]] const config::EngineConfigPtr& getEngineConfig() const;
+
+		void addRenderingFramebuffer(const buffer::FrameBufferPtr& frameBufferPtr, const config::MetaConfigPtr& configPtr);
 	private:
 		void run();
 		void stop();
@@ -66,7 +74,8 @@ namespace vd
 		core::InputHandlerPtr inputHandlerPtr;
 		core::WindowPtr windowPtr;
 
-		typedef core::impl::EntityCamera	CameraImpl;
+		//typedef core::impl::EntityCamera	CameraImpl;
+		typedef core::impl::FreeCamera		CameraImpl;
 		core::CameraPtr cameraPtr;
 
 		shadow::ShadowManagerPtr shadowManagerPtr;
@@ -74,6 +83,13 @@ namespace vd
 		config::EngineConfigPtr configPtr;
 
 		kernel::EngineWorkerPtr engineWorkerPtr;
+
+		struct RenderingFrameBuffer {
+		    buffer::FrameBufferPtr frameBufferPtr;
+		    config::MetaConfigPtr configPtr;
+		};
+
+		std::vector<RenderingFrameBuffer> renderingFrameBuffers;
 	};
 	typedef std::shared_ptr<Engine>	EnginePtr;
 }

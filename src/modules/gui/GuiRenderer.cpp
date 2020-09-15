@@ -9,6 +9,7 @@ namespace mod::gui {
     GuiRenderer::GuiRenderer()
         : Renderer()
         , guiQuadPtr(nullptr)
+        , firstTime(true)
     {
 
     }
@@ -20,6 +21,11 @@ namespace mod::gui {
     }
 
     void GuiRenderer::update(bool shadowUpdate) {
+        if (firstTime) {
+            this->init();
+            firstTime = false;
+        }
+
         if (!isReady() || shadowUpdate)
             return;
 

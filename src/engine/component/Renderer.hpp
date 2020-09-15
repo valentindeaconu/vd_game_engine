@@ -5,12 +5,11 @@
 
 #include <engine/object/Entity.hpp>
 #include <engine/shader/Shader.hpp>
+#include <engine/config/MetaConfig.hpp>
 
 #include <engine/kernel/EngineWorker.hpp>
 
 #include <engine/shadow/ShadowShader.hpp>
-
-#include "RenderConfig.hpp"
 
 namespace vd::component
 {
@@ -24,9 +23,9 @@ namespace vd::component
         virtual void update(bool shadowUpdate) = 0;
         virtual void cleanUp() = 0;
 
-        RenderConfigPtr& getRenderConfig();
-        [[nodiscard]] const RenderConfigPtr& getRenderConfig() const;
-        void setRenderConfig(const RenderConfigPtr& renderConfigPtr);
+        config::MetaConfigPtr& getRenderConfig();
+        [[nodiscard]] const config::MetaConfigPtr& getRenderConfig() const;
+        void setRenderConfig(const config::MetaConfigPtr& renderConfigPtr);
 
         shader::ShaderPtr& getShader();
         [[nodiscard]] const shader::ShaderPtr& getShader() const;
@@ -37,7 +36,7 @@ namespace vd::component
 
         [[nodiscard]] shadow::ShadowShaderPtr& getShadowShader() const;
 
-        RenderConfigPtr renderConfigPtr;
+        config::MetaConfigPtr renderConfigPtr;
         shader::ShaderPtr shaderPtr;
     };
     typedef std::shared_ptr<Renderer>	RendererPtr;

@@ -26,7 +26,7 @@ namespace mod::player
 
     void Player::update()
     {
-        input();
+        // input();
 
         float currentAngle = getWorldTransform().getYAxisRotationAngle();
         currentAngle += currentTurnSpeed * getParentEngine()->getFrameTime();

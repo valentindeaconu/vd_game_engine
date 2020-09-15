@@ -15,12 +15,24 @@ namespace mod::water {
         explicit WaterConfig(const std::string& filePath);
         ~WaterConfig();
 
-        [[nodiscard]] int getSize() const;
+        [[nodiscard]] uint32_t getSize() const;
+
+        [[nodiscard]] uint32_t getReflectionWidth() const;
+        [[nodiscard]] uint32_t getReflectionHeight() const;
+
+        [[nodiscard]] uint32_t getRefractionWidth() const;
+        [[nodiscard]] uint32_t getRefractionHeight() const;
     private:
         void onTokenReceived(const std::string& key, const std::vector<std::string>& tokens) override;
         void onParseFinish() override;
 
-        int size;
+        uint32_t size;
+
+        uint32_t reflectionWidth;
+        uint32_t reflectionHeight;
+
+        uint32_t refractionWidth;
+        uint32_t refractionHeight;
     };
     typedef std::shared_ptr<WaterConfig>    WaterConfigPtr;
 }

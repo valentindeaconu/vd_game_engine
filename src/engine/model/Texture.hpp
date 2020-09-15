@@ -8,6 +8,11 @@
 
 namespace vd::model
 {
+    enum Attachment {
+        eDepth = 0,
+        eColor
+    };
+
     void activeTexture(GLuint index);
 
     template<GLuint T>
@@ -78,6 +83,7 @@ namespace vd::model
         static Texture2DPtr get(const std::string& path);
         static Texture2DPtr get(const imgloader::ImageBPtr& imagePtr);
         static UTexture2DPtr get(size_t width, size_t height, const std::vector<uint16_t>& data);
+        static Texture2DPtr get(size_t width, size_t height, Attachment attachment);
 
         static void remove(Texture2DPtr& texture);
 

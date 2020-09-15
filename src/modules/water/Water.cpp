@@ -9,6 +9,9 @@ namespace mod::water {
         : vd::object::Entity(enginePtr)
     {
         configPtr = std::make_shared<WaterConfig>(configFilePath);
+
+        reflectionFBO = std::make_shared<vd::buffer::FrameBuffer>();
+        refractionFBO = std::make_shared<vd::buffer::FrameBuffer>();
     }
 
     Water::~Water() = default;
@@ -21,6 +24,14 @@ namespace mod::water {
 
         generatePatch();
 
+        reflectionFBO->allocate(configPtr->getReflectionWidth(),
+                                configPtr->getReflectionHeight(),
+                                vd::buffer::DepthAttachment::eDepthBuffer);
+
+        refractionFBO->allocate(configPtr->getRefractionWidth(),
+                                configPtr->getRefractionHeight(),
+                                vd::buffer::DepthAttachment::eDepthTexture);
+
         Entity::init();
     }
 
@@ -29,11 +40,22 @@ namespace mod::water {
     }
 
     void Water::cleanUp() {
+        reflectionFBO->cleanUp();
+        refractionFBO->cleanUp();
+
         Entity::cleanUp();
     }
 
     const WaterConfigPtr &Water::getWaterConfig() const {
         return configPtr;
+    }
+
+    const vd::buffer::FrameBufferPtr &Water::getReflectionFramebuffer() const {
+        return reflectionFBO;
+    }
+
+    const vd::buffer::FrameBufferPtr &Water::getRefractionFramebuffer() const {
+        return refractionFBO;
     }
 
     void Water::generatePatch() {

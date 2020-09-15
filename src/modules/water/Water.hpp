@@ -7,6 +7,8 @@
 
 #include <engine/object/Entity.hpp>
 
+#include <engine/glmodel/buffer/FrameBuffer.hpp>
+
 #include "WaterConfig.hpp"
 
 #include <memory>
@@ -22,10 +24,16 @@ namespace mod::water {
         void cleanUp() override;
 
         [[nodiscard]] const WaterConfigPtr& getWaterConfig() const;
+
+        [[nodiscard]] const vd::buffer::FrameBufferPtr& getReflectionFramebuffer() const;
+        [[nodiscard]] const vd::buffer::FrameBufferPtr& getRefractionFramebuffer() const;
     private:
         void generatePatch();
 
         WaterConfigPtr	configPtr;
+
+        vd::buffer::FrameBufferPtr reflectionFBO;
+        vd::buffer::FrameBufferPtr refractionFBO;
     };
     typedef std::shared_ptr<Water>  WaterPtr;
 }

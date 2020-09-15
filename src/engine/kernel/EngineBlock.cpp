@@ -132,32 +132,47 @@ namespace vd
 		inputHandlerPtr->update();
 		cameraPtr->update();
 
-		if (inputHandlerPtr->getKeyDown(GLFW_KEY_M))
-		{
-			static bool isWireframeMode = false;
-			isWireframeMode = !isWireframeMode;
-
-			if (isWireframeMode)
-			{
-				glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-			}
-			else
-			{
-				glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-			}
-		}
-
 		shadowManagerPtr->update(configPtr->getLights().front());
 
+		// render scene
 		glViewport(0, 0, configPtr->getShadowMapSize(), configPtr->getShadowMapSize());
         glDisable(GL_CULL_FACE);
         shadowManagerPtr->bindFramebuffer();
         glClear(GL_DEPTH_BUFFER_BIT);
         this->engineWorkerPtr->update(true);
         shadowManagerPtr->unbindFramebuffer();
+        glEnable(GL_CULL_FACE);
+
+        for (const auto& rfb : renderingFrameBuffers) {
+            if (rfb.configPtr != nullptr)
+                rfb.configPtr->enable();
+
+            rfb.frameBufferPtr->bind();
+
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+            this->engineWorkerPtr->update(false);
+
+            rfb.frameBufferPtr->unbind();
+
+            if (rfb.configPtr != nullptr)
+                rfb.configPtr->disable();
+        }
 
         glViewport(0, 0, windowPtr->getWidth(), windowPtr->getHeight());
-        glEnable(GL_CULL_FACE);
+        if (inputHandlerPtr->getKeyDown(GLFW_KEY_M))
+        {
+            static bool isWireframeMode = false;
+            isWireframeMode = !isWireframeMode;
+
+            if (isWireframeMode)
+            {
+                glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+            }
+            else
+            {
+                glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+            }
+        }
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         shadowManagerPtr->getShadowTexture()->bind();
 		this->engineWorkerPtr->update(false);
@@ -240,5 +255,14 @@ namespace vd
 	{
 		return configPtr;
 	}
+
+    void Engine::addRenderingFramebuffer(const buffer::FrameBufferPtr &frameBufferPtr,
+                                         const config::MetaConfigPtr &configPtr) {
+        this->renderingFrameBuffers.emplace_back();
+
+        RenderingFrameBuffer& rfb = this->renderingFrameBuffers.back();
+        rfb.frameBufferPtr = frameBufferPtr;
+        rfb.configPtr = configPtr;
+    }
 
 }
