@@ -53,8 +53,6 @@ namespace vd
 		glEnable(GL_CULL_FACE); // cull face
 		glCullFace(GL_BACK); // cull back face
 		glFrontFace(GL_CCW); // GL_CCW for counter clock-wise
-		//glEnable(GL_BLEND);
-		//glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 		// Camera init
 		cameraPtr->init(cameraParameters);

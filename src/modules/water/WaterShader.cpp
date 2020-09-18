@@ -19,24 +19,27 @@ namespace mod::water {
         addUniform("view");
         addUniform("projection");
 
+        addUniform("cameraPosition");
+
+        addUniform("tiling");
+        addUniform("waveStrength");
+        addUniform("moveFactor");
+
         addUniform("reflectionTexture");
         addUniform("refractionTexture");
 
-        addUniform("fogDensity");
-        addUniform("fogGradient");
-        addUniform("fogColor");
+        addUniform("dudvMap");
+        addUniform("normalMap");
+        addUniform("depthMap");
 
-        for (size_t i = 0; i < kMaxLights; ++i)
-        {
-            std::string currentLightUniformNameBase = "lights[" + std::to_string(i) + "]";
+        addUniform("sunPosition");
+        addUniform("sunColor");
+        addUniform("shineDamper");
+        addUniform("reflectivity");
+        addUniform("baseColor");
 
-            addUniform(currentLightUniformNameBase + ".position");
-            addUniform(currentLightUniformNameBase + ".color");
-            addUniform(currentLightUniformNameBase + ".attenuation");
-            addUniform(currentLightUniformNameBase + ".ambientStrength");
-            addUniform(currentLightUniformNameBase + ".specularStrength");
-            addUniform(currentLightUniformNameBase + ".shininess");
-        }
+        addUniform("nearPlane");
+        addUniform("farPlane");
     }
 
     WaterShader::~WaterShader() = default;
@@ -50,6 +53,11 @@ namespace mod::water {
         setUniform("view", enginePtr->getCamera()->getViewMatrix());
         setUniform("projection", enginePtr->getWindow()->getProjectionMatrix());
 
+        setUniform("cameraPosition", enginePtr->getCamera()->getPosition());
+
+        setUniformf("nearPlane", enginePtr->getWindow()->getNearPlane());
+        setUniformf("farPlane", enginePtr->getWindow()->getFarPlane());
+
         vd::model::activeTexture(0);
         waterPtr->getReflectionFramebuffer()->getColorTexture()->bind();
         setUniformi("reflectionTexture", 0);
@@ -58,31 +66,34 @@ namespace mod::water {
         waterPtr->getRefractionFramebuffer()->getColorTexture()->bind();
         setUniformi("refractionTexture", 1);
 
+        vd::model::activeTexture(2);
+        waterPtr->getRefractionFramebuffer()->getDepthTexture()->bind();
+        setUniformi("depthMap", 2);
+
+        setUniform("sunPosition", enginePtr->getEngineConfig()->getLights().front()->getPosition());
+        setUniform("sunColor", enginePtr->getEngineConfig()->getLights().front()->getColor());
+
+        setUniformf("moveFactor", waterPtr->getMoveFactor());
+
+        auto& waterConfigPtr = waterPtr->getWaterConfig();
+
+        vd::model::activeTexture(3);
+        waterConfigPtr->getDuDvMap("Chill")->bind();
+        setUniformi("dudvMap", 3);
+
+        vd::model::activeTexture(4);
+        waterConfigPtr->getNormalMap("Chill")->bind();
+        setUniformi("normalMap", 4);
+
         static bool loadedBasics = false;
         if (!loadedBasics)
         {
-            auto& engineConfigPtr = enginePtr->getEngineConfig();
-            setUniformf("fogDensity", engineConfigPtr->getFogDensity());
-            setUniformf("fogGradient", engineConfigPtr->getFogGradient());
-            setUniform("fogColor", engineConfigPtr->getFogColor());
+            setUniformf("tiling", waterConfigPtr->getTiling());
+            setUniformf("waveStrength", waterConfigPtr->getWaveStrength());
+            setUniformf("shineDamper", waterConfigPtr->getShineDamper());
+            setUniformf("reflectivity", waterConfigPtr->getReflectivity());
 
-            auto& lights = engineConfigPtr->getLights();
-            for (size_t i = 0; i < kMaxLights; ++i)
-            {
-                if (i < lights.size())
-                {
-                    auto& lightPtr = lights[i];
-
-                    std::string currentLightUniformNameBase = "lights[" + std::to_string(i) + "]";
-
-                    setUniform(currentLightUniformNameBase + ".position", lightPtr->getPosition());
-                    setUniform(currentLightUniformNameBase + ".color", lightPtr->getColor());
-                    setUniform(currentLightUniformNameBase + ".attenuation", lightPtr->getAttenuation());
-                    setUniformf(currentLightUniformNameBase + ".ambientStrength", lightPtr->getAmbientStrength());
-                    setUniformf(currentLightUniformNameBase + ".specularStrength", lightPtr->getSpecularStrength());
-                    setUniformf(currentLightUniformNameBase + ".shininess", lightPtr->getShininess());
-                }
-            }
+            setUniform("baseColor", waterConfigPtr->getBaseColor());
 
             loadedBasics = true;
         }

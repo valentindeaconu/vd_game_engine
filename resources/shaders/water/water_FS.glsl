@@ -1,59 +1,80 @@
 #version 410 core
 
 in vec4 fPosition;
-in vec3 fNormal;
+in vec2 fTexCoords;
 
 in vec4 clipSpace;
-
-in mat3 fNormalMatrix;
-in mat3 fLightDirectionMatrix;
-in float fVisibility;
+in vec3 toCamera;
+in vec3 fromLightVector;
 
 out vec4 fColor;
-
-uniform mat4 view;
-
-uniform vec3 fogColor;
-
-#include "../lib/light_FS.glsl"
-
-uniform Light lights[MAX_LIGHTS];
 
 uniform sampler2D reflectionTexture;
 uniform sampler2D refractionTexture;
 
-void main() 
+uniform sampler2D dudvMap;
+uniform sampler2D normalMap;
+uniform sampler2D depthMap;
+uniform float tiling;
+uniform float waveStrength;
+uniform float moveFactor;
+uniform float shineDamper;
+uniform float reflectivity;
+uniform vec3 sunColor;
+uniform vec4 baseColor;
+uniform float nearPlane;
+uniform float farPlane;
+
+float computeDistanceUsingDepth(float depth, float nearPlane, float farPlane) {
+	return 2.0f * nearPlane * farPlane / (farPlane + nearPlane - (2.0f * depth - 1.0f) * (farPlane - nearPlane));
+}
+
+void main()
 {
+	// get reflection & refraction
 	vec2 normCoords = (clipSpace.xy / clipSpace.w) / 2.0f + 0.5f;
 
 	vec2 refractionTexCoords = vec2(normCoords.x, normCoords.y);
 	vec2 reflectionTexCoords = vec2(normCoords.x, -normCoords.y);
 
+	float floorDistance = computeDistanceUsingDepth(texture(depthMap, refractionTexCoords).r, nearPlane, farPlane);
+	float waterDistance = computeDistanceUsingDepth(gl_FragCoord.z, nearPlane, farPlane);
+	float waterDepth = floorDistance - waterDistance;
+
+	// compute distorsion
+	vec2 distortedTexCoords = texture(dudvMap, vec2(fTexCoords.x + moveFactor, fTexCoords.y)).rg * 0.1f;
+	distortedTexCoords = fTexCoords + vec2(distortedTexCoords.x, distortedTexCoords.y + moveFactor);
+
+	vec2 totalDistortion = (texture(dudvMap, distortedTexCoords).rg * 2.0 - 1.0) * waveStrength * clamp(waterDepth / 20.0f, 0.0f, 1.0f);
+
+	refractionTexCoords += totalDistortion;
+	refractionTexCoords = clamp(refractionTexCoords, 0.001f, 0.999f);
+
+	reflectionTexCoords += totalDistortion;
+	reflectionTexCoords.x = clamp(reflectionTexCoords.x, 0.001f, 0.999f);
+	reflectionTexCoords.y = clamp(reflectionTexCoords.y, -0.999f, -0.001f);
+
 	// get color from texture
-	vec4 reflectionColor = texture(reflectionTexture, reflectionTexCoords);
 	vec4 refractionColor = texture(refractionTexture, refractionTexCoords);
+	vec4 reflectionColor = texture(reflectionTexture, reflectionTexCoords);
 
-	vec4 waterColor = mix(reflectionColor, refractionColor, 0.5f);
+	// compute normal
+	vec4 normalMapColor = texture(normalMap, distortedTexCoords);
+	vec3 normal = vec3(normalMapColor.r * 2.0f - 1.0f, normalMapColor.b * 5.0f, normalMapColor.g * 2.0f - 1.0f);
+	normal = normalize(normal);
 
-	// compute lights
-	//in eye coordinates, the viewer is situated at the origin
-	vec3 cameraPosEye = vec3(0.0f);
-	//transform normal
-	vec3 normalEye = normalize(fNormalMatrix * fNormal);
-	//compute view direction
-	vec3 viewDirN = normalize(cameraPosEye - fPosition.xyz);
+	// fesnel effect
+	vec3 viewVector = normalize(toCamera);
+	float refractiveFactor = dot(viewVector, normal);
 
-	Material totalMat = intersectAllLights(lights, normalEye, viewDirN, fLightDirectionMatrix);
+	vec3 reflectedLight = reflect(normalize(fromLightVector), normal);
+	float specular = max(dot(reflectedLight, viewVector), 0.0f);
+	specular = pow(specular, shineDamper);
+	vec3 specularHighlights = sunColor * specular * reflectivity * clamp(waterDepth / 5.0f, 0.0f, 1.0f);
 
-	// modulate with color
-	totalMat.ambient *= waterColor.xyz;
-	totalMat.diffuse *= waterColor.xyz;
+	vec4 waterColor = mix(reflectionColor  + vec4(specularHighlights, 0.0f), refractionColor, refractiveFactor);
+	waterColor = mix(waterColor, baseColor, 0.2f);
 
-	while (fogColor == vec3(1.0f)) break;
-	while (fVisibility == 0.5f) break;
-
-	// modulate with light
-	vec4 lighting = vec4(min(totalMat.ambient + totalMat.diffuse + totalMat.specular, 1.0f), 1.0f);
-	fColor = lighting;
-	//fColor = mix(vec4(fogColor, 1.0f), lighting, fVisibility);
+	fColor = mix(waterColor, baseColor, 0.2f);
+	fColor.a = clamp(waterDepth / 5.0f, 0.0f, 1.0f);
 }

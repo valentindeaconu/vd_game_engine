@@ -34,8 +34,17 @@ namespace vd::model
         bind();
 
         // GL_SRGB, GL_RGBA
-        glTexImage2D(type, 0, GL_SRGB_ALPHA, (GLsizei)width, (GLsizei)height, 0, GL_RGBA, GL_UNSIGNED_BYTE, &(imagePtr->data[0]));
+        glTexImage2D(type,
+                     0,
+                     GL_SRGB_ALPHA,
+                     (GLsizei)width,
+                     (GLsizei)height,
+                     0,
+                     GL_RGBA,
+                     GL_UNSIGNED_BYTE,
+                     &(imagePtr->data[0]));
 
+        noFilter();
         wrapRepeat();
         unbind();
     }

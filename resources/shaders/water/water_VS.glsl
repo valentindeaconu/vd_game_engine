@@ -1,49 +1,46 @@
 #version 410 core
 
 layout (location = 0) in vec3 vPosition;
-layout (location = 1) in vec3 vNormal;
 
-out vec3 fNormal;
 out vec4 fPosition;
+out vec2 fTexCoords;
 
 out vec4 clipSpace;
-
-out mat3 fNormalMatrix;
-out mat3 fLightDirectionMatrix;
-out float fVisibility;
+out vec3 toCamera;
+out vec3 fromLightVector;
 
 uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
 
-// fog constants
-uniform float fogDensity;
-uniform float fogGradient;
+// tiling
+uniform float tiling;
 
-#include "../lib/fog_VS.glsl"
+// camera position for fesnel effect
+uniform vec3 cameraPosition;
+
+// lighting for normal mapping
+uniform vec3 sunPosition;
 
 void main() 
 {
-	// pass normal and texcoords
-	fNormal = vNormal;
+	// compute texcoords
+	fTexCoords = vec2(vPosition.x / 2.0f + 0.5f, vPosition.z / 2.0f + 0.5f) * tiling;
 
-	// compute world coordinates
+	// compute world space coordinates
 	vec4 worldCoordinates = model * vec4(vPosition, 1.0f);
 
 	// compute eye space coordinates
-	vec4 cameraPosition = view * worldCoordinates;
-	fPosition = cameraPosition;
-	
-	// compute normal matrix
-	fNormalMatrix = mat3(transpose(inverse(view * model)));
-	
-	// compute light direction matrix
-	fLightDirectionMatrix = mat3(transpose(inverse(view)));
-	
-	// compute vertex visibility
-	fVisibility = getObjectVisibilityThruFog(cameraPosition.xyz, fogDensity, fogGradient);
+	vec4 eyeSpaceCoordinates = view * worldCoordinates;
+	fPosition = eyeSpaceCoordinates;
+
+	// coompute to camera vector
+	toCamera = cameraPosition - worldCoordinates.xyz;
+
+	// compute from light vector
+	fromLightVector = worldCoordinates.xyz - sunPosition;
 
 	// compute vertex position
-	clipSpace = projection * cameraPosition;
+	clipSpace = projection * eyeSpaceCoordinates;
 	gl_Position = clipSpace;
 }

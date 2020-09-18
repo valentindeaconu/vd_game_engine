@@ -42,7 +42,10 @@ namespace mod::water {
     }
 
     void Water::update() {
-
+        moveFactor += (configPtr->getWaveSpeed() * getParentEngine()->getFrameTime());
+        if (moveFactor >= 1.0f) {
+            moveFactor -= 1.0f;
+        }
     }
 
     void Water::cleanUp() {
@@ -68,70 +71,21 @@ namespace mod::water {
         return -33.0f;
     }
 
+    float Water::getMoveFactor() const {
+       return moveFactor; //return (float) std::sin(moveFactor * 2 * std::numbers::pi) / 2.0f + 0.5f;
+    }
+
     void Water::generatePatch() {
         vd::model::MeshPtr meshPtr = std::make_shared<vd::model::Mesh>();
 
         meshPtr->vertices = {
-                {
-                    .Position = glm::vec3(-1.0f, 0.0f, 1.0f),
-                    .Normal = glm::vec3(0.0f, 1.0f, 0.0f),
-                    .TexCoords = glm::vec2(0.0f, 1.0f)
-                },
-                {
-                    .Position = glm::vec3(-1.0f, 0.0f, -1.0f),
-                    .Normal = glm::vec3(0.0f, 1.0f, 0.0f),
-                    .TexCoords = glm::vec2(0.0f, 0.0f)
-                },
-                {
-                    .Position = glm::vec3(1.0f, 0.0f, 1.0f),
-                    .Normal = glm::vec3(0.0f, 1.0f, 0.0f),
-                    .TexCoords = glm::vec2(1.0f, 1.0f)
-                },
-                {
-                    .Position = glm::vec3(1.0f, 0.0f, -1.0f),
-                    .Normal = glm::vec3(0.0f, 1.0f, 0.0f),
-                    .TexCoords = glm::vec2(1.0f, 0.0f)
-                }
+                { .Position = glm::vec3(-1.0f, 0.0f, 1.0f) },
+                { .Position = glm::vec3(-1.0f, 0.0f, -1.0f) },
+                { .Position = glm::vec3(1.0f, 0.0f, 1.0f) },
+                { .Position = glm::vec3(1.0f, 0.0f, -1.0f) }
         };
 
         meshPtr->indices = { 0, 2, 1, 1, 2, 3 };
-
-        /*const size_t size = 2; //configPtr->getSize();
-
-        for (size_t i = 0; i <= size; ++i)
-        {
-            for (size_t j = 0; j <= size; ++j)
-            {
-                meshPtr->vertices.emplace_back();
-                vd::model::Vertex& v = meshPtr->vertices.back();
-
-                float x = ((float)i / size);
-                float z = ((float)j / size);
-
-                v.Position = glm::vec3(i, 0.0f, j);
-                v.Normal = glm::vec3(0.0f, 1.0f, 0.0f);
-                v.TexCoords = glm::vec2(x, z);
-            }
-        }
-
-        for (size_t i = 1; i <= size; ++i)
-        {
-            for (size_t j = 1; j <= size; ++j)
-            {
-                GLuint current = i * (size + 1) + j;
-                GLuint west = current - 1;
-                GLuint north = (i - 1) * (size + 1) + j;
-                GLuint northWest = north - 1;
-
-                meshPtr->indices.push_back(current);
-                meshPtr->indices.push_back(west);
-                meshPtr->indices.push_back(northWest);
-
-                meshPtr->indices.push_back(current);
-                meshPtr->indices.push_back(northWest);
-                meshPtr->indices.push_back(north);
-            }
-        }*/
 
         getMeshes().push_back(meshPtr);
     }

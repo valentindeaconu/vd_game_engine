@@ -12,6 +12,7 @@
 #include "WaterConfig.hpp"
 
 #include <memory>
+#include <numbers>
 
 namespace mod::water {
     class Water : public vd::object::Entity {
@@ -29,10 +30,13 @@ namespace mod::water {
         [[nodiscard]] const vd::buffer::FrameBufferPtr& getRefractionFramebuffer() const;
 
         [[nodiscard]] float getHeight() const;
+        [[nodiscard]] float getMoveFactor() const;
     private:
         void generatePatch();
 
         WaterConfigPtr	configPtr;
+
+        float moveFactor;
 
         vd::buffer::FrameBufferPtr reflectionFBO;
         vd::buffer::FrameBufferPtr refractionFBO;

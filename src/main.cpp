@@ -145,9 +145,18 @@ int main(int argc, char ** argv)
     {
         mod::water::WaterShaderPtr waterShaderPtr = std::make_shared<mod::water::WaterShader>();
 
+        vd::config::MetaConfigPtr waterConfigPtr = std::make_shared<vd::config::MetaConfig>([]() {
+            glFrontFace(GL_CCW);
+            glEnable(GL_BLEND);
+            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        }, []() {
+            glFrontFace(GL_CW);
+            glDisable(GL_BLEND);
+        });
+
         mod::water::WaterRendererPtr waterRendererPtr = std::make_shared<mod::water::WaterRenderer>();
         waterRendererPtr->setWater(waterPtr);
-        waterRendererPtr->setRenderConfig(ccwConfigPtr);
+        waterRendererPtr->setRenderConfig(waterConfigPtr);
         waterRendererPtr->setShader(waterShaderPtr);
 
         enginePtr->addRenderingFramebuffer(waterPtr->getReflectionFramebuffer(),
@@ -156,7 +165,7 @@ int main(int argc, char ** argv)
                                            },
                                            std::make_shared<vd::config::MetaConfig>([&]{
                                                glEnable(GL_CLIP_DISTANCE0);
-                                               enginePtr->setClipPlane(glm::vec4(0.0f, 1.0f, 0.0f, -waterPtr->getHeight()));
+                                               enginePtr->setClipPlane(glm::vec4(0.0f, 1.0f, 0.0f, -waterPtr->getHeight() + 1.0f));
 
                                                float distance = 2.0f * std::abs(
                                                        enginePtr->getCamera()->getPosition().y -
