@@ -125,6 +125,8 @@ add_executable(vd_game_engine
         src/engine/glmodel/buffer/FrameBuffer.hpp
         src/engine/config/MetaConfig.hpp
         src/engine/config/MetaConfig.cpp
+        src/engine/core/AsyncWorker.cpp
+        src/engine/core/AsyncWorker.hpp
         src/main.cpp)
 
 

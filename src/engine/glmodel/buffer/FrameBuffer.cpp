@@ -17,7 +17,9 @@ namespace vd::buffer {
     {
     }
 
-    FrameBuffer::~FrameBuffer() = default;
+    FrameBuffer::~FrameBuffer()
+    {
+    }
 
     void FrameBuffer::bind() const {
         glBindTexture(GL_TEXTURE_2D, 0);
@@ -30,19 +32,26 @@ namespace vd::buffer {
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
 
-    void FrameBuffer::allocate(int width, int height, const DepthAttachment& depthAttachment) {
+    void FrameBuffer::allocate(int width, int height, bool withColorTexture, const DepthAttachment& depthAttachment) {
         this->width = width;
         this->height = height;
         this->depthAttachment = depthAttachment;
 
         glGenFramebuffers(1, &fboId);
         glBindFramebuffer(GL_FRAMEBUFFER, fboId);
-        glDrawBuffer(GL_COLOR_ATTACHMENT0);
 
-        this->colorTexture = model::TextureService::get(width, height, model::Attachment::eColor);
-        glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, this->colorTexture->getId(), 0);
+        if (withColorTexture) {
+            glDrawBuffer(GL_COLOR_ATTACHMENT0);
+            this->colorTexture = model::TextureService::get(width, height, model::Attachment::eColor);
+            glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, this->colorTexture->getId(), 0);
+        } else {
+            glDrawBuffer(GL_NONE);
+            glReadBuffer(GL_NONE);
+        }
 
         switch (depthAttachment) {
+            case eNone:
+                break;
             case eDepthTexture:
                 this->depthTexture = model::TextureService::get(width, height, model::Attachment::eDepth);
                 glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, this->depthTexture->getId(), 0);

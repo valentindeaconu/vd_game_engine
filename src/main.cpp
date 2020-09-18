@@ -150,7 +150,41 @@ int main(int argc, char ** argv)
         waterRendererPtr->setRenderConfig(ccwConfigPtr);
         waterRendererPtr->setShader(waterShaderPtr);
 
-        enginePtr->addRenderingFramebuffer(waterPtr->getReflectionFramebuffer(), nullptr);
+        enginePtr->addRenderingFramebuffer(waterPtr->getReflectionFramebuffer(),
+                                           [&]() {
+                                                return enginePtr->getCamera()->getPosition().y > waterPtr->getHeight();
+                                           },
+                                           std::make_shared<vd::config::MetaConfig>([&]{
+                                               glEnable(GL_CLIP_DISTANCE0);
+                                               enginePtr->setClipPlane(glm::vec4(0.0f, 1.0f, 0.0f, -waterPtr->getHeight()));
+
+                                               float distance = 2.0f * std::abs(
+                                                       enginePtr->getCamera()->getPosition().y -
+                                                       waterPtr->getHeight());
+                                               enginePtr->getCamera()->getPosition().y -= distance;
+                                               enginePtr->getCamera()->invertPitch();
+                                           }, [&]() {
+                                               glDisable(GL_CLIP_DISTANCE0);
+
+                                               float distance = 2.0f * std::abs(
+                                                       enginePtr->getCamera()->getPosition().y -
+                                                       waterPtr->getHeight());
+                                               enginePtr->getCamera()->getPosition().y += distance;
+                                               enginePtr->getCamera()->invertPitch();
+                                           }),
+                                           vd::kernel::RenderingPass::eReflection);
+
+        enginePtr->addRenderingFramebuffer(waterPtr->getRefractionFramebuffer(),
+                                           [&]() {
+                                               return enginePtr->getCamera()->getPosition().y > waterPtr->getHeight();
+                                           },
+                                           std::make_shared<vd::config::MetaConfig>([&]{
+                                               glEnable(GL_CLIP_DISTANCE0);
+                                               enginePtr->setClipPlane(glm::vec4(0.0f, -1.0f, 0.0f, waterPtr->getHeight()));
+                                           }, [&]() {
+                                               glDisable(GL_CLIP_DISTANCE0);
+                                           }),
+                                           vd::kernel::RenderingPass::eRefraction);
 
         enginePtr->getWorker()->subscribe(waterRendererPtr);
     }
@@ -171,7 +205,7 @@ int main(int argc, char ** argv)
         mod::gui::GuiQuadPtr guiQuadPtr =
                 std::make_shared<mod::gui::GuiQuad>(enginePtr,
                                                     enginePtr->getShadowManager()->getShadowTexture(),
-                                                    glm::vec2(0.75f, 0.75f),
+                                                    glm::vec2(-0.75f, -0.75f),
                                                     glm::vec2(0.250f, 0.250f));
         mod::gui::GuiShaderPtr guiShaderPtr = std::make_shared<mod::gui::GuiShader>();
 
@@ -183,11 +217,11 @@ int main(int argc, char ** argv)
         enginePtr->getWorker()->subscribe(guiRendererPtr);
     }*/
 
-    {
+    /*{
         mod::gui::GuiQuadPtr guiQuadPtr =
                 std::make_shared<mod::gui::GuiQuad>(enginePtr,
-                                                    waterPtr->getReflectionFramebuffer()->getColorTexture(),
-                                                    glm::vec2(0.75f, 0.75f),
+                                                    waterPtr->getRefractionFramebuffer()->getColorTexture(),
+                                                    glm::vec2(-0.75f, -0.75f),
                                                     glm::vec2(0.250f, 0.250f));
         mod::gui::GuiShaderPtr guiShaderPtr = std::make_shared<mod::gui::GuiShader>();
 
@@ -198,6 +232,22 @@ int main(int argc, char ** argv)
 
         enginePtr->getWorker()->subscribe(guiRendererPtr);
     }
+
+    {
+         mod::gui::GuiQuadPtr guiQuadPtr =
+                 std::make_shared<mod::gui::GuiQuad>(enginePtr,
+                                                     waterPtr->getReflectionFramebuffer()->getColorTexture(),
+                                                     glm::vec2(0.75f, 0.75f),
+                                                     glm::vec2(0.250f, 0.250f));
+         mod::gui::GuiShaderPtr guiShaderPtr = std::make_shared<mod::gui::GuiShader>();
+
+         mod::gui::GuiRendererPtr  guiRendererPtr = std::make_shared<mod::gui::GuiRenderer>();
+         guiRendererPtr->setRenderConfig(ccwConfigPtr);
+         guiRendererPtr->setGuiQuad(guiQuadPtr);
+         guiRendererPtr->setShader(guiShaderPtr);
+
+         enginePtr->getWorker()->subscribe(guiRendererPtr);
+    }*/
 
 	// start mainloop
 	enginePtr->start();

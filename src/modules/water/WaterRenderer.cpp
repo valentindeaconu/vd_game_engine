@@ -18,10 +18,12 @@ namespace mod::water {
         waterPtr->init();
     }
 
-    void WaterRenderer::update(bool shadowUpdate) {
-        if (isReady() && !shadowUpdate) {
-            waterPtr->update();
+    void WaterRenderer::update() {
+        waterPtr->update();
+    }
 
+    void WaterRenderer::render(const vd::kernel::RenderingPass& renderingPass) {
+        if (isReady() && renderingPass == vd::kernel::RenderingPass::eMain) {
             if (renderConfigPtr != nullptr) {
                 renderConfigPtr->enable();
             }

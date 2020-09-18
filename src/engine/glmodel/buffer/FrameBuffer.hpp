@@ -13,7 +13,8 @@
 
 namespace vd::buffer {
     enum DepthAttachment {
-        eDepthTexture = 0,
+        eNone = 0,
+        eDepthTexture,
         eDepthBuffer
     };
 
@@ -25,7 +26,10 @@ namespace vd::buffer {
         void bind() const;
         static void unbind();
 
-        void allocate(int width, int height, const DepthAttachment& depthAttachment);
+        void allocate(int width,
+                      int height,
+                      bool withColorTexture = true,
+                      const DepthAttachment& depthAttachment = DepthAttachment::eNone);
         void cleanUp();
 
         [[nodiscard]] GLuint getId() const;

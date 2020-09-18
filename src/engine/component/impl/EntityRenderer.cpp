@@ -10,21 +10,21 @@ namespace vd::component::impl
 
     EntityRenderer::~EntityRenderer() = default;
 
-    void EntityRenderer::init()
-    {
+    void EntityRenderer::init() {
         entityPtr->init();
     }
 
-    void EntityRenderer::update(bool shadowUpdate)
-    {
-        if (isReady()) {
-            entityPtr->update();
+    void EntityRenderer::update() {
+        entityPtr->update();
+    }
 
+    void EntityRenderer::render(const kernel::RenderingPass& renderingPass) {
+        if (isReady()) {
             if (renderConfigPtr != nullptr) {
                 renderConfigPtr->enable();
             }
 
-            shader::ShaderPtr _shaderPtr = shadowUpdate ? this->getShadowShader() : shaderPtr;
+            auto _shaderPtr = renderingPass == vd::kernel::RenderingPass::eShadow ? this->getShadowShader() : shaderPtr;
 
             _shaderPtr->bind();
             buffer::MeshBufferPtrVec &meshBuffers = entityPtr->getMeshBuffers();
@@ -33,8 +33,7 @@ namespace vd::component::impl
                 meshBuffers[meshIndex]->render();
             }
 
-            if (renderConfigPtr != nullptr)
-            {
+            if (renderConfigPtr != nullptr) {
                 renderConfigPtr->disable();
             }
         }

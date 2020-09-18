@@ -32,6 +32,8 @@ namespace mod::player
             addUniform(currentLightUniformNameBase + ".specularStrength");
             addUniform(currentLightUniformNameBase + ".shininess");
         }
+
+        addUniform("clipPlane");
     }
 
     PlayerShader::~PlayerShader() = default;
@@ -64,6 +66,8 @@ namespace mod::player
                 setUniformi("specularMap", 1);
             }
         }
+
+        setUniform("clipPlane", enginePtr->getClipPlane());
 
         static bool loadedBasics = false;
         if (!loadedBasics)

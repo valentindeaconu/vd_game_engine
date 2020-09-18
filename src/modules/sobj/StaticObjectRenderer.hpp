@@ -17,7 +17,8 @@ namespace mod::sobj
         ~StaticObjectRenderer();
 
         void init() override;
-        void update(bool shadowUpdate) override;
+        void update() override;
+        void render(const vd::kernel::RenderingPass& renderingPass) override;
         void cleanUp() override;
 
         StaticObjectPlacerPtr& getStaticObjectPlacer();

@@ -19,6 +19,9 @@ namespace mod::water {
         addUniform("view");
         addUniform("projection");
 
+        addUniform("reflectionTexture");
+        addUniform("refractionTexture");
+
         addUniform("fogDensity");
         addUniform("fogGradient");
         addUniform("fogColor");
@@ -46,6 +49,14 @@ namespace mod::water {
         auto& enginePtr = entityPtr->getParentEngine();
         setUniform("view", enginePtr->getCamera()->getViewMatrix());
         setUniform("projection", enginePtr->getWindow()->getProjectionMatrix());
+
+        vd::model::activeTexture(0);
+        waterPtr->getReflectionFramebuffer()->getColorTexture()->bind();
+        setUniformi("reflectionTexture", 0);
+
+        vd::model::activeTexture(1);
+        waterPtr->getRefractionFramebuffer()->getColorTexture()->bind();
+        setUniformi("refractionTexture", 1);
 
         static bool loadedBasics = false;
         if (!loadedBasics)

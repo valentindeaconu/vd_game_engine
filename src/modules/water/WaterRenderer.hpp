@@ -16,7 +16,8 @@ namespace mod::water {
         ~WaterRenderer();
 
         void init() override;
-        void update(bool shadowUpdate) override;
+        void update() override;
+        void render(const vd::kernel::RenderingPass& renderingPass) override;
         void cleanUp() override;
 
         WaterPtr& getWater();

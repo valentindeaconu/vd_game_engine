@@ -27,6 +27,8 @@ namespace mod::water {
 
         [[nodiscard]] const vd::buffer::FrameBufferPtr& getReflectionFramebuffer() const;
         [[nodiscard]] const vd::buffer::FrameBufferPtr& getRefractionFramebuffer() const;
+
+        [[nodiscard]] float getHeight() const;
     private:
         void generatePatch();
 

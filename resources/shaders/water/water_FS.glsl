@@ -2,7 +2,8 @@
 
 in vec4 fPosition;
 in vec3 fNormal;
-in vec2 fTexCoords;
+
+in vec4 clipSpace;
 
 in mat3 fNormalMatrix;
 in mat3 fLightDirectionMatrix;
@@ -18,10 +19,22 @@ uniform vec3 fogColor;
 
 uniform Light lights[MAX_LIGHTS];
 
-const vec4 waterColor = vec4(0.0f, 0.0f, 1.0f, 1.0f);
+uniform sampler2D reflectionTexture;
+uniform sampler2D refractionTexture;
 
 void main() 
 {
+	vec2 normCoords = (clipSpace.xy / clipSpace.w) / 2.0f + 0.5f;
+
+	vec2 refractionTexCoords = vec2(normCoords.x, normCoords.y);
+	vec2 reflectionTexCoords = vec2(normCoords.x, -normCoords.y);
+
+	// get color from texture
+	vec4 reflectionColor = texture(reflectionTexture, reflectionTexCoords);
+	vec4 refractionColor = texture(refractionTexture, refractionTexCoords);
+
+	vec4 waterColor = mix(reflectionColor, refractionColor, 0.5f);
+
 	// compute lights
 	//in eye coordinates, the viewer is situated at the origin
 	vec3 cameraPosEye = vec3(0.0f);
@@ -36,7 +49,11 @@ void main()
 	totalMat.ambient *= waterColor.xyz;
 	totalMat.diffuse *= waterColor.xyz;
 
+	while (fogColor == vec3(1.0f)) break;
+	while (fVisibility == 0.5f) break;
+
 	// modulate with light
 	vec4 lighting = vec4(min(totalMat.ambient + totalMat.diffuse + totalMat.specular, 1.0f), 1.0f);
-	fColor = mix(vec4(fogColor, 1.0f), lighting, fVisibility);
+	fColor = lighting;
+	//fColor = mix(vec4(fogColor, 1.0f), lighting, fVisibility);
 }

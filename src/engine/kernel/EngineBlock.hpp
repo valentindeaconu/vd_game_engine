@@ -23,11 +23,11 @@
 
 #include <engine/config/MetaConfig.hpp>
 
-namespace vd
-{
-	class Engine
-	{
+namespace vd {
+	class Engine {
 	public:
+	    typedef std::function<bool()> FramebufferPreconditionFunc;
+
 		Engine();
 		
 		void setup(int windowWidth, int windowHeight, const char* windowTitle);
@@ -58,11 +58,18 @@ namespace vd
 		config::EngineConfigPtr& getEngineConfig();
 		[[nodiscard]] const config::EngineConfigPtr& getEngineConfig() const;
 
-		void addRenderingFramebuffer(const buffer::FrameBufferPtr& frameBufferPtr, const config::MetaConfigPtr& configPtr);
+		[[nodiscard]] const glm::vec4& getClipPlane() const;
+		void setClipPlane(const glm::vec4& clipPlane);
+
+		void addRenderingFramebuffer(const buffer::FrameBufferPtr& frameBufferPtr,
+                               const FramebufferPreconditionFunc& preconditionCheck,
+                               const config::MetaConfigPtr& configPtr,
+                               const kernel::RenderingPass& renderingPass);
 	private:
 		void run();
 		void stop();
 		void update();
+		void render();
 		void cleanUp();
 
 		int fps; // frames per second
@@ -84,12 +91,17 @@ namespace vd
 
 		kernel::EngineWorkerPtr engineWorkerPtr;
 
+		glm::vec4 clipPlane;
+
 		struct RenderingFrameBuffer {
 		    buffer::FrameBufferPtr frameBufferPtr;
+            FramebufferPreconditionFunc preconditionFunc;
 		    config::MetaConfigPtr configPtr;
+            kernel::RenderingPass renderingPass;
 		};
 
 		std::vector<RenderingFrameBuffer> renderingFrameBuffers;
+
 	};
 	typedef std::shared_ptr<Engine>	EnginePtr;
 }

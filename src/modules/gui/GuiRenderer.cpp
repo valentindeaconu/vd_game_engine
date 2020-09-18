@@ -9,24 +9,27 @@ namespace mod::gui {
     GuiRenderer::GuiRenderer()
         : Renderer()
         , guiQuadPtr(nullptr)
-        , firstTime(true)
+        , initialised(false)
     {
-
     }
 
     GuiRenderer::~GuiRenderer() = default;
 
     void GuiRenderer::init() {
-        guiQuadPtr->init();
+        if (!initialised) {
+            guiQuadPtr->init();
+            initialised = false;
+        }
     }
 
-    void GuiRenderer::update(bool shadowUpdate) {
-        if (firstTime) {
-            this->init();
-            firstTime = false;
-        }
+    void GuiRenderer::update() {
 
-        if (!isReady() || shadowUpdate)
+    }
+
+    void GuiRenderer::render(const vd::kernel::RenderingPass& renderingPass) {
+        init();
+
+        if (!isReady() || renderingPass != vd::kernel::RenderingPass::eMain)
             return;
 
         if (renderConfigPtr != nullptr)

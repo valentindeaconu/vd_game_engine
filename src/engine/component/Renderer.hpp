@@ -20,7 +20,8 @@ namespace vd::component
         ~Renderer();
 
         virtual void init() = 0;
-        virtual void update(bool shadowUpdate) = 0;
+        virtual void update() = 0;
+        virtual void render(const kernel::RenderingPass& renderingPass) = 0;
         virtual void cleanUp() = 0;
 
         config::MetaConfigPtr& getRenderConfig();

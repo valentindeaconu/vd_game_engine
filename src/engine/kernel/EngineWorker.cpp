@@ -1,41 +1,48 @@
 #include "EngineWorker.hpp"
 
-namespace vd::kernel
-{
-    void Observable::subscribe(const ObserverPtr& observer)
-    {
-        this->observers.push_back(observer);
+namespace vd::kernel {
+    void Observable::subscribe(const ObserverPtr& observer) {
+        core::AsyncWorkerPtr workerPtr = std::make_shared<core::AsyncWorker>([&]() {
+            observer->update();
+        });
+        observers.emplace_back(observer, std::move(workerPtr));
     }
 
-    void Observable::unsubscribe(const ObserverPtr& observer)
-    {
-        auto it = std::find(observers.begin(), observers.end(), observer);
+    void Observable::unsubscribe(const ObserverPtr& observer) {
+        auto it = std::find_if(observers.begin(), observers.end(), [&](const ObserverWorkerPair & x) {
+            return x.first == observer;
+        });
+
         if (it != observers.end()) {
             observers.erase(it);
         }
     }
 
-    void Observable::broadcastInit()
-    {
-        for (auto& observer : observers)
-        {
-            observer->init();
+    void Observable::broadcastInit() {
+        for (auto& pair : observers) {
+            pair.first->init();
         }
     }
 
-    void Observable::broadcastUpdate(bool shadowUpdate)
-    {
-        for (auto& observer : observers)
-        {
-            observer->update(shadowUpdate);
+    void Observable::broadcastUpdate() {
+        for (const auto& pair : observers) {
+            pair.second->run();
+        }
+
+        for (const auto& pair : observers) {
+            pair.second->join();
         }
     }
 
-    void Observable::broadcastCleanUp()
-    {
-        for (auto& observer : observers)
-        {
-            observer->cleanUp();
+    void Observable::broadcastRender(const RenderingPass& renderingPass) {
+        for (auto& pair : observers) {
+            pair.first->render(renderingPass);
+        }
+    }
+
+    void Observable::broadcastCleanUp() {
+        for (auto& pair : observers) {
+            pair.first->cleanUp();
         }
     }
 
@@ -43,18 +50,19 @@ namespace vd::kernel
 
     EngineWorker::~EngineWorker() = default;
 
-    void EngineWorker::init()
-    {
+    void EngineWorker::init() {
         broadcastInit();
     }
 
-    void EngineWorker::update(bool shadowUpdate)
-    {
-        broadcastUpdate(shadowUpdate);
+    void EngineWorker::update() {
+        broadcastUpdate();
     }
 
-    void EngineWorker::cleanUp()
-    {
+    void EngineWorker::render(const RenderingPass& renderingPass) {
+        broadcastRender(renderingPass);
+    }
+
+    void EngineWorker::cleanUp() {
         broadcastCleanUp();
     }
 }

@@ -146,6 +146,13 @@ namespace vd::shader
             glUniform3f(it->second, value.x, value.y, value.z);
     }
 
+    void Shader::setUniform(const std::string& uniformName, const glm::vec4& value) const
+    {
+        auto it = uniforms.find(uniformName);
+        if (it != uniforms.end())
+            glUniform4f(it->second, value.x, value.y, value.z, value.w);
+    }
+
     void Shader::setUniform(const std::string& uniformName, const glm::quat& value) const
     {
         auto it = uniforms.find(uniformName);

@@ -17,8 +17,12 @@ namespace mod::water {
     Water::~Water() = default;
 
     void Water::init() {
-        getLocalTransform().setScaling(768.0f, 768.0f, 768.0f);
+        getLocalTransform().setScaling(3072.0f, 0.0f, 3072.0f);
         getLocalTransform().setTranslation(-1024.0f, -33.0f, -1024.0f);
+
+        // asta merge also
+        //getLocalTransform().setScaling(250.0f, 0.0f, 260.0f);
+        //getLocalTransform().setTranslation(400.0f, -33.0f, 300.0f);
 
         configPtr->parse();
 
@@ -26,10 +30,12 @@ namespace mod::water {
 
         reflectionFBO->allocate(configPtr->getReflectionWidth(),
                                 configPtr->getReflectionHeight(),
+                                true,
                                 vd::buffer::DepthAttachment::eDepthBuffer);
 
         refractionFBO->allocate(configPtr->getRefractionWidth(),
                                 configPtr->getRefractionHeight(),
+                                true,
                                 vd::buffer::DepthAttachment::eDepthTexture);
 
         Entity::init();
@@ -58,10 +64,39 @@ namespace mod::water {
         return refractionFBO;
     }
 
+    float Water::getHeight() const {
+        return -33.0f;
+    }
+
     void Water::generatePatch() {
         vd::model::MeshPtr meshPtr = std::make_shared<vd::model::Mesh>();
 
-        const size_t size = configPtr->getSize();
+        meshPtr->vertices = {
+                {
+                    .Position = glm::vec3(-1.0f, 0.0f, 1.0f),
+                    .Normal = glm::vec3(0.0f, 1.0f, 0.0f),
+                    .TexCoords = glm::vec2(0.0f, 1.0f)
+                },
+                {
+                    .Position = glm::vec3(-1.0f, 0.0f, -1.0f),
+                    .Normal = glm::vec3(0.0f, 1.0f, 0.0f),
+                    .TexCoords = glm::vec2(0.0f, 0.0f)
+                },
+                {
+                    .Position = glm::vec3(1.0f, 0.0f, 1.0f),
+                    .Normal = glm::vec3(0.0f, 1.0f, 0.0f),
+                    .TexCoords = glm::vec2(1.0f, 1.0f)
+                },
+                {
+                    .Position = glm::vec3(1.0f, 0.0f, -1.0f),
+                    .Normal = glm::vec3(0.0f, 1.0f, 0.0f),
+                    .TexCoords = glm::vec2(1.0f, 0.0f)
+                }
+        };
+
+        meshPtr->indices = { 0, 2, 1, 1, 2, 3 };
+
+        /*const size_t size = 2; //configPtr->getSize();
 
         for (size_t i = 0; i <= size; ++i)
         {
@@ -96,7 +131,7 @@ namespace mod::water {
                 meshPtr->indices.push_back(northWest);
                 meshPtr->indices.push_back(north);
             }
-        }
+        }*/
 
         getMeshes().push_back(meshPtr);
     }
