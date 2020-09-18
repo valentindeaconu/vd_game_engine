@@ -33,6 +33,9 @@ uniform float fogGradient;
 
 #include "../lib/fog_VS.glsl"
 
+// clip plane
+uniform vec4 clipPlane;
+
 void main() 
 {
 	// pass normal and texcoords
@@ -41,6 +44,9 @@ void main()
 
 	// compute world coordinates
 	vec4 worldCoordinates = model * vec4(vPosition, 1.0f);
+
+	// clip geometry
+	gl_ClipDistance[0] = dot(worldCoordinates, clipPlane);
 
 	// compute eye space coordinates
 	vec4 cameraPosition = view * worldCoordinates;

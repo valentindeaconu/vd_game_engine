@@ -53,7 +53,7 @@ namespace mod::terrain
         int _x = glm::floor(x);
         int _z = glm::floor(z);
 
-        if (_x < 0 || _z < 0 || _x > heightmap->height || _z > heightmap->width)
+        if (_x < 0 || _z < 0 || _x >= heightmap->height || _z >= heightmap->width)
         {
             return 0.0f;
         }
@@ -143,7 +143,7 @@ namespace mod::terrain
         }
         else if (command == "biome")
         {
-            biomeAtlas.push_back(Biome());
+            biomeAtlas.emplace_back();
         }
         else if (command == "name")
         {

@@ -19,11 +19,12 @@ namespace mod::terrain
         ~TerrainRenderer();
 
         void init() override;
-        void update(bool shadowUpdate) override;
+        void update() override;
+        void render(const vd::kernel::RenderingPass& renderingPass) override;
         void cleanUp() override;
 
         TerrainPtr& getTerrain();
-        const TerrainPtr& getTerrain() const;
+        [[nodiscard]] const TerrainPtr& getTerrain() const;
         void setTerrain(const TerrainPtr& terrainPtr);
 
     private:

@@ -81,7 +81,7 @@ namespace vd::imgloader
         , height(other.height)
     {
         int len = width * height * 4;
-        data.resize(len);
+        data.reserve(len);
         data.insert(data.begin(), other.data.begin(), other.data.end());
         iterator = 0;
     }
@@ -152,6 +152,8 @@ namespace vd::imgloader
     template<typename T>
     Pixel<T> Image<T>::at(size_t i, size_t j, const PixelFormat& format) const
     {
+        assert(i >= 0 && j >= 0 && j < width && i < height);
+
         Pixel<T> p;
 
         size_t startIndex = (i * this->width + j) * 4;

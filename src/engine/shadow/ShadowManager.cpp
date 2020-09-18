@@ -6,13 +6,14 @@
 
 namespace vd::shadow {
     ShadowManager::ShadowManager()
-        : fboId(0)
-        , mapSize(0)
+        : mapSize(0)
         , distance(0.0f)
         , transitionDistance(0.0f)
+        , frameBufferPtr(nullptr)
     {
         lightViewPtr = std::make_shared<glm::mat4>(1.0f);
         projectionPtr = std::make_shared<glm::mat4>(1.0f);
+        frameBufferPtr = std::make_shared<buffer::FrameBuffer>();
     }
 
     ShadowManager::~ShadowManager() = default;
@@ -28,15 +29,27 @@ namespace vd::shadow {
         this->distance = distance;
         this->transitionDistance = transitionDistance;
 
-        glGenFramebuffers(1, &fboId);
-        glBindFramebuffer(GL_FRAMEBUFFER, fboId);
+        this->frameBufferPtr->allocate(mapSize,
+                                       mapSize,
+                                       false,
+                                       buffer::DepthAttachment::eDepthTexture);
+
+        this->frameBufferPtr->getDepthTexture()->bind();
+
+        this->frameBufferPtr->getDepthTexture()->noFilter();
+        this->frameBufferPtr->getDepthTexture()->wrapClampToBorder();
+
+        float border[] = {1.0f, 1.0f, 1.0f, 1.0f};
+        glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, border);
+
+        this->frameBufferPtr->getDepthTexture()->unbind();
+
+        this->frameBufferPtr->bind();
+
         glDrawBuffer(GL_NONE);
         glReadBuffer(GL_NONE);
 
-        shadowMapPtr = std::make_shared<model::ShadowTexture>(mapSize, mapSize);
-
-        glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, shadowMapPtr->getId(), 0);
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        this->frameBufferPtr->unbind();
 
         shadowBoxPtr = std::make_shared<ShadowBox>(windowPtr, cameraPtr, lightViewPtr, distance, offset);
     }
@@ -48,31 +61,23 @@ namespace vd::shadow {
     }
 
     void ShadowManager::cleanUp() {
-        glDeleteFramebuffers(1, &fboId);
+        frameBufferPtr->cleanUp();
     }
 
-    void ShadowManager::bindFramebuffer() const {
-        glBindFramebuffer(GL_FRAMEBUFFER, fboId);
-    }
-
-    void ShadowManager::unbindFramebuffer() const {
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    }
-
-    [[nodiscard]] float ShadowManager::getDistance() const {
+    float ShadowManager::getDistance() const {
         return distance;
     }
 
-    [[nodiscard]] float ShadowManager::getTransitionDistance() const {
+    float ShadowManager::getTransitionDistance() const {
         return transitionDistance;
     }
 
-    model::ShadowTexturePtr& ShadowManager::getShadowTexture() {
-        return shadowMapPtr;
+    const buffer::FrameBufferPtr &ShadowManager::getFramebuffer() const {
+        return frameBufferPtr;
     }
 
-    [[nodiscard]] const model::ShadowTexturePtr& ShadowManager::getShadowTexture() const {
-        return shadowMapPtr;
+    const model::Texture2DPtr& ShadowManager::getShadowTexture() const {
+        return frameBufferPtr->getDepthTexture();
     }
 
     const glm::mat4& ShadowManager::getViewMatrix() const {
@@ -113,4 +118,5 @@ namespace vd::shadow {
         (*projectionPtr)[2][2] = -2.0f / (shadowBoxPtr->getZ().max - shadowBoxPtr->getZ().min);
         (*projectionPtr)[3][3] = 1.0f;
     }
+
 }

@@ -31,31 +31,14 @@ namespace vd::core::impl
         computePitch();
         computeAngleAroundPlayer();
 
-        float horizontalDistance = computeHorizontalDistance();
-        float verticalDistance = computeVerticalDistance();
-
-        auto worldTransform = entityPtr->getWorldTransform();
-        glm::vec3 entityPosition = worldTransform.getTranslationVector() + offset;
-        float entityAngle = worldTransform.getYAxisRotationAngle();
-
-        glm::vec3 newPosition = computeCameraPosition(entityPosition,
-            entityAngle, horizontalDistance, verticalDistance);
-
-        float allowedHeight =
-            terrainPtr->getTerrainConfig()->getHeight(newPosition.x, newPosition.z) +
-            offset.y;
-
-        if (newPosition.y < allowedHeight)
-        {
-            newPosition.y = allowedHeight;
-        }
-
-        position = newPosition;
-
-        forward = glm::normalize(entityPosition - position);
-        updatePositionVectors();
-
+        updateVectors();
         Camera::update();
+    }
+
+    void EntityCamera::invertPitch() {
+        pitch = -pitch;
+
+        updateVectors();
     }
 
     void EntityCamera::computeZoom()
@@ -114,5 +97,31 @@ namespace vd::core::impl
         res.y = playerPosition.y + verticalDistance;
 
         return res;
+    }
+
+    void EntityCamera::updateVectors() {
+        float horizontalDistance = computeHorizontalDistance();
+        float verticalDistance = computeVerticalDistance();
+
+        auto worldTransform = entityPtr->getWorldTransform();
+        glm::vec3 entityPosition = worldTransform.getTranslationVector() + offset;
+        float entityAngle = worldTransform.getYAxisRotationAngle();
+
+        glm::vec3 newPosition = computeCameraPosition(entityPosition,
+                                                      entityAngle, horizontalDistance, verticalDistance);
+
+        float allowedHeight =
+                terrainPtr->getTerrainConfig()->getHeight(newPosition.x, newPosition.z) +
+                offset.y;
+
+        if (newPosition.y < allowedHeight)
+        {
+            newPosition.y = allowedHeight;
+        }
+
+        position = newPosition;
+
+        forward = glm::normalize(entityPosition - position);
+        updatePositionVectors();
     }
 }

@@ -10,17 +10,17 @@ namespace vd::component
 
     Renderer::~Renderer() = default;
 
-    RenderConfigPtr& Renderer::getRenderConfig()
+    config::MetaConfigPtr& Renderer::getRenderConfig()
     {
         return renderConfigPtr;
     }
 
-    const RenderConfigPtr& Renderer::getRenderConfig() const
+    const config::MetaConfigPtr& Renderer::getRenderConfig() const
     {
         return renderConfigPtr;
     }
 
-    void Renderer::setRenderConfig(const RenderConfigPtr& renderConfigPtr)
+    void Renderer::setRenderConfig(const config::MetaConfigPtr& renderConfigPtr)
     {
         this->renderConfigPtr = renderConfigPtr;
     }

@@ -28,8 +28,6 @@ include_directories(src/modules/terrain)
 add_executable(vd_game_engine
         src/engine/component/impl/EntityRenderer.cpp
         src/engine/component/impl/EntityRenderer.hpp
-        src/engine/component/RenderConfig.cpp
-        src/engine/component/RenderConfig.hpp
         src/engine/component/Renderer.cpp
         src/engine/component/Renderer.hpp
         src/engine/config/ConfigurationFile.cpp
@@ -115,7 +113,22 @@ add_executable(vd_game_engine
         src/modules/gui/GuiRenderer.hpp
         src/modules/gui/GuiShader.cpp
         src/modules/gui/GuiShader.hpp
+        src/modules/water/Water.cpp
+        src/modules/water/Water.hpp
+        src/modules/water/WaterShader.cpp
+        src/modules/water/WaterShader.hpp
+        src/modules/water/WaterRenderer.cpp
+        src/modules/water/WaterRenderer.hpp
+        src/modules/water/WaterConfig.cpp
+        src/modules/water/WaterConfig.hpp
+        src/engine/glmodel/buffer/FrameBuffer.cpp
+        src/engine/glmodel/buffer/FrameBuffer.hpp
+        src/engine/config/MetaConfig.hpp
+        src/engine/config/MetaConfig.cpp
+        src/engine/core/AsyncWorker.cpp
+        src/engine/core/AsyncWorker.hpp
         src/main.cpp)
+
 
 # dependencies
 

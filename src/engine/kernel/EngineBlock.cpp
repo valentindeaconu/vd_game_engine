@@ -30,6 +30,18 @@ namespace vd
 
 		// Config creation
 		configPtr = std::make_shared<config::EngineConfig>("./resources/engine_settings.cfg");
+
+		// Set shadow framebuffer
+        config::MetaConfigPtr shadowConfigPtr = std::make_shared<config::MetaConfig>([]() {
+            glDisable(GL_CULL_FACE);
+        }, []() {
+            glEnable(GL_CULL_FACE);
+        });
+
+        this->addRenderingFramebuffer(shadowManagerPtr->getFramebuffer(),
+                                      []() { return true; },
+                                      shadowConfigPtr,
+                                      kernel::RenderingPass::eShadow);
 	}
 
 	void Engine::init(core::CameraInitParametersPtr cameraParameters) {
@@ -41,8 +53,6 @@ namespace vd
 		glEnable(GL_CULL_FACE); // cull face
 		glCullFace(GL_BACK); // cull back face
 		glFrontFace(GL_CCW); // GL_CCW for counter clock-wise
-		//glEnable(GL_BLEND);
-		//glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 		// Camera init
 		cameraPtr->init(cameraParameters);
@@ -109,6 +119,7 @@ namespace vd
 			if (renderFrame)
 			{
 				this->update();
+				this->render();
 				frames++;
 			}
 			else
@@ -128,39 +139,56 @@ namespace vd
 	}
 
 	void Engine::update() {
-		windowPtr->update();
-		inputHandlerPtr->update();
-		cameraPtr->update();
+        inputHandlerPtr->update();
+        windowPtr->update();
+        cameraPtr->update();
 
-		if (inputHandlerPtr->getKeyDown(GLFW_KEY_M))
-		{
-			static bool isWireframeMode = false;
-			isWireframeMode = !isWireframeMode;
+        shadowManagerPtr->update(configPtr->getLights().front());
 
-			if (isWireframeMode)
-			{
-				glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-			}
-			else
-			{
-				glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-			}
-		}
+        engineWorkerPtr->update();
+	}
 
-		shadowManagerPtr->update(configPtr->getLights().front());
+	void Engine::render() {
+        for (const auto& rfb : renderingFrameBuffers) {
+            if (!rfb.preconditionFunc())
+                continue;
 
-		glViewport(0, 0, configPtr->getShadowMapSize(), configPtr->getShadowMapSize());
-        glDisable(GL_CULL_FACE);
-        shadowManagerPtr->bindFramebuffer();
-        glClear(GL_DEPTH_BUFFER_BIT);
-        this->engineWorkerPtr->update(true);
-        shadowManagerPtr->unbindFramebuffer();
+            if (rfb.configPtr != nullptr) {
+                rfb.configPtr->enable();
+            }
 
+            rfb.frameBufferPtr->bind();
+
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+            this->engineWorkerPtr->render(rfb.renderingPass);
+
+            rfb.frameBufferPtr->unbind();
+
+            if (rfb.configPtr != nullptr)
+                rfb.configPtr->disable();
+        }
+
+        if (inputHandlerPtr->getKeyDown(GLFW_KEY_M))
+        {
+            static bool isWireframeMode = false;
+            isWireframeMode = !isWireframeMode;
+
+            if (isWireframeMode)
+            {
+                glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+            }
+            else
+            {
+                glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+            }
+        }
+
+        // final render scene
         glViewport(0, 0, windowPtr->getWidth(), windowPtr->getHeight());
-        glEnable(GL_CULL_FACE);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        shadowManagerPtr->getShadowTexture()->bind();
-		this->engineWorkerPtr->update(false);
+
+        this->engineWorkerPtr->render(kernel::RenderingPass::eMain);
 	}
 
 	void Engine::cleanUp() {
@@ -173,53 +201,43 @@ namespace vd
 		glfwTerminate();
 	}
 
-	int Engine::getFramesPerSecond() const
-	{
+	int Engine::getFramesPerSecond() const {
 		return fps;
 	}
 
-	float Engine::getFrameTime() const
-	{
+	float Engine::getFrameTime() const {
 		return frameTimeInSeconds;
 	}
 
-	kernel::EngineWorkerPtr& Engine::getWorker()
-	{
+	kernel::EngineWorkerPtr& Engine::getWorker() {
 		return engineWorkerPtr;
 	}
 
-	const kernel::EngineWorkerPtr& Engine::getWorker() const
-	{
+	const kernel::EngineWorkerPtr& Engine::getWorker() const {
 		return engineWorkerPtr;
 	}
 
-	core::InputHandlerPtr& Engine::getInputHandler()
-	{
+	core::InputHandlerPtr& Engine::getInputHandler() {
 		return inputHandlerPtr;
 	}
 
-	const core::InputHandlerPtr& Engine::getInputHandler() const
-	{
+	const core::InputHandlerPtr& Engine::getInputHandler() const {
 		return inputHandlerPtr;
 	}
 
-	core::WindowPtr& Engine::getWindow()
-	{
+	core::WindowPtr& Engine::getWindow() {
 		return windowPtr;
 	}
 
-	const core::WindowPtr& Engine::getWindow() const
-	{
+	const core::WindowPtr& Engine::getWindow() const {
 		return windowPtr;
 	}
 
-	core::CameraPtr& Engine::getCamera()
-	{
+	core::CameraPtr& Engine::getCamera() {
 		return cameraPtr;
 	}
 
-	const core::CameraPtr& Engine::getCamera() const
-	{
+	const core::CameraPtr& Engine::getCamera() const {
 		return cameraPtr;
 	}
 
@@ -227,18 +245,36 @@ namespace vd
 	    return shadowManagerPtr;
 	}
 
-    [[nodiscard]] const shadow::ShadowManagerPtr& Engine::getShadowManager() const {
+    const shadow::ShadowManagerPtr& Engine::getShadowManager() const {
 	    return shadowManagerPtr;
 	}
 
-	config::EngineConfigPtr& Engine::getEngineConfig()
-	{
+	config::EngineConfigPtr& Engine::getEngineConfig() {
 		return configPtr;
 	}
 
-	const config::EngineConfigPtr& Engine::getEngineConfig() const
-	{
+	const config::EngineConfigPtr& Engine::getEngineConfig() const {
 		return configPtr;
 	}
+
+    const glm::vec4& Engine::getClipPlane() const {
+	    return clipPlane;
+	}
+
+    void Engine::setClipPlane(const glm::vec4& clipPlane) {
+	    this->clipPlane = clipPlane;
+	}
+
+    void Engine::addRenderingFramebuffer(const buffer::FrameBufferPtr& frameBufferPtr,
+                                         const FramebufferPreconditionFunc& preconditionFunc,
+                                         const config::MetaConfigPtr& metaConfigPtr,
+                                         const kernel::RenderingPass& renderingPass) {
+	    renderingFrameBuffers.push_back({
+            .frameBufferPtr = frameBufferPtr,
+            .preconditionFunc = preconditionFunc,
+            .configPtr = metaConfigPtr,
+            .renderingPass = renderingPass
+	    });
+    }
 
 }

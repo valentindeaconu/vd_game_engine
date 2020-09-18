@@ -39,6 +39,8 @@ namespace vd
 				void init(CameraInitParametersPtr parameters) override;
 				void update() override;
 
+				void invertPitch() override;
+
 			private:
 				void computeZoom();
 				void computePitch();
@@ -51,6 +53,8 @@ namespace vd
 					float playerAngle,
 					float horizontalDistance,
 					float verticalDistance) const;
+
+				void updateVectors();
 
 				float pitch;
 				float distanceFromPlayer;

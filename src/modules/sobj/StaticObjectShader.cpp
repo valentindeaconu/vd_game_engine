@@ -32,6 +32,8 @@ namespace mod::sobj
             addUniform(currentLightUniformNameBase + ".specularStrength");
             addUniform(currentLightUniformNameBase + ".shininess");
         }
+
+        addUniform("clipPlane");
     }
 
     StaticObjectShader::~StaticObjectShader() = default;
@@ -65,8 +67,9 @@ namespace mod::sobj
             }
         }
 
-        static bool loadedBasics = false;
+        setUniform("clipPlane", enginePtr->getClipPlane());
 
+        static bool loadedBasics = false;
         if (!loadedBasics)
         {
             auto& engineConfigPtr = enginePtr->getEngineConfig();

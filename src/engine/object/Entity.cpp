@@ -100,7 +100,7 @@ namespace vd::object
 
     void Entity::generateBuffers()
     {
-        cleanUp();
+        Entity::cleanUp();
 
         for (auto& mesh : meshes)
         {

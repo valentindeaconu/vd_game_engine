@@ -18,16 +18,17 @@ namespace mod::sobj
         }
     }
 
-    void StaticObjectRenderer::update(bool shadowUpdate)
-    {
-        if (isReady())
-        {
-            if (renderConfigPtr != nullptr)
-            {
+    void StaticObjectRenderer::update() {
+
+    }
+
+    void StaticObjectRenderer::render(const vd::kernel::RenderingPass &renderingPass) {
+        if (isReady()) {
+            if (renderConfigPtr != nullptr) {
                 renderConfigPtr->enable();
             }
 
-            vd::shader::ShaderPtr _shaderPtr = shadowUpdate ? this->getShadowShader() : shaderPtr;
+            auto _shaderPtr = renderingPass == vd::kernel::RenderingPass::eShadow ? this->getShadowShader() : shaderPtr;
 
             _shaderPtr->bind();
 
@@ -46,7 +47,8 @@ namespace mod::sobj
                         staticObjectPtr->update();
 
                         for (size_t meshIndex = 0;
-                            meshIndex < staticObjectPtr->getMeshBuffers().size(); ++meshIndex) {
+                            meshIndex < staticObjectPtr->getMeshBuffers().size();
+                            ++meshIndex) {
                             _shaderPtr->updateUniforms(staticObjectPtr, meshIndex);
                             staticObjectPtr->getMeshBuffers()[meshIndex]->render();
                         }

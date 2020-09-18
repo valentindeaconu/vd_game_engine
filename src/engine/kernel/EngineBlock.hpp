@@ -6,22 +6,28 @@
 #include <thread>
 #include <iostream>
 #include <string>
+#include <vector>
 
 #include "EngineWorker.hpp"
 
 #include <engine/core/Window.hpp>
 
 #include <engine/core/impl/EntityCamera.hpp>
+#include <engine/core/impl/FreeCamera.hpp>
 
 #include <engine/config/EngineConfig.hpp>
 
 #include <engine/shadow/ShadowManager.hpp>
 
-namespace vd
-{
-	class Engine
-	{
+#include <engine/glmodel/buffer/FrameBuffer.hpp>
+
+#include <engine/config/MetaConfig.hpp>
+
+namespace vd {
+	class Engine {
 	public:
+	    typedef std::function<bool()> FramebufferPreconditionFunc;
+
 		Engine();
 		
 		void setup(int windowWidth, int windowHeight, const char* windowTitle);
@@ -51,10 +57,19 @@ namespace vd
 
 		config::EngineConfigPtr& getEngineConfig();
 		[[nodiscard]] const config::EngineConfigPtr& getEngineConfig() const;
+
+		[[nodiscard]] const glm::vec4& getClipPlane() const;
+		void setClipPlane(const glm::vec4& clipPlane);
+
+		void addRenderingFramebuffer(const buffer::FrameBufferPtr& frameBufferPtr,
+                               const FramebufferPreconditionFunc& preconditionCheck,
+                               const config::MetaConfigPtr& configPtr,
+                               const kernel::RenderingPass& renderingPass);
 	private:
 		void run();
 		void stop();
 		void update();
+		void render();
 		void cleanUp();
 
 		int fps; // frames per second
@@ -66,7 +81,8 @@ namespace vd
 		core::InputHandlerPtr inputHandlerPtr;
 		core::WindowPtr windowPtr;
 
-		typedef core::impl::EntityCamera	CameraImpl;
+		//typedef core::impl::EntityCamera	CameraImpl;
+		typedef core::impl::FreeCamera		CameraImpl;
 		core::CameraPtr cameraPtr;
 
 		shadow::ShadowManagerPtr shadowManagerPtr;
@@ -74,6 +90,18 @@ namespace vd
 		config::EngineConfigPtr configPtr;
 
 		kernel::EngineWorkerPtr engineWorkerPtr;
+
+		glm::vec4 clipPlane;
+
+		struct RenderingFrameBuffer {
+		    buffer::FrameBufferPtr frameBufferPtr;
+            FramebufferPreconditionFunc preconditionFunc;
+		    config::MetaConfigPtr configPtr;
+            kernel::RenderingPass renderingPass;
+		};
+
+		std::vector<RenderingFrameBuffer> renderingFrameBuffers;
+
 	};
 	typedef std::shared_ptr<Engine>	EnginePtr;
 }

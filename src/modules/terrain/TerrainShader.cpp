@@ -45,6 +45,8 @@ namespace mod::terrain
             addUniform(currentLightUniformNameBase + ".specularStrength");
             addUniform(currentLightUniformNameBase + ".shininess");
         }
+
+        addUniform("clipPlane");
     }
 
     TerrainShader::~TerrainShader() = default;
@@ -67,7 +69,7 @@ namespace mod::terrain
         setUniformf("shadowTransitionDistance", shadowManagerPtr->getTransitionDistance());
 
         vd::model::activeTexture(0);
-        enginePtr->getShadowManager()->getShadowTexture()->bind();
+        shadowManagerPtr->getShadowTexture()->bind();
         setUniformi("shadowMap", 0);
 
         auto terrainConfig = terrainPtr->getTerrainConfig();
@@ -83,6 +85,8 @@ namespace mod::terrain
             terrainConfig->getBiomeAtlas()[i].material.diffusemap->bind();
             setUniformi("textures[" + std::to_string(i) + "]", textureUnit + i);
         }
+
+        setUniform("clipPlane", enginePtr->getClipPlane());
 
         static bool loadedBasics = false;
         if (!loadedBasics)

@@ -21,11 +21,12 @@ namespace vd::component
             ~EntityRenderer();
 
             void init() override;
-            void update(bool shadowUpdate) override;
+            void update() override;
+            void render(const kernel::RenderingPass& renderingPass) override;
             void cleanUp() override;
 
             vd::object::EntityPtr& getEntity();
-            const vd::object::EntityPtr& getEntity() const;
+            [[nodiscard]] const vd::object::EntityPtr& getEntity() const;
             void setEntity(const vd::object::EntityPtr& entityPtr);
 
         private:

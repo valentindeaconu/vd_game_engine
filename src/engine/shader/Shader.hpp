@@ -47,6 +47,7 @@ namespace vd::shader
         void setUniformf(const std::string& uniformName, float value) const;
         void setUniform(const std::string& uniformName, const glm::vec2& value) const;
         void setUniform(const std::string& uniformName, const glm::vec3& value) const;
+        void setUniform(const std::string& uniformName, const glm::vec4& value) const;
         void setUniform(const std::string& uniformName, const glm::quat& value) const;
         void setUniform(const std::string& uniformName, const glm::mat3& value) const;
         void setUniform(const std::string& uniformName, const glm::mat4& value) const;
@@ -54,7 +55,7 @@ namespace vd::shader
         void bindUniformBlock(const std::string& uniformBlockName, uint32_t uniformBlockBinding) const;
         void bindFragDataLocation(const std::string& name, uint32_t index) const;
 
-        uint32_t getProgram() const;
+        [[nodiscard]] uint32_t getProgram() const;
 
         virtual void updateUniforms(vd::object::EntityPtr entityPtr, size_t meshIndex) = 0;
     private:

@@ -57,16 +57,6 @@ namespace mod::terrain
 
                 v.Position = glm::vec3(i, y, j);
                 v.TexCoords = glm::vec2(x, z);
-
-                if (i > 0) {
-                    vd::model::Vertex& up_point = meshPtr->vertices[(i - 1) * size + j];
-                    vd::model::Vertex& left_point = meshPtr->vertices[i * size + (j - 1)];
-
-                    glm::vec3 up = up_point.Position - v.Position;
-                    glm::vec3 left = left_point.Position - v.Position;
-
-                    v.Normal = glm::cross(up, left);
-                }
             }
         }
 

@@ -10,21 +10,21 @@ namespace mod::terrain
 
     TerrainRenderer::~TerrainRenderer() = default;
 
-    void TerrainRenderer::init()
-    {
+    void TerrainRenderer::init() {
         terrainPtr->init();
     }
 
-    void TerrainRenderer::update(bool shadowUpdate)
-    {
-        if (isReady()) {
-            terrainPtr->update();
+    void TerrainRenderer::update() {
+        terrainPtr->update();
+    }
 
+    void TerrainRenderer::render(const vd::kernel::RenderingPass& renderingPass) {
+        if (isReady()) {
             if (renderConfigPtr != nullptr) {
                 renderConfigPtr->enable();
             }
 
-            vd::shader::ShaderPtr _shaderPtr = shadowUpdate ? this->getShadowShader() : shaderPtr;
+            auto _shaderPtr = renderingPass == vd::kernel::RenderingPass::eShadow ? this->getShadowShader() : shaderPtr;
 
             _shaderPtr->bind();
             _shaderPtr->updateUniforms(terrainPtr, 0);

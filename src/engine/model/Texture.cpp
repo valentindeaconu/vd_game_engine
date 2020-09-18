@@ -34,8 +34,17 @@ namespace vd::model
         bind();
 
         // GL_SRGB, GL_RGBA
-        glTexImage2D(type, 0, GL_SRGB_ALPHA, (GLsizei)width, (GLsizei)height, 0, GL_RGBA, GL_UNSIGNED_BYTE, &(imagePtr->data[0]));
+        glTexImage2D(type,
+                     0,
+                     GL_SRGB_ALPHA,
+                     (GLsizei)width,
+                     (GLsizei)height,
+                     0,
+                     GL_RGBA,
+                     GL_UNSIGNED_BYTE,
+                     &(imagePtr->data[0]));
 
+        noFilter();
         wrapRepeat();
         unbind();
     }
@@ -159,7 +168,15 @@ namespace vd::model
         generate();
         bind();
 
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, (GLsizei)width, (GLsizei)height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+        glTexImage2D(GL_TEXTURE_2D,
+                     0,
+                     GL_DEPTH_COMPONENT,
+                     (GLsizei)width,
+                     (GLsizei)height,
+                     0,
+                     GL_DEPTH_COMPONENT,
+                     GL_FLOAT,
+                     NULL);
 
         noFilter();
         wrapClampToBorder();
@@ -240,6 +257,47 @@ namespace vd::model
     UTexture2DPtr TextureService::get(size_t width, size_t height, const std::vector<uint16_t>& data)
     {
         UTexture2DPtr texture = std::make_shared<UTexture2D>(width, height, data);
+        return texture;
+    }
+
+    Texture2DPtr TextureService::get(size_t width, size_t height, Attachment attachment)
+    {
+        Texture2DPtr texture = std::make_shared<Texture2D>(width, height);
+
+        texture->generate();
+        texture->bind();
+
+        switch (attachment) {
+            case eDepth:
+                glTexImage2D(GL_TEXTURE_2D,
+                             0,
+                             GL_DEPTH_COMPONENT32,
+                             width,
+                             height,
+                             0,
+                             GL_DEPTH_COMPONENT,
+                             GL_FLOAT,
+                             nullptr);
+                break;
+            case eColor:
+                glTexImage2D(GL_TEXTURE_2D,
+                             0,
+                             GL_RGB,
+                             width,
+                             height,
+                             0,
+                             GL_RGB,
+                             GL_UNSIGNED_BYTE,
+                             nullptr);
+                break;
+        }
+
+
+        //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 0);
+        //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 0);
+
+        texture->bilinearFilter();
+
         return texture;
     }
 

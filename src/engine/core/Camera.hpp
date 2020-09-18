@@ -6,12 +6,10 @@
 
 #include "InputHandler.hpp"
 
-namespace vd::core
-{
+namespace vd::core {
     typedef void*	CameraInitParametersPtr;
 
-    class Camera
-    {
+    class Camera {
     public:
         explicit Camera(const InputHandlerPtr& inputHandlerPtr);
         ~Camera();
@@ -44,6 +42,8 @@ namespace vd::core
         [[nodiscard]] float getPitch() const;
         [[nodiscard]] float getYaw() const;
         [[nodiscard]] float getRoll() const;
+
+        virtual void invertPitch() = 0;
 
         struct CameraConstants {
             constexpr static const glm::vec3 kUpVector = glm::vec3(0.0f, 1.0f, 0.0f);

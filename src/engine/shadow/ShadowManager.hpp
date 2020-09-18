@@ -11,6 +11,8 @@
 #include <engine/core/Window.hpp>
 #include <engine/core/Camera.hpp>
 
+#include <engine/glmodel/buffer/FrameBuffer.hpp>
+
 #include <memory>
 
 #include "ShadowBox.hpp"
@@ -30,14 +32,12 @@ namespace vd::shadow {
         void update(const model::LightPtr& sunPtr);
         void cleanUp();
 
-        void bindFramebuffer() const;
-        void unbindFramebuffer() const;
-
         [[nodiscard]] float getDistance() const;
         [[nodiscard]] float getTransitionDistance() const;
 
-        model::ShadowTexturePtr& getShadowTexture();
-        [[nodiscard]] const model::ShadowTexturePtr& getShadowTexture() const;
+        [[nodiscard]] const buffer::FrameBufferPtr& getFramebuffer() const;
+
+        [[nodiscard]] const model::Texture2DPtr& getShadowTexture() const;
 
         [[nodiscard]] const glm::mat4& getViewMatrix() const;
         [[nodiscard]] const glm::mat4& getProjectionMatrix() const;
@@ -50,8 +50,7 @@ namespace vd::shadow {
         float distance;
         float transitionDistance;
 
-        GLuint fboId;
-        model::ShadowTexturePtr shadowMapPtr;
+        buffer::FrameBufferPtr frameBufferPtr;
 
         ShadowBoxPtr shadowBoxPtr;
 

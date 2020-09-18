@@ -5,13 +5,22 @@
 #include <vector>
 #include <algorithm>
 
-namespace vd::kernel
-{
+#include <engine/core/AsyncWorker.hpp>
+
+namespace vd::kernel {
+    enum RenderingPass {
+        eMain = 0,
+        eReflection,
+        eRefraction,
+        eShadow
+    };
+
     class Observer
     {
     public:
         virtual void init() = 0;
-        virtual void update(bool shadowUpdate) = 0;
+        virtual void update() = 0;
+        virtual void render(const RenderingPass& renderingPass) = 0;
         virtual void cleanUp() = 0;
     };
     typedef std::shared_ptr<Observer>	ObserverPtr;
@@ -23,10 +32,13 @@ namespace vd::kernel
         void unsubscribe(const ObserverPtr& observer);
 
         void broadcastInit();
-        void broadcastUpdate(bool shadowUpdate);
+        void broadcastUpdate();
+        void broadcastRender(const RenderingPass& renderingPass);
         void broadcastCleanUp();
     private:
-        std::vector<ObserverPtr> observers;
+        typedef std::pair<ObserverPtr, core::AsyncWorkerPtr>    ObserverWorkerPair;
+        typedef std::vector<ObserverWorkerPair>                 ObserverWorkerPairVec;
+        ObserverWorkerPairVec observers;
     };
 
     class EngineWorker : public Observable
@@ -36,7 +48,8 @@ namespace vd::kernel
         ~EngineWorker();
 
         void init();
-        void update(bool shadowUpdate);
+        void update();
+        void render(const RenderingPass& renderingPass);
         void cleanUp();
     };
     typedef std::shared_ptr<EngineWorker>	EngineWorkerPtr;
