@@ -22,7 +22,7 @@ namespace vd::shadow
 
     ShadowBox::~ShadowBox() = default;
 
-    void ShadowBox::update(const model::LightPtr& sunPtr) {
+    void ShadowBox::update() {
         std::vector<glm::vec4> points = computeFrustumVertices();
 
         X.min = X.max = points.front().x;

@@ -24,9 +24,9 @@ namespace mod::player
         Entity::init(); // call super.init() to initialize meshBuffers;
     }
 
-    void Player::update()
-    {
-        // input();
+    void Player::update() {
+        if (this->getParentEngine()->getCameraMode() == vd::Engine::e3rdPersonCamera)
+            input();
 
         float currentAngle = getWorldTransform().getYAxisRotationAngle();
         currentAngle += currentTurnSpeed * getParentEngine()->getFrameTime();

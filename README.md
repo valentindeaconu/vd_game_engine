@@ -39,17 +39,18 @@ Optional* Use any IDE which supports CMake (CLion, Visual Studio, Qt Creator etc
 * Static Objects
 * Random Object Generator with possibility to spawn a certain object in a certain biome
 * Skybox
-* Free Camera and 3rd Person Camera (actually using only 3rd Person Camera, but the switch will be available soon.
+* Free Camera and 3rd Person Camera
 * Player object with following basic movement: forward, backward, left, right, jumping with gravity and collision with the terrain
 * Multiple lights (point lights and directional lights)
 * Shadows
 * Support for GUI Textures
+* Water
+* Frustum Culling
 
 ## Available soon
 
 * Spot lighting
 * Day-night time
-* Water
 * Animations
 * Animated Objects (such as mobs)
 * Particle System

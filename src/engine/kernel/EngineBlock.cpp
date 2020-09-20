@@ -20,7 +20,11 @@ namespace vd
 		windowPtr->create(windowWidth, windowHeight, windowTitle);
 
 		// Camera creation
-		cameraPtr = std::make_shared<CameraImpl>(inputHandlerPtr);
+        entityCameraPtr = std::make_shared<core::impl::EntityCamera>(inputHandlerPtr);
+		freeCameraPtr = std::make_shared<core::impl::FreeCamera>(inputHandlerPtr);
+
+		// Frustum creation
+		frustumPtr = std::make_shared<math::Frustum>(windowPtr, entityCameraPtr);
 
 		// ShadowManager creation
 		shadowManagerPtr = std::make_shared<shadow::ShadowManager>();
@@ -55,7 +59,16 @@ namespace vd
 		glFrontFace(GL_CCW); // GL_CCW for counter clock-wise
 
 		// Camera init
-		cameraPtr->init(cameraParameters);
+		cameraMode = e3rdPersonCamera;
+
+        vd::core::FreeCameraInitParameters cameraInitParameters = {
+                .initPosition = glm::vec3(512.0f, 1.0f, 512.0f),
+                .initTarget = glm::vec3(0.0f, 0.0f, 0.0f),
+                .speed = 4.0f
+        };
+
+		freeCameraPtr->init(&cameraInitParameters);
+		entityCameraPtr->init(cameraParameters);
 
 		// Config init
 		configPtr->parse();
@@ -65,11 +78,14 @@ namespace vd
 
 		// Shadow Manager init
 		shadowManagerPtr->init(windowPtr,
-                         cameraPtr,
+                         entityCameraPtr,
                          configPtr->getShadowMapSize(),
                          configPtr->getShadowDistance(),
                          configPtr->getShadowTransitionDistance(),
                          configPtr->getShadowOffset());
+
+		// frustum init
+		frustumPtr->init();
 	}
 
 	void Engine::start() {
@@ -141,7 +157,24 @@ namespace vd
 	void Engine::update() {
         inputHandlerPtr->update();
         windowPtr->update();
-        cameraPtr->update();
+
+        if (inputHandlerPtr->getKeyDown(GLFW_KEY_C)) {
+            if (cameraMode == eFreeCamera) {
+                cameraMode = e3rdPersonCamera;
+                logger::Logger::log("3rd Person Camera Mode");
+            } else {
+                cameraMode = eFreeCamera;
+                logger::Logger::log("Free Camera Mode");
+            }
+        }
+
+        if (cameraMode == eFreeCamera) {
+            freeCameraPtr->update();
+        } else {
+            entityCameraPtr->update();
+        }
+
+        frustumPtr->update();
 
         shadowManagerPtr->update(configPtr->getLights().front());
 
@@ -233,12 +266,38 @@ namespace vd
 		return windowPtr;
 	}
 
+    const Engine::CameraMode& Engine::getCameraMode() const {
+	    return cameraMode;
+	}
+
 	core::CameraPtr& Engine::getCamera() {
-		return cameraPtr;
+        if (cameraMode == eFreeCamera)
+            return freeCameraPtr;
+
+        return entityCameraPtr;
 	}
 
 	const core::CameraPtr& Engine::getCamera() const {
-		return cameraPtr;
+	    if (cameraMode == eFreeCamera)
+	        return freeCameraPtr;
+
+	    return entityCameraPtr;
+	}
+
+    core::CameraPtr& Engine::getFreeCamera() {
+        return freeCameraPtr;
+	}
+
+	[[nodiscard]] const core::CameraPtr& Engine::getFreeCamera() const {
+        return freeCameraPtr;
+	}
+
+    core::CameraPtr& Engine::getEntityCamera() {
+        return entityCameraPtr;
+	}
+
+    [[nodiscard]] const core::CameraPtr& Engine::getEntityCamera() const {
+        return entityCameraPtr;
 	}
 
     shadow::ShadowManagerPtr& Engine::getShadowManager() {
@@ -256,6 +315,10 @@ namespace vd
 	const config::EngineConfigPtr& Engine::getEngineConfig() const {
 		return configPtr;
 	}
+
+    const math::FrustumPtr& Engine::getFrustum() const {
+        return frustumPtr;
+    }
 
     const glm::vec4& Engine::getClipPlane() const {
 	    return clipPlane;
@@ -276,5 +339,4 @@ namespace vd
             .renderingPass = renderingPass
 	    });
     }
-
 }

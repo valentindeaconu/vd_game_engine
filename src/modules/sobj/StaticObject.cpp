@@ -11,8 +11,7 @@ namespace mod::sobj
 
     StaticObject::~StaticObject() = default;
 
-    void StaticObject::init()
-    {
+    void StaticObject::init() {
         vd::objloader::OBJLoader objLoader;
 
         vd::model::MeshPtrVec& meshPtrVec = getMeshes();
@@ -21,13 +20,11 @@ namespace mod::sobj
         Entity::init(); // call super.init() to initialize meshBuffers;
     }
 
-    void StaticObject::update()
-    {
-        // no update for this kind of objects
+    void StaticObject::update() {
+
     }
 
-    void StaticObject::cleanUp()
-    {
+    void StaticObject::cleanUp() {
         Entity::cleanUp();
     }
 }

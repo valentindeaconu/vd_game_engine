@@ -31,14 +31,44 @@ namespace vd::core::impl
         computePitch();
         computeAngleAroundPlayer();
 
-        updateVectors();
+        float horizontalDistance = computeHorizontalDistance();
+        float verticalDistance = computeVerticalDistance();
+
+        auto worldTransform = entityPtr->getWorldTransform();
+        glm::vec3 entityPosition = worldTransform.getTranslationVector() + offset;
+        float entityAngle = worldTransform.getYAxisRotationAngle();
+
+        glm::vec3 newPosition = computeCameraPosition(entityPosition,
+                                                      entityAngle, horizontalDistance, verticalDistance);
+
+        float allowedHeight =
+                terrainPtr->getTerrainConfig()->getHeight(newPosition.x, newPosition.z) +
+                offset.y;
+
+        if (newPosition.y < allowedHeight)
+        {
+            newPosition.y = allowedHeight;
+        }
+
+        position = newPosition;
+
+        forward = glm::normalize(entityPosition - position);
+        updatePositionVectors();
+
         Camera::update();
     }
 
     void EntityCamera::invertPitch() {
         pitch = -pitch;
 
-        updateVectors();
+        float yaw = getYaw();
+
+        forward.x = std::cos(glm::radians(yaw)) * std::cos(glm::radians(pitch));
+        forward.y = std::sin(glm::radians(pitch));
+        forward.z = std::sin(glm::radians(yaw)) * std::cos(glm::radians(pitch));
+        forward = glm::normalize(forward);
+
+        updatePositionVectors();
     }
 
     void EntityCamera::computeZoom()
@@ -97,31 +127,5 @@ namespace vd::core::impl
         res.y = playerPosition.y + verticalDistance;
 
         return res;
-    }
-
-    void EntityCamera::updateVectors() {
-        float horizontalDistance = computeHorizontalDistance();
-        float verticalDistance = computeVerticalDistance();
-
-        auto worldTransform = entityPtr->getWorldTransform();
-        glm::vec3 entityPosition = worldTransform.getTranslationVector() + offset;
-        float entityAngle = worldTransform.getYAxisRotationAngle();
-
-        glm::vec3 newPosition = computeCameraPosition(entityPosition,
-                                                      entityAngle, horizontalDistance, verticalDistance);
-
-        float allowedHeight =
-                terrainPtr->getTerrainConfig()->getHeight(newPosition.x, newPosition.z) +
-                offset.y;
-
-        if (newPosition.y < allowedHeight)
-        {
-            newPosition.y = allowedHeight;
-        }
-
-        position = newPosition;
-
-        forward = glm::normalize(entityPosition - position);
-        updatePositionVectors();
     }
 }

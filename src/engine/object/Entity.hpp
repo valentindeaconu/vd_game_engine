@@ -4,44 +4,51 @@
 #include <glm/glm.hpp>
 
 #include <engine/foundation/math/Transform.hpp>
+#include <engine/foundation/math/BoundingBox.hpp>
 #include <engine/model/Mesh.hpp>
 #include <engine/glmodel/buffer/MeshBuffer.hpp>
 
 #include <unordered_map>
+#include <algorithm>
 
 #include <engine/kernel/EngineWorker.hpp>
 #include <engine/kernel/EngineBlock.hpp>
 
-namespace vd::object
-{
-    class Entity
-    {
+namespace vd::object {
+    class Entity {
     public:
-        Entity(const vd::EnginePtr& enginePtr);
+        explicit Entity(const vd::EnginePtr& enginePtr);
         ~Entity();
 
         virtual void init();
         virtual void update() = 0;
         virtual void cleanUp();
 
+        [[nodiscard]] bool shouldBeRendered() const;
+
         vd::math::Transform& getLocalTransform();
-        const vd::math::Transform& getLocalTransform() const;
+        [[nodiscard]] const vd::math::Transform& getLocalTransform() const;
         void getLocalTransform(const vd::math::Transform& transform);
 
         vd::math::Transform& getWorldTransform();
-        const vd::math::Transform& getWorldTransform() const;
+        [[nodiscard]] const vd::math::Transform& getWorldTransform() const;
         void getWorldTransform(const vd::math::Transform& transform);
 
         vd::model::MeshPtrVec& getMeshes();
-        const vd::model::MeshPtrVec& getMeshes() const;
+        [[nodiscard]] const vd::model::MeshPtrVec& getMeshes() const;
         void setMeshes(const vd::model::MeshPtrVec& meshes);
 
         vd::buffer::MeshBufferPtrVec& getMeshBuffers();
-        const vd::buffer::MeshBufferPtrVec& getMeshBuffers() const;
+        [[nodiscard]] const vd::buffer::MeshBufferPtrVec& getMeshBuffers() const;
+
+        vd::math::BoundingBoxVec& getBoundingBoxes();
+        [[nodiscard]] const vd::math::BoundingBoxVec& getBoundingBoxes() const;
+        void setBoundingBoxes(const vd::math::BoundingBoxVec& boundingBoxes);
 
         vd::EnginePtr& getParentEngine();
-        const vd::EnginePtr& getParentEngine() const;
+        [[nodiscard]] const vd::EnginePtr& getParentEngine() const;
         void setParentEngine(const vd::EnginePtr& enginePtr);
+
     private:
         void generateBuffers();
 
@@ -50,6 +57,7 @@ namespace vd::object
 
         vd::model::MeshPtrVec meshes;
         vd::buffer::MeshBufferPtrVec meshBuffers;
+        vd::math::BoundingBoxVec boundingBoxes;
 
         vd::EnginePtr parentEnginePtr;
     };
