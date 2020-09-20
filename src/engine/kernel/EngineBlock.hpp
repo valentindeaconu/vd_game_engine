@@ -23,10 +23,17 @@
 
 #include <engine/config/MetaConfig.hpp>
 
+#include <engine/foundation/math/Frustum.hpp>
+
 namespace vd {
 	class Engine {
 	public:
 	    typedef std::function<bool()> FramebufferPreconditionFunc;
+
+	    enum CameraMode {
+	        eFreeCamera = 0,
+	        e3rdPersonCamera
+	    };
 
 		Engine();
 		
@@ -49,14 +56,24 @@ namespace vd {
 		core::WindowPtr& getWindow();
 		[[nodiscard]] const core::WindowPtr& getWindow() const;
 
+		[[nodiscard]] const CameraMode& getCameraMode() const;
+
 		core::CameraPtr& getCamera();
 		[[nodiscard]] const core::CameraPtr& getCamera() const;
+
+		core::CameraPtr& getFreeCamera();
+		[[nodiscard]] const core::CameraPtr& getFreeCamera() const;
+
+		core::CameraPtr& getEntityCamera();
+		[[nodiscard]] const core::CameraPtr& getEntityCamera() const;
 
         shadow::ShadowManagerPtr& getShadowManager();
         [[nodiscard]] const shadow::ShadowManagerPtr& getShadowManager() const;
 
 		config::EngineConfigPtr& getEngineConfig();
 		[[nodiscard]] const config::EngineConfigPtr& getEngineConfig() const;
+
+		[[nodiscard]] const math::FrustumPtr& getFrustum() const;
 
 		[[nodiscard]] const glm::vec4& getClipPlane() const;
 		void setClipPlane(const glm::vec4& clipPlane);
@@ -81,15 +98,17 @@ namespace vd {
 		core::InputHandlerPtr inputHandlerPtr;
 		core::WindowPtr windowPtr;
 
-		//typedef core::impl::EntityCamera	CameraImpl;
-		typedef core::impl::FreeCamera		CameraImpl;
-		core::CameraPtr cameraPtr;
+		CameraMode cameraMode;
+		core::CameraPtr entityCameraPtr;
+		core::CameraPtr freeCameraPtr;
 
 		shadow::ShadowManagerPtr shadowManagerPtr;
 
 		config::EngineConfigPtr configPtr;
 
 		kernel::EngineWorkerPtr engineWorkerPtr;
+
+        math::FrustumPtr frustumPtr;
 
 		glm::vec4 clipPlane;
 

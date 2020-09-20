@@ -2,7 +2,6 @@
 #define __IMG_LOADER_HPP_
 
 #include <string>
-#include <iostream>
 #include <cstdint>
 #include <unordered_map>
 #include <memory>

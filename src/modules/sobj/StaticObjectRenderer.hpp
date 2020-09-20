@@ -6,6 +6,8 @@
 
 #include <modules/terrain/Terrain.hpp>
 
+#include <engine/logger/Logger.hpp>
+
 #include "StaticObjectPlacer.hpp"
 
 namespace mod::sobj

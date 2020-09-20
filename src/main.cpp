@@ -46,6 +46,8 @@
 #include <modules/water/WaterRenderer.hpp>
 #include <modules/water/WaterShader.hpp>
 
+#include <glm/gtx/string_cast.hpp>
+
 int main(int argc, char ** argv)
 {
 	vd::EnginePtr enginePtr = std::make_shared<vd::Engine>();
@@ -54,7 +56,7 @@ int main(int argc, char ** argv)
 	// Dependency Injector part
 
 	// camera parameters
-	// vd::core::EntityCameraInitParameters cameraInitParameters;
+	vd::core::EntityCameraInitParameters cameraInitParameters;
 
 	// renderer config init
 	vd::config::MetaConfigPtr cwConfigPtr = std::make_shared<vd::config::MetaConfig>([]() {
@@ -93,14 +95,14 @@ int main(int argc, char ** argv)
 		enginePtr->getWorker()->subscribe(playerRendererPtr);
 
 		// set camera follows this entity
-		// cameraInitParameters.entityPtr = playerPtr;
+		cameraInitParameters.entityPtr = playerPtr;
 
 		// with an offset of 1 on Y axis
 		// "don't look at shoes, look at chest"
-		// cameraInitParameters.playerPositionOffset = glm::vec3(0.0f, 1.0f, 0.0f);
+		cameraInitParameters.playerPositionOffset = glm::vec3(0.0f, 1.0f, 0.0f);
 
 		// using this terrain
-		// cameraInitParameters.terrainPtr = terrainPtr;
+		cameraInitParameters.terrainPtr = terrainPtr;
 	}
 	
 	// sky creation
@@ -161,6 +163,9 @@ int main(int argc, char ** argv)
 
         enginePtr->addRenderingFramebuffer(waterPtr->getReflectionFramebuffer(),
                                            [&]() {
+                                                if (enginePtr->getCameraMode() == vd::Engine::e3rdPersonCamera)
+                                                    return false;
+
                                                 return enginePtr->getCamera()->getPosition().y > waterPtr->getHeight();
                                            },
                                            std::make_shared<vd::config::MetaConfig>([&]{
@@ -200,13 +205,7 @@ int main(int argc, char ** argv)
 
 	// engine init
 	{
-		vd::core::FreeCameraInitParameters cameraInitParameters = {
-		        .initPosition = glm::vec3(512.0f, 1.0f, 512.0f),
-                .initTarget = glm::vec3(0.0f, 0.0f, 0.0f),
-                .speed = 4.0f
-		};
-
-		// send init signal
+	    // send init signal
 		enginePtr->init(&cameraInitParameters);
 	}
 

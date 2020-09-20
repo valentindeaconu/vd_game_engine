@@ -1,9 +1,6 @@
 #ifndef __WINDOW_HPP_
 #define __WINDOW_HPP_
 
-#include <cstdint>
-#include <iostream>
-
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
@@ -17,7 +14,7 @@ namespace vd::core
     class Window {
 
     public:
-        Window(const InputHandlerPtr& inputHandlerPtr);
+        explicit Window(const InputHandlerPtr& inputHandlerPtr);
         ~Window();
 
         void create(uint32_t width, uint32_t height, const char* title);

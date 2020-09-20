@@ -34,7 +34,7 @@ namespace vd::shadow
                   float offset);
         ~ShadowBox();
 
-        void update(const model::LightPtr& sunPtr);
+        void update();
 
         [[nodiscard]] glm::vec3 getCenter() const;
 

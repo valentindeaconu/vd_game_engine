@@ -3,6 +3,8 @@
 
 #include <engine/shader/Shader.hpp>
 
+#include <engine/foundation/math/Frustum.hpp>
+
 #include "Terrain.hpp"
 
 namespace mod::terrain
