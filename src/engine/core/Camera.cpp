@@ -103,18 +103,14 @@ namespace vd::core
     }
 
     float Camera::getYaw() const {
-        // cos(yaw) = dot(forward, right) / (len(forward) * len(right))
-        // forward, right - normalised => len(forward) = len(right) = 1
-        // => yaw = acos(dot(forward, right))
-        // acos returns radians
-        // return glm::degrees(std::acos(glm::dot(forward, right)));
+        const glm::vec3 x_unit = glm::vec3(1.0f, 0.0f, 0.0f);
+        const glm::vec3 z_unit = glm::vec3(0.0f, 0.0f, 1.0f);
 
-        glm::vec3 fwrd = forward;
-        fwrd.y = 0.0f;
-        fwrd = glm::normalize(fwrd);
-        float yaw = glm::degrees(acos(dot(forward, glm::vec3(1.0f, 0.0f, 0.0f))));
-        if (dot(forward, glm::vec3(0.0f, 0.0f, 1.0f)) > 0.0f)
-            yaw = 360 - yaw;
+        glm::vec3 straight_forward = glm::normalize(glm::vec3(forward.x, 0.0f, forward.z));
+
+        float yaw = glm::degrees(std::acos(glm::dot(straight_forward, x_unit)));
+        
+        yaw = (glm::dot(straight_forward, z_unit) > 0.0f) ? (360.0f - yaw) : yaw;
 
         return yaw;
     }

@@ -43,7 +43,7 @@ namespace vd::core {
         [[nodiscard]] float getYaw() const;
         [[nodiscard]] float getRoll() const;
 
-        virtual void invertPitch() = 0;
+        virtual void reflect(float yAxisSymmetric) = 0;
 
         struct CameraConstants {
             constexpr static const glm::vec3 kUpVector = glm::vec3(0.0f, 1.0f, 0.0f);

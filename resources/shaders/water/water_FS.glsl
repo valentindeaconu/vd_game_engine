@@ -75,6 +75,6 @@ void main()
 	vec4 waterColor = mix(reflectionColor  + vec4(specularHighlights, 0.0f), refractionColor, refractiveFactor);
 	waterColor = mix(waterColor, baseColor, 0.2f);
 
-	fColor = mix(waterColor, baseColor, 0.2f);
+	fColor = mix(waterColor, baseColor, 0.35f);
 	fColor.a = clamp(waterDepth / 5.0f, 0.0f, 1.0f);
 }

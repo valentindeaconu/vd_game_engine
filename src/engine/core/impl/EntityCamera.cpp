@@ -7,13 +7,16 @@ namespace vd::core::impl
 {
     EntityCamera::EntityCamera(const InputHandlerPtr& inputHandlerPtr)
         : Camera(inputHandlerPtr)
+        , pitch(0.0f)
+        , distanceFromPlayer(0.0f)
+        , angleAroundPlayer(0.0f)
+        , offset(0.0f)
     {
     }
 
     EntityCamera::~EntityCamera() = default;
 
-    void EntityCamera::init(CameraInitParametersPtr parameters)
-    {
+    void EntityCamera::init(CameraInitParametersPtr parameters) {
         EntityCameraInitParameters* params = (EntityCameraInitParameters*)parameters;
 
         entityPtr = params->entityPtr;
@@ -25,69 +28,84 @@ namespace vd::core::impl
         angleAroundPlayer = 180.0f;
     }
 
-    void EntityCamera::update()
-    {
-        computeZoom();
-        computePitch();
-        computeAngleAroundPlayer();
+    void EntityCamera::update() {
+        input();
 
-        updateVectors();
+        float horizontalDistance = computeHorizontalDistance();
+        float verticalDistance = computeVerticalDistance();
+
+        auto worldTransform = entityPtr->getWorldTransform();
+        glm::vec3 entityPosition = worldTransform.getTranslationVector() + offset;
+        float entityAngle = worldTransform.getYAxisRotationAngle();
+
+        glm::vec3 newPosition = computeCameraPosition(entityPosition,
+                                                      entityAngle,
+                                                      horizontalDistance,
+                                                      verticalDistance);
+
+        float allowedHeight =
+                terrainPtr->getTerrainConfig()->getHeight(newPosition.x, newPosition.z) + offset.y;
+
+        if (newPosition.y < allowedHeight) {
+            newPosition.y = allowedHeight;
+        }
+
+        position = newPosition;
+
+        forward = glm::normalize(entityPosition - position);
+        updatePositionVectors();
+
         Camera::update();
     }
 
-    void EntityCamera::invertPitch() {
-        pitch = -pitch;
+    void EntityCamera::reflect(float yAxisSymmetric) {
+        float totalOffset = 2.0f * std::abs(position.y - yAxisSymmetric);
 
-        updateVectors();
+        if (position.y > yAxisSymmetric) {
+            position.y -= totalOffset;
+        } else {
+            position.y += totalOffset;
+        }
+
+        forward.y = -forward.y;
+        updatePositionVectors();
     }
 
-    void EntityCamera::computeZoom()
-    {
-        if (inputHandlerPtr->getMouseScrolled())
-        {
-            float zoomLevel = (float)inputHandlerPtr->getMouseDWheel();
+    void EntityCamera::input() {
+        if (inputHandlerPtr->getMouseScrolled()) {
+            auto zoomLevel = (float)inputHandlerPtr->getMouseDWheel();
             distanceFromPlayer -= zoomLevel;
             distanceFromPlayer = glm::clamp(distanceFromPlayer, 2.5f, 35.0f);
         }
-    }
 
-    void EntityCamera::computePitch()
-    {
-        if (inputHandlerPtr->getButtonHolding(GLFW_MOUSE_BUTTON_MIDDLE))
-        {
-            if (inputHandlerPtr->getMouseMoved())
-            {
-                float pitchChange = (float)inputHandlerPtr->getMouseDY();
+        if (inputHandlerPtr->getButtonHolding(GLFW_MOUSE_BUTTON_MIDDLE)) {
+            if (inputHandlerPtr->getMouseMoved()) {
+                auto pitchChange = (float) inputHandlerPtr->getMouseDY();
                 pitch -= pitchChange;
                 pitch = glm::clamp(pitch, 5.0f, 75.0f);
             }
         }
-    }
 
-    void EntityCamera::computeAngleAroundPlayer()
-    {
-        if (inputHandlerPtr->getButtonHolding(GLFW_MOUSE_BUTTON_MIDDLE))
-        {
-            if (inputHandlerPtr->getMouseMoved())
-            {
-                float angleChange = (float)inputHandlerPtr->getMouseDX();
+        if (inputHandlerPtr->getButtonHolding(GLFW_MOUSE_BUTTON_MIDDLE)) {
+            if (inputHandlerPtr->getMouseMoved()) {
+                auto angleChange = (float)inputHandlerPtr->getMouseDX();
                 angleAroundPlayer -= angleChange * 2.5f;
             }
         }
     }
 
-    float EntityCamera::computeHorizontalDistance() const
-    {
+    float EntityCamera::computeHorizontalDistance() const {
         return distanceFromPlayer * glm::cos(glm::radians(pitch));
     }
 
-    float EntityCamera::computeVerticalDistance() const
-    {
+    float EntityCamera::computeVerticalDistance() const {
         return distanceFromPlayer * glm::sin(glm::radians(pitch));
     }
 
-    glm::vec3 EntityCamera::computeCameraPosition(const glm::vec3& playerPosition, float playerAngle, float horizontalDistance, float verticalDistance) const
-    {
+    glm::vec3 EntityCamera::computeCameraPosition(const glm::vec3& playerPosition,
+                                                  float playerAngle,
+                                                  float horizontalDistance,
+                                                  float verticalDistance) const {
         float theta = playerAngle + angleAroundPlayer;
         float xOffset = horizontalDistance * glm::sin(glm::radians(theta));
         float zOffset = horizontalDistance * glm::cos(glm::radians(theta));
@@ -97,31 +115,5 @@ namespace vd::core::impl
         res.y = playerPosition.y + verticalDistance;
 
         return res;
-    }
-
-    void EntityCamera::updateVectors() {
-        float horizontalDistance = computeHorizontalDistance();
-        float verticalDistance = computeVerticalDistance();
-
-        auto worldTransform = entityPtr->getWorldTransform();
-        glm::vec3 entityPosition = worldTransform.getTranslationVector() + offset;
-        float entityAngle = worldTransform.getYAxisRotationAngle();
-
-        glm::vec3 newPosition = computeCameraPosition(entityPosition,
-                                                      entityAngle, horizontalDistance, verticalDistance);
-
-        float allowedHeight =
-                terrainPtr->getTerrainConfig()->getHeight(newPosition.x, newPosition.z) +
-                offset.y;
-
-        if (newPosition.y < allowedHeight)
-        {
-            newPosition.y = allowedHeight;
-        }
-
-        position = newPosition;
-
-        forward = glm::normalize(entityPosition - position);
-        updatePositionVectors();
     }
 }

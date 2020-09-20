@@ -44,7 +44,7 @@ namespace vd
                                       kernel::RenderingPass::eShadow);
 	}
 
-	void Engine::init(core::CameraInitParametersPtr cameraParameters) {
+	void Engine::init() {
 		// GL init configs
 		glClearColor(0.3f, 0.3f, 0.3f, 1.0f);
 		glEnable(GL_FRAMEBUFFER_SRGB);
@@ -54,8 +54,16 @@ namespace vd
 		glCullFace(GL_BACK); // cull back face
 		glFrontFace(GL_CCW); // GL_CCW for counter clock-wise
 
+		/*
+		 * vd::core::FreeCameraInitParameters cameraInitParameters = {
+                .initPosition = glm::vec3(512.0f, 1.0f, 512.0f),
+                .initTarget = glm::vec3(0.0f, 0.0f, 0.0f),
+                .speed = 4.0f
+        };
+		 */
+
 		// Camera init
-		cameraPtr->init(cameraParameters);
+		cameraPtr->init();
 
 		// Config init
 		configPtr->parse();

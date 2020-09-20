@@ -24,7 +24,7 @@ namespace vd::core::impl
         void init(CameraInitParametersPtr parameters) override;
         void update() override;
 
-        void invertPitch() override;
+        void reflect(float yAxisSymmetric) override;
 
     private:
         void move(const glm::vec3& dir, float amount);

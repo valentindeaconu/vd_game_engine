@@ -78,10 +78,15 @@ namespace vd::core::impl
         Camera::update();
     }
 
-    void FreeCamera::invertPitch() {
-        pitch = -pitch;
+    void FreeCamera::reflect(float yAxisSymmetric) {
+        float offset = 2.0f * std::abs(position.y - yAxisSymmetric);
+        if (position.y > yAxisSymmetric) {
+            position.y -= offset;
+        } else {
+            position.y += offset;
+        }
 
-        updateForwardVector();
+        forward.y = -forward.y;
         updatePositionVectors();
     }
 

@@ -26,8 +26,6 @@ include_directories(src/modules/sobj)
 include_directories(src/modules/terrain)
 
 add_executable(vd_game_engine
-        src/engine/component/impl/EntityRenderer.cpp
-        src/engine/component/impl/EntityRenderer.hpp
         src/engine/component/Renderer.cpp
         src/engine/component/Renderer.hpp
         src/engine/config/ConfigurationFile.cpp
@@ -81,10 +79,14 @@ add_executable(vd_game_engine
         src/modules/player/Player.hpp
         src/modules/player/PlayerShader.cpp
         src/modules/player/PlayerShader.hpp
+        src/modules/player/PlayerRenderer.cpp
+        src/modules/player/PlayerRenderer.hpp
         src/modules/sky/Sky.cpp
         src/modules/sky/Sky.hpp
         src/modules/sky/SkyShader.cpp
         src/modules/sky/SkyShader.hpp
+        src/modules/sky/SkyRenderer.cpp
+        src/modules/sky/SkyRenderer.hpp
         src/modules/sobj/StaticObject.cpp
         src/modules/sobj/StaticObject.hpp
         src/modules/sobj/StaticObjectPlacer.cpp

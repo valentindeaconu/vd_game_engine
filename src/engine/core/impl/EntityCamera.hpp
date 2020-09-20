@@ -39,12 +39,10 @@ namespace vd
 				void init(CameraInitParametersPtr parameters) override;
 				void update() override;
 
-				void invertPitch() override;
+				void reflect(float yAxisSymmetric) override;
 
 			private:
-				void computeZoom();
-				void computePitch();
-				void computeAngleAroundPlayer();
+				void input();
 
 				float computeHorizontalDistance() const;
 				float computeVerticalDistance() const;
@@ -54,8 +52,6 @@ namespace vd
 					float horizontalDistance,
 					float verticalDistance) const;
 
-				void updateVectors();
-
 				float pitch;
 				float distanceFromPlayer;
 				float angleAroundPlayer;
@@ -63,6 +59,8 @@ namespace vd
 				object::EntityPtr entityPtr;
 				mod::terrain::TerrainPtr terrainPtr;
 				glm::vec3 offset;
+
+				glm::vec3 cacheForward;
 			};
 		}
 	}   

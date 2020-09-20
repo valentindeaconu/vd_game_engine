@@ -31,7 +31,7 @@ namespace vd {
 		Engine();
 		
 		void setup(int windowWidth, int windowHeight, const char* windowTitle);
-		void init(core::CameraInitParametersPtr cameraParameters);
+		void init();
 		void start();
 
 		// Get the number of frames per second of the engine
