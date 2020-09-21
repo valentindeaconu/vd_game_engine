@@ -4,7 +4,6 @@
 #include <fstream>
 #include <sstream>
 #include <unordered_map>
-#include <iostream>
 #include <vector>
 
 #include <engine/logger/Logger.hpp>
@@ -14,12 +13,12 @@ namespace vd::config
     class ConfigurationFile
     {
     public:
-        ConfigurationFile(const std::string& filePath);
+        explicit ConfigurationFile(const std::string& filePath);
         ~ConfigurationFile();
 
         void parse();
 
-        const std::string& getFilePath() const;
+        [[nodiscard]] const std::string& getFilePath() const;
     private:
         const std::string filePath;
 

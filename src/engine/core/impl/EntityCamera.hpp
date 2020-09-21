@@ -33,7 +33,7 @@ namespace vd
 			class EntityCamera : public Camera
 			{
 			public:
-				EntityCamera(const InputHandlerPtr& inputHandlerPtr);
+				explicit EntityCamera(const InputHandlerPtr& inputHandlerPtr);
 				~EntityCamera();
 
 				void init(CameraInitParametersPtr parameters) override;
@@ -44,10 +44,10 @@ namespace vd
 			private:
 				void input();
 
-				float computeHorizontalDistance() const;
-				float computeVerticalDistance() const;
+				[[nodiscard]] float computeHorizontalDistance() const;
+				[[nodiscard]] float computeVerticalDistance() const;
 
-				glm::vec3 computeCameraPosition(const glm::vec3& playerPosition,
+				[[nodiscard]] glm::vec3 computeCameraPosition(const glm::vec3& playerPosition,
 					float playerAngle,
 					float horizontalDistance,
 					float verticalDistance) const;
@@ -59,8 +59,6 @@ namespace vd
 				object::EntityPtr entityPtr;
 				mod::terrain::TerrainPtr terrainPtr;
 				glm::vec3 offset;
-
-				glm::vec3 cacheForward;
 			};
 		}
 	}   

@@ -3,8 +3,7 @@
 #include <engine/object/Entity.hpp>
 #include <modules/terrain/Terrain.hpp>
 
-namespace vd::core::impl
-{
+namespace vd::core::impl {
     EntityCamera::EntityCamera(const InputHandlerPtr& inputHandlerPtr)
         : Camera(inputHandlerPtr)
         , pitch(0.0f)
@@ -17,7 +16,7 @@ namespace vd::core::impl
     EntityCamera::~EntityCamera() = default;
 
     void EntityCamera::init(CameraInitParametersPtr parameters) {
-        EntityCameraInitParameters* params = (EntityCameraInitParameters*)parameters;
+        auto* params = (EntityCameraInitParameters*) parameters;
 
         entityPtr = params->entityPtr;
         terrainPtr = params->terrainPtr;

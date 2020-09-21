@@ -26,6 +26,16 @@ namespace vd::object
         meshBuffers.clear();
     }
 
+    bool Entity::shouldBeRendered() const {
+        return std::ranges::any_of(boundingBoxes.cbegin(),
+                                   boundingBoxes.cend(),
+                                   [&](const math::BoundingBox& boundingBox) {
+            return parentEnginePtr
+                ->getFrustum()
+                ->checkAgainst(boundingBox.withTransform(worldTransform)) != math::Frustum::eOutside;
+        });
+    }
+
     vd::math::Transform& Entity::getLocalTransform()
     {
         return localTransform;
@@ -83,6 +93,18 @@ namespace vd::object
         return meshBuffers;
     }
 
+    vd::math::BoundingBoxVec& Entity::getBoundingBoxes() {
+        return boundingBoxes;
+    }
+
+    const vd::math::BoundingBoxVec& Entity::getBoundingBoxes() const {
+        return boundingBoxes;
+    }
+
+    void Entity::setBoundingBoxes(const vd::math::BoundingBoxVec& boundingBoxes) {
+        this->boundingBoxes = boundingBoxes;
+    }
+
     vd::EnginePtr& Entity::getParentEngine()
     {
         return parentEnginePtr;
@@ -106,6 +128,9 @@ namespace vd::object
         {
             meshBuffers.push_back(std::make_shared<vd::buffer::MeshBuffer>());
             meshBuffers.back()->allocate(mesh);
+
+            boundingBoxes.emplace_back();
+            boundingBoxes.back().wrapMesh(mesh);
         }
     }
 }

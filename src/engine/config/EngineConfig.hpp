@@ -25,6 +25,12 @@ namespace vd::config
             float transitionDistance;
             float offset;
         };
+
+        struct CameraInfo {
+            glm::vec3 position;
+            glm::vec3 target;
+            float speed;
+        };
     }
 
     class EngineConfig : public ConfigurationFile
@@ -38,6 +44,10 @@ namespace vd::config
         [[nodiscard]] float getShadowTransitionDistance() const;
         [[nodiscard]] float getShadowOffset() const;
 
+        [[nodiscard]] const glm::vec3& getCameraPosition() const;
+        [[nodiscard]] const glm::vec3& getCameraTarget() const;
+        [[nodiscard]] float getCameraSpeed() const;
+
         [[nodiscard]] const glm::vec3& getFogColor() const;
         [[nodiscard]] const float& getFogDensity() const;
         [[nodiscard]] const float& getFogSkyDensity() const;
@@ -50,6 +60,7 @@ namespace vd::config
 
         internal::FogInfo fogInfo;
         internal::ShadowInfo shadowInfo;
+        internal::CameraInfo cameraInfo;
         std::vector<model::LightPtr> lights;
     };
     typedef std::shared_ptr<EngineConfig>	EngineConfigPtr;

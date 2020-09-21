@@ -10,7 +10,6 @@
 #include <functional>
 #include <mutex>
 #include <atomic>
-#include <iostream>
 
 namespace vd::core {
     class AsyncWorker {

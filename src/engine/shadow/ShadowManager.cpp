@@ -55,7 +55,7 @@ namespace vd::shadow {
     }
 
     void ShadowManager::update(const model::LightPtr& sunPtr) {
-        shadowBoxPtr->update(sunPtr);
+        shadowBoxPtr->update();
         updateLightView(sunPtr);
         updateProjection();
     }

@@ -25,12 +25,16 @@ namespace vd::kernel {
     }
 
     void Observable::broadcastUpdate() {
-        for (const auto& pair : observers) {
+        /*for (const auto& pair : observers) {
             pair.second->run();
         }
 
         for (const auto& pair : observers) {
             pair.second->join();
+        }*/
+
+        for (auto& pair : observers) {
+            pair.first->update();
         }
     }
 

@@ -46,11 +46,13 @@ namespace mod::sobj
                         staticObjectPtr->getWorldTransform().setTranslation(placementInfo.location);
                         staticObjectPtr->update();
 
-                        for (size_t meshIndex = 0;
-                            meshIndex < staticObjectPtr->getMeshBuffers().size();
-                            ++meshIndex) {
-                            _shaderPtr->updateUniforms(staticObjectPtr, meshIndex);
-                            staticObjectPtr->getMeshBuffers()[meshIndex]->render();
+                        if (staticObjectPtr->shouldBeRendered()) {
+                            for (size_t meshIndex = 0;
+                                 meshIndex < staticObjectPtr->getMeshBuffers().size();
+                                 ++meshIndex) {
+                                _shaderPtr->updateUniforms(staticObjectPtr, meshIndex);
+                                staticObjectPtr->getMeshBuffers()[meshIndex]->render();
+                            }
                         }
                     }
                 }

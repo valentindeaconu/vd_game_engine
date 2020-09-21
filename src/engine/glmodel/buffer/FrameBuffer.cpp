@@ -79,11 +79,11 @@ namespace vd::buffer {
         return fboId;
     }
 
-    const model::Texture2DPtr &FrameBuffer::getColorTexture() const {
+    const model::Texture2DPtr& FrameBuffer::getColorTexture() const {
         return colorTexture;
     }
 
-    const model::Texture2DPtr &FrameBuffer::getDepthTexture() const {
+    const model::Texture2DPtr& FrameBuffer::getDepthTexture() const {
         return depthTexture;
     }
 

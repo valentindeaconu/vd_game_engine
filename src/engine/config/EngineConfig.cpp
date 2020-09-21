@@ -27,6 +27,18 @@ namespace vd::config
         return shadowInfo.offset;
     }
 
+    const glm::vec3& EngineConfig::getCameraPosition() const {
+        return cameraInfo.position;
+    }
+
+    const glm::vec3& EngineConfig::getCameraTarget() const {
+        return cameraInfo.target;
+    }
+
+    float EngineConfig::getCameraSpeed() const {
+        return cameraInfo.speed;
+    }
+
     const glm::vec3& EngineConfig::getFogColor() const
     {
         return fogInfo.color;
@@ -69,6 +81,18 @@ namespace vd::config
         else if (command == "shadowOffset")
         {
             shadowInfo.offset = std::stof(tokens[0]);
+        }
+        else if (command == "position")
+        {
+            cameraInfo.position = glm::vec3(std::stof(tokens[0]), std::stof(tokens[1]), std::stof(tokens[2]));
+        }
+        else if (command == "target")
+        {
+            cameraInfo.target = glm::vec3(std::stof(tokens[0]), std::stof(tokens[1]), std::stof(tokens[2]));
+        }
+        else if (command == "speed")
+        {
+            cameraInfo.speed = std::stof(tokens[0]);
         }
         else if (command == "fogColor")
         {

@@ -5,6 +5,8 @@
 
 #include <engine/kernel/EngineBlock.hpp>
 
+#include <engine/core/impl/EntityCamera.hpp>
+
 // configs
 #include <engine/config/MetaConfig.hpp>
 
@@ -42,14 +44,14 @@ mod::terrain::TerrainPtr createTerrain(vd::EnginePtr& enginePtr);
 mod::player::PlayerPtr createPlayer(vd::EnginePtr& enginePtr, mod::terrain::TerrainPtr& terrainPtr);
 mod::sky::SkyPtr createSky(vd::EnginePtr& enginePtr);
 
-void createAndPlaceStaticObjects(vd::EnginePtr& enginePtr);
+void createAndPlaceStaticObjects(vd::EnginePtr& enginePtr, mod::terrain::TerrainPtr& terrainPtr);
 
 mod::water::WaterPtr createWater(vd::EnginePtr& enginePtr);
 
-void createGUI(vd::EnginePtr& enginePtr,
-               vd::model::Texture2DPtr& texturePtr,
-               const glm::vec2& position,
-               const glm::vec2& scale);
+[[maybe_unused]] void createGUI(vd::EnginePtr& enginePtr,
+                                const vd::model::Texture2DPtr& texturePtr,
+                                const glm::vec2& position,
+                                const glm::vec2& scale);
 
 int main(int argc, char ** argv) {
 
@@ -64,19 +66,25 @@ int main(int argc, char ** argv) {
 
 	mod::player::PlayerPtr playerPtr = createPlayer(enginePtr, terrainPtr);
 
-    createAndPlaceStaticObjects(enginePtr);
+    createAndPlaceStaticObjects(enginePtr, terrainPtr);
 
 	/// Water must be the last element to draw, but before GUIs
 	mod::water::WaterPtr waterPtr = createWater(enginePtr);
 
 	/// Engine init
-    enginePtr->init();
+	vd::core::EntityCameraInitParameters entityCameraInitParameters = {
+        .entityPtr = playerPtr,
+        .terrainPtr = terrainPtr,
+        .playerPositionOffset = glm::vec3(0.0f, 1.0f, 0.0f)
+	};
+
+    enginePtr->init(&entityCameraInitParameters);
 
     /// Debugging GUIs
     /*createGUI(enginePtr,
               enginePtr->getShadowManager()->getShadowTexture(),
               glm::vec2(-0.75f, -0.75f),
-              glm::vec2(0.250f, 0.250f));*/
+              glm::vec2(0.250f, 0.250f));
 
     createGUI(enginePtr,
               waterPtr->getRefractionFramebuffer()->getColorTexture(),
@@ -86,7 +94,7 @@ int main(int argc, char ** argv) {
     createGUI(enginePtr,
               waterPtr->getReflectionFramebuffer()->getColorTexture(),
               glm::vec2(0.75f, 0.75f),
-              glm::vec2(0.250f, 0.250f));
+              glm::vec2(0.250f, 0.250f));*/
 
 	/// Starting Main Loop
 	enginePtr->start();
@@ -128,17 +136,6 @@ mod::player::PlayerPtr createPlayer(vd::EnginePtr& enginePtr, mod::terrain::Terr
 
     enginePtr->getWorker()->subscribe(playerRendererPtr);
 
-
-    // set camera follows this entity
-    // cameraInitParameters.entityPtr = playerPtr;
-
-    // with an offset of 1 on Y axis
-    // "don't look at shoes, look at chest"
-    // cameraInitParameters.playerPositionOffset = glm::vec3(0.0f, 1.0f, 0.0f);
-
-    // using this terrain
-    // cameraInitParameters.terrainPtr = terrainPtr;
-
     return playerPtr;
 }
 
@@ -164,7 +161,11 @@ mod::sky::SkyPtr createSky(vd::EnginePtr& enginePtr) {
     return skyPtr;
 }
 
-void createAndPlaceStaticObjects(vd::EnginePtr& enginePtr) {
+void createAndPlaceStaticObjects(vd::EnginePtr& enginePtr, mod::terrain::TerrainPtr& terrainPtr) {
+    const vd::config::MetaConfigPtr ccwConfigPtr =
+            std::make_shared<vd::config::MetaConfig>([]() { glFrontFace(GL_CCW); },
+                                                     []() { glFrontFace(GL_CW); });
+
     mod::sobj::StaticObjectPlacerPtr staticObjectPlacerPtr =
             std::make_shared<mod::sobj::StaticObjectPlacer>(terrainPtr, 7000, 10.0f);
     mod::sobj::StaticObjectShaderPtr staticObjectShaderPtr = std::make_shared<mod::sobj::StaticObjectShader>();
@@ -238,12 +239,18 @@ mod::water::WaterPtr createWater(vd::EnginePtr& enginePtr) {
                                        vd::kernel::RenderingPass::eRefraction);
 
     enginePtr->getWorker()->subscribe(waterRendererPtr);
+
+    return waterPtr;
 }
 
-void createGUI(vd::EnginePtr& enginePtr,
-               vd::model::Texture2DPtr& texturePtr,
+[[maybe_unused]] void createGUI(vd::EnginePtr& enginePtr,
+               const vd::model::Texture2DPtr& texturePtr,
                const glm::vec2& position,
                const glm::vec2& scale) {
+    const vd::config::MetaConfigPtr ccwConfigPtr =
+            std::make_shared<vd::config::MetaConfig>([]() { glFrontFace(GL_CCW); },
+                                                     []() { glFrontFace(GL_CW); });
+
     mod::gui::GuiQuadPtr guiQuadPtr =
             std::make_shared<mod::gui::GuiQuad>(enginePtr, texturePtr, position, scale);
     mod::gui::GuiShaderPtr guiShaderPtr = std::make_shared<mod::gui::GuiShader>();

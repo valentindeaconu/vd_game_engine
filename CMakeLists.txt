@@ -129,6 +129,12 @@ add_executable(vd_game_engine
         src/engine/config/MetaConfig.cpp
         src/engine/core/AsyncWorker.cpp
         src/engine/core/AsyncWorker.hpp
+        src/engine/foundation/math/Frustum.cpp
+        src/engine/foundation/math/Frustum.hpp
+        src/engine/foundation/math/BoundingBox.cpp
+        src/engine/foundation/math/BoundingBox.hpp
+        src/engine/foundation/math/Util.cpp
+        src/engine/foundation/math/Util.hpp
         src/main.cpp)
 
 
