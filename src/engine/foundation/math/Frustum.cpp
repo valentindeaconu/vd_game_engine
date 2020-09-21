@@ -69,8 +69,8 @@ namespace vd::math {
             if (glm::dot(plane.n, min) + plane.d > 0)
                 return eOutside;
 
-            if (glm::dot(plane.n, max) + plane.d >= 0)
-                return eIntersect;
+            //if (glm::dot(plane.n, max) + plane.d >= 0)
+            //    return eIntersect;
         }
 
         return eInside;
