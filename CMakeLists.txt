@@ -125,6 +125,8 @@ add_executable(vd_game_engine
         src/modules/water/WaterConfig.hpp
         src/engine/glmodel/buffer/FrameBuffer.cpp
         src/engine/glmodel/buffer/FrameBuffer.hpp
+        src/engine/glmodel/buffer/PatchBuffer.cpp
+        src/engine/glmodel/buffer/PatchBuffer.hpp
         src/engine/config/MetaConfig.hpp
         src/engine/config/MetaConfig.cpp
         src/engine/core/AsyncWorker.cpp
@@ -135,6 +137,28 @@ add_executable(vd_game_engine
         src/engine/foundation/math/BoundingBox.hpp
         src/engine/foundation/math/Util.cpp
         src/engine/foundation/math/Util.hpp
+        src/engine/terrain/TerrainNode.cpp
+        src/engine/terrain/TerrainNode.hpp
+        src/engine/terrain/TerrainQuadtree.cpp
+        src/engine/terrain/TerrainQuadtree.hpp
+        src/engine/terrain/TerrainShader.cpp
+        src/engine/terrain/TerrainShader.hpp
+        src/engine/terrain/Terrain.cpp
+        src/engine/terrain/Terrain.hpp
+        src/engine/terrain/Biome.cpp
+        src/engine/terrain/Biome.hpp
+        src/engine/terrain/TerrainConfig.cpp
+        src/engine/terrain/TerrainConfig.hpp
+        src/engine/terrain/TerrainRenderer.cpp
+        src/engine/terrain/TerrainRenderer.hpp
+        src/engine/terrain/normalmap/NormalMapShader.cpp
+        src/engine/terrain/normalmap/NormalMapShader.hpp
+        src/engine/terrain/normalmap/NormalMapRenderer.cpp
+        src/engine/terrain/normalmap/NormalMapRenderer.hpp
+        src/engine/terrain/splatmap/SplatMapRenderer.cpp
+        src/engine/terrain/splatmap/SplatMapRenderer.hpp
+        src/engine/terrain/splatmap/SplatMapShader.cpp
+        src/engine/terrain/splatmap/SplatMapShader.hpp
         src/main.cpp)
 
 

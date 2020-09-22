@@ -82,7 +82,7 @@ namespace mod::terrain
         for (size_t i = 0; i < kMaxTextures; ++i)
         {
             vd::model::activeTexture(textureUnit + i);
-            terrainConfig->getBiomeAtlas()[i].material.diffusemap->bind();
+            terrainConfig->getBiomeAtlas()[i].material.diffuseMap->bind();
             setUniformi("textures[" + std::to_string(i) + "]", textureUnit + i);
         }
 

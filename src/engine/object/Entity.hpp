@@ -6,7 +6,9 @@
 #include <engine/foundation/math/Transform.hpp>
 #include <engine/foundation/math/BoundingBox.hpp>
 #include <engine/model/Mesh.hpp>
+
 #include <engine/glmodel/buffer/MeshBuffer.hpp>
+#include <engine/glmodel/buffer/PatchBuffer.hpp>
 
 #include <unordered_map>
 #include <algorithm>
@@ -17,6 +19,11 @@
 namespace vd::object {
     class Entity {
     public:
+        enum BufferGenerationStrategy {
+            eMesh = 0,
+            ePatch
+        };
+
         explicit Entity(const vd::EnginePtr& enginePtr);
         ~Entity();
 
@@ -38,8 +45,8 @@ namespace vd::object {
         [[nodiscard]] const vd::model::MeshPtrVec& getMeshes() const;
         void setMeshes(const vd::model::MeshPtrVec& meshes);
 
-        vd::buffer::MeshBufferPtrVec& getMeshBuffers();
-        [[nodiscard]] const vd::buffer::MeshBufferPtrVec& getMeshBuffers() const;
+        vd::buffer::BufferPtrVec& getBuffers();
+        [[nodiscard]] const vd::buffer::BufferPtrVec& getBuffers() const;
 
         vd::math::BoundingBoxVec& getBoundingBoxes();
         [[nodiscard]] const vd::math::BoundingBoxVec& getBoundingBoxes() const;
@@ -49,14 +56,19 @@ namespace vd::object {
         [[nodiscard]] const vd::EnginePtr& getParentEngine() const;
         void setParentEngine(const vd::EnginePtr& enginePtr);
 
+    protected:
+        void setBufferGenerationStrategy(const BufferGenerationStrategy& strategy);
+
     private:
         void generateBuffers();
 
         vd::math::Transform localTransform;
         vd::math::Transform worldTransform;
 
+        BufferGenerationStrategy strategy;
+
         vd::model::MeshPtrVec meshes;
-        vd::buffer::MeshBufferPtrVec meshBuffers;
+        vd::buffer::BufferPtrVec buffers;
         vd::math::BoundingBoxVec boundingBoxes;
 
         vd::EnginePtr parentEnginePtr;

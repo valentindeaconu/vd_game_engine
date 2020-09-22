@@ -30,7 +30,7 @@ namespace mod::water {
 
             shaderPtr->bind();
             shaderPtr->updateUniforms(waterPtr, 0);
-            waterPtr->getMeshBuffers()[0]->render();
+            waterPtr->getBuffers()[0]->render();
 
             if (renderConfigPtr != nullptr) {
                 renderConfigPtr->disable();

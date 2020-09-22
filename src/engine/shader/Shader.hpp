@@ -16,8 +16,7 @@
 
 #include "GLSLWrapper.hpp"
 
-namespace vd::shader
-{
+namespace vd::shader {
     enum ShaderType
     {
         eVertexShader = GL_VERTEX_SHADER,
@@ -28,8 +27,9 @@ namespace vd::shader
         eComputeShader = GL_COMPUTE_SHADER
     };
 
-    class Shader
-    {
+    std::string to_string(const ShaderType& shaderType);
+
+    class Shader {
     public:
         Shader();
 

@@ -122,7 +122,7 @@ namespace vd::objloader
                         currentTexture->bind();
                         currentTexture->wrapRepeat();
                         currentTexture->trilinearFilter();
-                        meshPtr->materials.back().ambientmap = currentTexture;
+                        meshPtr->materials.back().ambientMap = currentTexture;
                     }
 
                     //diffuse texture
@@ -133,7 +133,7 @@ namespace vd::objloader
                         currentTexture->bind();
                         currentTexture->wrapRepeat();
                         currentTexture->trilinearFilter();
-                        meshPtr->materials.back().diffusemap = currentTexture;
+                        meshPtr->materials.back().diffuseMap = currentTexture;
                     }
 
                     //specular texture
@@ -144,7 +144,7 @@ namespace vd::objloader
                         currentTexture->bind();
                         currentTexture->wrapRepeat();
                         currentTexture->trilinearFilter();
-                        meshPtr->materials.back().specularmap = currentTexture;
+                        meshPtr->materials.back().specularMap = currentTexture;
                     }
 
                     //normal texture
@@ -155,7 +155,7 @@ namespace vd::objloader
                         currentTexture->bind();
                         currentTexture->wrapRepeat();
                         currentTexture->trilinearFilter();
-                        meshPtr->materials.back().normalmap = currentTexture;
+                        meshPtr->materials.back().normalMap = currentTexture;
                     }
 
                     //displacement texture
@@ -166,7 +166,7 @@ namespace vd::objloader
                         currentTexture->bind();
                         currentTexture->wrapRepeat();
                         currentTexture->trilinearFilter();
-                        meshPtr->materials.back().displacemap = currentTexture;
+                        meshPtr->materials.back().displaceMap = currentTexture;
                     }
 
                     //alpha texture
@@ -177,7 +177,7 @@ namespace vd::objloader
                         currentTexture->bind();
                         currentTexture->wrapRepeat();
                         currentTexture->trilinearFilter();
-                        meshPtr->materials.back().alphamap = currentTexture;
+                        meshPtr->materials.back().alphaMap = currentTexture;
                     }
 
                     //bump texture
@@ -188,7 +188,7 @@ namespace vd::objloader
                         currentTexture->bind();
                         currentTexture->wrapRepeat();
                         currentTexture->trilinearFilter();
-                        meshPtr->materials.back().bumpmap = currentTexture;
+                        meshPtr->materials.back().bumpMap = currentTexture;
                     }
                 }
             }

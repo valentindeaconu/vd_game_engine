@@ -52,17 +52,17 @@ namespace mod::sobj
         {
             vd::model::Material& meshMaterial = meshPtr->materials.front();
 
-            if (meshMaterial.diffusemap != nullptr)
+            if (meshMaterial.diffuseMap != nullptr)
             {
                 vd::model::activeTexture(0);
-                meshMaterial.diffusemap->bind();
+                meshMaterial.diffuseMap->bind();
                 setUniformi("diffusemap", 0);
             }
 
-            if (meshMaterial.specularmap != nullptr)
+            if (meshMaterial.specularMap != nullptr)
             {
                 vd::model::activeTexture(1);
-                meshMaterial.specularmap->bind();
+                meshMaterial.specularMap->bind();
                 setUniformi("specularmap", 1);
             }
         }

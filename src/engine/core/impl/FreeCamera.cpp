@@ -40,6 +40,8 @@ namespace vd::core::impl
     }
 
     void FreeCamera::update() {
+        Camera::update();
+
         float movAmt = speed;
         float rotAmt = speed * 0.5f;
 
@@ -74,8 +76,6 @@ namespace vd::core::impl
                 rotate(-pitchChange, 0.0f);
             }
         }
-
-        Camera::update();
     }
 
     void FreeCamera::reflect(float yAxisSymmetric) {

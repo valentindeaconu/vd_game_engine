@@ -28,7 +28,7 @@ namespace mod::terrain
 
             _shaderPtr->bind();
             _shaderPtr->updateUniforms(terrainPtr, 0);
-            terrainPtr->getMeshBuffers()[0]->render();
+            terrainPtr->getBuffers()[0]->render();
 
             if (renderConfigPtr != nullptr) {
                 renderConfigPtr->disable();

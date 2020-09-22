@@ -1,7 +1,8 @@
 #include "EntityCamera.hpp"
 
 #include <engine/object/Entity.hpp>
-#include <modules/terrain/Terrain.hpp>
+//#include <modules/terrain/Terrain.hpp>
+#include <engine/terrain/Terrain.hpp>
 
 namespace vd::core::impl {
     EntityCamera::EntityCamera(const InputHandlerPtr& inputHandlerPtr)
@@ -28,6 +29,8 @@ namespace vd::core::impl {
     }
 
     void EntityCamera::update() {
+        Camera::update();
+
         input();
 
         float horizontalDistance = computeHorizontalDistance();
@@ -53,8 +56,6 @@ namespace vd::core::impl {
 
         forward = glm::normalize(entityPosition - position);
         updatePositionVectors();
-
-        Camera::update();
     }
 
     void EntityCamera::reflect(float yAxisSymmetric) {

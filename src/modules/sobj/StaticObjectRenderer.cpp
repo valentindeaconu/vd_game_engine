@@ -48,10 +48,10 @@ namespace mod::sobj
 
                         if (staticObjectPtr->shouldBeRendered()) {
                             for (size_t meshIndex = 0;
-                                 meshIndex < staticObjectPtr->getMeshBuffers().size();
+                                 meshIndex < staticObjectPtr->getBuffers().size();
                                  ++meshIndex) {
                                 _shaderPtr->updateUniforms(staticObjectPtr, meshIndex);
-                                staticObjectPtr->getMeshBuffers()[meshIndex]->render();
+                                staticObjectPtr->getBuffers()[meshIndex]->render();
                             }
                         }
                     }

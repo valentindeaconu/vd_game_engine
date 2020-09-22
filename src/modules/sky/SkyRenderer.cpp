@@ -26,10 +26,10 @@ namespace mod::sky {
             auto _shaderPtr = renderingPass == vd::kernel::RenderingPass::eShadow ? this->getShadowShader() : shaderPtr;
 
             _shaderPtr->bind();
-            vd::buffer::MeshBufferPtrVec &meshBuffers = skyPtr->getMeshBuffers();
-            for (size_t meshIndex = 0; meshIndex < meshBuffers.size(); ++meshIndex) {
+            vd::buffer::BufferPtrVec& buffers = skyPtr->getBuffers();
+            for (size_t meshIndex = 0; meshIndex < buffers.size(); ++meshIndex) {
                 _shaderPtr->updateUniforms(skyPtr, meshIndex);
-                meshBuffers[meshIndex]->render();
+                buffers[meshIndex]->render();
             }
 
             if (renderConfigPtr != nullptr) {

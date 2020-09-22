@@ -152,9 +152,9 @@ namespace mod::terrain
         }
         else if (command == "map_DIF")
         {
-            biomeAtlas.back().material.diffusemap = vd::model::TextureService::get(tokens[0]);
-            biomeAtlas.back().material.diffusemap->bind();
-            biomeAtlas.back().material.diffusemap->trilinearFilter();
+            biomeAtlas.back().material.diffuseMap = vd::model::TextureService::get(tokens[0]);
+            biomeAtlas.back().material.diffuseMap->bind();
+            biomeAtlas.back().material.diffuseMap->trilinearFilter();
         }
         else if (command == "height_threshold_min")
         {
