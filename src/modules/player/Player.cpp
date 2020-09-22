@@ -15,10 +15,10 @@ namespace mod::player
         //getWorldTransform().setTranslation(256.0f, 0.0f, 256.0f);
         //getWorldTransform().setTranslation(0.0f, 0.0f, 0.0f);
 
-        float h = terrainPtr->getTerrainConfig()->getHeight(512.0f, 512.0f);
+        float h = terrainPtr->getTerrainConfig()->getHeight(0.0f, 0.0f);
 
-        getWorldTransform().setTranslation(512.0f, h + modelYOffset, 512.0f);
-        getWorldTransform().setScaling(0.5f, 0.5f, 0.5f);
+        getWorldTransform().setTranslation(0.0f, h + modelYOffset, 0.0f);
+        //getWorldTransform().setScaling(0.5f, 0.5f, 0.5f);
         vd::objloader::OBJLoaderPtr objLoaderPtr = std::make_shared<vd::objloader::OBJLoader>();
 
         vd::model::MeshPtrVec& meshPtrVec = getMeshes();

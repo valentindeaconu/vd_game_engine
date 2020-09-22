@@ -71,7 +71,7 @@ float morphLongitude(vec2 localPosition) {
     return 0.0f;
 }
 
-vec2 morph(vec2 localPosition, int morphArea) {
+vec2 morph(vec2 localPosition, float height, int morphArea) {
     vec2 morphing = vec2(0.0f, 0.0f);
 
     vec2 fixPointLatitude = vec2(0.0f, 0.0f);
@@ -100,17 +100,10 @@ vec2 morph(vec2 localPosition, int morphArea) {
         fixPointLongitude = position + vec2(gap, 0.0f);
     }
 
-    float planarFactor = 0.0f;
-    if (cameraPosition.y > abs(scaleY)) {
-        planarFactor = 1.0f;
-    } else {
-        planarFactor = cameraPosition.y / abs(scaleY);
-    }
-
-    vec4 worldFixPointLatitude = worldModel * vec4(fixPointLatitude.x, planarFactor, fixPointLatitude.y, 1.0f);
+    vec4 worldFixPointLatitude = worldModel * vec4(fixPointLatitude.x, height, fixPointLatitude.y, 1.0f);
     distLatitude = length(cameraPosition - worldFixPointLatitude.xyz);
 
-    vec4 worldFixPointLongitude = worldModel * vec4(fixPointLongitude.x, planarFactor, fixPointLongitude.y, 1.0f);
+    vec4 worldFixPointLongitude = worldModel * vec4(fixPointLongitude.x, height, fixPointLongitude.y, 1.0f);
     distLongitude = length(cameraPosition - worldFixPointLongitude.xyz);
 
     if (distLatitude > morphArea) {
@@ -126,11 +119,14 @@ vec2 morph(vec2 localPosition, int morphArea) {
 void main() {
     vec2 localPosition = (localModel * vec4(vPosition.x, 0.0f, vPosition.y, 1.0f)).xz;
 
+    float height = texture(heightMap, localPosition).r;
     if (lod > 0) {
-        localPosition += morph(localPosition, lodMorphArea);
+        vec2 morphing = morph(localPosition, height, lodMorphArea);
+        //localPosition += ;
+        while (morphing == vec2(1.0f)) break;
     }
 
-    float height = texture(heightMap, localPosition).r;
+    height = texture(heightMap, localPosition).r;
 
     tcTexCoord = localPosition;
 

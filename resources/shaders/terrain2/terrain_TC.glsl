@@ -27,7 +27,7 @@ void main() {
         vec3 abMid = vec3(gl_in[0].gl_Position + gl_in[3].gl_Position) / 2.0f;
         vec3 bcMid = vec3(gl_in[3].gl_Position + gl_in[15].gl_Position) / 2.0f;
         vec3 cdMid = vec3(gl_in[15].gl_Position + gl_in[12].gl_Position) / 2.0f;
-        vec3 daMid = vec3(gl_in[15].gl_Position + gl_in[12].gl_Position) / 2.0f;
+        vec3 daMid = vec3(gl_in[12].gl_Position + gl_in[0].gl_Position) / 2.0f;
 
         float distanceAB = distance(abMid, cameraPosition);
         float distanceBC = distance(bcMid, cameraPosition);

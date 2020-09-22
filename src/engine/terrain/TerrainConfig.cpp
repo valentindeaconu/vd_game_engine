@@ -105,12 +105,12 @@ namespace vd::terrain {
 
     void TerrainConfig::onParseFinish() {
         normalmap::NormalMapRendererPtr normalMapRendererPtr =
-                std::make_shared<normalmap::NormalMapRenderer>(heightMap->getWidth());
+                std::make_shared<normalmap::NormalMapRenderer>(int(heightMap->getWidth()));
         normalMapRendererPtr->render(heightMap, normalStrength);
         normalMap = normalMapRendererPtr->getNormalMap();
 
         splatmap::SplatMapRendererPtr splatMapRendererPtr =
-                std::make_shared<splatmap::SplatMapRenderer>(heightMap->getWidth());
+                std::make_shared<splatmap::SplatMapRenderer>(int(heightMap->getWidth()));
         splatMapRendererPtr->render(heightMap, scaleY, biomes);
         splatMap = splatMapRendererPtr->getSplatMap();
     }
@@ -177,50 +177,40 @@ namespace vd::terrain {
     }
 
     float TerrainConfig::getHeight(float x, float z) const {
-        return 0.0f;
-
-        std::swap(x, z);
-
-        const float scaleFactor = (scaleXZ / 2.0f) / float(heightImg->width);
-
-        x = glm::floor(x /scaleFactor);
-        z = glm::floor(z / scaleFactor);
-
-        imgloader::PixelF pixel = heightImg->at(x, z);
-
-        return ((pixel.r * 2.0f) - 1.0f) * scaleY;
-
-        /*const float scaleFactor = (scaleXZ / 2.0f) / float(heightImg->width);
-
-        x /= scaleFactor;
-        z /= scaleFactor;
-
-        int _x = glm::floor(x);
-        int _z = glm::floor(z);
-
-        if (_x < 0 || _z < 0 || _x >= heightImg->height || _z >= heightImg->width) {
+        if (x < 0.0f || z < 0.0f || x >= scaleXZ || z >= scaleXZ)
             return 0.0f;
-        }
 
-        if (glm::abs(float(_x) - x) < 0.01f && glm::abs(float(_z) - z) < 0.01f) {
-            imgloader::PixelF pixel = heightImg->at(_x, _z);
+        // reverse scaling
+        float rx = x / scaleXZ;
+        float rz = z / scaleXZ;
 
-            return ((pixel.r * 2.0f) - 1.0f) * scaleY;
-        }
-        else {
-            float h0 = getHeight(float(_x), float(_z));
-            float h1 = getHeight(float(_x) + 1, float(_z));
+        // upscale to heightmap
+        float hx = rx * heightImg->width;
+        float hz = rz * heightImg->width;
 
-            float h2 = getHeight(float(_x), float(_z) + 1);
-            float h3 = getHeight(float(_x) + 1, float(_z) + 1);
+        // compute integer coordinates
+        int x0 = int(glm::floor(hx));
+        int x1 = x0 + 1;
+        int z0 = int(glm::floor(hz));
+        int z1 = z0 + 1;
 
-            float frac_x = x - (float)_x;
-            float h01 = glm::mix(h0, h1, frac_x);
-            float h23 = glm::mix(h2, h3, frac_x);
+        if (hx == float(x0) && hz == float(z0))
+            return heightImg->at(z0, x0).r * scaleY;
 
-            float frac_z = z - (float)_z;
-            float h = glm::mix(h01, h23, frac_z);
-            return h;
-        }*/
+        float h0 = heightImg->at(z0, x0).r;
+        float h1 = heightImg->at(z0, x1).r;
+        float h2 = heightImg->at(z1, x0).r;
+        float h3 = heightImg->at(z1, x1).r;
+
+        float frac_x = hx - glm::floor(hx);
+        float frac_z = hz - glm::floor(hz);
+
+        float h01 = glm::mix(h0, h1, frac_x);
+        float h23 = glm::mix(h2, h3, frac_x);
+
+        float h = glm::mix(h01, h23, frac_z);
+        h *= scaleY;
+
+        return h;
     }
 }

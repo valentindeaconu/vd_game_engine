@@ -1,7 +1,7 @@
 #version 430
 
 layout(triangles) in;
-layout(triangle_strip, max_vertices = 4) out;
+layout(triangle_strip, max_vertices = 3) out;
 
 in vec2 gTexCoord[];
 
@@ -42,7 +42,7 @@ void computeTangent() {
 }
 
 void main() {
-    for (int i = 0; i < 3; ++i) {
+    for (int i = 0; i < gl_in.length(); ++i) {
         displacement[i] = vec3(0.0f);
     }
 
@@ -57,8 +57,6 @@ void main() {
 
         for (int k = 0; k < gl_in.length(); ++k) {
             displacement[k] = vec3(0.0f, 1.0f, 0.0f);
-
-            float height = gl_in[k].gl_Position.y;
 
             vec3 normal = normalize(texture(normalMap, gTexCoord[k]).rbg);
 

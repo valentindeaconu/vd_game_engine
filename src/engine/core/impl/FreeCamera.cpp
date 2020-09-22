@@ -76,6 +76,9 @@ namespace vd::core::impl
                 rotate(-pitchChange, 0.0f);
             }
         }
+
+        if (inputHandlerPtr->getKeyHolding(GLFW_KEY_K))
+            Logger::log("Position (" + std::to_string(position.x) + ", " + std::to_string(position.y) + ", " + std::to_string(position.z) + ")");
     }
 
     void FreeCamera::reflect(float yAxisSymmetric) {

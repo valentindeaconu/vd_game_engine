@@ -26,7 +26,7 @@ namespace vd::terrain {
         void setTerrain(const TerrainPtr& terrainPtr);
 
     private:
-        void renderNode(const TerrainNodePtr& nodePtr);
+        void renderNode(const TerrainNodePtr& nodePtr, const math::Transform& worldModel);
 
         bool isReady() override;
 

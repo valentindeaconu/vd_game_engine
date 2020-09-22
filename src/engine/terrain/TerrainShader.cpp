@@ -89,7 +89,9 @@ namespace vd::terrain {
         configPtr->getSplatMap()->bind();
         setUniformi("splatMap", 2);
 
-        setUniformi("lodMorphArea", configPtr->getLodMorphingArea()[nodePtr->getLod() - 1]);
+        if (nodePtr->getLod() > 0) {
+            setUniformi("lodMorphArea", configPtr->getLodMorphingArea()[nodePtr->getLod() - 1]);
+        }
 
         int textureUnit = 3;
         for (int i = 0; i < kBiomeCount; ++i) {

@@ -36,11 +36,7 @@ namespace vd::terrain {
             }
         }
 
-        glm::vec3 scaling(configPtr->getScaleXZ(), configPtr->getScaleY(), configPtr->getScaleXZ());
-        getWorldTransform().setScaling(scaling);
-
-        glm::vec3 translation(configPtr->getScaleXZ() / 2.0f, 0.0f, configPtr->getScaleXZ() / 2.0f);
-        getWorldTransform().setTranslation(translation);
+        getWorldTransform().setScaling(configPtr->getScaleXZ(), configPtr->getScaleY(), configPtr->getScaleXZ());
 
         generatePatch();
 

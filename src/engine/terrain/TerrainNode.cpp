@@ -30,8 +30,8 @@ namespace vd::terrain {
         getLocalTransform().setScaling(gap, 0.0f, gap);
         getLocalTransform().setTranslation(position.x, 0.0f, position.y);
 
-        getWorldTransform().setScaling(configPtr->getScaleXZ(), configPtr->getScaleY(), configPtr->getScaleXZ());
-        getWorldTransform().setTranslation(-configPtr->getScaleXZ() / 2.0f, 0.0f, -configPtr->getScaleXZ() / 2.0f);
+        //getWorldTransform().setScaling(configPtr->getScaleXZ(), configPtr->getScaleY(), configPtr->getScaleXZ());
+        //getWorldTransform().setTranslation(-configPtr->getScaleXZ() / 2.0f, 0.0f, -configPtr->getScaleXZ() / 2.0f);
 
         computeWorldPosition();
 
@@ -40,8 +40,6 @@ namespace vd::terrain {
 
     void TerrainNode::update() {
         auto& cameraPtr = getParentEngine()->getCamera();
-
-        worldPosition.y = std::min(cameraPtr->getPosition().y, configPtr->getScaleY());
 
         updateNodes();
 
@@ -87,9 +85,11 @@ namespace vd::terrain {
     }
 
     void TerrainNode::computeWorldPosition() {
-        glm::vec2 pos = ((position + (gap / 2.0f)) * configPtr->getScaleXZ()) - (configPtr->getScaleXZ() / 2.0f);
+        glm::vec2 pos = ((position + (gap / 2.0f)) * configPtr->getScaleXZ());
 
-        worldPosition = glm::vec3(pos.x, 0.0f, pos.y);
+        float h = configPtr->getHeight(pos.x, pos.y);
+
+        worldPosition = glm::vec3(pos.x, h, pos.y);
     }
 
     void TerrainNode::addNodes(int lod) {

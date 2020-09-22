@@ -32,7 +32,7 @@ namespace vd::terrain {
             const auto& rootNodes = terrainQuadtreePtr->getRootNodes();
 
             for (const auto& nodePtr : rootNodes) {
-                renderNode(nodePtr);
+                renderNode(nodePtr, terrainQuadtreePtr->getWorldTransform());
             }
 
             if (renderConfigPtr != nullptr) {
@@ -41,18 +41,19 @@ namespace vd::terrain {
         }
     }
 
-    void TerrainRenderer::renderNode(const TerrainNodePtr& nodePtr) {
+    void TerrainRenderer::renderNode(const TerrainNodePtr& nodePtr, const math::Transform& worldModel) {
         if (nodePtr != nullptr) {
             if (nodePtr->isLeaf()) {
                 shaderPtr->bind();
                 shaderPtr->updateUniforms(nodePtr, 0);
+                shaderPtr->setUniform("worldModel", worldModel.get());
 
                 const auto& terrainQuadtreePtr = terrainPtr->getTerrainQuadtree();
                 vd::buffer::BufferPtrVec& buffers = terrainQuadtreePtr->getBuffers();
                 buffers[0]->render();
             } else {
                 for (const auto& subNodePtr : nodePtr->getNodes()) {
-                    renderNode(subNodePtr);
+                    renderNode(subNodePtr, worldModel);
                 }
             }
         }
