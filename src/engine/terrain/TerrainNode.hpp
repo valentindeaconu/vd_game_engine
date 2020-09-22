@@ -47,7 +47,7 @@ namespace vd::terrain {
     private:
         void computeWorldPosition();
 
-        void addNodes(int lod);
+        void addNodes(int childLod);
         void updateNodes();
         void clearNodes();
 

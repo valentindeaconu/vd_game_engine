@@ -5,6 +5,7 @@
 #include <engine/foundation/imgloader/IMGLoader.hpp>
 
 #include <string>
+#include <algorithm>
 
 namespace vd::model
 {
@@ -34,6 +35,7 @@ namespace vd::model
         void noFilter();
         void bilinearFilter();
         void trilinearFilter();
+        void trilinearFilterWithAnisotropy();
 
         void wrapRepeat();
         void wrapMirroredRepeat();

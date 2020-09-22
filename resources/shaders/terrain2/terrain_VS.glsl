@@ -122,7 +122,7 @@ void main() {
     float height = texture(heightMap, localPosition).r;
     if (lod > 0) {
         vec2 morphing = morph(localPosition, height, lodMorphArea);
-        //localPosition += ;
+        //localPosition += morphing;
         while (morphing == vec2(1.0f)) break;
     }
 

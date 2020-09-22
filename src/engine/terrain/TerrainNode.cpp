@@ -86,13 +86,11 @@ namespace vd::terrain {
 
     void TerrainNode::computeWorldPosition() {
         glm::vec2 pos = ((position + (gap / 2.0f)) * configPtr->getScaleXZ());
-
         float h = configPtr->getHeight(pos.x, pos.y);
-
         worldPosition = glm::vec3(pos.x, h, pos.y);
     }
 
-    void TerrainNode::addNodes(int lod) {
+    void TerrainNode::addNodes(int childLod) {
         if (leaf) {
             leaf = false;
         }
@@ -107,7 +105,7 @@ namespace vd::terrain {
                             std::make_shared<TerrainNode>(getParentEngine(),
                                                           configPtr,
                                                           position + nodePosition,
-                                                          lod,
+                                                          childLod,
                                                           glm::vec2(i, j));
 
                     nodePtr->init();

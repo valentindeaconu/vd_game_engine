@@ -194,7 +194,7 @@ namespace vd::terrain {
         int z0 = int(glm::floor(hz));
         int z1 = z0 + 1;
 
-        if (hx == float(x0) && hz == float(z0))
+        if (glm::abs(hx - float(x0)) < 0.01f && glm::abs(hz - float(z0)) < 0.01f)
             return heightImg->at(z0, x0).r * scaleY;
 
         float h0 = heightImg->at(z0, x0).r;

@@ -113,6 +113,21 @@ namespace vd::model
     }
 
     template<GLuint type>
+    void Texture<type>::trilinearFilterWithAnisotropy() {
+        const GLfloat kMaxAnisotropy = 8.0f;
+        GLfloat value;
+
+        glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &value);
+        value = std::min(kMaxAnisotropy, value);
+
+        glTexParameterf(type, GL_TEXTURE_LOD_BIAS, 0);
+        glGenerateMipmap(type);
+        glTexParameteri(type, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+        glTexParameterf(type, GL_TEXTURE_MAX_ANISOTROPY_EXT, value);
+    }
+
+
+    template<GLuint type>
     void Texture<type>::wrapRepeat()
     {
         glTexParameteri(type, GL_TEXTURE_WRAP_S, GL_REPEAT);

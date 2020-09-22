@@ -119,4 +119,8 @@ namespace vd::math
     {
         return zAxisRotation;
     }
+
+    glm::vec4 Transform::operator*(const glm::vec4& operand) const {
+        return this->get() * operand;
+    }
 }

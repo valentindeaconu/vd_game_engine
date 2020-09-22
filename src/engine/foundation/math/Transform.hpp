@@ -12,31 +12,32 @@ namespace vd::math
     public:
         Transform();
 
-        glm::mat4 get() const;
+        [[nodiscard]] glm::mat4 get() const;
 
-        glm::mat4 getTranslation() const;
-        glm::mat4 getRotation() const;
-        glm::mat4 getScaling() const;
+        [[nodiscard]] glm::mat4 getTranslation() const;
+        [[nodiscard]] glm::mat4 getRotation() const;
+        [[nodiscard]] glm::mat4 getScaling() const;
 
         void setTranslation(float x, float y, float z);
         void setTranslation(const glm::vec3& translation);
-        const glm::vec3& getTranslationVector() const;
+        [[nodiscard]] const glm::vec3& getTranslationVector() const;
 
         void setScaling(float x, float y, float z);
         void setScaling(const glm::vec3& scaling);
-        const glm::vec3& getScalingVector() const;
+        [[nodiscard]] const glm::vec3& getScalingVector() const;
 
         void setXRotationAngle(float angle);
-        float getXAxisRotationAngle() const;
+        [[nodiscard]] float getXAxisRotationAngle() const;
         void setYRotationAngle(float angle);
-        float getYAxisRotationAngle() const;
+        [[nodiscard]] float getYAxisRotationAngle() const;
         void setZRotationAngle(float angle);
         float getZAxisRotationAngle() const;
 
-        const glm::quat& getXAxisRotation() const;
-        const glm::quat& getYAxisRotation() const;
-        const glm::quat& getZAxisRotation() const;
+        [[nodiscard]] const glm::quat& getXAxisRotation() const;
+        [[nodiscard]] const glm::quat& getYAxisRotation() const;
+        [[nodiscard]] const glm::quat& getZAxisRotation() const;
 
+        [[nodiscard]] glm::vec4 operator*(const glm::vec4& operand) const;
     private:
         glm::vec3 translation;
 
