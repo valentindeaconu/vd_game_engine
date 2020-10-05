@@ -46,8 +46,6 @@ namespace vd::terrain {
         for (int i = 0; i < kBiomeCount; ++i) {
             addUniform("materials[" + std::to_string(i) + "].diffuseMap");
             addUniform("materials[" + std::to_string(i) + "].normalMap");
-            addUniform("materials[" + std::to_string(i) + "].displaceMap");
-            addUniform("materials[" + std::to_string(i) + "].heightScaling");
             addUniform("materials[" + std::to_string(i) + "].horizontalScaling");
         }
     }
@@ -107,12 +105,6 @@ namespace vd::terrain {
             setUniformi("materials[" + std::to_string(i) + "].normalMap", textureUnit);
             ++textureUnit;
 
-            model::activeTexture(textureUnit);
-            material.displaceMap->bind();
-            setUniformi("materials[" + std::to_string(i) + "].displaceMap", textureUnit);
-            ++textureUnit;
-
-            setUniformf("materials[" + std::to_string(i) + "].heightScaling", material.displaceScale);
             setUniformf("materials[" + std::to_string(i) + "].horizontalScaling", material.horizontalScale);
         }
     }

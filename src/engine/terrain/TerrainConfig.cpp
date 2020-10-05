@@ -27,6 +27,9 @@ namespace vd::terrain {
         else if (command == "scaleXZ") {
             scaleXZ = std::stof(tokens[0]);
         }
+        else if (command == "tbnRange") {
+            tbnRange = std::stoi(tokens[0]);
+        }
         else if (command == "tessellationFactor") {
             tessellationFactor = std::stoi(tokens[0]);
         }
@@ -110,8 +113,8 @@ namespace vd::terrain {
         normalMap = normalMapRendererPtr->getNormalMap();
 
         splatmap::SplatMapRendererPtr splatMapRendererPtr =
-                std::make_shared<splatmap::SplatMapRenderer>(int(heightMap->getWidth()));
-        splatMapRendererPtr->render(heightMap, scaleY, biomes);
+                std::make_shared<splatmap::SplatMapRenderer>(int(normalMap->getWidth()));
+        splatMapRendererPtr->render(normalMap, scaleY, biomes);
         splatMap = splatMapRendererPtr->getSplatMap();
     }
 
@@ -177,12 +180,15 @@ namespace vd::terrain {
     }
 
     float TerrainConfig::getHeight(float x, float z) const {
-        if (x < 0.0f || z < 0.0f || x >= scaleXZ || z >= scaleXZ)
+        float upperBound = scaleXZ / 2.0f;
+        float lowerBound = -upperBound;
+
+        if (x < lowerBound || z < lowerBound || x >= upperBound || z >= upperBound)
             return 0.0f;
 
-        // reverse scaling
-        float rx = x / scaleXZ;
-        float rz = z / scaleXZ;
+        // reverse transform
+        float rx = (x + (scaleXZ / 2.0f)) / scaleXZ;
+        float rz = (z + (scaleXZ / 2.0f)) / scaleXZ;
 
         // upscale to heightmap
         float hx = rx * heightImg->width;
@@ -197,10 +203,14 @@ namespace vd::terrain {
         if (glm::abs(hx - float(x0)) < 0.01f && glm::abs(hz - float(z0)) < 0.01f)
             return heightImg->at(z0, x0).r * scaleY;
 
-        float h0 = heightImg->at(z0, x0).r;
-        float h1 = heightImg->at(z0, x1).r;
-        float h2 = heightImg->at(z1, x0).r;
-        float h3 = heightImg->at(z1, x1).r;
+        auto checkInside = [&](int x, int y) {
+            return x >= 0 && y >= 0 && x < heightImg->width && y < heightImg->width;
+        };
+
+        float h0 = checkInside(z0, x0) ? heightImg->at(z0, x0).r : 0.0f;
+        float h1 = checkInside(z0, x1) ? heightImg->at(z0, x1).r : 0.0f;
+        float h2 = checkInside(z1, x0) ? heightImg->at(z1, x0).r : 0.0f;
+        float h3 = checkInside(z1, x1) ? heightImg->at(z1, x1).r : 0.0f;
 
         float frac_x = hx - glm::floor(hx);
         float frac_z = hz - glm::floor(hz);

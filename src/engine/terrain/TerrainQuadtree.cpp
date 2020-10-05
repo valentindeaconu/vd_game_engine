@@ -37,6 +37,7 @@ namespace vd::terrain {
         }
 
         getWorldTransform().setScaling(configPtr->getScaleXZ(), configPtr->getScaleY(), configPtr->getScaleXZ());
+        getWorldTransform().setTranslation(-configPtr->getScaleXZ() / 2.0f, 0.0f, -configPtr->getScaleXZ() / 2.0f);
 
         generatePatch();
 

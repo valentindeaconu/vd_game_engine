@@ -34,6 +34,11 @@ void main() {
         float distanceCD = distance(cdMid, cameraPosition);
         float distanceDA = distance(daMid, cameraPosition);
 
+        while (LodFactor(distanceAB) == 1.0f) break;
+        while (LodFactor(distanceBC) == 1.0f) break;
+        while (LodFactor(distanceCD) == 1.0f) break;
+        while (LodFactor(distanceDA) == 1.0f) break;
+
         gl_TessLevelOuter[AB] = mix(1, gl_MaxTessGenLevel, LodFactor(distanceAB));
         gl_TessLevelOuter[BC] = mix(1, gl_MaxTessGenLevel, LodFactor(distanceBC));
         gl_TessLevelOuter[CD] = mix(1, gl_MaxTessGenLevel, LodFactor(distanceCD));

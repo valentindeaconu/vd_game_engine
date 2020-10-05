@@ -11,14 +11,14 @@ namespace vd::terrain::splatmap {
             , kBiomeCount(5)
     {
         shaderPtr = std::make_shared<SplatMapShader>();
-        shaderPtr->addUniform("heightMap");
+        shaderPtr->addUniform("normalMap");
         shaderPtr->addUniform("size");
-        shaderPtr->addUniform("scaleY");
+        //shaderPtr->addUniform("scaleY");
 
-        for (int i = 0; i < kBiomeCount; ++i) {
-            shaderPtr->addUniform("biomes[" + std::to_string(i) + "].minHeight");
-            shaderPtr->addUniform("biomes[" + std::to_string(i) + "].maxHeight");
-        }
+      //  for (int i = 0; i < kBiomeCount; ++i) {
+       //     shaderPtr->addUniform("biomes[" + std::to_string(i) + "].minHeight");
+      //      shaderPtr->addUniform("biomes[" + std::to_string(i) + "].maxHeight");
+      //  }
 
         splatMap = std::make_shared<model::Texture2D>(size, size);
 
@@ -33,26 +33,26 @@ namespace vd::terrain::splatmap {
 
     SplatMapRenderer::~SplatMapRenderer() = default;
 
-    void SplatMapRenderer::render(const model::Texture2DPtr& heightMap, float scaleY, const BiomePtrVec& biomes) {
+    void SplatMapRenderer::render(const model::Texture2DPtr& normalMap, float scaleY, const BiomePtrVec& biomes) {
         shaderPtr->bind();
 
         model::activeTexture(0);
-        heightMap->bind();
-        shaderPtr->setUniformi("heightMap", 0);
+        normalMap->bind();
+        shaderPtr->setUniformi("normalMap", 0);
         shaderPtr->setUniformi("size", size);
-        shaderPtr->setUniformf("scaleY", scaleY);
+        //shaderPtr->setUniformf("scaleY", scaleY);
 
-        for (int i = 0; i < kBiomeCount; ++i) {
-            const auto& biomePtr = biomes[i];
-            shaderPtr->setUniformf("biomes[" + std::to_string(i) + "].minHeight", biomePtr->getMinHeight());
-            shaderPtr->setUniformf("biomes[" + std::to_string(i) + "].maxHeight", biomePtr->getMaxHeight());
-        }
+       // for (int i = 0; i < kBiomeCount; ++i) {
+       //     const auto& biomePtr = biomes[i];
+       //     shaderPtr->setUniformf("biomes[" + std::to_string(i) + "].minHeight", biomePtr->getMinHeight());
+       //     shaderPtr->setUniformf("biomes[" + std::to_string(i) + "].maxHeight", biomePtr->getMaxHeight());
+       // }
 
         glBindImageTexture(0, splatMap->getId(), 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_R32UI);
         glDispatchCompute(size/16, size/16, 1);
         glFinish();
 
-        heightMap->unbind();
+        normalMap->unbind();
 
         splatMap->bind();
         splatMap->bilinearFilter();

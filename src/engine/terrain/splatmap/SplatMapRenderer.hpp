@@ -17,7 +17,7 @@ namespace vd::terrain::splatmap {
         explicit SplatMapRenderer(int size);
         ~SplatMapRenderer();
 
-        void render(const model::Texture2DPtr& heightMap, float scaleY, const BiomePtrVec& biomes);
+        void render(const model::Texture2DPtr& normalMap, float scaleY, const BiomePtrVec& biomes);
 
         [[nodiscard]] const model::Texture2DPtr& getSplatMap() const;
     private:

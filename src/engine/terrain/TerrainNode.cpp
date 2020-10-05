@@ -30,9 +30,6 @@ namespace vd::terrain {
         getLocalTransform().setScaling(gap, 0.0f, gap);
         getLocalTransform().setTranslation(position.x, 0.0f, position.y);
 
-        //getWorldTransform().setScaling(configPtr->getScaleXZ(), configPtr->getScaleY(), configPtr->getScaleXZ());
-        //getWorldTransform().setTranslation(-configPtr->getScaleXZ() / 2.0f, 0.0f, -configPtr->getScaleXZ() / 2.0f);
-
         computeWorldPosition();
 
         Entity::init();
@@ -87,7 +84,11 @@ namespace vd::terrain {
     void TerrainNode::computeWorldPosition() {
         glm::vec2 pos = ((position + (gap / 2.0f)) * configPtr->getScaleXZ());
         float h = configPtr->getHeight(pos.x, pos.y);
-        worldPosition = glm::vec3(pos.x, h, pos.y);
+        worldPosition = glm::vec3(
+            pos.x - (configPtr->getScaleXZ() / 2.0f),
+            h,
+            pos.y - (configPtr->getScaleXZ() / 2.0f)
+        );
     }
 
     void TerrainNode::addNodes(int childLod) {

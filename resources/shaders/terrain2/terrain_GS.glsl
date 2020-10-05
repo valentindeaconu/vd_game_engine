@@ -11,9 +11,9 @@ out vec3 fTangent;
 
 uniform mat4 view;
 uniform mat4 projection;
-uniform sampler2D normalMap;
-uniform usampler2D splatMap;
+
 uniform vec3 cameraPosition;
+
 uniform int tbnRange;
 
 #include "material_lib.glsl"
@@ -42,10 +42,6 @@ void computeTangent() {
 }
 
 void main() {
-    for (int i = 0; i < gl_in.length(); ++i) {
-        displacement[i] = vec3(0.0f);
-    }
-
     float dist = (
         distance(gl_in[0].gl_Position.xyz, cameraPosition) +
         distance(gl_in[1].gl_Position.xyz, cameraPosition) +
@@ -54,40 +50,24 @@ void main() {
 
     if (dist < tbnRange) {
         computeTangent();
-
-        for (int k = 0; k < gl_in.length(); ++k) {
-            displacement[k] = vec3(0.0f, 1.0f, 0.0f);
-
-            vec3 normal = normalize(texture(normalMap, gTexCoord[k]).rbg);
-
-            uint splatMask = texture(splatMap, fTexCoord).r;
-
-            float scale = 0.0f;
-            for (uint i = 0; i < MAX_MATERIALS; ++i) {
-                uint msk = (1 << i);
-                if ((splatMask & msk) > 0) {
-                    vec2 scaledTexCoords = gTexCoord[k] * materials[i].horizontalScaling;
-
-                    float total = texture(materials[i].displaceMap, scaledTexCoords).r;
-                    total *= materials[i].heightScaling;
-
-                    scale += total;
-                }
-            }
-
-            float d = distance(gl_in[k].gl_Position.xyz, cameraPosition);
-            float attenuation = clamp(-d / (tbnRange - 50) + 1.0f, 0.0f, 1.0f);
-            scale *= attenuation;
-
-            displacement[k] *= scale;
-        }
     }
 
     for (int i = 0; i < gl_in.length(); ++i) {
-        vec4 worldPosition = gl_in[i].gl_Position + vec4(displacement[i], 0.0f);
-        gl_Position = projection * view * worldPosition;
-        fTexCoord = gTexCoord[i];
-        fPosition = worldPosition.xyz;
+        vec4 worldCoords = gl_in[i].gl_Position;
+        vec4 eyeSpaceCoords = view * worldCoords;
+        gl_Position = projection * eyeSpaceCoords;
+
+        if (i == 0) {
+            fTexCoord = gTexCoord[0];
+        }
+        else if (i == 1) {
+            fTexCoord = gTexCoord[1];
+        }
+        else {
+            fTexCoord = gTexCoord[2];
+        }
+
+        fPosition = eyeSpaceCoords.xyz;
         fTangent = tangent;
         EmitVertex();
     }
