@@ -25,11 +25,6 @@
 #include <modules/terrain/Terrain.hpp>
 #include <modules/terrain/TerrainShader.hpp>
 
-// terrain2
-#include <engine/terrain/TerrainRenderer.hpp>
-#include <engine/terrain/Terrain.hpp>
-#include <engine/terrain/TerrainShader.hpp>
-
 // object generator
 #include <modules/sobj/StaticObjectRenderer.hpp>
 #include <modules/sobj/StaticObjectPlacer.hpp>
@@ -47,9 +42,7 @@
 
 mod::terrain::TerrainPtr createTerrain(vd::EnginePtr& enginePtr);
 
-vd::terrain::TerrainPtr createTerrain2(vd::EnginePtr& enginePtr);
-
-mod::player::PlayerPtr createPlayer(vd::EnginePtr& enginePtr, vd::terrain::TerrainPtr& terrainPtr);
+mod::player::PlayerPtr createPlayer(vd::EnginePtr& enginePtr, mod::terrain::TerrainPtr& terrainPtr);
 mod::sky::SkyPtr createSky(vd::EnginePtr& enginePtr);
 
 void createAndPlaceStaticObjects(vd::EnginePtr& enginePtr, mod::terrain::TerrainPtr& terrainPtr);
@@ -68,8 +61,7 @@ int main(int argc, char ** argv) {
 	enginePtr->setup(1280, 720, "VD Game Engine");
 
 	/// Mods
-	//mod::terrain::TerrainPtr terrainPtr = createTerrain(enginePtr);
-	vd::terrain::TerrainPtr terrainPtr = createTerrain2(enginePtr);
+    mod::terrain::TerrainPtr terrainPtr = createTerrain(enginePtr);
 
     mod::sky::SkyPtr skyPtr = createSky(enginePtr);
 
@@ -101,7 +93,7 @@ int main(int argc, char ** argv) {
               glm::vec2(0.250f, 0.250f));
 
     createGUI(enginePtr,
-              waterPtr->getReflectionFramebuffer()->getColorTexture(),
+              terrainPtr->GetTerrainConfig()->getNormalMap(),
               glm::vec2(0.75f, 0.75f),
               glm::vec2(0.250f, 0.250f));*/
 
@@ -118,6 +110,7 @@ mod::terrain::TerrainPtr createTerrain(vd::EnginePtr& enginePtr) {
 
     mod::terrain::TerrainPtr terrainPtr =
             std::make_shared<mod::terrain::Terrain>(enginePtr, "./resources/terrain_settings.cfg");
+
     mod::terrain::TerrainShaderPtr terrainShaderPtr = std::make_shared<mod::terrain::TerrainShader>();
 
     mod::terrain::TerrainRendererPtr terrainRendererPtr = std::make_shared<mod::terrain::TerrainRenderer>();
@@ -130,27 +123,7 @@ mod::terrain::TerrainPtr createTerrain(vd::EnginePtr& enginePtr) {
     return terrainPtr;
 }
 
-vd::terrain::TerrainPtr createTerrain2(vd::EnginePtr& enginePtr) {
-    const vd::config::MetaConfigPtr ccwConfigPtr =
-            std::make_shared<vd::config::MetaConfig>([]() { glFrontFace(GL_CCW); },
-                                                     []() { glFrontFace(GL_CW); });
-
-    vd::terrain::TerrainPtr terrainPtr =
-            std::make_shared<vd::terrain::Terrain>(enginePtr, "./resources/terrain2_settings.cfg");
-
-    vd::terrain::TerrainShaderPtr terrainShaderPtr = std::make_shared<vd::terrain::TerrainShader>();
-
-    vd::terrain::TerrainRendererPtr terrainRendererPtr = std::make_shared<vd::terrain::TerrainRenderer>();
-    terrainRendererPtr->setTerrain(terrainPtr);
-    terrainRendererPtr->setRenderConfig(ccwConfigPtr);
-    terrainRendererPtr->setShader(terrainShaderPtr);
-
-    enginePtr->getWorker()->subscribe(terrainRendererPtr);
-
-    return terrainPtr;
-}
-
-mod::player::PlayerPtr createPlayer(vd::EnginePtr& enginePtr, vd::terrain::TerrainPtr& terrainPtr /*mod::terrain::TerrainPtr& terrainPtr*/) {
+mod::player::PlayerPtr createPlayer(vd::EnginePtr& enginePtr, mod::terrain::TerrainPtr& terrainPtr) {
     const vd::config::MetaConfigPtr ccwConfigPtr =
             std::make_shared<vd::config::MetaConfig>([]() { glFrontFace(GL_CCW); },
                                                      []() { glFrontFace(GL_CW); });

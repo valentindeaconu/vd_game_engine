@@ -1,220 +1,209 @@
+//
+// Created by Vali on 9/21/2020.
+//
+
 #include "TerrainConfig.hpp"
 
-namespace mod::terrain
-{
-    TerrainConfig::TerrainConfig(const std::string& filePath)
+namespace mod::terrain {
+
+    TerrainConfig::TerrainConfig(const std::string &filePath)
         : ConfigurationFile(filePath)
+        , scaleY(0.0f)
+        , scaleXZ(0.0f)
+        , lodRange()
+        , lodMorphingArea()
     {
-        imgLoaderPtr = std::make_shared<vd::imgloader::IMGLoader>();
     }
 
     TerrainConfig::~TerrainConfig() = default;
 
-    void TerrainConfig::initializeObjects(const vd::EnginePtr& enginePtr)
-    {
-        for (auto it = biomeAtlas.begin(); it != biomeAtlas.end(); ++it)
-        {
-            for (auto jt = it->objects.begin(); jt != it->objects.end(); ++jt)
-            {
-                (*jt)->setParentEngine(enginePtr);
-            }
+    void TerrainConfig::onTokenReceived(const std::string &command, const std::vector<std::string> &tokens) {
+        if (command == "rootNodes") {
+            rootNodes = std::stoi(tokens[0]);
         }
-    }
-
-    size_t TerrainConfig::getSize() const
-    {
-        return size;
-    }
-
-    const BiomeAtlas& TerrainConfig::getBiomeAtlas() const
-    {
-        return biomeAtlas;
-    }
-
-    vd::model::UTexture2DPtr TerrainConfig::getSplatmap() const
-    {
-        return blendmap.texture;
-    }
-
-    float TerrainConfig::getMaxHeight() const
-    {
-        return maxHeight;
-    }
-
-    float TerrainConfig::getNormalStrength() const {
-        return normalStrength;
-    }
-
-    float TerrainConfig::getHeight(float x, float z) const
-    {
-        // TODO: Take care of this
-        std::swap(x, z);
-
-        int _x = glm::floor(x);
-        int _z = glm::floor(z);
-
-        if (_x < 0 || _z < 0 || _x >= heightmap->height || _z >= heightmap->width)
-        {
-            return 0.0f;
+        else if (command == "scaleY") {
+            scaleY = std::stof(tokens[0]);
         }
-
-        if (glm::abs(_x - x) < 0.0001f && glm::abs(_z - z) < 0.0001f)
-        {
-            vd::imgloader::PixelF pixel = heightmap->at(_x, _z);
-
-            float h = pixel.r; //(float)pixel.r / 255.0f;
-            h *= 2.0f;
-            h -= 1.0f;
-            h *= maxHeight;
-
-            return h;
+        else if (command == "scaleXZ") {
+            scaleXZ = std::stof(tokens[0]);
         }
-        else
-        {
-            float h0 = getHeight(_x, _z);
-            float h1 = getHeight(_x + 1, _z);
-
-            float h2 = getHeight(_x, _z + 1);
-            float h3 = getHeight(_x + 1, _z + 1);
-
-            float frac_x = x - (float)_x;
-            float h01 = glm::mix(h0, h1, frac_x);
-            float h23 = glm::mix(h2, h3, frac_x);
-
-            float frac_z = z - (float)_z;
-            float h = glm::mix(h01, h23, frac_z);
-            return h;
+        else if (command == "tbnRange") {
+            tbnRange = std::stoi(tokens[0]);
         }
-
-        return 0.0f;
-    }
-
-    std::string TerrainConfig::getBiome(float x, float z) const
-    {
-        std::swap(x, z);
-
-        int _x = glm::floor(x);
-        int _z = glm::floor(z);
-
-        if (_x < 0 || _z < 0 || _x > heightmap->height || _z > heightmap->width)
-            return "Unknown";
-
-
-        int index = _x * heightmap->width + _z;
-        uint16_t mask = blendmap.data[index];
-
-        for (size_t k = 0; k < biomeAtlas.size(); ++k)
-        {
-            if ((mask & (1 << k)) != 0)
-            {
-                return biomeAtlas[k].name;
-            }
+        else if (command == "tessellationFactor") {
+            tessellationFactor = std::stoi(tokens[0]);
         }
-
-        return "Unknown";
-    }
-
-    size_t TerrainConfig::getBiomeIndex(float x, float z) const
-    {
-        const std::string& biomeName = getBiome(x, z);
-
-        auto it = biomeIndices.find(biomeName);
-        if (it != biomeIndices.end()) {
-            return it->second;
+        else if (command == "tessellationSlope") {
+            tessellationSlope = std::stof(tokens[0]);
         }
-
-        return 0;
-    }
-
-    void TerrainConfig::onTokenReceived(const std::string& command, const std::vector<std::string>& tokens)
-    {
-        if (command == "heightmap")
-        {
-            heightmap = imgLoaderPtr->loadFloatImage(tokens[0]);
-            size = heightmap->height;
+        else if (command == "tessellationShift") {
+            tessellationShift = std::stof(tokens[0]);
         }
-        else if (command == "maxHeight")
-        {
-            maxHeight = std::stof(tokens[0]);
+        else if (command == "heightmap") {
+            vd::img::IMGLoader imgLoader;
+            heightImg = imgLoader.loadFloatImage(tokens[0]);
+
+            heightMap = vd::model::TextureService::get(tokens[0]);
+            heightMap->bind();
+            heightMap->bilinearFilter();
+            heightMap->unbind();
         }
-        else if (command == "normalStrength")
-        {
+        else if (command == "normalStrength") {
             normalStrength = std::stof(tokens[0]);
         }
-        else if (command == "biome")
-        {
-            biomeAtlas.emplace_back();
-        }
-        else if (command == "name")
-        {
-            biomeAtlas.back().name = tokens[0];
-            biomeIndices[tokens[0]] = biomeAtlas.size() - 1;
-        }
-        else if (command == "map_DIF")
-        {
-            biomeAtlas.back().material.diffuseMap = vd::model::TextureService::get(tokens[0]);
-            biomeAtlas.back().material.diffuseMap->bind();
-            biomeAtlas.back().material.diffuseMap->trilinearFilter();
-        }
-        else if (command == "height_threshold_min")
-        {
-            biomeAtlas.back().height.min = std::stof(tokens[0]);
-        }
-        else if (command == "height_threshold_max")
-        {
-            biomeAtlas.back().height.max = std::stof(tokens[0]);
-        }
-        else if (command == "object")
-        {
-            sobj::StaticObjectPtr staticObjectPtr = std::make_shared<sobj::StaticObject>(tokens[0], tokens[1]);
-            float scaleFactor = std::stof(tokens[2]);
+        else if (command.starts_with("lod") && command.ends_with("_range")) {
+            int index = command[3] - '0' - 1;
 
-            staticObjectPtr->init();
-            staticObjectPtr->getWorldTransform().setScaling(scaleFactor, scaleFactor, scaleFactor);
+            int lodRangeValue = std::stoi(tokens[0]);
 
-            biomeAtlas.back().objects.push_back(staticObjectPtr);
-        }
-    }
-
-    void TerrainConfig::onParseFinish()
-    {
-        generateBlendmap();
-
-        // release imgLoader since it is not necessary anymore
-        imgLoaderPtr = nullptr;
-    }
-
-    void TerrainConfig::generateBlendmap()
-    {
-        if (heightmap == nullptr || heightmap->width == 0 || heightmap->height == 0 || biomeAtlas.empty())
-        {
-            blendmap.texture = nullptr;
-
-            vd::Logger::terminate("could not create blendmap", 1);
-        }
-
-        blendmap.data.reserve(heightmap->width * heightmap->height);
-
-        for (size_t i = 0; i < heightmap->height; ++i)
-        {
-            for (size_t j = 0; j < heightmap->width; ++j)
-            {
-                float h = getHeight(i, j);
-
-                uint16_t mask = 0;
-                for (size_t k = 0; k < biomeAtlas.size(); ++k)
-                {
-                    if (biomeAtlas[k].height.min <= h && h <= biomeAtlas[k].height.max)
-                    {
-                        // set bit on position K to mark that we use the k-th texture
-                        mask |= (1 << k);
-                    }
-                }
-
-                blendmap.data.push_back(mask);
+            if (lodRangeValue == 0) {
+                lodRange[index] = lodMorphingArea[index] = 0;
+            } else {
+                setLodRange(index, lodRangeValue);
             }
         }
+        else if (command == "biome") {
+            biomes.push_back(std::make_shared<Biome>());
+        }
+        else if (command == "name") {
+            biomes.back()->setName(tokens[0]);
+        }
+        else if (command == "min_height") {
+            biomes.back()->setMinHeight(std::stof(tokens[0]));
+        }
+        else if (command == "max_height") {
+            biomes.back()->setMaxHeight(std::stof(tokens[0]));
+        }
+        else if (command == "material_DIF") {
+            vd::model::Material& material = biomes.back()->getMaterial();
+            material.diffuseMap = vd::model::TextureService::get(tokens[0]);
+            material.diffuseMap->bind();
+            material.diffuseMap->trilinearFilter();
+            material.diffuseMap->unbind();
+        }
+        else if (command == "material_NRM") {
+            vd::model::Material& material = biomes.back()->getMaterial();
+            material.normalMap = vd::model::TextureService::get(tokens[0]);
+            material.normalMap->bind();
+            material.normalMap->trilinearFilter();
+            material.normalMap->unbind();
+        }
+        else if (command == "material_DISP") {
+            vd::model::Material& material = biomes.back()->getMaterial();
+            material.displaceMap = vd::model::TextureService::get(tokens[0]);
+            material.displaceMap->bind();
+            material.displaceMap->trilinearFilter();
+            material.displaceMap->unbind();
+        }
+        else if (command == "material_heightScaling") {
+            vd::model::Material& material = biomes.back()->getMaterial();
+            material.displaceScale = std::stof(tokens[0]);
+        }
+        else if (command == "material_horizontalScaling") {
+            vd::model::Material& material = biomes.back()->getMaterial();
+            material.horizontalScale = std::stof(tokens[0]);
+        }
 
-        blendmap.texture = vd::model::TextureService::get(heightmap->width, heightmap->height, blendmap.data);
+    }
+
+    void TerrainConfig::onParseFinish() {
+        normalmap::NormalMapRendererPtr normalMapRendererPtr =
+                std::make_shared<normalmap::NormalMapRenderer>(int(heightMap->getWidth()));
+        normalMapRendererPtr->render(heightMap, normalStrength);
+        normalMap = normalMapRendererPtr->getNormalMap();
+
+        splatmap::SplatMapRendererPtr splatMapRendererPtr =
+                std::make_shared<splatmap::SplatMapRenderer>(int(normalMap->getWidth()));
+        splatMapRendererPtr->render(normalMap, scaleY, biomes);
+        splatMap = splatMapRendererPtr->getSplatMap();
+
+        worldTransform.setScaling(scaleXZ, scaleY, scaleXZ);
+        worldTransform.setTranslation(-scaleXZ/2.0f, 0.0f, -scaleXZ/2.0f);
+    }
+
+    int TerrainConfig::updateMorphingArea(int lod) const {
+        return (int) ((scaleXZ / rootNodes) / float(1 << lod));
+    }
+
+    void TerrainConfig::setLodRange(int index, int lodRangeValue) {
+        lodRange[index] = lodRangeValue;
+        lodMorphingArea[index] = lodRangeValue - updateMorphingArea(index + 1);
+    }
+
+    int TerrainConfig::getRootNodes() const {
+        return rootNodes;
+    }
+
+    float TerrainConfig::getScaleY() const {
+        return scaleY;
+    }
+
+    float TerrainConfig::getScaleXZ() const {
+        return scaleXZ;
+    }
+
+    const TerrainConfig::LodVec& TerrainConfig::getLodRange() const {
+        return lodRange;
+    }
+
+    const TerrainConfig::LodVec& TerrainConfig::getLodMorphingArea() const {
+        return lodMorphingArea;
+    }
+
+    int TerrainConfig::getTessellationFactor() const {
+        return tessellationFactor;
+    }
+
+    float TerrainConfig::getTessellationSlope() const {
+        return tessellationSlope;
+    }
+
+    float TerrainConfig::getTessellationShift() const {
+        return tessellationShift;
+    }
+
+    int TerrainConfig::getTbnRange() const {
+        return tbnRange;
+    }
+
+    const vd::model::Texture2DPtr& TerrainConfig::getHeightMap() const {
+        return heightMap;
+    }
+
+    const vd::model::Texture2DPtr& TerrainConfig::getNormalMap() const {
+        return normalMap;
+    }
+
+    const vd::model::Texture2DPtr& TerrainConfig::getSplatMap() const {
+        return splatMap;
+    }
+
+    const vd::img::ImageFPtr& TerrainConfig::getHeightImg() const {
+        return heightImg;
+    }
+
+    const vd::math::Transform& TerrainConfig::getTransform() const {
+        return worldTransform;
+    }
+
+    const BiomePtrVec& TerrainConfig::getBiomes() const {
+        return biomes;
+    }
+
+    float TerrainConfig::getHeight(float x, float z) const {
+        float upperBound = scaleXZ / 2.0f;
+        float lowerBound = -upperBound;
+
+        if (x < lowerBound || z < lowerBound || x >= upperBound || z >= upperBound)
+            return 0.0f;
+
+        // reverse transform
+        float rx = (x + (scaleXZ / 2.0f)) / scaleXZ;
+        float rz = (z + (scaleXZ / 2.0f)) / scaleXZ;
+
+
+        const auto height = vd::img::ImageHelper::texture(*heightImg, glm::vec2(rx, rz)).r;
+
+        return height * scaleY;
     }
 }

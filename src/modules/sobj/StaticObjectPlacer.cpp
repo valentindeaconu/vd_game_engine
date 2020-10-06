@@ -13,10 +13,10 @@ namespace mod::sobj
 
     void StaticObjectPlacer::place()
     {
-        auto& terrainConfig = terrainPtr->getTerrainConfig();
-        const mod::terrain::BiomeAtlas& biomeAtlas = terrainConfig->getBiomeAtlas();
+        auto& terrainConfig = terrainPtr->GetTerrainConfig();
+        const mod::terrain::BiomePtrVec& biomeAtlas = terrainConfig->getBiomes();
         const size_t noOfBiomes = biomeAtlas.size();
-        const size_t terrainSize = terrainConfig->getSize();
+        const auto terrainSize = size_t(terrainConfig->getScaleXZ());
 
         placementInfosForBiomes.resize(noOfBiomes);
 
@@ -28,9 +28,10 @@ namespace mod::sobj
         std::mt19937 gen{ rd() };
         std::uniform_real_distribution<float> d(0, terrainSize - 1);
 
+        // TODO: Adapt to the new terrain
         for (size_t objectIndex = 0; objectIndex < objectCount; ++objectIndex)
         {
-            PlacementInfo placementInfo;
+            /*PlacementInfo placementInfo;
             size_t biomeIndex = 0;
 
             do
@@ -41,7 +42,7 @@ namespace mod::sobj
                     placementInfo.location.x = d(gen);
                     placementInfo.location.z = d(gen);
 
-                    biomeIndex = terrainConfig->getBiomeIndex(placementInfo.location.x, placementInfo.location.z);
+                    biomeIndex = terrainConfig->getBiome(placementInfo.location.x, placementInfo.location.z);
                 } while (biomeAtlas[biomeIndex].objects.empty());
 
             } while (!onSurface(placementInfo.location.x, placementInfo.location.z));
@@ -51,7 +52,7 @@ namespace mod::sobj
             std::uniform_int_distribution<size_t> d_i(0, biomeAtlas[biomeIndex].objects.size() - 1);
             placementInfo.objectIndex = d_i(gen);
 
-            placementInfosForBiomes[biomeIndex].push_back(placementInfo);
+            placementInfosForBiomes[biomeIndex].push_back(placementInfo);*/
         }
     }
 

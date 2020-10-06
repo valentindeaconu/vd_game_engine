@@ -10,8 +10,8 @@ include_directories(src/engine/config)
 include_directories(src/engine/core)
 include_directories(src/engine/core/impl)
 include_directories(src/engine/foundation)
-include_directories(src/engine/foundation/imgloader)
-include_directories(src/engine/foundation/imgloader/model)
+include_directories(src/engine/foundation/img/imgloader)
+include_directories(src/engine/foundation/img/model)
 include_directories(src/engine/foundation/math)
 include_directories(src/engine/foundation/objloader)
 include_directories(src/engine/glmodel/buffer)
@@ -42,12 +42,14 @@ add_executable(vd_game_engine
         src/engine/core/InputHandler.hpp
         src/engine/core/Window.cpp
         src/engine/core/Window.hpp
-        src/engine/foundation/imgloader/model/Image.cpp
-        src/engine/foundation/imgloader/model/Image.hpp
-        src/engine/foundation/imgloader/IIMGLoader.cpp
-        src/engine/foundation/imgloader/IIMGLoader.hpp
-        src/engine/foundation/imgloader/IMGLoader.cpp
-        src/engine/foundation/imgloader/IMGLoader.hpp
+        src/engine/foundation/img/Image.cpp
+        src/engine/foundation/img/Image.hpp
+        src/engine/foundation/img/imgloader/IIMGLoader.cpp
+        src/engine/foundation/img/imgloader/IIMGLoader.hpp
+        src/engine/foundation/img/imgloader/IMGLoader.cpp
+        src/engine/foundation/img/imgloader/IMGLoader.hpp
+        src/engine/foundation/img/imghelper/ImageHelper.cpp
+        src/engine/foundation/img/imghelper/ImageHelper.hpp
         src/engine/foundation/math/Transform.cpp
         src/engine/foundation/math/Transform.hpp
         src/engine/foundation/objloader/OBJLoader.cpp
@@ -137,30 +139,27 @@ add_executable(vd_game_engine
         src/engine/foundation/math/BoundingBox.hpp
         src/engine/foundation/math/Util.cpp
         src/engine/foundation/math/Util.hpp
-        src/engine/terrain/TerrainNode.cpp
-        src/engine/terrain/TerrainNode.hpp
-        src/engine/terrain/TerrainQuadtree.cpp
-        src/engine/terrain/TerrainQuadtree.hpp
-        src/engine/terrain/TerrainShader.cpp
-        src/engine/terrain/TerrainShader.hpp
-        src/engine/terrain/Terrain.cpp
-        src/engine/terrain/Terrain.hpp
-        src/engine/terrain/Biome.cpp
-        src/engine/terrain/Biome.hpp
-        src/engine/terrain/TerrainConfig.cpp
-        src/engine/terrain/TerrainConfig.hpp
-        src/engine/terrain/TerrainRenderer.cpp
-        src/engine/terrain/TerrainRenderer.hpp
-        src/engine/terrain/normalmap/NormalMapShader.cpp
-        src/engine/terrain/normalmap/NormalMapShader.hpp
-        src/engine/terrain/normalmap/NormalMapRenderer.cpp
-        src/engine/terrain/normalmap/NormalMapRenderer.hpp
-        src/engine/terrain/splatmap/SplatMapRenderer.cpp
-        src/engine/terrain/splatmap/SplatMapRenderer.hpp
-        src/engine/terrain/splatmap/SplatMapShader.cpp
-        src/engine/terrain/splatmap/SplatMapShader.hpp
+        src/modules/terrain/TerrainShader.cpp
+        src/modules/terrain/TerrainShader.hpp
+        src/modules/terrain/Terrain.cpp
+        src/modules/terrain/Terrain.hpp
+        src/modules/terrain/TerrainNode.cpp
+        src/modules/terrain/TerrainNode.hpp
+        src/modules/terrain/Biome.cpp
+        src/modules/terrain/Biome.hpp
+        src/modules/terrain/TerrainConfig.cpp
+        src/modules/terrain/TerrainConfig.hpp
+        src/modules/terrain/TerrainRenderer.cpp
+        src/modules/terrain/TerrainRenderer.hpp
+        src/modules/terrain/normalmap/NormalMapShader.cpp
+        src/modules/terrain/normalmap/NormalMapShader.hpp
+        src/modules/terrain/normalmap/NormalMapRenderer.cpp
+        src/modules/terrain/normalmap/NormalMapRenderer.hpp
+        src/modules/terrain/splatmap/SplatMapRenderer.cpp
+        src/modules/terrain/splatmap/SplatMapRenderer.hpp
+        src/modules/terrain/splatmap/SplatMapShader.cpp
+        src/modules/terrain/splatmap/SplatMapShader.hpp
         src/main.cpp)
-
 
 # dependencies
 

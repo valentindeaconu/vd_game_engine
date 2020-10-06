@@ -2,7 +2,7 @@
 
 namespace mod::player
 {
-    Player::Player(const vd::EnginePtr& enginePtr, const vd::terrain::TerrainPtr& terrainPtr)
+    Player::Player(const vd::EnginePtr& enginePtr, const mod::terrain::TerrainPtr& terrainPtr)
         : Entity(enginePtr)
         , terrainPtr(terrainPtr)
     {
@@ -15,7 +15,7 @@ namespace mod::player
         //getWorldTransform().setTranslation(256.0f, 0.0f, 256.0f);
         //getWorldTransform().setTranslation(0.0f, 0.0f, 0.0f);
 
-        float h = terrainPtr->getTerrainConfig()->getHeight(0.0f, 0.0f);
+        float h = terrainPtr->GetTerrainConfig()->getHeight(0.0f, 0.0f);
 
         getWorldTransform().setTranslation(0.0f, h + modelYOffset, 0.0f);
         //getWorldTransform().setScaling(0.5f, 0.5f, 0.5f);
@@ -56,7 +56,7 @@ namespace mod::player
         currentUpwardsSpeed += kGravity * getParentEngine()->getFrameTime();
         currentPosition.y += currentUpwardsSpeed * getParentEngine()->getFrameTime();
 
-        float height = terrainPtr->getTerrainConfig()->getHeight(currentPosition.x, currentPosition.z);
+        float height = terrainPtr->GetTerrainConfig()->getHeight(currentPosition.x, currentPosition.z);
 
         if (currentPosition.y < height + modelYOffset) {
             currentUpwardsSpeed = 0.0f;

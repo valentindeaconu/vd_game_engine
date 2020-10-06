@@ -4,8 +4,7 @@
 #include "../Camera.hpp"
 
 // Forward declaration for terrain
-//namespace mod::terrain
-namespace vd::terrain
+namespace mod::terrain
 {
     class Terrain;
     typedef std::shared_ptr<Terrain> TerrainPtr;
@@ -25,7 +24,7 @@ namespace vd
 		struct EntityCameraInitParameters
 		{
 			object::EntityPtr entityPtr;
-			vd::terrain::TerrainPtr terrainPtr;
+            mod::terrain::TerrainPtr terrainPtr;
 			glm::vec3 playerPositionOffset;
 		};
 
@@ -58,7 +57,7 @@ namespace vd
 				float angleAroundPlayer;
 
 				object::EntityPtr entityPtr;
-				vd::terrain::TerrainPtr terrainPtr;
+                mod::terrain::TerrainPtr terrainPtr;
 				glm::vec3 offset;
 			};
 		}

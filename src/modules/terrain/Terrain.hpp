@@ -1,14 +1,20 @@
-#ifndef __TERRAIN_HPP_
-#define __TERRAIN_HPP_
+//
+// Created by Vali on 9/21/2020.
+//
+
+#ifndef VD_GAME_ENGINE_TERRAIN_HPP
+#define VD_GAME_ENGINE_TERRAIN_HPP
 
 #include <engine/object/Entity.hpp>
 
-#include "TerrainConfig.hpp"
+#include <memory>
+#include <vector>
 
-namespace mod::terrain
-{
-    class Terrain : public vd::object::Entity
-    {
+#include "TerrainConfig.hpp"
+#include "TerrainNode.hpp"
+
+namespace mod::terrain {
+    class Terrain : public vd::object::Entity {
     public:
         Terrain(const vd::EnginePtr& enginePtr, const std::string& configFilePath);
         ~Terrain();
@@ -17,14 +23,19 @@ namespace mod::terrain
         void update() override;
         void cleanUp() override;
 
-        const TerrainConfigPtr& getTerrainConfig() const;
+        [[nodiscard]] const TerrainConfigPtr& GetTerrainConfig() const;
+
+        [[nodiscard]] const TerrainNodePtrVec& GetRootNodes() const;
+
     private:
         void generatePatch();
 
-        TerrainConfigPtr	configPtr;
-    };
-    typedef std::shared_ptr<Terrain>	TerrainPtr;
+        TerrainConfigPtr m_ConfigPtr;
 
+        TerrainNodePtrVec m_RootNodes;
+    };
+    typedef std::shared_ptr<Terrain>    TerrainPtr;
 }
 
-#endif // __TERRAIN_HPP_
+
+#endif //VD_GAME_ENGINE_TERRAIN_HPP

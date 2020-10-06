@@ -1,8 +1,7 @@
 #include "EntityCamera.hpp"
 
 #include <engine/object/Entity.hpp>
-//#include <modules/terrain/Terrain.hpp>
-#include <engine/terrain/Terrain.hpp>
+#include <modules/terrain/Terrain.hpp>
 
 namespace vd::core::impl {
     EntityCamera::EntityCamera(const InputHandlerPtr& inputHandlerPtr)
@@ -46,7 +45,7 @@ namespace vd::core::impl {
                                                       verticalDistance);
 
         float allowedHeight =
-                terrainPtr->getTerrainConfig()->getHeight(newPosition.x, newPosition.z) + offset.y;
+                terrainPtr->GetTerrainConfig()->getHeight(newPosition.x, newPosition.z) + offset.y;
 
         if (newPosition.y < allowedHeight) {
             newPosition.y = allowedHeight;

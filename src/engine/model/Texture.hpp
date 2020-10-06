@@ -2,7 +2,7 @@
 #define __TEXTURE_HPP_
 
 #include <engine/foundation/GL.hpp>
-#include <engine/foundation/imgloader/IMGLoader.hpp>
+#include <engine/foundation/img/imgloader/IMGLoader.hpp>
 
 #include <string>
 #include <algorithm>
@@ -22,7 +22,7 @@ namespace vd::model
     public:
         Texture();
         Texture(const Texture& other);
-        Texture(const vd::imgloader::ImageBPtr& imagePtr);
+        Texture(const vd::img::ImageBPtr& imagePtr);
         Texture(size_t width, size_t height);
         ~Texture();
 
@@ -63,7 +63,7 @@ namespace vd::model
     {
     public:
         ShadowTexture(size_t width, size_t height);
-        ShadowTexture(const vd::imgloader::ImageBPtr& imagePtr) = delete;
+        ShadowTexture(const vd::img::ImageBPtr& imagePtr) = delete;
     };
     typedef std::shared_ptr<ShadowTexture>	ShadowTexturePtr;
 
@@ -71,7 +71,7 @@ namespace vd::model
     {
     public:
         UTexture2D(size_t width, size_t height, const std::vector<uint16_t>& imagePtr);
-        UTexture2D(const vd::imgloader::ImageBPtr& imagePtr) = delete;
+        UTexture2D(const vd::img::ImageBPtr& imagePtr) = delete;
     };
     typedef std::shared_ptr<UTexture2D>	UTexture2DPtr;
 
@@ -83,7 +83,7 @@ namespace vd::model
         static TextureService& getInstance();
 
         static Texture2DPtr get(const std::string& path);
-        static Texture2DPtr get(const imgloader::ImageBPtr& imagePtr);
+        static Texture2DPtr get(const img::ImageBPtr& imagePtr);
         static UTexture2DPtr get(size_t width, size_t height, const std::vector<uint16_t>& data);
         static Texture2DPtr get(size_t width, size_t height, Attachment attachment);
 
@@ -92,7 +92,7 @@ namespace vd::model
     private:
         TextureService();
 
-        imgloader::IMGLoaderPtr imgLoaderPtr;
+        img::IMGLoaderPtr imgLoaderPtr;
 
         std::unordered_map<std::string, Texture2DPtr> cache;
     };

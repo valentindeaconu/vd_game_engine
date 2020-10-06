@@ -26,7 +26,7 @@ namespace vd::model
     }
 
     template<GLuint type>
-    Texture<type>::Texture(const vd::imgloader::ImageBPtr& imagePtr)
+    Texture<type>::Texture(const vd::img::ImageBPtr& imagePtr)
         : width(imagePtr->width)
         , height(imagePtr->height)
     {
@@ -229,7 +229,7 @@ namespace vd::model
 
     TextureService::TextureService()
     {
-        imgLoaderPtr = std::make_shared<imgloader::IMGLoader>();
+        imgLoaderPtr = std::make_shared<img::IMGLoader>();
     }
 
     TextureService& TextureService::getInstance()
@@ -254,7 +254,7 @@ namespace vd::model
             return instance.cache[path];
         }
 
-        vd::imgloader::ImageBPtr imagePtr = instance.imgLoaderPtr->loadByteImage(path);
+        vd::img::ImageBPtr imagePtr = instance.imgLoaderPtr->loadByteImage(path);
 
         Texture2DPtr texture = std::make_shared<Texture2D>(imagePtr);
 
@@ -263,7 +263,7 @@ namespace vd::model
         return texture;
     }
 
-    Texture2DPtr TextureService::get(const imgloader::ImageBPtr& imagePtr)
+    Texture2DPtr TextureService::get(const img::ImageBPtr& imagePtr)
     {
         Texture2DPtr texture = std::make_shared<Texture2D>(imagePtr);
         return texture;

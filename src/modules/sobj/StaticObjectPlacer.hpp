@@ -22,7 +22,7 @@ namespace mod::sobj
     class StaticObjectPlacer
     {
     public:
-        StaticObjectPlacer(const mod::terrain::TerrainPtr& terrainPtr, size_t objectCount, float marginOffset);
+        StaticObjectPlacer(const terrain::TerrainPtr& terrainPtr, size_t objectCount, float marginOffset);
         ~StaticObjectPlacer();
 
         void place();

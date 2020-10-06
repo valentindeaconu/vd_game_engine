@@ -1,73 +1,93 @@
-#ifndef __TERRAIN_CONFIG_HPP_
-#define __TERRAIN_CONFIG_HPP_
+//
+// Created by Vali on 9/21/2020.
+//
+
+#ifndef VD_GAME_ENGINE_TERRAINCONFIG_HPP
+#define VD_GAME_ENGINE_TERRAINCONFIG_HPP
 
 #include <engine/config/ConfigurationFile.hpp>
-
-#include <engine/foundation/imgloader/IMGLoader.hpp>
 #include <engine/model/Texture.hpp>
-#include <engine/model/Material.hpp>
+#include <engine/foundation/img/Image.hpp>
+#include <engine/foundation/img/imgloader/IMGLoader.hpp>
+#include <engine/foundation/img/imghelper/ImageHelper.hpp>
+#include <engine/foundation/math/Transform.hpp>
 
-#include <modules/sobj/StaticObject.hpp>
+#include <array>
+#include <memory>
 
-namespace mod::terrain
-{
-    struct Biome
-    {
-        std::string name;
-        struct { float min, max; } height;
-        vd::model::Material material;
-        std::vector<sobj::StaticObjectPtr> objects;
-    };
-    typedef std::vector<Biome>	BiomeAtlas;
+#include "Biome.hpp"
 
-    class TerrainConfig : public vd::config::ConfigurationFile
-    {
+#include "normalmap/NormalMapRenderer.hpp"
+#include "splatmap/SplatMapRenderer.hpp"
+
+namespace mod::terrain {
+    class TerrainConfig : public vd::config::ConfigurationFile {
     public:
-        TerrainConfig(const std::string& filePath);
+        typedef std::array<int, 8> LodVec;
+
+        explicit TerrainConfig(const std::string& filePath);
         ~TerrainConfig();
 
-        void initializeObjects(const vd::EnginePtr& enginePtr);
+        [[nodiscard]] int getRootNodes() const;
 
-        size_t getSize() const;
+        [[nodiscard]] float getScaleY() const;
+        [[nodiscard]] float getScaleXZ() const;
 
-        const BiomeAtlas& getBiomeAtlas() const;
+        [[nodiscard]] const LodVec& getLodRange() const;
+        [[nodiscard]] const LodVec& getLodMorphingArea() const;
 
-        vd::model::UTexture2DPtr getSplatmap() const;
+        [[nodiscard]] int getTessellationFactor() const;
+        [[nodiscard]] float getTessellationSlope() const;
+        [[nodiscard]] float getTessellationShift() const;
 
-        float getMaxHeight() const;
+        [[nodiscard]] int getTbnRange() const;
 
-        float getNormalStrength() const;
+        [[nodiscard]] const vd::model::Texture2DPtr& getHeightMap() const;
+        [[nodiscard]] const vd::model::Texture2DPtr& getNormalMap() const;
+        [[nodiscard]] const vd::model::Texture2DPtr& getSplatMap() const;
 
-        float getHeight(float x, float z) const;
-        std::string getBiome(float x, float z) const;
-        size_t getBiomeIndex(float x, float z) const;
+        [[nodiscard]] const vd::img::ImageFPtr& getHeightImg() const;
+
+        [[nodiscard]] const vd::math::Transform& getTransform() const;
+
+        [[nodiscard]] const BiomePtrVec& getBiomes() const;
+
+        [[nodiscard]] float getHeight(float x, float z) const;
     private:
-        void onTokenReceived(const std::string& key, const std::vector<std::string>& tokens) override;
+        void onTokenReceived(const std::string& command, const std::vector<std::string>& tokens) override;
         void onParseFinish() override;
 
-        void generateBlendmap();
+        [[nodiscard]] int updateMorphingArea(int lod) const;
+        void setLodRange(int index, int lodRangeValue);
 
-        vd::imgloader::IMGLoaderPtr imgLoaderPtr;
+        int rootNodes;
 
-        size_t size;
+        float scaleY;
+        float scaleXZ;
 
-        float maxHeight;
+        int tessellationFactor;
+        float tessellationSlope;
+        float tessellationShift;
+
+        int tbnRange;
 
         float normalStrength;
 
-        BiomeAtlas biomeAtlas;
+        BiomePtrVec biomes;
 
-        std::unordered_map<std::string, size_t> biomeIndices;
+        vd::img::ImageFPtr heightImg;
 
-        struct
-        {
-            vd::model::UTexture2DPtr texture;
-            std::vector<uint16_t> data;
-        } blendmap;
+        vd::model::Texture2DPtr heightMap;
+        vd::model::Texture2DPtr normalMap;
+        vd::model::Texture2DPtr splatMap;
 
-        vd::imgloader::ImageFPtr heightmap;
+        std::array<int, 8> lodRange;
+        std::array<int, 8> lodMorphingArea;
+
+        vd::math::Transform worldTransform;
     };
-    typedef std::shared_ptr<TerrainConfig>	TerrainConfigPtr;
+    typedef std::shared_ptr<TerrainConfig>  TerrainConfigPtr;
 }
 
-#endif // !__TERRAIN_CONFIG_HPP_
+
+#endif //VD_GAME_ENGINE_TERRAINCONFIG_HPP

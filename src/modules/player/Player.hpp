@@ -4,15 +4,14 @@
 #include <engine/object/Entity.hpp>
 #include <engine/foundation/objloader/OBJLoader.hpp>
 
-//#include <modules/terrain/Terrain.hpp>
-#include <engine/terrain/Terrain.hpp>
+#include <modules/terrain/Terrain.hpp>
 
 namespace mod::player
 {
     class Player : public vd::object::Entity
     {
     public:
-        Player(const vd::EnginePtr& enginePtr, const vd::terrain::TerrainPtr& terrainPtr);
+        Player(const vd::EnginePtr& enginePtr, const mod::terrain::TerrainPtr& terrainPtr);
         ~Player();
 
         void init() override;
@@ -27,7 +26,7 @@ namespace mod::player
         float currentUpwardsSpeed;
         bool isJumping;
 
-        vd::terrain::TerrainPtr terrainPtr;
+        mod::terrain::TerrainPtr terrainPtr;
 
         const float modelYOffset = 0.0f;
 

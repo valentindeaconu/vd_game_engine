@@ -33,11 +33,12 @@ namespace mod::sobj
             _shaderPtr->bind();
 
             const PlacementInfoMat &placementInfosForBiomes = staticObjectPlacerPtr->getPlacementInfosForBiomes();
-            const terrain::BiomeAtlas &biomeAtlas =
-                    staticObjectPlacerPtr->getTerrain()->getTerrainConfig()->getBiomeAtlas();
+            const auto& biomeAtlas =
+                    staticObjectPlacerPtr->getTerrain()->GetTerrainConfig()->getBiomes();
 
-            for (size_t biomeIndex = 0; biomeIndex < biomeAtlas.size(); ++biomeIndex) {
-                const terrain::Biome &biome = biomeAtlas[biomeIndex];
+            // TODO: Adapt to the new terrain
+            /*for (size_t biomeIndex = 0; biomeIndex < biomeAtlas.size(); ++biomeIndex) {
+                const auto& biome = biomeAtlas[biomeIndex];
                 const PlacementInfoVec &placementInfos = placementInfosForBiomes[biomeIndex];
 
                 if (!placementInfos.empty()) {
@@ -56,7 +57,7 @@ namespace mod::sobj
                         }
                     }
                 }
-            }
+            }*/
 
             if (renderConfigPtr != nullptr) {
                 renderConfigPtr->disable();
@@ -65,14 +66,16 @@ namespace mod::sobj
     }
 
     void StaticObjectRenderer::cleanUp() {
-        const terrain::BiomeAtlas& biomeAtlas = staticObjectPlacerPtr->getTerrain()->getTerrainConfig()->getBiomeAtlas();
-        for (const auto& biome : biomeAtlas) {
+        const auto& biomeAtlas = staticObjectPlacerPtr->getTerrain()->GetTerrainConfig()->getBiomes();
+
+        // TODO: Adapt to the new terrain
+        /*for (const auto& biome : biomeAtlas) {
             if (!biome.objects.empty()) {
                 for (const auto& object : biome.objects) {
                     object->cleanUp();
                 }
             }
-        }
+        }*/
     }
 
     StaticObjectPlacerPtr& StaticObjectRenderer::getStaticObjectPlacer() {
