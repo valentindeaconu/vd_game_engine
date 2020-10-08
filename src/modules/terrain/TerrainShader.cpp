@@ -25,11 +25,10 @@ namespace mod::terrain {
 
         addUniform("cameraPosition");
 
-        //addUniform("scaleY");
-        addUniform("tessellationFactor");
-        addUniform("tessellationSlope");
-        addUniform("tessellationShift");
+        addUniform("scaleY");
         addUniform("tbnRange");
+        addUniform("tessellationOuterLevel");
+        addUniform("tessellationInnerLevel");
 
         addUniform("heightMap");
         addUniform("normalMap");
@@ -37,12 +36,6 @@ namespace mod::terrain {
 
         for (int i = 0; i < 16; ++i) {
             addUniform("patchHeights[" + std::to_string(i) + "]");
-        }
-
-        for (int i = 0; i < kBiomeCount; ++i) {
-            addUniform("materials[" + std::to_string(i) + "].diffuseMap");
-            addUniform("materials[" + std::to_string(i) + "].normalMap");
-            addUniform("materials[" + std::to_string(i) + "].horizontalScaling");
         }
 
         for (int i = 0; i < kBiomeCount; ++i) {
@@ -58,16 +51,16 @@ namespace mod::terrain {
         auto& enginePtr = entityPtr->getParentEngine();
         setUniform("view", enginePtr->getCamera()->getViewMatrix());
         setUniform("projection", enginePtr->getWindow()->getProjectionMatrix());
+
         setUniform("cameraPosition", enginePtr->getCamera()->getPosition());
 
         const auto& terrainPtr = std::dynamic_pointer_cast<Terrain>(entityPtr);
         const auto& configPtr = terrainPtr->GetTerrainConfig();
 
-        //setUniformi("scaleY", configPtr->getScaleY());
-        setUniformi("tessellationFactor", configPtr->getTessellationFactor());
-        setUniformf("tessellationSlope", configPtr->getTessellationSlope());
-        setUniformf("tessellationShift", configPtr->getTessellationShift());
+        setUniformf("scaleY", configPtr->getScaleY());
         setUniformi("tbnRange", configPtr->getTbnRange());
+        setUniformf("tessellationOuterLevel", configPtr->getTessellationOuterLevel());
+        setUniformf("tessellationInnerLevel", configPtr->getTessellationInnerLevel());
 
         vd::model::activeTexture(0);
         configPtr->getHeightMap()->bind();

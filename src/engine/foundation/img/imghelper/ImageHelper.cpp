@@ -44,7 +44,6 @@ namespace vd::img {
         float frac_x = uv_x - float(uv_x_0);
         float frac_y = uv_y - float(uv_y_0);
 
-
         Pixel<T> v01(
             glm::mix(v0.r, v1.r, frac_x),
             glm::mix(v0.g, v1.g, frac_x),

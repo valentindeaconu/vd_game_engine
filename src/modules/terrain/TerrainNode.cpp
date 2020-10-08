@@ -8,16 +8,21 @@ namespace mod::terrain {
     TerrainNode::TerrainNode(const TerrainConfigPtr& terrainConfigPtr,
                              const glm::vec2& topLeft,
                              const glm::vec2& bottomRight,
-                             int level)
+                             int level,
+                             NodeIndex nodeIndex)
             : m_kConfigPtr(terrainConfigPtr)
             , m_kTopLeft(topLeft)
             , m_kBottomRight(bottomRight)
             , m_kLevel(level)
             , m_Leaf(true)
             , m_kCenter((topLeft.x + bottomRight.x) / 2.0f, (topLeft.y + bottomRight.y) / 2.0f)
+            , m_NodeIndex(nodeIndex)
     {
+        assert((bottomRight.x - topLeft.x) == (bottomRight.y - topLeft.y));
+        m_Gap = bottomRight.x - topLeft.x;
+
         m_Transform.setTranslation(topLeft.x, 0.0f, topLeft.y);
-        m_Transform.setScaling(bottomRight.x - topLeft.x, 1.0f, bottomRight.y - topLeft.y);
+        m_Transform.setScaling(m_Gap, 1.0f, m_Gap);
 
         m_PatchHeights[0] = computeHeightFor2DPoint(0.0f, 0.0f);
         // m_PatchHeights[1] = computeHeightFor2DPoint(0.333f, 0.0f);
@@ -42,6 +47,10 @@ namespace mod::terrain {
 
     void TerrainNode::update(const vd::core::CameraPtr& cameraPtr) {
         if (!(cameraPtr->isCameraRotated() || cameraPtr->isCameraMoved())) {
+            return;
+        }
+
+        if (!m_kConfigPtr->isLevelOfDetailEnabled()) {
             return;
         }
 
@@ -79,28 +88,32 @@ namespace mod::terrain {
         m_Children.resize(4);
 
         // Top Left child
-        m_Children[0] = std::make_shared<TerrainNode>(m_kConfigPtr,
-                                                      m_kTopLeft,
-                                                      m_kCenter,
-                                               m_kLevel + 1);
+        m_Children[eTopLeft] = std::make_shared<TerrainNode>(m_kConfigPtr,
+                                                             m_kTopLeft,
+                                                             m_kCenter,
+                                                             m_kLevel + 1,
+                                                             eTopLeft);
 
         // Top Right child
-        m_Children[1] = std::make_shared<TerrainNode>(m_kConfigPtr,
-                                                      glm::vec2(m_kCenter.x, m_kTopLeft.y),
-                                                      glm::vec2(m_kBottomRight.x, m_kCenter.y),
-                                               m_kLevel + 1);
+        m_Children[eTopRight] = std::make_shared<TerrainNode>(m_kConfigPtr,
+                                                              glm::vec2(m_kCenter.x, m_kTopLeft.y),
+                                                              glm::vec2(m_kBottomRight.x, m_kCenter.y),
+                                                              m_kLevel + 1,
+                                                              eTopRight);
 
         // Bottom Left child
-        m_Children[2] = std::make_shared<TerrainNode>(m_kConfigPtr,
-                                                      glm::vec2(m_kTopLeft.x, m_kCenter.y),
-                                                      glm::vec2(m_kCenter.x, m_kBottomRight.y),
-                                               m_kLevel + 1);
+        m_Children[eBottomLeft] = std::make_shared<TerrainNode>(m_kConfigPtr,
+                                                                glm::vec2(m_kTopLeft.x, m_kCenter.y),
+                                                                glm::vec2(m_kCenter.x, m_kBottomRight.y),
+                                                                m_kLevel + 1,
+                                                                eBottomLeft);
 
         // Bottom Right child
-        m_Children[3] = std::make_shared<TerrainNode>(m_kConfigPtr,
-                                                      m_kCenter,
-                                                      m_kBottomRight,
-                                               m_kLevel + 1);
+        m_Children[eBottomRight] = std::make_shared<TerrainNode>(m_kConfigPtr,
+                                                                 m_kCenter,
+                                                                 m_kBottomRight,
+                                                                 m_kLevel + 1,
+                                                                 eBottomRight);
 
         // Update all children
         for (auto& child : m_Children) {
@@ -112,12 +125,24 @@ namespace mod::terrain {
         return m_Children;
     }
 
-    bool TerrainNode::IsLeaf() const {
-        return m_Leaf;
+    const glm::vec2& TerrainNode::GetTopLeft() const {
+        return m_kTopLeft;
     }
 
     int TerrainNode::GetLevel() const {
         return m_kLevel;
+    }
+
+    bool TerrainNode::IsLeaf() const {
+        return m_Leaf;
+    }
+
+    float TerrainNode::GetGap() const {
+        return m_Gap;
+    }
+
+    TerrainNode::NodeIndex TerrainNode::GetIndex() const {
+        return m_NodeIndex;
     }
 
     const vd::math::Transform& TerrainNode::GetTransform() const {
@@ -142,6 +167,8 @@ namespace mod::terrain {
     }
 
     float TerrainNode::computeHeightFor2DPoint(float x, float z) const {
+        return 0.0f;
+
         const auto& heightImg = m_kConfigPtr->getHeightImg();
 
         glm::vec4 localSystemPoint = m_Transform * glm::vec4(x, 0.0f, z, 1.0f);
@@ -152,5 +179,6 @@ namespace mod::terrain {
 
         return height;
     }
+
 
 }

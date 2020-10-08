@@ -4,7 +4,7 @@ layout(local_size_x = 16, local_size_y = 16) in;
 
 layout(binding = 0, r32ui) uniform writeonly uimage2D splatMap;
 
-uniform sampler2D normalMap;
+uniform sampler2D heightMap;
 uniform float scaleY;
 uniform int size;
 
@@ -16,13 +16,11 @@ const int BIOME_COUNT = 5;
 
 uniform Biome biomes[BIOME_COUNT];
 
-const float slopeThreshold[5] = {0.72, 0.49, 0.32, 0.14, 0.0};
-
 void main() {
     ivec2 x = ivec2(gl_GlobalInvocationID.xy);
     vec2 texCoord = gl_GlobalInvocationID.xy / float(size);
 
-    /*float h = texture(heightMap, texCoord).r * scaleY;
+    float h = (texture(heightMap, texCoord).r) * scaleY;
 
     uint mask = 0;
     for (int k = 0; k < BIOME_COUNT; ++k) {
@@ -32,17 +30,7 @@ void main() {
         }
     }
 
-    while (mask == 0) break;*/
-
-    float slope = normalize(texture(normalMap, texCoord).rbg).y;
-
-    uint mask;
-    for (int k = 0; k < BIOME_COUNT; ++k) {
-        if (slope > slopeThreshold[k]) {
-            mask |= uint(1 << k);
-            break;
-        }
-    }
+    while (mask == 0) break;
 
     imageStore(splatMap, x, ivec4(mask, 0, 0, 0));
 }

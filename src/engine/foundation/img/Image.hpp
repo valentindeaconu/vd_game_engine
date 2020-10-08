@@ -34,6 +34,16 @@ namespace vd::img {
     };
 
     template<typename T>
+    class RawImage {
+    public:
+        size_t width;
+        size_t height;
+        std::vector<T> data;
+    };
+    typedef RawImage<float> RawFloatImage;
+    typedef std::shared_ptr<RawFloatImage>  RawFloatImagePtr;
+
+    template<typename T>
     class Image
     {
     public:

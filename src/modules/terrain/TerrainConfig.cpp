@@ -39,14 +39,24 @@ namespace mod::terrain {
         else if (command == "tessellationShift") {
             tessellationShift = std::stof(tokens[0]);
         }
+        else if (command == "tessellationOuterLevel") {
+            tessellationOuterLevel = std::stof(tokens[0]);
+        }
+        else if (command == "tessellationInnerLevel") {
+            tessellationInnerLevel = std::stof(tokens[0]);
+        }
+        else if (command == "levelOfDetailEnabled") {
+            levelOfDetailEnabled = std::stoi(tokens[0]);
+        }
         else if (command == "heightmap") {
             vd::img::IMGLoader imgLoader;
             heightImg = imgLoader.loadFloatImage(tokens[0]);
 
-            heightMap = vd::model::TextureService::get(tokens[0]);
-            heightMap->bind();
-            heightMap->bilinearFilter();
-            heightMap->unbind();
+            heightMap = std::make_shared<vd::model::Texture2D>(heightImg);
+            //heightMap = vd::model::TextureService::get(tokens[0]);
+            //heightMap->bind();
+            //heightMap->bilinearFilter();
+            //heightMap->unbind();
         }
         else if (command == "normalStrength") {
             normalStrength = std::stof(tokens[0]);
@@ -69,10 +79,12 @@ namespace mod::terrain {
             biomes.back()->setName(tokens[0]);
         }
         else if (command == "min_height") {
-            biomes.back()->setMinHeight(std::stof(tokens[0]));
+            float height = std::stof(tokens[0]) * scaleY;
+            biomes.back()->setMinHeight(height);
         }
         else if (command == "max_height") {
-            biomes.back()->setMaxHeight(std::stof(tokens[0]));
+            float height = std::stof(tokens[0]) * scaleY;
+            biomes.back()->setMaxHeight(height);
         }
         else if (command == "material_DIF") {
             vd::model::Material& material = biomes.back()->getMaterial();
@@ -113,8 +125,8 @@ namespace mod::terrain {
         normalMap = normalMapRendererPtr->getNormalMap();
 
         splatmap::SplatMapRendererPtr splatMapRendererPtr =
-                std::make_shared<splatmap::SplatMapRenderer>(int(normalMap->getWidth()));
-        splatMapRendererPtr->render(normalMap, scaleY, biomes);
+                std::make_shared<splatmap::SplatMapRenderer>(int(heightMap->getWidth()));
+        splatMapRendererPtr->render(heightMap, scaleY, biomes);
         splatMap = splatMapRendererPtr->getSplatMap();
 
         worldTransform.setScaling(scaleXZ, scaleY, scaleXZ);
@@ -162,8 +174,20 @@ namespace mod::terrain {
         return tessellationShift;
     }
 
+    float TerrainConfig::getTessellationOuterLevel() const {
+        return tessellationOuterLevel;
+    }
+
+    float TerrainConfig::getTessellationInnerLevel() const {
+        return tessellationInnerLevel;
+    }
+
     int TerrainConfig::getTbnRange() const {
         return tbnRange;
+    }
+
+    bool TerrainConfig::isLevelOfDetailEnabled() const {
+        return levelOfDetailEnabled;
     }
 
     const vd::model::Texture2DPtr& TerrainConfig::getHeightMap() const {
@@ -201,8 +225,7 @@ namespace mod::terrain {
         float rx = (x + (scaleXZ / 2.0f)) / scaleXZ;
         float rz = (z + (scaleXZ / 2.0f)) / scaleXZ;
 
-
-        const auto height = vd::img::ImageHelper::texture(*heightImg, glm::vec2(rx, rz)).r;
+        const auto height = vd::img::ImageHelper::texture(*heightImg, glm::vec2(rz, rx)).r;
 
         return height * scaleY;
     }

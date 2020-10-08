@@ -32,6 +32,8 @@ add_executable(vd_game_engine
         src/engine/config/ConfigurationFile.hpp
         src/engine/config/EngineConfig.cpp
         src/engine/config/EngineConfig.hpp
+        src/engine/config/MetaConfig.hpp
+        src/engine/config/MetaConfig.cpp
         src/engine/core/impl/EntityCamera.cpp
         src/engine/core/impl/EntityCamera.hpp
         src/engine/core/impl/FreeCamera.cpp
@@ -42,6 +44,8 @@ add_executable(vd_game_engine
         src/engine/core/InputHandler.hpp
         src/engine/core/Window.cpp
         src/engine/core/Window.hpp
+        src/engine/core/AsyncWorker.cpp
+        src/engine/core/AsyncWorker.hpp
         src/engine/foundation/img/Image.cpp
         src/engine/foundation/img/Image.hpp
         src/engine/foundation/img/imgloader/IIMGLoader.cpp
@@ -55,9 +59,19 @@ add_executable(vd_game_engine
         src/engine/foundation/objloader/OBJLoader.cpp
         src/engine/foundation/objloader/OBJLoader.hpp
         src/engine/foundation/GL.hpp
+        src/engine/foundation/math/Frustum.cpp
+        src/engine/foundation/math/Frustum.hpp
+        src/engine/foundation/math/BoundingBox.cpp
+        src/engine/foundation/math/BoundingBox.hpp
+        src/engine/foundation/math/Util.cpp
+        src/engine/foundation/math/Util.hpp
         src/engine/glmodel/buffer/Buffer.hpp
         src/engine/glmodel/buffer/MeshBuffer.cpp
         src/engine/glmodel/buffer/MeshBuffer.hpp
+        src/engine/glmodel/buffer/FrameBuffer.cpp
+        src/engine/glmodel/buffer/FrameBuffer.hpp
+        src/engine/glmodel/buffer/PatchBuffer.cpp
+        src/engine/glmodel/buffer/PatchBuffer.hpp
         src/engine/kernel/EngineBlock.cpp
         src/engine/kernel/EngineBlock.hpp
         src/engine/kernel/EngineWorker.cpp
@@ -97,48 +111,6 @@ add_executable(vd_game_engine
         src/modules/sobj/StaticObjectRenderer.hpp
         src/modules/sobj/StaticObjectShader.cpp
         src/modules/sobj/StaticObjectShader.hpp
-        src/modules/terrain/Terrain.cpp
-        src/modules/terrain/Terrain.hpp
-        src/modules/terrain/TerrainConfig.cpp
-        src/modules/terrain/TerrainConfig.hpp
-        src/modules/terrain/TerrainRenderer.cpp
-        src/modules/terrain/TerrainRenderer.hpp
-        src/modules/terrain/TerrainShader.cpp
-        src/modules/terrain/TerrainShader.hpp
-        src/engine/shadow/ShadowBox.cpp
-        src/engine/shadow/ShadowBox.hpp
-        src/engine/shadow/ShadowShader.cpp
-        src/engine/shadow/ShadowShader.hpp
-        src/engine/shadow/ShadowManager.cpp
-        src/engine/shadow/ShadowManager.hpp
-        src/modules/gui/GuiQuad.cpp
-        src/modules/gui/GuiQuad.hpp
-        src/modules/gui/GuiRenderer.cpp
-        src/modules/gui/GuiRenderer.hpp
-        src/modules/gui/GuiShader.cpp
-        src/modules/gui/GuiShader.hpp
-        src/modules/water/Water.cpp
-        src/modules/water/Water.hpp
-        src/modules/water/WaterShader.cpp
-        src/modules/water/WaterShader.hpp
-        src/modules/water/WaterRenderer.cpp
-        src/modules/water/WaterRenderer.hpp
-        src/modules/water/WaterConfig.cpp
-        src/modules/water/WaterConfig.hpp
-        src/engine/glmodel/buffer/FrameBuffer.cpp
-        src/engine/glmodel/buffer/FrameBuffer.hpp
-        src/engine/glmodel/buffer/PatchBuffer.cpp
-        src/engine/glmodel/buffer/PatchBuffer.hpp
-        src/engine/config/MetaConfig.hpp
-        src/engine/config/MetaConfig.cpp
-        src/engine/core/AsyncWorker.cpp
-        src/engine/core/AsyncWorker.hpp
-        src/engine/foundation/math/Frustum.cpp
-        src/engine/foundation/math/Frustum.hpp
-        src/engine/foundation/math/BoundingBox.cpp
-        src/engine/foundation/math/BoundingBox.hpp
-        src/engine/foundation/math/Util.cpp
-        src/engine/foundation/math/Util.hpp
         src/modules/terrain/TerrainShader.cpp
         src/modules/terrain/TerrainShader.hpp
         src/modules/terrain/Terrain.cpp
@@ -159,6 +131,26 @@ add_executable(vd_game_engine
         src/modules/terrain/splatmap/SplatMapRenderer.hpp
         src/modules/terrain/splatmap/SplatMapShader.cpp
         src/modules/terrain/splatmap/SplatMapShader.hpp
+        src/engine/shadow/ShadowBox.cpp
+        src/engine/shadow/ShadowBox.hpp
+        src/engine/shadow/ShadowShader.cpp
+        src/engine/shadow/ShadowShader.hpp
+        src/engine/shadow/ShadowManager.cpp
+        src/engine/shadow/ShadowManager.hpp
+        src/modules/gui/GuiQuad.cpp
+        src/modules/gui/GuiQuad.hpp
+        src/modules/gui/GuiRenderer.cpp
+        src/modules/gui/GuiRenderer.hpp
+        src/modules/gui/GuiShader.cpp
+        src/modules/gui/GuiShader.hpp
+        src/modules/water/Water.cpp
+        src/modules/water/Water.hpp
+        src/modules/water/WaterShader.cpp
+        src/modules/water/WaterShader.hpp
+        src/modules/water/WaterRenderer.cpp
+        src/modules/water/WaterRenderer.hpp
+        src/modules/water/WaterConfig.cpp
+        src/modules/water/WaterConfig.hpp
         src/main.cpp)
 
 # dependencies

@@ -18,9 +18,7 @@ namespace vd::img {
 
         ImageBPtr loadByteImage(const std::string& path);
         ImageFPtr loadFloatImage(const std::string& path);
-
-        // Debugging purposes
-        static void showByteImage(const ImageB& imagePtr);
+        RawFloatImagePtr loadRawFloatImage(const std::string& path);
     private:
         /// Change Impl here
         // typedef internal::impl::OpenCVIMGLoader	IMGLoaderImpl;

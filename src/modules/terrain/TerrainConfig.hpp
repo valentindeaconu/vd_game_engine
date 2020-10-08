@@ -40,6 +40,11 @@ namespace mod::terrain {
         [[nodiscard]] float getTessellationSlope() const;
         [[nodiscard]] float getTessellationShift() const;
 
+        [[nodiscard]] float getTessellationOuterLevel() const;
+        [[nodiscard]] float getTessellationInnerLevel() const;
+
+        [[nodiscard]] bool isLevelOfDetailEnabled() const;
+
         [[nodiscard]] int getTbnRange() const;
 
         [[nodiscard]] const vd::model::Texture2DPtr& getHeightMap() const;
@@ -69,6 +74,11 @@ namespace mod::terrain {
         float tessellationSlope;
         float tessellationShift;
 
+        float tessellationOuterLevel;
+        float tessellationInnerLevel;
+
+        bool levelOfDetailEnabled;
+
         int tbnRange;
 
         float normalStrength;
@@ -76,6 +86,7 @@ namespace mod::terrain {
         BiomePtrVec biomes;
 
         vd::img::ImageFPtr heightImg;
+        vd::img::RawFloatImagePtr heightData;
 
         vd::model::Texture2DPtr heightMap;
         vd::model::Texture2DPtr normalMap;

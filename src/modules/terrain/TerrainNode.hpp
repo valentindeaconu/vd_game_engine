@@ -24,20 +24,35 @@ namespace mod::terrain {
 
     class TerrainNode {
     public:
+        enum NodeIndex {
+            eTopLeft = 0,
+            eTopRight,
+            eBottomLeft,
+            eBottomRight,
+            eRootNode
+        };
+
         typedef std::array<float, 16>   PatchHeightVec;
 
         TerrainNode(const TerrainConfigPtr& terrainConfigPtr,
                     const glm::vec2& topLeft,
                     const glm::vec2& bottomRight,
-                    int level);
+                    int level,
+                    NodeIndex nodeIndex);
 
         void update(const vd::core::CameraPtr& cameraPtr);
 
         [[nodiscard]] const TerrainNodePtrVec& GetNodes() const;
 
-        [[nodiscard]] bool IsLeaf() const;
+        [[nodiscard]] const glm::vec2& GetTopLeft() const;
 
         [[nodiscard]] int GetLevel() const;
+
+        [[nodiscard]] bool IsLeaf() const;
+
+        [[nodiscard]] float GetGap() const;
+
+        [[nodiscard]] NodeIndex GetIndex() const;
 
         [[nodiscard]] const vd::math::Transform& GetTransform() const;
 
@@ -53,6 +68,8 @@ namespace mod::terrain {
         const glm::vec2 m_kBottomRight;
         const int m_kLevel;
         bool m_Leaf;
+        float m_Gap;
+        NodeIndex m_NodeIndex;
 
         glm::vec2 m_kCenter;
 

@@ -31,7 +31,11 @@ namespace mod::terrain {
                 const glm::vec2 topLeft(x / gridFactor, y / gridFactor);
                 const glm::vec2 bottomRight((x + 1) / gridFactor, (y + 1) / gridFactor);
 
-                m_RootNodes.emplace_back(std::make_shared<TerrainNode>(m_ConfigPtr, topLeft, bottomRight, 0));
+                m_RootNodes.emplace_back(std::make_shared<TerrainNode>(m_ConfigPtr,
+                                                                       topLeft,
+                                                                       bottomRight,
+                                                                       0,
+                                                                       TerrainNode::eRootNode));
             }
         }
 

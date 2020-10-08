@@ -8,6 +8,8 @@
 #include <engine/component/Renderer.hpp>
 
 #include "Terrain.hpp"
+#include "TerrainConfig.hpp"
+#include "TerrainNode.hpp"
 
 namespace mod::terrain {
     class TerrainRenderer : public vd::component::Renderer {
@@ -25,7 +27,7 @@ namespace mod::terrain {
         void setTerrain(const TerrainPtr& terrainPtr);
 
     private:
-        void renderNode(const TerrainNodePtr& nodePtr, const vd::math::Transform& worldModel);
+        void renderNode(const TerrainNodePtr& nodePtr, const TerrainConfigPtr& terrainConfigPtr);
 
         bool isReady() override;
 

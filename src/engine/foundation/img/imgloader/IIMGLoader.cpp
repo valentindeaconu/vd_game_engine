@@ -183,4 +183,55 @@ namespace vd::img::internal::impl {
 
         return imagePtr;
     }
+
+    RawFloatImagePtr stbiIMGLoader::loadRawFloatImage(const std::string &path) {
+        int x, y, n;
+        int force_channels = 4;
+        unsigned char* image_data = stbi_load(path.c_str(), &x, &y, &n, force_channels);
+        if (!image_data)
+        {
+            vd::Logger::warn("Could not load " + path);
+            return nullptr;
+        }
+
+
+        if ((x & (x - 1)) != 0 || (y & (y - 1)) != 0)
+        {
+            vd::Logger::log("Texture " + path + " is not power-of-2 dimension");
+        }
+
+        int width_in_bytes = (x << 2);
+
+        unsigned char* top = NULL;
+        unsigned char* bottom = NULL;
+        unsigned char temp = 0;
+
+        int half_height = (y >> 1);
+
+        for (int row = 0; row < half_height; row++) {
+            top = image_data + row * width_in_bytes;
+            bottom = image_data + (x - row - 1) * width_in_bytes;
+            for (int col = 0; col < width_in_bytes; col++) {
+                temp = *top;
+                *top = *bottom;
+                *bottom = temp;
+                top++;
+                bottom++;
+            }
+        }
+
+        RawFloatImagePtr rawFloatImagePtr = std::make_shared<RawFloatImage>();
+        rawFloatImagePtr->width = x;
+        rawFloatImagePtr->height = y;
+        rawFloatImagePtr->data.reserve(x * y);
+
+        size_t len = x * y * 4;
+        for (size_t i = 0; i < len; i += 4) {
+            rawFloatImagePtr->data.emplace_back(float(image_data[i]) / 255.0f);
+        }
+
+        stbi_image_free(image_data);
+
+        return rawFloatImagePtr;
+    }
 }

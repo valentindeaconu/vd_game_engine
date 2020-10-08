@@ -32,7 +32,7 @@ namespace mod::terrain {
             const auto& terrainConfigPtr = terrainPtr->GetTerrainConfig();
 
             for (const auto& rootNode : rootNodes) {
-                renderNode(rootNode, terrainConfigPtr->getTransform());
+                renderNode(rootNode, terrainConfigPtr);
             }
 
             if (renderConfigPtr != nullptr) {
@@ -41,13 +41,13 @@ namespace mod::terrain {
         }
     }
 
-    void TerrainRenderer::renderNode(const TerrainNodePtr& nodePtr, const vd::math::Transform& worldModel) {
+    void TerrainRenderer::renderNode(const TerrainNodePtr& nodePtr, const TerrainConfigPtr& terrainConfigPtr) {
         if (nodePtr != nullptr) {
             if (nodePtr->IsLeaf()) {
                 shaderPtr->bind();
 
                 shaderPtr->setUniform("localModel", nodePtr->GetTransform().get());
-                shaderPtr->setUniform("worldModel", worldModel.get());
+                shaderPtr->setUniform("worldModel", terrainConfigPtr->getTransform().get());
 
                 const auto& patchHeights = nodePtr->GetPatchHeights();
                 for (int i = 0; i < 16; ++i) {
@@ -61,7 +61,7 @@ namespace mod::terrain {
             } else {
                 const auto& children = nodePtr->GetNodes();
                 for (const auto& child : children) {
-                    renderNode(child, worldModel);
+                    renderNode(child, terrainConfigPtr);
                 }
             }
         }

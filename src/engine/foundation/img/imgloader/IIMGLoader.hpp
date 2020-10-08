@@ -15,6 +15,7 @@ namespace vd::img::internal {
     public:
         virtual ImageBPtr loadByteImage(const std::string& path) = 0;
         virtual ImageFPtr loadFloatImage(const std::string& path) = 0;
+        virtual RawFloatImagePtr loadRawFloatImage(const std::string& path) = 0;
     };
     typedef std::shared_ptr<IIMGLoader>	IIMGLoaderPtr;
 
@@ -34,6 +35,8 @@ namespace vd::img::internal {
         public:
             ImageBPtr loadByteImage(const std::string& path) override;
             ImageFPtr loadFloatImage(const std::string& path) override;
+            RawFloatImagePtr loadRawFloatImage(const std::string& path) override;
+
         };
         typedef std::shared_ptr<stbiIMGLoader>		stbiIMGLoaderPtr;
     }

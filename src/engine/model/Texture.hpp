@@ -23,6 +23,7 @@ namespace vd::model
         Texture();
         Texture(const Texture& other);
         Texture(const vd::img::ImageBPtr& imagePtr);
+        Texture(const vd::img::ImageFPtr& imagePtr);
         Texture(size_t width, size_t height);
         ~Texture();
 

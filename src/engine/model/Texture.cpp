@@ -50,6 +50,36 @@ namespace vd::model
     }
 
     template<GLuint type>
+    Texture<type>::Texture(const vd::img::ImageFPtr& imagePtr)
+        : width(imagePtr->width)
+        , height(imagePtr->height)
+    {
+        generate();
+        bind();
+
+        const size_t sz = imagePtr->width * imagePtr->height;
+        std::vector<float> data;
+        data.reserve(sz);
+        for (int i = 0; i < sz * 4; i+=4) {
+            data.emplace_back(imagePtr->data[i]);
+        }
+
+        glTexImage2D(type,
+                     0,
+                     GL_RED,
+                     (GLsizei) width,
+                     (GLsizei) height,
+                     0,
+                     GL_RED,
+                     GL_FLOAT,
+                     &data[0]);
+
+        bilinearFilter();
+        wrapRepeat();
+        unbind();
+    }
+
+    template<GLuint type>
     Texture<type>::Texture(size_t width, size_t height)
         : width(width)
         , height(height)
