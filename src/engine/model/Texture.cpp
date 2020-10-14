@@ -66,7 +66,7 @@ namespace vd::model
 
         glTexImage2D(type,
                      0,
-                     GL_RED,
+                     GL_R16F,
                      (GLsizei) width,
                      (GLsizei) height,
                      0,

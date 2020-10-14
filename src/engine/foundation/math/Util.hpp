@@ -7,10 +7,10 @@
 
 #include <glm/glm.hpp>
 
-#include "BoundingBox.hpp"
+#include "Bounds.hpp"
 
 namespace vd::math {
-    bool isPointInsideBoundingBox(const glm::vec3& point, const BoundingBox& boundingBox);
+    bool isPointInsideBoundingBox(const glm::vec3& point, const Bounds3& bounds);
 }
 
 #endif //VD_GAME_ENGINE_UTIL_HPP

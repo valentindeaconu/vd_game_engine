@@ -8,6 +8,7 @@
 #include <engine/core/Camera.hpp>
 #include <engine/foundation/img/imghelper/ImageHelper.hpp>
 #include <engine/foundation/math/Transform.hpp>
+#include <engine/foundation/math/Bounds.hpp>
 
 #include <glm/glm.hpp>
 
@@ -32,15 +33,24 @@ namespace mod::terrain {
             eRootNode
         };
 
-        typedef std::array<float, 16>   PatchHeightVec;
+        enum EdgeIndex {
+            eTop = 0,
+            eRight,
+            eBottom,
+            eLeft
+        };
 
-        TerrainNode(const TerrainConfigPtr& terrainConfigPtr,
+        typedef std::array<glm::vec3, 4> PointVec;
+
+        TerrainNode(const TerrainNode* parent,
+                    const TerrainConfigPtr& terrainConfigPtr,
                     const glm::vec2& topLeft,
                     const glm::vec2& bottomRight,
                     int level,
                     NodeIndex nodeIndex);
 
-        void update(const vd::core::CameraPtr& cameraPtr);
+        void Update(const vd::core::CameraPtr& cameraPtr);
+        void UpdateNeighbours();
 
         [[nodiscard]] const TerrainNodePtrVec& GetNodes() const;
 
@@ -50,34 +60,62 @@ namespace mod::terrain {
 
         [[nodiscard]] bool IsLeaf() const;
 
-        [[nodiscard]] float GetGap() const;
-
-        [[nodiscard]] NodeIndex GetIndex() const;
-
         [[nodiscard]] const vd::math::Transform& GetTransform() const;
 
-        [[nodiscard]] const PatchHeightVec& GetPatchHeights() const;
+        [[nodiscard]] const PointVec& GetEdgeMiddles() const;
 
+        [[nodiscard]] const glm::vec4& GetTessFactors() const;
+
+        [[nodiscard]] const NodeIndex& GetIndex() const;
+
+        void SetNeighbour(const TerrainNodePtr& neighbour, EdgeIndex neighbourIndex);
     private:
-        float distanceToCamera(const glm::vec3& cameraPosition, const glm::vec2& localCoords);
-        [[nodiscard]] float computeHeightFor2DPoint(float x, float z) const;
+        void computeEdgeMiddles();
+        void computeChildren();
+        void computeNeighbours();
+
+        enum MatchingResult {
+            eOutside = 0,
+            eInside,
+            ePerfectMatch
+        };
+        [[nodiscard]] MatchingResult containsSquare(const vd::math::Bounds2& searchingBounds) const;
+
+        static const TerrainNode* searchNeighbour(const TerrainNode* nodePtr,
+                                                  const vd::math::Bounds2& searchingBounds,
+                                                  bool parentSearch = false,
+                                                  NodeIndex caller = eRootNode);
+        static const TerrainNode* searchNeighbour(const TerrainNodePtr& nodePtr,
+                                                  const vd::math::Bounds2& searchingBounds,
+                                                  bool parentSearch = false,
+                                                  NodeIndex caller = eRootNode);
+
+        const TerrainNode* m_kParent;
+
+        const NodeIndex m_kNodeIndex;
 
         const TerrainConfigPtr m_kConfigPtr;
 
+        bool m_Leaf;
+
+        const int m_kLevel;
+
         const glm::vec2 m_kTopLeft;
         const glm::vec2 m_kBottomRight;
-        const int m_kLevel;
-        bool m_Leaf;
-        float m_Gap;
-        NodeIndex m_NodeIndex;
 
-        glm::vec2 m_kCenter;
+        const glm::vec2 m_kCenter;
+
+        PointVec m_EdgeMid;
+
+        float m_EdgeLength;
+
+        glm::vec4 m_TessFactor;
 
         TerrainNodePtrVec m_Children;
 
         vd::math::Transform m_Transform;
 
-        PatchHeightVec m_PatchHeights;
+        std::array<const TerrainNode*, 4> m_Neighbours;
     };
 }
 

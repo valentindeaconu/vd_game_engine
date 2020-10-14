@@ -45,7 +45,7 @@ namespace mod::sobj
                     for (const auto& placementInfo : placementInfos) {
                         StaticObjectPtr staticObjectPtr = biome.objects[placementInfo.objectIndex];
                         staticObjectPtr->getWorldTransform().setTranslation(placementInfo.location);
-                        staticObjectPtr->update();
+                        staticObjectPtr->Update();
 
                         if (staticObjectPtr->shouldBeRendered()) {
                             for (size_t meshIndex = 0;

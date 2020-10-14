@@ -26,7 +26,7 @@ namespace vd::object
     bool Entity::shouldBeRendered() const {
         return std::ranges::any_of(boundingBoxes.cbegin(),
                                    boundingBoxes.cend(),
-                                   [&](const math::BoundingBox& boundingBox) {
+                                   [&](const math::Bounds3& boundingBox) {
             return parentEnginePtr
                 ->getFrustum()
                 ->checkAgainst(boundingBox.withTransform(worldTransform)) != math::Frustum::eOutside;
@@ -79,15 +79,15 @@ namespace vd::object
         return buffers;
     }
 
-    vd::math::BoundingBoxVec& Entity::getBoundingBoxes() {
+    vd::math::Bounds3Vec& Entity::getBoundingBoxes() {
         return boundingBoxes;
     }
 
-    const vd::math::BoundingBoxVec& Entity::getBoundingBoxes() const {
+    const vd::math::Bounds3Vec& Entity::getBoundingBoxes() const {
         return boundingBoxes;
     }
 
-    void Entity::setBoundingBoxes(const vd::math::BoundingBoxVec& boundingBoxes) {
+    void Entity::setBoundingBoxes(const vd::math::Bounds3Vec& boundingBoxes) {
         this->boundingBoxes = boundingBoxes;
     }
 

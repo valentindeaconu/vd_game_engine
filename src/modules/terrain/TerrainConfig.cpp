@@ -51,18 +51,17 @@ namespace mod::terrain {
         else if (command == "heightmap") {
             vd::img::IMGLoader imgLoader;
             heightImg = imgLoader.loadFloatImage(tokens[0]);
-
             heightMap = std::make_shared<vd::model::Texture2D>(heightImg);
-            //heightMap = vd::model::TextureService::get(tokens[0]);
-            //heightMap->bind();
-            //heightMap->bilinearFilter();
-            //heightMap->unbind();
         }
         else if (command == "normalStrength") {
             normalStrength = std::stof(tokens[0]);
         }
         else if (command.starts_with("lod") && command.ends_with("_range")) {
             int index = command[3] - '0' - 1;
+
+            if (index >= kDetailLevels) {
+                return;
+            }
 
             int lodRangeValue = std::stoi(tokens[0]);
 
@@ -97,14 +96,14 @@ namespace mod::terrain {
             vd::model::Material& material = biomes.back()->getMaterial();
             material.normalMap = vd::model::TextureService::get(tokens[0]);
             material.normalMap->bind();
-            material.normalMap->trilinearFilter();
+            material.normalMap->bilinearFilter();
             material.normalMap->unbind();
         }
         else if (command == "material_DISP") {
             vd::model::Material& material = biomes.back()->getMaterial();
             material.displaceMap = vd::model::TextureService::get(tokens[0]);
             material.displaceMap->bind();
-            material.displaceMap->trilinearFilter();
+            material.displaceMap->bilinearFilter();
             material.displaceMap->unbind();
         }
         else if (command == "material_heightScaling") {
@@ -184,6 +183,10 @@ namespace mod::terrain {
 
     int TerrainConfig::getTbnRange() const {
         return tbnRange;
+    }
+
+    int TerrainConfig::getMaxDetailLevel() const {
+        return kDetailLevels - 1;
     }
 
     bool TerrainConfig::isLevelOfDetailEnabled() const {

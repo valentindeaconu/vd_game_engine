@@ -5,7 +5,7 @@
 #include "Util.hpp"
 
 namespace vd::math {
-    bool isPointInsideBoundingBox(const glm::vec3& point, const BoundingBox& boundingBox) {
+    bool isPointInsideBoundingBox(const glm::vec3& point, const Bounds3& bounds) {
         // bibliography: https://math.stackexchange.com/questions/1472049/check-if-a-point-is-inside-a-rectangular-shaped-area-3d
         /*
               P6 ------ P7
@@ -16,10 +16,10 @@ namespace vd::math {
             | /      |	/
             P1 ----- P4
         */
-        glm::vec3 P1(boundingBox.getBottomLeft());
-        glm::vec3 P2(P1.x, P1.y, boundingBox.getTopRight().z);
-        glm::vec3 P4(boundingBox.getTopRight().x, P1.y, P1.z);
-        glm::vec3 P5(P1.x, boundingBox.getTopRight().y, P1.z);
+        glm::vec3 P1(bounds.GetLeft());
+        glm::vec3 P2(P1.x, P1.y, bounds.GetRight().z);
+        glm::vec3 P4(bounds.GetRight().x, P1.y, P1.z);
+        glm::vec3 P5(P1.x, bounds.GetRight().y, P1.z);
 
         glm::vec3 i = P2 - P1;
         glm::vec3 j = P4 - P1;

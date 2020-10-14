@@ -49,9 +49,11 @@ namespace mod::terrain {
                 shaderPtr->setUniform("localModel", nodePtr->GetTransform().get());
                 shaderPtr->setUniform("worldModel", terrainConfigPtr->getTransform().get());
 
-                const auto& patchHeights = nodePtr->GetPatchHeights();
-                for (int i = 0; i < 16; ++i) {
-                    shaderPtr->setUniformf("patchHeights[" + std::to_string(i) + "]", patchHeights[i]);
+                shaderPtr->setUniform("tessFactor", nodePtr->GetTessFactors());
+
+                const auto& edgeMid = nodePtr->GetEdgeMiddles();
+                for (int i = 0; i < 4; ++i) {
+                    shaderPtr->setUniform("edgeMid[" + std::to_string(i) + "]", edgeMid[i]);
                 }
 
                 shaderPtr->updateUniforms(terrainPtr, 0);

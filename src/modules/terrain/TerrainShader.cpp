@@ -27,6 +27,11 @@ namespace mod::terrain {
 
         addUniform("scaleY");
         addUniform("tbnRange");
+
+        addUniform("tessellationFactor");
+        addUniform("tessellationSlope");
+        addUniform("tessellationShift");
+
         addUniform("tessellationOuterLevel");
         addUniform("tessellationInnerLevel");
 
@@ -34,8 +39,9 @@ namespace mod::terrain {
         addUniform("normalMap");
         addUniform("splatMap");
 
-        for (int i = 0; i < 16; ++i) {
-            addUniform("patchHeights[" + std::to_string(i) + "]");
+        addUniform("tessFactor");
+        for (int i = 0; i < 4; ++i) {
+            addUniform("edgeMid[" + std::to_string(i) + "]");
         }
 
         for (int i = 0; i < kBiomeCount; ++i) {
@@ -59,8 +65,13 @@ namespace mod::terrain {
 
         setUniformf("scaleY", configPtr->getScaleY());
         setUniformi("tbnRange", configPtr->getTbnRange());
-        setUniformf("tessellationOuterLevel", configPtr->getTessellationOuterLevel());
+
+        setUniformi("tessellationFactor", configPtr->getTessellationFactor());
+        setUniformf("tessellationSlope", configPtr->getTessellationSlope());
+        setUniformf("tessellationShift", configPtr->getTessellationShift());
+
         setUniformf("tessellationInnerLevel", configPtr->getTessellationInnerLevel());
+        setUniformf("tessellationOuterLevel", configPtr->getTessellationOuterLevel());
 
         vd::model::activeTexture(0);
         configPtr->getHeightMap()->bind();

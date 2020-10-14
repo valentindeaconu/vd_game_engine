@@ -32,8 +32,8 @@ namespace vd::math {
     /**
      * Based on https://stackoverflow.com/questions/52217233/check-if-an-axis-aligned-bounding-box-is-inside-view-frustum
      */
-    Frustum::CollisionRelationship Frustum::checkAgainst(const BoundingBox& boundingBox) const {
-        if (boundingBox.isEmpty())
+    Frustum::CollisionRelationship Frustum::checkAgainst(const Bounds3& bounds) const {
+        if (bounds.IsEmpty())
             return eOutside;
 
         glm::vec3 min, max;
@@ -41,29 +41,29 @@ namespace vd::math {
         for (const auto& plane : planes) {
             // X axis
             if(plane.n.x > 0) {
-                min.x = boundingBox.getBottomLeft().x;
-                max.x = boundingBox.getTopRight().x;
+                min.x = bounds.GetLeft().x;
+                max.x = bounds.GetRight().x;
             } else {
-                min.x = boundingBox.getTopRight().x;
-                max.x = boundingBox.getBottomLeft().x;
+                min.x = bounds.GetRight().x;
+                max.x = bounds.GetLeft().x;
             }
 
             // Y axis
             if(plane.n.y > 0) {
-                min.y = boundingBox.getBottomLeft().y;
-                max.y = boundingBox.getTopRight().y;
+                min.y = bounds.GetLeft().y;
+                max.y = bounds.GetRight().y;
             } else {
-                min.y = boundingBox.getTopRight().y;
-                max.y = boundingBox.getBottomLeft().y;
+                min.y = bounds.GetRight().y;
+                max.y = bounds.GetLeft().y;
             }
 
             // Z axis
             if(plane.n.z > 0) {
-                min.z = boundingBox.getBottomLeft().z;
-                max.z = boundingBox.getTopRight().z;
+                min.z = bounds.GetLeft().z;
+                max.z = bounds.GetRight().z;
             } else {
-                min.z = boundingBox.getTopRight().z;
-                max.z = boundingBox.getBottomLeft().z;
+                min.z = bounds.GetRight().z;
+                max.z = bounds.GetLeft().z;
             }
 
             if (glm::dot(plane.n, min) + plane.d > 0)

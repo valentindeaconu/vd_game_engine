@@ -7,12 +7,17 @@ out vec2 tcTexCoords;
 uniform mat4 localModel;
 uniform mat4 worldModel;
 
+uniform sampler2D heightMap;
+
 void main() {
     // Compute local coordinates
     vec2 localCoords = (localModel * vec4(vPosition.x, 0.0f, vPosition.y, 1.0f)).xz;
 
     // Pass texcoords
     tcTexCoords = localCoords;
+
+    // Read vertex' height
+    float height = texture(heightMap, localCoords).r;
 
     // Compute world coordinates
     vec4 worldCoords = worldModel * vec4(localCoords.x, 0.0f, localCoords.y, 1.0f);

@@ -23,7 +23,8 @@
 namespace mod::terrain {
     class TerrainConfig : public vd::config::ConfigurationFile {
     public:
-        typedef std::array<int, 8> LodVec;
+        static const int kDetailLevels = 6;
+        typedef std::array<int, kDetailLevels> LodVec;
 
         explicit TerrainConfig(const std::string& filePath);
         ~TerrainConfig();
@@ -46,6 +47,8 @@ namespace mod::terrain {
         [[nodiscard]] bool isLevelOfDetailEnabled() const;
 
         [[nodiscard]] int getTbnRange() const;
+
+        [[nodiscard]] int getMaxDetailLevel() const;
 
         [[nodiscard]] const vd::model::Texture2DPtr& getHeightMap() const;
         [[nodiscard]] const vd::model::Texture2DPtr& getNormalMap() const;
@@ -92,8 +95,8 @@ namespace mod::terrain {
         vd::model::Texture2DPtr normalMap;
         vd::model::Texture2DPtr splatMap;
 
-        std::array<int, 8> lodRange;
-        std::array<int, 8> lodMorphingArea;
+        std::array<int, kDetailLevels> lodRange;
+        std::array<int, kDetailLevels> lodMorphingArea;
 
         vd::math::Transform worldTransform;
     };

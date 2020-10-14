@@ -31,11 +31,35 @@ namespace mod::terrain {
                 const glm::vec2 topLeft(x / gridFactor, y / gridFactor);
                 const glm::vec2 bottomRight((x + 1) / gridFactor, (y + 1) / gridFactor);
 
-                m_RootNodes.emplace_back(std::make_shared<TerrainNode>(m_ConfigPtr,
+                TerrainNodePtr nodePtr = std::make_shared<TerrainNode>(nullptr,
+                                                                       m_ConfigPtr,
                                                                        topLeft,
                                                                        bottomRight,
                                                                        0,
-                                                                       TerrainNode::eRootNode));
+                                                                       TerrainNode::eRootNode);
+
+                if (i == 0) {
+                    nodePtr->SetNeighbour(nullptr, TerrainNode::eTop);
+                } else {
+                    const auto &topNeighbour = m_RootNodes[(i - 1) * sqrtRootNodes + j];
+                    nodePtr->SetNeighbour(topNeighbour, TerrainNode::eTop);
+
+                    topNeighbour->SetNeighbour(nodePtr, TerrainNode::eBottom);
+                }
+
+                if (j == 0) {
+                    nodePtr->SetNeighbour(nullptr, TerrainNode::eLeft);
+                } else {
+                    const auto &leftNeighbour = m_RootNodes[i * sqrtRootNodes + (j - 1)];
+                    nodePtr->SetNeighbour(leftNeighbour, TerrainNode::eLeft);
+
+                    leftNeighbour->SetNeighbour(nodePtr, TerrainNode::eRight);
+                }
+
+                nodePtr->SetNeighbour(nullptr, TerrainNode::eRight);
+                nodePtr->SetNeighbour(nullptr, TerrainNode::eBottom);
+
+                m_RootNodes.push_back(std::move(nodePtr));
             }
         }
 
@@ -48,7 +72,11 @@ namespace mod::terrain {
         auto& cameraPtr = getParentEngine()->getCamera();
         if (cameraPtr->isCameraMoved() || cameraPtr->isCameraRotated()) {
             for (auto& rootNode : m_RootNodes) {
-                rootNode->update(cameraPtr);
+                rootNode->Update(cameraPtr);
+            }
+
+            for (auto& rootNode : m_RootNodes) {
+                rootNode->UpdateNeighbours();
             }
         }
     }

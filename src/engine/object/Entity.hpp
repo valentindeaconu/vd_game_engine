@@ -4,7 +4,7 @@
 #include <glm/glm.hpp>
 
 #include <engine/foundation/math/Transform.hpp>
-#include <engine/foundation/math/BoundingBox.hpp>
+#include <engine/foundation/math/Bounds.hpp>
 #include <engine/model/Mesh.hpp>
 
 #include <engine/glmodel/buffer/MeshBuffer.hpp>
@@ -48,9 +48,9 @@ namespace vd::object {
         vd::buffer::BufferPtrVec& getBuffers();
         [[nodiscard]] const vd::buffer::BufferPtrVec& getBuffers() const;
 
-        vd::math::BoundingBoxVec& getBoundingBoxes();
-        [[nodiscard]] const vd::math::BoundingBoxVec& getBoundingBoxes() const;
-        void setBoundingBoxes(const vd::math::BoundingBoxVec& boundingBoxes);
+        vd::math::Bounds3Vec& getBoundingBoxes();
+        [[nodiscard]] const vd::math::Bounds3Vec& getBoundingBoxes() const;
+        void setBoundingBoxes(const vd::math::Bounds3Vec& boundingBoxes);
 
         vd::EnginePtr& getParentEngine();
         [[nodiscard]] const vd::EnginePtr& getParentEngine() const;
@@ -69,7 +69,7 @@ namespace vd::object {
 
         vd::model::MeshPtrVec meshes;
         vd::buffer::BufferPtrVec buffers;
-        vd::math::BoundingBoxVec boundingBoxes;
+        vd::math::Bounds3Vec boundingBoxes;
 
         vd::EnginePtr parentEnginePtr;
     };

@@ -61,10 +61,14 @@ add_executable(vd_game_engine
         src/engine/foundation/GL.hpp
         src/engine/foundation/math/Frustum.cpp
         src/engine/foundation/math/Frustum.hpp
-        src/engine/foundation/math/BoundingBox.cpp
-        src/engine/foundation/math/BoundingBox.hpp
+        src/engine/foundation/math/Bounds.cpp
+        src/engine/foundation/math/Bounds.hpp
         src/engine/foundation/math/Util.cpp
         src/engine/foundation/math/Util.hpp
+        src/engine/foundation/datastruct/Tree.cpp
+        src/engine/foundation/datastruct/Tree.hpp
+        src/engine/foundation/algorithm/TreeHelper.cpp
+        src/engine/foundation/algorithm/TreeHelper.hpp
         src/engine/glmodel/buffer/Buffer.hpp
         src/engine/glmodel/buffer/MeshBuffer.cpp
         src/engine/glmodel/buffer/MeshBuffer.hpp
