@@ -71,12 +71,22 @@ namespace vd::datastruct {
     }
 
     template<int Dim>
+    const Tree<Dim>* Tree<Dim>::GetParent() const {
+        return m_kParent;
+    }
+
+    template<int Dim>
     typename Tree<Dim>::ptr_type_t& Tree<Dim>::GetChild(size_t index) {
         return m_Children[index];
     }
 
     template<int Dim>
-    typename const Tree<Dim>::ptr_type_t& Tree<Dim>::GetChild(size_t index) const {
+    const typename Tree<Dim>::ptr_type_t& Tree<Dim>::GetChild(size_t index) const {
         return m_Children[index];
+    }
+
+    template<int Dim>
+    const typename Tree<Dim>::arr_type_t &Tree<Dim>::GetChildren() const {
+        return m_Children;
     }
 }

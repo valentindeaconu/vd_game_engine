@@ -28,12 +28,8 @@ namespace mod::terrain {
                 renderConfigPtr->enable();
             }
 
-            const auto& rootNodes = terrainPtr->GetRootNodes();
             const auto& terrainConfigPtr = terrainPtr->GetTerrainConfig();
-
-            for (const auto& rootNode : rootNodes) {
-                renderNode(rootNode, terrainConfigPtr);
-            }
+            renderNode(terrainPtr->GetRootNode(), terrainConfigPtr);
 
             if (renderConfigPtr != nullptr) {
                 renderConfigPtr->disable();
@@ -41,7 +37,7 @@ namespace mod::terrain {
         }
     }
 
-    void TerrainRenderer::renderNode(const TerrainNodePtr& nodePtr, const TerrainConfigPtr& terrainConfigPtr) {
+    void TerrainRenderer::renderNode(const TerrainNode::ptr_type_t& nodePtr, const TerrainConfigPtr& terrainConfigPtr) {
         if (nodePtr != nullptr) {
             if (nodePtr->IsLeaf()) {
                 shaderPtr->bind();
@@ -61,9 +57,9 @@ namespace mod::terrain {
                 vd::buffer::BufferPtrVec& buffers = terrainPtr->getBuffers();
                 buffers[0]->render();
             } else {
-                const auto& children = nodePtr->GetNodes();
+                const auto& children = nodePtr->GetChildren();
                 for (const auto& child : children) {
-                    renderNode(child, terrainConfigPtr);
+                    renderNode(std::dynamic_pointer_cast<TerrainNode>(child), terrainConfigPtr);
                 }
             }
         }

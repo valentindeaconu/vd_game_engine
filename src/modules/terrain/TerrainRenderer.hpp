@@ -27,7 +27,7 @@ namespace mod::terrain {
         void setTerrain(const TerrainPtr& terrainPtr);
 
     private:
-        void renderNode(const TerrainNodePtr& nodePtr, const TerrainConfigPtr& terrainConfigPtr);
+        void renderNode(const TerrainNode::ptr_type_t& nodePtr, const TerrainConfigPtr& terrainConfigPtr);
 
         bool isReady() override;
 

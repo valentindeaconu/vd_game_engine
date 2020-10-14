@@ -11,15 +11,12 @@ namespace mod::terrain {
                              const glm::vec2& bottomRight,
                              int level,
                              NodeIndex nodeIndex)
-            : m_kParent(parent)
+            : vd::datastruct::Quadtree(parent, level, nodeIndex)
             , m_kConfigPtr(terrainConfigPtr)
             , m_kTopLeft(topLeft)
             , m_kBottomRight(bottomRight)
-            , m_kLevel(level)
-            , m_Leaf(true)
             , m_kCenter((topLeft.x + bottomRight.x) / 2.0f, (topLeft.y + bottomRight.y) / 2.0f)
             , m_TessFactor(1.0f)
-            , m_kNodeIndex(nodeIndex)
     {
         assert((bottomRight.x - topLeft.x) == (bottomRight.y - topLeft.y));
 
@@ -30,16 +27,13 @@ namespace mod::terrain {
         const auto rtRootNodes = float(std::sqrt(terrainConfigPtr->getRootNodes()));
         const auto levelDivision = float(1 << level);
 
-        m_EdgeLength = scaleXZ / (rtRootNodes * levelDivision);
-
-        computeEdgeMiddles();
+        ComputeEdgeMiddles();
     }
 
     void TerrainNode::Update(const vd::core::CameraPtr& cameraPtr) {
         if ((m_kConfigPtr->isLevelOfDetailEnabled()) && (cameraPtr->isCameraRotated() || cameraPtr->isCameraMoved())) {
             // Set this node as leaf
-            m_Leaf = true;
-            m_Children.clear();
+            this->Clear();
 
             // If this node's level is greater or equal to the maximum level, then just ignore it
             if (m_kLevel < m_kConfigPtr->getMaxDetailLevel()) {
@@ -47,7 +41,7 @@ namespace mod::terrain {
                 const auto levelMinRange = float(m_kConfigPtr->getLodRange()[m_kLevel]);
 
                 // Compute distance from each point to get the minimum distance from the patch to the camera position
-                const auto &cameraPosition = cameraPtr->getPosition();
+                const auto& cameraPosition = cameraPtr->getPosition();
 
                 glm::vec4 distance;
                 float nodeDistance;
@@ -59,12 +53,12 @@ namespace mod::terrain {
                 // If the distance is less than the current level minimum range, this node should divide
                 if (nodeDistance <= levelMinRange) {
                     // Set this node as being a parent, and create its children
-                    m_Leaf = false;
-                    computeChildren();
+                    Populate();
 
                     // Update all children
-                    for (auto &childPtr : m_Children) {
-                        childPtr->Update(cameraPtr);
+                    for (auto& childPtr : m_Children) {
+                        auto terrainNodePtr = std::dynamic_pointer_cast<TerrainNode>(childPtr);
+                        terrainNodePtr->Update(cameraPtr);
                     }
                 }
             }
@@ -76,23 +70,18 @@ namespace mod::terrain {
         // Also, there's no point in computing neighbours if this node is not a leaf, because the responsability
         // to check the border is passed to the children
         if (m_kNodeIndex != eRootNode && m_Leaf) {
-            computeNeighbours();
+            ComputeNeighbours();
 
             // Check if any neighbour has a different level of detail
             // In that case, compute the difference between levels and set tessellation factor on that edge
             // to be equal to 2 to the power of the difference
-
-            if (m_Neighbours[0] == nullptr && m_kLevel >= 1) {
-                int a = 0;
-                ++a;
-            }
 
             // TODO: What happens if the tessellation factor goes over limit (gl_MaxTessLevel)?
             //  Is that possible?
             for (int i = 0; i < 4; ++i) {
                 if (m_Neighbours[i] != nullptr && m_Neighbours[i]->GetLevel() >= m_kLevel) {
                     int count = m_Neighbours[i]->GetLevel() - m_kLevel;
-                    for (const TerrainNode *r = m_Neighbours[i]; !r->IsLeaf(); r = r->GetNodes()[0].get())
+                    for (const vd::datastruct::Quadtree* r = m_Neighbours[i]; !r->IsLeaf(); r = r->GetChild(0).get())
                         ++count;
                     m_TessFactor[i] = float(1 << count);
                 }
@@ -100,25 +89,14 @@ namespace mod::terrain {
         } else {
             // Update all children' neighbours
             for (auto& childPtr : m_Children) {
-                childPtr->UpdateNeighbours();
+                auto terrainNodePtr = std::dynamic_pointer_cast<TerrainNode>(childPtr);
+                terrainNodePtr->UpdateNeighbours();
             }
         }
     }
 
-    const TerrainNodePtrVec& TerrainNode::GetNodes() const {
-        return m_Children;
-    }
-
     const glm::vec2& TerrainNode::GetTopLeft() const {
         return m_kTopLeft;
-    }
-
-    int TerrainNode::GetLevel() const {
-        return m_kLevel;
-    }
-
-    bool TerrainNode::IsLeaf() const {
-        return m_Leaf;
     }
 
     const vd::math::Transform& TerrainNode::GetTransform() const {
@@ -133,15 +111,11 @@ namespace mod::terrain {
         return m_TessFactor;
     }
 
-    const TerrainNode::NodeIndex& TerrainNode::GetIndex() const {
-        return m_kNodeIndex;
+    void TerrainNode::SetNeighbour(const TerrainNode* neighbour, EdgeIndex neighbourIndex) {
+        m_Neighbours[neighbourIndex] = neighbour;
     }
 
-    void TerrainNode::SetNeighbour(const TerrainNodePtr& neighbour, EdgeIndex neighbourIndex) {
-        m_Neighbours[neighbourIndex] = neighbour.get();
-    }
-
-    void TerrainNode::computeEdgeMiddles() {
+    void TerrainNode::ComputeEdgeMiddles() {
         const auto& worldTransform = m_kConfigPtr->getTransform();
         const auto& heightImg = m_kConfigPtr->getHeightImg();
 
@@ -156,11 +130,14 @@ namespace mod::terrain {
         m_EdgeMid[eLeft] = convertToWorldCoords(m_kTopLeft.x, m_kCenter.y);
     }
 
-    void TerrainNode::computeChildren() {
-        if (!m_Children.empty())
-            m_Children.clear();
 
-        m_Children.resize(4);
+    void TerrainNode::Populate() {
+        if (!m_Leaf) {
+            Clear();
+        }
+
+        // Set this as parent
+        m_Leaf = false;
 
         // Top Left child
         m_Children[eTopLeft] = std::make_shared<TerrainNode>(this,
@@ -195,7 +172,7 @@ namespace mod::terrain {
                                                                  eBottomRight);
     }
 
-    void TerrainNode::computeNeighbours() {
+    void TerrainNode::ComputeNeighbours() {
         if (m_kNodeIndex == eRootNode) {
             return;
         }
@@ -214,44 +191,70 @@ namespace mod::terrain {
         const vd::math::Bounds2 westEstimatedBounds(glm::vec2(m_kTopLeft.x - localEdgeLength, m_kTopLeft.y),
                                                     glm::vec2(m_kTopLeft.x, m_kBottomRight.y));
 
+        auto grandfatherPtr = (TerrainNode*) m_kParent->GetParent();
 
         switch (m_kNodeIndex) {
             case eTopLeft: {
-                m_Neighbours[eRight] = m_kParent->GetNodes()[eTopRight].get();
-                m_Neighbours[eBottom] = m_kParent->GetNodes()[eBottomLeft].get();
+                m_Neighbours[eRight] = (TerrainNode*) m_kParent->GetChild(eTopRight).get();
+                m_Neighbours[eBottom] = (TerrainNode*) m_kParent->GetChild(eBottomLeft).get();
 
-                m_Neighbours[eLeft] = searchNeighbour(m_kParent->m_kParent, westEstimatedBounds, true, m_kNodeIndex);
-                m_Neighbours[eTop] = searchNeighbour(m_kParent->m_kParent, northEstimatedBounds, true, m_kNodeIndex);
+                m_Neighbours[eLeft] = SearchNeighbour(grandfatherPtr,
+                                                      westEstimatedBounds,
+                                                      true,
+                                                      (NodeIndex) m_kNodeIndex);
+                m_Neighbours[eTop] = SearchNeighbour(grandfatherPtr,
+                                                     northEstimatedBounds,
+                                                     true,
+                                                     (NodeIndex) m_kNodeIndex);
                 break;
             }
             case eTopRight: {
-                m_Neighbours[eLeft] = m_kParent->GetNodes()[eTopLeft].get();
-                m_Neighbours[eBottom] = m_kParent->GetNodes()[eBottomRight].get();
+                m_Neighbours[eLeft] = (TerrainNode*) m_kParent->GetChild(eTopLeft).get();
+                m_Neighbours[eBottom] = (TerrainNode*) m_kParent->GetChild(eBottomRight).get();
 
-                m_Neighbours[eRight] = searchNeighbour(m_kParent->m_kParent, eastEstimatedBounds, true, m_kNodeIndex);
-                m_Neighbours[eTop] = searchNeighbour(m_kParent->m_kParent, northEstimatedBounds, true, m_kNodeIndex);
+                m_Neighbours[eRight] = SearchNeighbour(grandfatherPtr,
+                                                       eastEstimatedBounds,
+                                                       true,
+                                                       (NodeIndex) m_kNodeIndex);
+
+                m_Neighbours[eTop] = SearchNeighbour(grandfatherPtr,
+                                                     northEstimatedBounds,
+                                                     true,
+                                                     (NodeIndex) m_kNodeIndex);
                 break;
             }
             case eBottomLeft: {
-                m_Neighbours[eRight] = m_kParent->GetNodes()[eBottomRight].get();
-                m_Neighbours[eTop] = m_kParent->GetNodes()[eTopLeft].get();
+                m_Neighbours[eRight] = (TerrainNode*) m_kParent->GetChild(eBottomRight).get();
+                m_Neighbours[eTop] = (TerrainNode*) m_kParent->GetChild(eTopLeft).get();
 
-                m_Neighbours[eLeft] = searchNeighbour(m_kParent->m_kParent, westEstimatedBounds, true, m_kNodeIndex);
-                m_Neighbours[eBottom] = searchNeighbour(m_kParent->m_kParent, southEstimatedBounds, true, m_kNodeIndex);
+                m_Neighbours[eLeft] = SearchNeighbour(grandfatherPtr,
+                                                      westEstimatedBounds,
+                                                      true,
+                                                      (NodeIndex) m_kNodeIndex);
+                m_Neighbours[eBottom] = SearchNeighbour(grandfatherPtr,
+                                                        southEstimatedBounds,
+                                                        true,
+                                                        (NodeIndex) m_kNodeIndex);
                 break;
             }
             case eBottomRight: {
-                m_Neighbours[eLeft] = m_kParent->GetNodes()[eBottomLeft].get();
-                m_Neighbours[eTop] = m_kParent->GetNodes()[eTopRight].get();
+                m_Neighbours[eLeft] = (TerrainNode*) m_kParent->GetChild(eBottomLeft).get();
+                m_Neighbours[eTop] = (TerrainNode*) m_kParent->GetChild(eTopRight).get();
 
-                m_Neighbours[eRight] = searchNeighbour(m_kParent->m_kParent, eastEstimatedBounds, true, m_kNodeIndex);
-                m_Neighbours[eBottom] = searchNeighbour(m_kParent->m_kParent, southEstimatedBounds, true, m_kNodeIndex);
+                m_Neighbours[eRight] = SearchNeighbour(grandfatherPtr,
+                                                       eastEstimatedBounds,
+                                                       true,
+                                                       (NodeIndex) m_kNodeIndex);
+                m_Neighbours[eBottom] = SearchNeighbour(grandfatherPtr,
+                                                        southEstimatedBounds,
+                                                        true,
+                                                        (NodeIndex) m_kNodeIndex);
                 break;
             }
         }
     }
 
-    TerrainNode::MatchingResult TerrainNode::containsSquare(const vd::math::Bounds2& bounds) const {
+    TerrainNode::MatchingResult TerrainNode::ContainsSquare(const vd::math::Bounds2& bounds) const {
         if (bounds.IsEmpty()) {
             glm::vec2 point = bounds.GetLeft();
 
@@ -283,7 +286,7 @@ namespace mod::terrain {
         return eOutside;
     }
 
-    const TerrainNode* TerrainNode::searchNeighbour(const TerrainNode* nodePtr,
+    const TerrainNode* TerrainNode::SearchNeighbour(const TerrainNode* nodePtr,
                                                     const vd::math::Bounds2& searchingBounds,
                                                     bool parentSearch,
                                                     NodeIndex caller) {
@@ -291,7 +294,7 @@ namespace mod::terrain {
             return nullptr;
         }
 
-        switch (nodePtr->containsSquare(searchingBounds)) {
+        switch (nodePtr->ContainsSquare(searchingBounds)) {
             case eOutside: return nullptr;
             case ePerfectMatch: return nodePtr;
             case eInside:
@@ -303,9 +306,9 @@ namespace mod::terrain {
 
         for (int nodeIndex = 0; nodeIndex < 4; ++nodeIndex) {
             if (caller == eRootNode || caller != nodeIndex) {
-                const auto& childPtr = nodePtr->GetNodes()[nodeIndex];
+                const auto& childPtr = std::dynamic_pointer_cast<TerrainNode>(nodePtr->GetChild(nodeIndex));
                 if (childPtr != nullptr) {
-                    auto resultPtr = searchNeighbour(childPtr, searchingBounds);
+                    auto resultPtr = SearchNeighbour(childPtr.get(), searchingBounds);
                     if (resultPtr != nullptr) {
                         return resultPtr;
                     }
@@ -314,16 +317,10 @@ namespace mod::terrain {
         }
 
         if (parentSearch && nodePtr->m_kParent != nullptr) {
-            return searchNeighbour(nodePtr->m_kParent, searchingBounds, true, nodePtr->m_kNodeIndex);
+            auto parentPtr = (TerrainNode*) nodePtr->m_kParent;
+            return SearchNeighbour(parentPtr, searchingBounds, true, (NodeIndex) nodePtr->m_kNodeIndex);
         }
 
         return nullptr;
-    }
-
-    const TerrainNode* TerrainNode::searchNeighbour(const TerrainNodePtr& nodePtr,
-                                                    const vd::math::Bounds2& searchingBounds,
-                                                    bool parentSearch,
-                                                    NodeIndex caller) {
-        return searchNeighbour(nodePtr.get(), searchingBounds, parentSearch, caller);
     }
 }

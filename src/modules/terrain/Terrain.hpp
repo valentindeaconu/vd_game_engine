@@ -7,6 +7,8 @@
 
 #include <engine/object/Entity.hpp>
 
+#include <engine/foundation/algorithm//TreeHelper.hpp>
+
 #include <memory>
 #include <vector>
 
@@ -25,14 +27,14 @@ namespace mod::terrain {
 
         [[nodiscard]] const TerrainConfigPtr& GetTerrainConfig() const;
 
-        [[nodiscard]] const TerrainNodePtrVec& GetRootNodes() const;
+        [[nodiscard]] const TerrainNode::ptr_type_t& GetRootNode() const;
 
     private:
         void generatePatch();
 
         TerrainConfigPtr m_ConfigPtr;
 
-        TerrainNodePtrVec m_RootNodes;
+        TerrainNode::ptr_type_t m_RootNode;
     };
     typedef std::shared_ptr<Terrain>    TerrainPtr;
 }

@@ -12,32 +12,34 @@ namespace vd::datastruct {
     template<int Dim>
     class Tree {
     public:
-        typedef std::shared_ptr< Tree<Dim> >  ptr_type_t;
+        typedef std::shared_ptr< Tree<Dim> >    ptr_type_t;
+        typedef std::array<ptr_type_t, Dim>     arr_type_t;
 
         Tree();
         Tree(const Tree* parent, int level, int nodeIndex);
         ~Tree();
 
-        void Populate();
-        void Clear();
+        virtual void Populate();
+        virtual void Clear();
 
         [[nodiscard]] int GetLevel() const;
         [[nodiscard]] int GetNodeIndex() const;
-        [[nodsicard]] bool IsLeaf() const;
+        [[nodiscard]] bool IsLeaf() const;
+
+        [[nodiscard]] const Tree* GetParent() const;
 
         ptr_type_t& GetChild(size_t index);
         const ptr_type_t& GetChild(size_t index) const;
-    private:
 
-        const Tree* m_kParent;
-
+        const arr_type_t& GetChildren() const;
+    protected:
         const int m_kLevel;
         const int m_kNodeIndex;
 
         bool m_Leaf;
 
-
-        std::array<ptr_type_t, Dim>  m_Children;
+        const Tree* m_kParent;
+        arr_type_t m_Children;
     };
 
     typedef Tree<4> Quadtree;
