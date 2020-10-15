@@ -3,16 +3,16 @@
 namespace vd::img {
     // Implementations
     template class Pixel<uint8_t>;
-    template class Pixel<uint16_t>;
+    template class Pixel<uint32_t>;
     template class Pixel<float>;
 
     template class Image<uint8_t>;
-    template class Image<uint16_t>;
+    template class Image<uint32_t>;
     template class Image<float>;
 
     template Image<uint8_t> Image<float>::cast<uint8_t>() const;
     template Image<float> Image<uint8_t>::cast<float>() const;
-    template Image<uint16_t> Image<uint8_t>::cast<uint16_t>() const;
+    template Image<uint32_t> Image<uint8_t>::cast<uint32_t>() const;
 
     template<typename T>
     Pixel<T>::Pixel(T r, T g, T b, T a)

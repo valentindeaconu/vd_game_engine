@@ -17,6 +17,14 @@ namespace mod::terrain {
     void Terrain::init() {
         m_ConfigPtr->parse();
 
+        auto& biomes = m_ConfigPtr->getBiomes();
+        for (const auto& biome : biomes) {
+            auto& objects = biome->getObjects();
+            for (auto& object : objects) {
+                object->setParentEngine(getParentEngine());
+            }
+        }
+
         m_RootNode = std::make_shared<TerrainNode>(nullptr,
                                                    m_ConfigPtr,
                                                    glm::vec2(0.0f, 0.0f),

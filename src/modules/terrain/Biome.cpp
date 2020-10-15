@@ -59,4 +59,12 @@ namespace mod::terrain {
     void Biome::setMaterial(const vd::model::Material& material) {
         this->material = material;
     }
+
+    std::vector<sobj::StaticObjectPtr> &Biome::getObjects() {
+        return objects;
+    }
+
+    void Biome::addObject(const sobj::StaticObjectPtr &object) {
+        objects.emplace_back(object);
+    }
 }

@@ -56,10 +56,28 @@ namespace mod::terrain::splatmap {
 
         splatMap->bind();
         splatMap->bilinearFilter();
+
+        std::vector<uint32_t> outBuffer(size * size);
+        glGetTexImage(GL_TEXTURE_2D, 0, GL_RED_INTEGER, GL_UNSIGNED_INT, &outBuffer[0]);
+
+        if (std::any_of(outBuffer.begin(), outBuffer.end(), [](auto x) { return x == 2; })) {
+            int a = 0;
+            a++;
+        }
+
+        splatImg = std::make_shared<vd::img::ImageI>(size, size);
+        for (auto r : outBuffer) {
+            splatImg->expand(vd::img::Pixel<uint32_t>(r, 0, 0, 0));
+        }
+
         splatMap->unbind();
     }
 
     const vd::model::Texture2DPtr& SplatMapRenderer::getSplatMap() const {
         return splatMap;
+    }
+
+    const vd::img::ImageIPtr &SplatMapRenderer::getSplatData() const {
+        return splatImg;
     }
 }

@@ -20,12 +20,15 @@ namespace mod::terrain::splatmap {
         void render(const vd::model::Texture2DPtr& normalMap, float scaleY, const BiomePtrVec& biomes);
 
         [[nodiscard]] const vd::model::Texture2DPtr& getSplatMap() const;
+
+        [[nodiscard]] const vd::img::ImageIPtr& getSplatData() const;
     private:
         const int kBiomeCount;
 
         SplatMapShaderPtr shaderPtr;
 
         vd::model::Texture2DPtr splatMap;
+        vd::img::ImageIPtr      splatImg;
 
         int size;
     };

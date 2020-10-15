@@ -58,7 +58,7 @@ int main(int argc, char ** argv) {
 
     /// Engine creation
 	vd::EnginePtr enginePtr = std::make_shared<vd::Engine>();
-	enginePtr->setup(1280, 720, "VD Game Engine");
+	enginePtr->setup(1280, 720, "VDGE");
 
 	/// Mods
     mod::terrain::TerrainPtr terrainPtr = createTerrain(enginePtr);
@@ -67,7 +67,7 @@ int main(int argc, char ** argv) {
 
 	mod::player::PlayerPtr playerPtr = createPlayer(enginePtr, terrainPtr);
 
-    //createAndPlaceStaticObjects(enginePtr, terrainPtr);
+    createAndPlaceStaticObjects(enginePtr, terrainPtr);
 
 	/// Water must be the last element to draw, but before GUIs
 	//mod::water::WaterPtr waterPtr = createWater(enginePtr);

@@ -25,7 +25,7 @@ namespace vd::img {
 
     typedef Pixel<uint8_t>	PixelB;
     typedef Pixel<float>	PixelF;
-    typedef Pixel<uint16_t>	PixelS;
+    typedef Pixel<uint32_t>	PixelI;
 
     enum PixelFormat
     {
@@ -67,11 +67,11 @@ namespace vd::img {
     };
     typedef Image<uint8_t>	ImageB;
     typedef Image<float>	ImageF;
-    typedef Image<uint16_t>	ImageS;
+    typedef Image<uint32_t>	ImageI;
 
     typedef std::shared_ptr<ImageB>	ImageBPtr;
     typedef std::shared_ptr<ImageF>	ImageFPtr;
-    typedef std::shared_ptr<ImageS>	ImageSPtr;
+    typedef std::shared_ptr<ImageI>	ImageIPtr;
 }
 
 #endif // !__IMAGE_HPP_

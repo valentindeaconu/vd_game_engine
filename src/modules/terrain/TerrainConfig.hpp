@@ -60,6 +60,8 @@ namespace mod::terrain {
 
         [[nodiscard]] const BiomePtrVec& getBiomes() const;
 
+        [[nodiscard]] BiomePtrVec getBiomesAt(float x, float z) const;
+
         [[nodiscard]] float getHeight(float x, float z) const;
     private:
         void onTokenReceived(const std::string& command, const std::vector<std::string>& tokens) override;
@@ -93,7 +95,9 @@ namespace mod::terrain {
 
         vd::model::Texture2DPtr heightMap;
         vd::model::Texture2DPtr normalMap;
+
         vd::model::Texture2DPtr splatMap;
+        vd::img::ImageIPtr splatImg;
 
         std::array<int, kDetailLevels> lodRange;
         std::array<int, kDetailLevels> lodMorphingArea;

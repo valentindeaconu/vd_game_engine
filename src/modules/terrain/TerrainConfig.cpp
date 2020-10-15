@@ -114,6 +114,15 @@ namespace mod::terrain {
             vd::model::Material& material = biomes.back()->getMaterial();
             material.horizontalScale = std::stof(tokens[0]);
         }
+        else if (command == "object") {
+            sobj::StaticObjectPtr staticObjectPtr = std::make_shared<sobj::StaticObject>(tokens[0], tokens[1]);
+            float scaleFactor = std::stof(tokens[2]);
+
+            staticObjectPtr->init();
+            staticObjectPtr->getWorldTransform().setScaling(scaleFactor, scaleFactor, scaleFactor);
+
+            biomes.back()->addObject(staticObjectPtr);
+        }
 
     }
 
@@ -127,6 +136,7 @@ namespace mod::terrain {
                 std::make_shared<splatmap::SplatMapRenderer>(int(heightMap->getWidth()));
         splatMapRendererPtr->render(heightMap, scaleY, biomes);
         splatMap = splatMapRendererPtr->getSplatMap();
+        splatImg = splatMapRendererPtr->getSplatData();
 
         worldTransform.setScaling(scaleXZ, scaleY, scaleXZ);
         worldTransform.setTranslation(-scaleXZ/2.0f, 0.0f, -scaleXZ/2.0f);
@@ -215,6 +225,30 @@ namespace mod::terrain {
 
     const BiomePtrVec& TerrainConfig::getBiomes() const {
         return biomes;
+    }
+
+    BiomePtrVec TerrainConfig::getBiomesAt(float x, float z) const {
+        float upperBound = scaleXZ / 2.0f;
+        float lowerBound = -upperBound;
+
+        BiomePtrVec output;
+
+        if (x < lowerBound || z < lowerBound || x >= upperBound || z >= upperBound)
+            return output;
+
+        // reverse transform
+        float rx = (x + (scaleXZ / 2.0f)) / scaleXZ;
+        float rz = (z + (scaleXZ / 2.0f)) / scaleXZ;
+
+        const auto mask = vd::img::ImageHelper::texture(*splatImg, glm::vec2(rz, rx)).r;
+
+        for (size_t k = 0; k < biomes.size(); ++k) {
+            if ((mask & (1 << k)) != 0) {
+                output.emplace_back(biomes[k]);
+            }
+        }
+
+        return output;
     }
 
     float TerrainConfig::getHeight(float x, float z) const {

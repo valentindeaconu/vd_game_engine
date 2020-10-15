@@ -10,6 +10,8 @@
 #include <memory>
 #include <string>
 
+#include <modules/sobj/StaticObject.hpp>
+
 namespace mod::terrain {
     class Biome {
     public:
@@ -26,6 +28,9 @@ namespace mod::terrain {
         [[nodiscard]] float getMaxHeight() const;
         void setMaxHeight(float maxHeight);
 
+        [[nodiscard]] std::vector<sobj::StaticObjectPtr>& getObjects();
+        void addObject(const sobj::StaticObjectPtr& object);
+
         [[nodiscard]] vd::model::Material& getMaterial();
         [[nodiscard]] const vd::model::Material& getMaterial() const;
         void setMaterial(const vd::model::Material& material);
@@ -36,6 +41,9 @@ namespace mod::terrain {
         std::string name;
 
         vd::model::Material material;
+
+        // TODO: Not like this
+        std::vector<sobj::StaticObjectPtr> objects;
     };
     typedef std::shared_ptr<Biome>  BiomePtr;
     typedef std::vector<BiomePtr>   BiomePtrVec;

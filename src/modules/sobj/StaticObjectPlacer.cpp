@@ -15,50 +15,60 @@ namespace mod::sobj
     {
         auto& terrainConfig = terrainPtr->GetTerrainConfig();
         const mod::terrain::BiomePtrVec& biomeAtlas = terrainConfig->getBiomes();
-        const size_t noOfBiomes = biomeAtlas.size();
-        const auto terrainSize = size_t(terrainConfig->getScaleXZ());
-
-        placementInfosForBiomes.resize(noOfBiomes);
+        const auto terrainSize = int(terrainConfig->getScaleXZ()/2);
 
         auto onSurface = [&terrainSize](const float x, const float z) -> bool {
-            return (x >= 0.0f && z >= 0.0f && x <= terrainSize && z <= terrainSize);
+            return (x > -terrainSize && z > -terrainSize && x < terrainSize && z < terrainSize);
         };
 
         std::random_device rd{};
         std::mt19937 gen{ rd() };
-        std::uniform_real_distribution<float> d(0, terrainSize - 1);
+        std::uniform_real_distribution<float> d(-terrainSize, terrainSize);
 
-        // TODO: Adapt to the new terrain
         for (size_t objectIndex = 0; objectIndex < objectCount; ++objectIndex)
         {
-            /*PlacementInfo placementInfo;
-            size_t biomeIndex = 0;
+            PlacementInfo placementInfo;
 
-            do
-            {
-                placementInfo.location.y = 0.0f;
-                do
-                {
+            placementInfo.location.y = 0.0f;
+
+            bool foundSomethingToPlace = false;
+            do {
+                do {
                     placementInfo.location.x = d(gen);
                     placementInfo.location.z = d(gen);
+                } while (!onSurface(placementInfo.location.x, placementInfo.location.z));
 
-                    biomeIndex = terrainConfig->getBiome(placementInfo.location.x, placementInfo.location.z);
-                } while (biomeAtlas[biomeIndex].objects.empty());
-
-            } while (!onSurface(placementInfo.location.x, placementInfo.location.z));
+                auto biomesAtLocation = terrainConfig->getBiomesAt(placementInfo.location.x,
+                                                                   placementInfo.location.z);
+                for (auto& biomeAtLocation : biomesAtLocation) {
+                    if (!biomeAtLocation->getObjects().empty()) {
+                        foundSomethingToPlace = true;
+                        break;
+                    }
+                }
+            } while (!foundSomethingToPlace);
 
             placementInfo.location.y = terrainConfig->getHeight(placementInfo.location.x, placementInfo.location.z);
 
-            std::uniform_int_distribution<size_t> d_i(0, biomeAtlas[biomeIndex].objects.size() - 1);
-            placementInfo.objectIndex = d_i(gen);
+            std::vector<StaticObjectPtr> objectsAtLocation;
+            auto biomesAtLocation = terrainConfig->getBiomesAt(placementInfo.location.x,
+                                                               placementInfo.location.z);
+            for (auto& biomeAtLocation : biomesAtLocation) {
+                auto& objects = biomeAtLocation->getObjects();
+                objectsAtLocation.insert(objectsAtLocation.begin(), objects.begin(), objects.end());
+            }
 
-            placementInfosForBiomes[biomeIndex].push_back(placementInfo);*/
+            std::uniform_int_distribution<size_t> d_i(0, objectsAtLocation.size() - 1);
+            size_t objectRandomIndex = d_i(gen);
+            placementInfo.objectPtr = objectsAtLocation[objectRandomIndex];
+
+            placementInfos.push_back(placementInfo);
         }
     }
 
-    const PlacementInfoMat& StaticObjectPlacer::getPlacementInfosForBiomes() const
+    const PlacementInfoVec& StaticObjectPlacer::getPlacementInfos() const
     {
-        return placementInfosForBiomes;
+        return placementInfos;
     }
 
     terrain::TerrainPtr &StaticObjectPlacer::getTerrain() {

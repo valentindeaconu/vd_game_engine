@@ -7,7 +7,7 @@
 namespace vd::img {
     // Template instantiation
     template Pixel<uint8_t>     ImageHelper::texture(const Image<uint8_t>&, const glm::vec2&);
-    template Pixel<uint16_t>    ImageHelper::texture(const Image<uint16_t>&, const glm::vec2&);
+    template Pixel<uint32_t>    ImageHelper::texture(const Image<uint32_t>&, const glm::vec2&);
     template Pixel<float>       ImageHelper::texture(const Image<float>&, const glm::vec2&);
 
     template<typename T>
@@ -36,10 +36,10 @@ namespace vd::img {
             return image.at(uv_x_0, uv_y_0);
         }
 
-        Pixel<T> v0 = image.at(uv_x_0, uv_y_0);
-        Pixel<T> v1 = image.at(uv_x_0, uv_y_1);
-        Pixel<T> v2 = image.at(uv_x_1, uv_y_0);
-        Pixel<T> v3 = image.at(uv_x_1, uv_y_1);
+        Pixel<T> v0 = image.at(uv_x_0, uv_y_0, eRGBA);
+        Pixel<T> v1 = image.at(uv_x_0, uv_y_1, eRGBA);
+        Pixel<T> v2 = image.at(uv_x_1, uv_y_0, eRGBA);
+        Pixel<T> v3 = image.at(uv_x_1, uv_y_1, eRGBA);
 
         float frac_x = uv_x - float(uv_x_0);
         float frac_y = uv_y - float(uv_y_0);
