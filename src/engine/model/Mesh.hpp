@@ -9,10 +9,8 @@
 #include "Vertex.hpp"
 #include "Material.hpp"
 
-namespace vd::model
-{
-    struct Mesh
-    {
+namespace vd::model {
+    struct Mesh {
         std::vector<Vertex>	vertices;
         std::vector<GLuint>	indices;
         std::vector<Material> materials;

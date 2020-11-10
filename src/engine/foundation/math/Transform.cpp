@@ -5,6 +5,7 @@ namespace vd::math
     Transform::Transform()
         : translation(0.0f)
         , scaling(1.0f)
+        , transformComputed(false)
     {
         setXRotationAngle(0.0f);
         setYRotationAngle(0.0f);
@@ -13,7 +14,14 @@ namespace vd::math
 
     glm::mat4 Transform::get() const
     {
-        return getTranslation() * getScaling() * getRotation();
+        computeTransform();
+        return transform;
+    }
+
+    glm::mat4 Transform::inverse() const
+    {
+        computeTransform();
+        return glm::inverse(transform);
     }
 
     glm::mat4 Transform::getTranslation() const
@@ -35,11 +43,15 @@ namespace vd::math
         return glm::scale(glm::mat4(1.0f), scaling);
     }
 
+
+
     void Transform::setTranslation(float x, float y, float z)
     {
         this->translation.x = x;
         this->translation.y = y;
         this->translation.z = z;
+
+        this->transformComputed = false;
     }
 
     void Transform::setTranslation(const glm::vec3& translation)
@@ -57,6 +69,8 @@ namespace vd::math
         this->scaling.x = x;
         this->scaling.y = y;
         this->scaling.z = z;
+
+        this->transformComputed = false;
     }
 
     void Transform::setScaling(const glm::vec3& scaling)
@@ -74,6 +88,8 @@ namespace vd::math
         angle = glm::clamp(angle, 0.0f, 360.0f);
         xAxisRotationAngle = angle;
         xAxisRotation = glm::angleAxis(glm::radians(angle), glm::vec3(1.0f, 0.0f, 0.0f));
+
+        this->transformComputed = false;
     }
 
     float Transform::getXAxisRotationAngle() const
@@ -96,6 +112,8 @@ namespace vd::math
         angle = glm::clamp(angle, 0.0f, 360.0f);
         yAxisRotationAngle = angle;
         yAxisRotation = glm::angleAxis(glm::radians(angle), glm::vec3(0.0f, 1.0f, 0.0f));
+
+        this->transformComputed = false;
     }
 
     const glm::quat& Transform::getYAxisRotation() const
@@ -108,6 +126,8 @@ namespace vd::math
         angle = glm::clamp(angle, 0.0f, 360.0f);
         zAxisRotationAngle = angle;
         zAxisRotation = glm::angleAxis(glm::radians(angle), glm::vec3(0.0f, 0.0f, 1.0f));
+
+        this->transformComputed = false;
     }
 
     float Transform::getZAxisRotationAngle() const
@@ -118,5 +138,17 @@ namespace vd::math
     const glm::quat& Transform::getZAxisRotation() const
     {
         return zAxisRotation;
+    }
+
+    glm::vec4 Transform::operator*(const glm::vec4& operand) const {
+        return get() * operand;
+    }
+
+    void Transform::computeTransform() const {
+        if (!transformComputed) {
+            auto nc_this = const_cast<Transform*>(this);
+            nc_this->transform = getTranslation() * getScaling() * getRotation();
+            nc_this->transformComputed = true;
+        }
     }
 }

@@ -3,6 +3,8 @@
 
 #include "../Camera.hpp"
 
+#include <engine/logger/Logger.hpp>
+
 namespace vd::core
 {
     struct FreeCameraInitParameters

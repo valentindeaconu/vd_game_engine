@@ -1,7 +1,18 @@
 #include "Shader.hpp"
 
-namespace vd::shader
-{
+namespace vd::shader {
+    std::string to_string(const ShaderType& shaderType) {
+        switch (shaderType) {
+            case eVertexShader: return "Vertex Shader";
+            case eTessellationControlShader: return "Tessellation Control Shader";
+            case eTessellationEvaluationShader: return "Tessellation Evaluation Shader";
+            case eGeometryShader: return "Geometry Shader";
+            case eComputeShader: return "Compute Shader";
+            case eFragmentShader: return "Fragment Shader";
+            default: return "Unknown";
+        }
+    }
+
     Shader::Shader()
         : program(0)
     {
@@ -58,15 +69,7 @@ namespace vd::shader
             char infoLog[1024];
             glGetShaderInfoLog(shader, 1024, NULL, infoLog);
 
-            std::string type_s;
-            switch (type)
-            {
-                case eVertexShader: type_s = "Vertex Shader"; break;
-                case eFragmentShader: type_s = "Fragment Shader"; break;
-                default: type_s = "Unknown"; break;
-            }
-
-            vd::Logger::terminate("[shader = " + type_s + "] shader compilation error: " + infoLog, 1);
+            vd::Logger::terminate("[shader = " + to_string(static_cast<const ShaderType>(type)) + "] shader compilation error: " + infoLog, 1);
         }
 
         if (program == 0)

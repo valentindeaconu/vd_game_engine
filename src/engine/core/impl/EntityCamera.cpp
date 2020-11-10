@@ -28,6 +28,8 @@ namespace vd::core::impl {
     }
 
     void EntityCamera::update() {
+        Camera::update();
+
         input();
 
         float horizontalDistance = computeHorizontalDistance();
@@ -43,7 +45,7 @@ namespace vd::core::impl {
                                                       verticalDistance);
 
         float allowedHeight =
-                terrainPtr->getTerrainConfig()->getHeight(newPosition.x, newPosition.z) + offset.y;
+                terrainPtr->GetTerrainConfig()->getHeight(newPosition.x, newPosition.z) + offset.y;
 
         if (newPosition.y < allowedHeight) {
             newPosition.y = allowedHeight;
@@ -53,8 +55,6 @@ namespace vd::core::impl {
 
         forward = glm::normalize(entityPosition - position);
         updatePositionVectors();
-
-        Camera::update();
     }
 
     void EntityCamera::reflect(float yAxisSymmetric) {

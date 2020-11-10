@@ -10,8 +10,8 @@ include_directories(src/engine/config)
 include_directories(src/engine/core)
 include_directories(src/engine/core/impl)
 include_directories(src/engine/foundation)
-include_directories(src/engine/foundation/imgloader)
-include_directories(src/engine/foundation/imgloader/model)
+include_directories(src/engine/foundation/img/imgloader)
+include_directories(src/engine/foundation/img/model)
 include_directories(src/engine/foundation/math)
 include_directories(src/engine/foundation/objloader)
 include_directories(src/engine/glmodel/buffer)
@@ -32,6 +32,8 @@ add_executable(vd_game_engine
         src/engine/config/ConfigurationFile.hpp
         src/engine/config/EngineConfig.cpp
         src/engine/config/EngineConfig.hpp
+        src/engine/config/MetaConfig.hpp
+        src/engine/config/MetaConfig.cpp
         src/engine/core/impl/EntityCamera.cpp
         src/engine/core/impl/EntityCamera.hpp
         src/engine/core/impl/FreeCamera.cpp
@@ -42,20 +44,40 @@ add_executable(vd_game_engine
         src/engine/core/InputHandler.hpp
         src/engine/core/Window.cpp
         src/engine/core/Window.hpp
-        src/engine/foundation/imgloader/model/Image.cpp
-        src/engine/foundation/imgloader/model/Image.hpp
-        src/engine/foundation/imgloader/IIMGLoader.cpp
-        src/engine/foundation/imgloader/IIMGLoader.hpp
-        src/engine/foundation/imgloader/IMGLoader.cpp
-        src/engine/foundation/imgloader/IMGLoader.hpp
+        src/engine/core/AsyncWorker.cpp
+        src/engine/core/AsyncWorker.hpp
+        src/engine/core/ObjectManager.hpp
+        src/engine/core/ObjectManager.cpp
+        src/engine/foundation/img/Image.cpp
+        src/engine/foundation/img/Image.hpp
+        src/engine/foundation/img/imgloader/IIMGLoader.cpp
+        src/engine/foundation/img/imgloader/IIMGLoader.hpp
+        src/engine/foundation/img/imgloader/IMGLoader.cpp
+        src/engine/foundation/img/imgloader/IMGLoader.hpp
+        src/engine/foundation/img/imghelper/ImageHelper.cpp
+        src/engine/foundation/img/imghelper/ImageHelper.hpp
         src/engine/foundation/math/Transform.cpp
         src/engine/foundation/math/Transform.hpp
         src/engine/foundation/objloader/OBJLoader.cpp
         src/engine/foundation/objloader/OBJLoader.hpp
         src/engine/foundation/GL.hpp
+        src/engine/foundation/math/Frustum.cpp
+        src/engine/foundation/math/Frustum.hpp
+        src/engine/foundation/math/Bounds.cpp
+        src/engine/foundation/math/Bounds.hpp
+        src/engine/foundation/math/Util.cpp
+        src/engine/foundation/math/Util.hpp
+        src/engine/foundation/datastruct/Tree.cpp
+        src/engine/foundation/datastruct/Tree.hpp
+        src/engine/foundation/algorithm/TreeHelper.cpp
+        src/engine/foundation/algorithm/TreeHelper.hpp
         src/engine/glmodel/buffer/Buffer.hpp
         src/engine/glmodel/buffer/MeshBuffer.cpp
         src/engine/glmodel/buffer/MeshBuffer.hpp
+        src/engine/glmodel/buffer/FrameBuffer.cpp
+        src/engine/glmodel/buffer/FrameBuffer.hpp
+        src/engine/glmodel/buffer/PatchBuffer.cpp
+        src/engine/glmodel/buffer/PatchBuffer.hpp
         src/engine/kernel/EngineBlock.cpp
         src/engine/kernel/EngineBlock.hpp
         src/engine/kernel/EngineWorker.cpp
@@ -95,14 +117,26 @@ add_executable(vd_game_engine
         src/modules/sobj/StaticObjectRenderer.hpp
         src/modules/sobj/StaticObjectShader.cpp
         src/modules/sobj/StaticObjectShader.hpp
+        src/modules/terrain/TerrainShader.cpp
+        src/modules/terrain/TerrainShader.hpp
         src/modules/terrain/Terrain.cpp
         src/modules/terrain/Terrain.hpp
+        src/modules/terrain/TerrainNode.cpp
+        src/modules/terrain/TerrainNode.hpp
+        src/modules/terrain/Biome.cpp
+        src/modules/terrain/Biome.hpp
         src/modules/terrain/TerrainConfig.cpp
         src/modules/terrain/TerrainConfig.hpp
         src/modules/terrain/TerrainRenderer.cpp
         src/modules/terrain/TerrainRenderer.hpp
-        src/modules/terrain/TerrainShader.cpp
-        src/modules/terrain/TerrainShader.hpp
+        src/modules/terrain/normalmap/NormalMapShader.cpp
+        src/modules/terrain/normalmap/NormalMapShader.hpp
+        src/modules/terrain/normalmap/NormalMapRenderer.cpp
+        src/modules/terrain/normalmap/NormalMapRenderer.hpp
+        src/modules/terrain/splatmap/SplatMapRenderer.cpp
+        src/modules/terrain/splatmap/SplatMapRenderer.hpp
+        src/modules/terrain/splatmap/SplatMapShader.cpp
+        src/modules/terrain/splatmap/SplatMapShader.hpp
         src/engine/shadow/ShadowBox.cpp
         src/engine/shadow/ShadowBox.hpp
         src/engine/shadow/ShadowShader.cpp
@@ -123,20 +157,7 @@ add_executable(vd_game_engine
         src/modules/water/WaterRenderer.hpp
         src/modules/water/WaterConfig.cpp
         src/modules/water/WaterConfig.hpp
-        src/engine/glmodel/buffer/FrameBuffer.cpp
-        src/engine/glmodel/buffer/FrameBuffer.hpp
-        src/engine/config/MetaConfig.hpp
-        src/engine/config/MetaConfig.cpp
-        src/engine/core/AsyncWorker.cpp
-        src/engine/core/AsyncWorker.hpp
-        src/engine/foundation/math/Frustum.cpp
-        src/engine/foundation/math/Frustum.hpp
-        src/engine/foundation/math/BoundingBox.cpp
-        src/engine/foundation/math/BoundingBox.hpp
-        src/engine/foundation/math/Util.cpp
-        src/engine/foundation/math/Util.hpp
         src/main.cpp)
-
 
 # dependencies
 

@@ -1,19 +1,18 @@
-#ifndef __TERRAIN_RENDERER_HPP_
-#define __TERRAIN_RENDERER_HPP_
+//
+// Created by Vali on 9/21/2020.
+//
 
-#include <string>
+#ifndef VD_GAME_ENGINE_TERRAINRENDERER_HPP
+#define VD_GAME_ENGINE_TERRAINRENDERER_HPP
 
 #include <engine/component/Renderer.hpp>
-#include <engine/shader/Shader.hpp>
-
-#include <engine/kernel/EngineWorker.hpp>
 
 #include "Terrain.hpp"
+#include "TerrainConfig.hpp"
+#include "TerrainNode.hpp"
 
-namespace mod::terrain
-{
-    class TerrainRenderer : public vd::component::Renderer
-    {
+namespace mod::terrain {
+    class TerrainRenderer : public vd::component::Renderer {
     public:
         TerrainRenderer();
         ~TerrainRenderer();
@@ -28,6 +27,8 @@ namespace mod::terrain
         void setTerrain(const TerrainPtr& terrainPtr);
 
     private:
+        void renderNode(const TerrainNode::ptr_type_t& nodePtr, const TerrainConfigPtr& terrainConfigPtr);
+
         bool isReady() override;
 
         TerrainPtr terrainPtr;
@@ -35,4 +36,5 @@ namespace mod::terrain
     typedef std::shared_ptr<TerrainRenderer>	TerrainRendererPtr;
 }
 
-#endif // !__TERRAIN_RENDERER_HPP_
+
+#endif //VD_GAME_ENGINE_TERRAINRENDERER_HPP

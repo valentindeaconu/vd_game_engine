@@ -17,8 +17,8 @@ namespace mod::water {
     Water::~Water() = default;
 
     void Water::init() {
-        getLocalTransform().setScaling(3072.0f, 0.0f, 3072.0f);
-        getLocalTransform().setTranslation(-1024.0f, -33.0f, -1024.0f);
+        getLocalTransform().setScaling(6000.0f, 0.0f, 6000.0f);
+        getLocalTransform().setTranslation(-3000.0f, 180.0f, -3000.0f);
 
         // asta merge also
         //getLocalTransform().setScaling(250.0f, 0.0f, 260.0f);
@@ -68,7 +68,7 @@ namespace mod::water {
     }
 
     float Water::getHeight() const {
-        return -33.0f;
+        return 180.0f;
     }
 
     float Water::getMoveFactor() const {
@@ -79,10 +79,10 @@ namespace mod::water {
         vd::model::MeshPtr meshPtr = std::make_shared<vd::model::Mesh>();
 
         meshPtr->vertices = {
-                { .Position = glm::vec3(-1.0f, 0.0f, 1.0f) },
-                { .Position = glm::vec3(-1.0f, 0.0f, -1.0f) },
+                { .Position = glm::vec3(0.0f, 0.0f, 1.0f) },
+                { .Position = glm::vec3(0.0f, 0.0f, 0.0f) },
                 { .Position = glm::vec3(1.0f, 0.0f, 1.0f) },
-                { .Position = glm::vec3(1.0f, 0.0f, -1.0f) }
+                { .Position = glm::vec3(1.0f, 0.0f, 0.0f) }
         };
 
         meshPtr->indices = { 0, 2, 1, 1, 2, 3 };

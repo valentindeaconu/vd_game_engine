@@ -47,7 +47,7 @@ namespace vd::core
         static void mouseScrollCallback(GLFWwindow* window, double xoffset, double yoffset);
 
         float Near_Plane = 0.1f;
-        float Far_Plane = 1000.0f;
+        float Far_Plane = 10000.0f;
         float fov = 45.0f;
 
         GLFWwindow* window;

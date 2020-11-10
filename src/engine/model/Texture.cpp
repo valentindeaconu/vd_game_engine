@@ -26,7 +26,7 @@ namespace vd::model
     }
 
     template<GLuint type>
-    Texture<type>::Texture(const vd::imgloader::ImageBPtr& imagePtr)
+    Texture<type>::Texture(const vd::img::ImageBPtr& imagePtr)
         : width(imagePtr->width)
         , height(imagePtr->height)
     {
@@ -45,6 +45,36 @@ namespace vd::model
                      &(imagePtr->data[0]));
 
         noFilter();
+        wrapRepeat();
+        unbind();
+    }
+
+    template<GLuint type>
+    Texture<type>::Texture(const vd::img::ImageFPtr& imagePtr)
+        : width(imagePtr->width)
+        , height(imagePtr->height)
+    {
+        generate();
+        bind();
+
+        const size_t sz = imagePtr->width * imagePtr->height;
+        std::vector<float> data;
+        data.reserve(sz);
+        for (int i = 0; i < sz * 4; i+=4) {
+            data.emplace_back(imagePtr->data[i]);
+        }
+
+        glTexImage2D(type,
+                     0,
+                     GL_R16F,
+                     (GLsizei) width,
+                     (GLsizei) height,
+                     0,
+                     GL_RED,
+                     GL_FLOAT,
+                     &data[0]);
+
+        bilinearFilter();
         wrapRepeat();
         unbind();
     }
@@ -111,6 +141,21 @@ namespace vd::model
         glTexParameteri(type, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
         glTexParameteri(type, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     }
+
+    template<GLuint type>
+    void Texture<type>::trilinearFilterWithAnisotropy() {
+        const GLfloat kMaxAnisotropy = 8.0f;
+        GLfloat value;
+
+        glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &value);
+        value = std::min(kMaxAnisotropy, value);
+
+        glTexParameterf(type, GL_TEXTURE_LOD_BIAS, 0);
+        glGenerateMipmap(type);
+        glTexParameteri(type, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+        glTexParameterf(type, GL_TEXTURE_MAX_ANISOTROPY_EXT, value);
+    }
+
 
     template<GLuint type>
     void Texture<type>::wrapRepeat()
@@ -214,7 +259,7 @@ namespace vd::model
 
     TextureService::TextureService()
     {
-        imgLoaderPtr = std::make_shared<imgloader::IMGLoader>();
+        imgLoaderPtr = std::make_shared<img::IMGLoader>();
     }
 
     TextureService& TextureService::getInstance()
@@ -239,7 +284,7 @@ namespace vd::model
             return instance.cache[path];
         }
 
-        vd::imgloader::ImageBPtr imagePtr = instance.imgLoaderPtr->loadByteImage(path);
+        vd::img::ImageBPtr imagePtr = instance.imgLoaderPtr->loadByteImage(path);
 
         Texture2DPtr texture = std::make_shared<Texture2D>(imagePtr);
 
@@ -248,7 +293,7 @@ namespace vd::model
         return texture;
     }
 
-    Texture2DPtr TextureService::get(const imgloader::ImageBPtr& imagePtr)
+    Texture2DPtr TextureService::get(const img::ImageBPtr& imagePtr)
     {
         Texture2DPtr texture = std::make_shared<Texture2D>(imagePtr);
         return texture;

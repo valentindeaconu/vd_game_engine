@@ -1,17 +1,16 @@
 #include "MeshBuffer.hpp"
 
-namespace vd::buffer
-{
+namespace vd::buffer {
     MeshBuffer::MeshBuffer()
+        : vaoId(0)
+        , vbId(0)
+        , ebId(0)
     {
-    }
+    };
 
-    MeshBuffer::~MeshBuffer()
-    {
-    }
+    MeshBuffer::~MeshBuffer() = default;
 
-    void MeshBuffer::allocate(const vd::model::MeshPtr& meshPtr)
-    {
+    void MeshBuffer::allocate(const vd::model::MeshPtr& meshPtr) {
         this->meshPtr = meshPtr;
 
         // Create buffers/arrays

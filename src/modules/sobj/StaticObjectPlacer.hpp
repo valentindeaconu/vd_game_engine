@@ -14,20 +14,19 @@ namespace mod::sobj
     struct PlacementInfo
     {
         glm::vec3 location;
-        size_t objectIndex;
+        StaticObjectPtr objectPtr;
     };
     typedef std::vector<PlacementInfo>		PlacementInfoVec;
-    typedef std::vector<PlacementInfoVec>	PlacementInfoMat;
 
     class StaticObjectPlacer
     {
     public:
-        StaticObjectPlacer(const mod::terrain::TerrainPtr& terrainPtr, size_t objectCount, float marginOffset);
+        StaticObjectPlacer(const terrain::TerrainPtr& terrainPtr, size_t objectCount, float marginOffset);
         ~StaticObjectPlacer();
 
         void place();
 
-        [[nodiscard]] const PlacementInfoMat& getPlacementInfosForBiomes() const;
+        [[nodiscard]] const PlacementInfoVec& getPlacementInfos() const;
 
         terrain::TerrainPtr& getTerrain();
         [[nodiscard]] const terrain::TerrainPtr& getTerrain() const;
@@ -37,7 +36,7 @@ namespace mod::sobj
 
         mod::terrain::TerrainPtr terrainPtr;
 
-        PlacementInfoMat placementInfosForBiomes;
+        PlacementInfoVec placementInfos;
     };
     typedef std::shared_ptr<StaticObjectPlacer> StaticObjectPlacerPtr;
 }

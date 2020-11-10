@@ -32,28 +32,18 @@ namespace mod::sobj
 
             _shaderPtr->bind();
 
-            const PlacementInfoMat &placementInfosForBiomes = staticObjectPlacerPtr->getPlacementInfosForBiomes();
-            const terrain::BiomeAtlas &biomeAtlas =
-                    staticObjectPlacerPtr->getTerrain()->getTerrainConfig()->getBiomeAtlas();
+            const PlacementInfoVec &placementInfos = staticObjectPlacerPtr->getPlacementInfos();
+            for (const auto& placementInfo : placementInfos) {
+                StaticObjectPtr staticObjectPtr = placementInfo.objectPtr;
+                staticObjectPtr->getWorldTransform().setTranslation(placementInfo.location);
+                staticObjectPtr->update();
 
-            for (size_t biomeIndex = 0; biomeIndex < biomeAtlas.size(); ++biomeIndex) {
-                const terrain::Biome &biome = biomeAtlas[biomeIndex];
-                const PlacementInfoVec &placementInfos = placementInfosForBiomes[biomeIndex];
-
-                if (!placementInfos.empty()) {
-                    for (const auto& placementInfo : placementInfos) {
-                        StaticObjectPtr staticObjectPtr = biome.objects[placementInfo.objectIndex];
-                        staticObjectPtr->getWorldTransform().setTranslation(placementInfo.location);
-                        staticObjectPtr->update();
-
-                        if (staticObjectPtr->shouldBeRendered()) {
-                            for (size_t meshIndex = 0;
-                                 meshIndex < staticObjectPtr->getMeshBuffers().size();
-                                 ++meshIndex) {
-                                _shaderPtr->updateUniforms(staticObjectPtr, meshIndex);
-                                staticObjectPtr->getMeshBuffers()[meshIndex]->render();
-                            }
-                        }
+                if (staticObjectPtr->shouldBeRendered()) {
+                    for (size_t meshIndex = 0;
+                         meshIndex < staticObjectPtr->getBuffers().size();
+                         ++meshIndex) {
+                        _shaderPtr->updateUniforms(staticObjectPtr, meshIndex);
+                        staticObjectPtr->getBuffers()[meshIndex]->render();
                     }
                 }
             }
@@ -65,10 +55,11 @@ namespace mod::sobj
     }
 
     void StaticObjectRenderer::cleanUp() {
-        const terrain::BiomeAtlas& biomeAtlas = staticObjectPlacerPtr->getTerrain()->getTerrainConfig()->getBiomeAtlas();
+        const auto& biomeAtlas = staticObjectPlacerPtr->getTerrain()->GetTerrainConfig()->getBiomes();
+
         for (const auto& biome : biomeAtlas) {
-            if (!biome.objects.empty()) {
-                for (const auto& object : biome.objects) {
+            if (!biome->getObjects().empty()) {
+                for (const auto& object : biome->getObjects()) {
                     object->cleanUp();
                 }
             }

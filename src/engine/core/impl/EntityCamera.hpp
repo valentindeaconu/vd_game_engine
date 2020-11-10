@@ -24,7 +24,7 @@ namespace vd
 		struct EntityCameraInitParameters
 		{
 			object::EntityPtr entityPtr;
-			mod::terrain::TerrainPtr terrainPtr;
+            mod::terrain::TerrainPtr terrainPtr;
 			glm::vec3 playerPositionOffset;
 		};
 
@@ -57,7 +57,7 @@ namespace vd
 				float angleAroundPlayer;
 
 				object::EntityPtr entityPtr;
-				mod::terrain::TerrainPtr terrainPtr;
+                mod::terrain::TerrainPtr terrainPtr;
 				glm::vec3 offset;
 			};
 		}

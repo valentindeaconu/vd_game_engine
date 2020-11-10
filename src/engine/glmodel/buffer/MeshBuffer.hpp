@@ -8,15 +8,13 @@
 
 #include "Buffer.hpp"
 
-namespace vd::buffer
-{
-    class MeshBuffer : public Buffer
-    {
+namespace vd::buffer {
+    class MeshBuffer : public Buffer {
     public:
         MeshBuffer();
         ~MeshBuffer();
 
-        void allocate(const vd::model::MeshPtr& meshPtr) override;
+        void allocate(const vd::model::MeshPtr& meshPtr);
         void render() override;
         void cleanUp() override;
     private:
@@ -27,7 +25,6 @@ namespace vd::buffer
         vd::model::MeshPtr meshPtr;
     };
     typedef std::shared_ptr<MeshBuffer>	MeshBufferPtr;
-    typedef std::vector<MeshBufferPtr>	MeshBufferPtrVec;
 }
 
 #endif // !__MESH_BUFFER_HPP_

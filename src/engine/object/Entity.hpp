@@ -4,9 +4,11 @@
 #include <glm/glm.hpp>
 
 #include <engine/foundation/math/Transform.hpp>
-#include <engine/foundation/math/BoundingBox.hpp>
+#include <engine/foundation/math/Bounds.hpp>
 #include <engine/model/Mesh.hpp>
+
 #include <engine/glmodel/buffer/MeshBuffer.hpp>
+#include <engine/glmodel/buffer/PatchBuffer.hpp>
 
 #include <unordered_map>
 #include <algorithm>
@@ -17,6 +19,11 @@
 namespace vd::object {
     class Entity {
     public:
+        enum BufferGenerationStrategy {
+            eMesh = 0,
+            ePatch
+        };
+
         explicit Entity(const vd::EnginePtr& enginePtr);
         ~Entity();
 
@@ -38,16 +45,19 @@ namespace vd::object {
         [[nodiscard]] const vd::model::MeshPtrVec& getMeshes() const;
         void setMeshes(const vd::model::MeshPtrVec& meshes);
 
-        vd::buffer::MeshBufferPtrVec& getMeshBuffers();
-        [[nodiscard]] const vd::buffer::MeshBufferPtrVec& getMeshBuffers() const;
+        vd::buffer::BufferPtrVec& getBuffers();
+        [[nodiscard]] const vd::buffer::BufferPtrVec& getBuffers() const;
 
-        vd::math::BoundingBoxVec& getBoundingBoxes();
-        [[nodiscard]] const vd::math::BoundingBoxVec& getBoundingBoxes() const;
-        void setBoundingBoxes(const vd::math::BoundingBoxVec& boundingBoxes);
+        vd::math::Bounds3Vec& getBoundingBoxes();
+        [[nodiscard]] const vd::math::Bounds3Vec& getBoundingBoxes() const;
+        void setBoundingBoxes(const vd::math::Bounds3Vec& boundingBoxes);
 
         vd::EnginePtr& getParentEngine();
         [[nodiscard]] const vd::EnginePtr& getParentEngine() const;
         void setParentEngine(const vd::EnginePtr& enginePtr);
+
+    protected:
+        void setBufferGenerationStrategy(const BufferGenerationStrategy& strategy);
 
     private:
         void generateBuffers();
@@ -55,9 +65,11 @@ namespace vd::object {
         vd::math::Transform localTransform;
         vd::math::Transform worldTransform;
 
+        BufferGenerationStrategy strategy;
+
         vd::model::MeshPtrVec meshes;
-        vd::buffer::MeshBufferPtrVec meshBuffers;
-        vd::math::BoundingBoxVec boundingBoxes;
+        vd::buffer::BufferPtrVec buffers;
+        vd::math::Bounds3Vec boundingBoxes;
 
         vd::EnginePtr parentEnginePtr;
     };

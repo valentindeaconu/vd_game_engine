@@ -1,120 +1,150 @@
-#version 410 core
+#version 430
 
-in vec4 fPosition;
-in vec3 fNormal;
+layout (location = 0) out vec4 fColor;
+
 in vec2 fTexCoords;
-
-in mat3 fNormalMatrix;
-in mat3 fLightDirectionMatrix;
-in float fVisibility;
-
+in vec3 fPosition;
+in vec3 fTangent;
 in vec4 fPosition_ls;
+in mat3 fNormalMatrix;
 
-in float fShadowDistance;
+// terrain material color
+uniform sampler2D shadowMap;
+uniform sampler2D normalMap;
+uniform usampler2D splatMap;
+#include "material_lib.glsl"
 
-out vec4 fColor;
-
+uniform int highDetailRange;
+uniform vec3 cameraPosition;
 uniform mat4 view;
 
-uniform sampler2D shadowMap;
-const int MAX_TEXTURES = 6;
-uniform sampler2D textures[MAX_TEXTURES];
-uniform usampler2D splatMap;
-
-uniform vec3 fogColor;
-
+// light constants
 #include "../lib/light_FS.glsl"
-
 uniform Light lights[MAX_LIGHTS];
 
-float computeShadow(vec4 fragPosLightSpace, vec3 lightDirection, float shadowDistance)
-{
-	const int pcfCount = 2;
-	const float totalTexels = (pcfCount * 2.0f + 1.0f) * (pcfCount * 2.0f + 1.0f);
+// shadow constants
+uniform float shadowDistance;
+uniform float shadowTransitionDistance;
 
-	// perform perspective divide
-	vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
+// fog constants
+uniform float fogDensity;
+uniform float fogGradient;
+uniform vec3 fogColor;
 
-	if (projCoords.z > 1.0f)
-		return 0.0f;
+#include "../lib/fog_VS.glsl"
 
-	// transform to [0,1] range
-	projCoords = projCoords * 0.5f + 0.5f;
+float computeShadow(vec4 fragPosLightSpace, vec3 normal, vec3 lightDirection, float shadowDistance) {
+    const int pcfCount = 2;
+    const float totalTexels = (pcfCount * 2.0f + 1.0f) * (pcfCount * 2.0f + 1.0f);
 
-	// get closest depth value from light's perspective (using [0,1] range fragPosLight as coords)
-	float closestDepth = texture(shadowMap, projCoords.xy).r;
+    // perform perspective divide
+    vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
 
-	// get depth of current fragment from light's perspective
-	float currentDepth = projCoords.z;
+    if (projCoords.z > 1.0f)
+        return 0.0f;
 
-	float bias = max(0.05f * (1.0f - dot(fNormal, -lightDirection)), 0.005f);
+    // transform to [0,1] range
+    projCoords = projCoords * 0.5f + 0.5f;
 
-	// check whether current frag pos is in shadow
-	float shadow = 0.0;
-	vec2 texelSize = 1.0 / textureSize(shadowMap, 0);
-	for (int x = -pcfCount; x <= pcfCount; ++x)
-	{
-		for (int y = -pcfCount; y <= pcfCount; ++y)
-		{
-			float pcfDepth = texture(shadowMap, projCoords.xy + vec2(x, y) * texelSize).r;
+    // get closest depth value from light's perspective (using [0,1] range fragPosLight as coords)
+    float closestDepth = texture(shadowMap, projCoords.xy).r;
 
-			if (currentDepth - bias > pcfDepth)
-			{
-				shadow += 1.0f;
-			}
-		}
-	}
-	shadow /= totalTexels;
+    // get depth of current fragment from light's perspective
+    float currentDepth = projCoords.z;
 
-	return shadow * shadowDistance;
+    // TODO: Solve bias
+    float bias = 0.005f; // max(0.0075f * (1.0f - dot(normal, lightDirection)), 0.005f);
+
+    // check whether current frag pos is in shadow
+    float shadow = 0.0;
+    vec2 texelSize = 1.0 / textureSize(shadowMap, 0);
+    for (int x = -pcfCount; x <= pcfCount; ++x) {
+        for (int y = -pcfCount; y <= pcfCount; ++y) {
+            float pcfDepth = texture(shadowMap, projCoords.xy + vec2(x, y) * texelSize).r;
+
+            if (currentDepth - bias > pcfDepth) {
+                shadow += 1.0f;
+            }
+        }
+    }
+    shadow /= totalTexels;
+
+    return shadow * shadowDistance;
 }
 
-void main() 
-{
-	// splatMap color
-	uint splatMask = texture(splatMap, fTexCoords).r;
-	
-	vec2 nTexCoords = fTexCoords * 140.0f;
-	
-	vec4 textureColors[MAX_TEXTURES];
-	for (int i = 0; i < MAX_TEXTURES; ++i)
-	{
-		textureColors[i] = texture(textures[i], nTexCoords);
-	}
+void main() {
+    // compute visibility factor
+    float visibility = getObjectVisibilityThruFog(fPosition, fogDensity, fogGradient);
 
-	vec4 totalColor = vec4(0.0f);
-	float total = 0.0f;
-	for (uint i = 0; i < MAX_TEXTURES; ++i)
-	{
-		uint msk = (1 << i);
-		if ((splatMask & msk) > 0)
-		{
-			totalColor += textureColors[i];
-			total = total + 1.0f;
-		}
-	}
-	
-	totalColor /= total;
-	
-	// compute lights
-	//in eye coordinates, the viewer is situated at the origin
-	vec3 cameraPosEye = vec3(0.0f);
-	//transform normal
-	vec3 normalEye = normalize(fNormalMatrix * fNormal);	
-	//compute view direction 
-	vec3 viewDirN = normalize(cameraPosEye - fPosition.xyz);
-	
-	Material totalMat = intersectAllLights(lights, normalEye, viewDirN, fLightDirectionMatrix);
+    // if the fragment is completely inside fog, set its color to fog color without other computations
+    if (visibility <= 0.025f) {
+        fColor = vec4(fogColor, 1.0f);
+    } else {
+        vec3 normal = normalize(2.0f * texture(normalMap, fTexCoords).rbg - 1.0f);
 
-	// modulate with material
-	totalMat.ambient *= totalColor.xyz;
-	totalMat.diffuse *= totalColor.xyz;
+        // compute material color
+        uint splatMask = texture(splatMap, fTexCoords).r;
 
-	// modulate with shadow
-	vec3 lightDirection = -lights[0].position;
-	float shadow = computeShadow(fPosition_ls, lightDirection, fShadowDistance);
+        vec4 materialColor = vec4(0.0f);
+        float total = 0.0f;
+        for (uint i = 0; i < MAX_MATERIALS; ++i) {
+            uint msk = (1 << i);
+            if ((splatMask & msk) > 0) {
+                materialColor += texture(materials[i].diffuseMap, fTexCoords * materials[i].horizontalScaling);
+                total = total + 1.0f;
+            }
+        }
+        materialColor /= total;
 
-	// modulate with light
-	vec4 lighting = vec4(min(totalMat.ambient + (1.0f - shadow) * (totalMat.diffuse + totalMat.specular), 1.0f), 1.0f);
-	fColor = mix(vec4(fogColor, 1.0f), lighting, fVisibility);
+        // compute normal
+        float dist = length(cameraPosition - fPosition);
+        if (dist < highDetailRange - 50) {
+            float attenuation = clamp(-dist/(highDetailRange - 50) + 1.0f, 0.0f, 1.0f);
+
+            vec3 bitangent = normalize(cross(fTangent, normal));
+
+            mat3 TBN = mat3(fTangent, bitangent, normal);
+
+            vec3 bumpNormal = vec3(0.0f);
+            for (uint i = 0; i < MAX_MATERIALS; ++i) {
+                uint msk = (1 << i);
+                if ((splatMask & msk) > 0) {
+                    vec3 materialNormal = texture(materials[i].normalMap, fTexCoords * materials[i].horizontalScaling).rbg;
+                    bumpNormal += (2.0f * materialNormal - 1.0f);
+                }
+            }
+            bumpNormal = normalize(bumpNormal);
+            bumpNormal.xz *= attenuation;
+            normal = normalize(TBN * bumpNormal);
+        }
+
+        // compute lights
+        // in eye coordinates, the viewer is situated at the origin
+        vec3 cameraPosEye = vec3(0.0f);
+        // transform normal
+        vec3 normalEye = normalize(fNormalMatrix * normal);
+        // compute view direction
+        vec3 viewDirN = normalize(cameraPosition - fPosition);
+        // compute light direction matrix
+        mat3 lightDirectionMatrix = mat3(transpose(inverse(view)));
+
+        Material totalMat = intersectAllLights(lights, normalEye, viewDirN, lightDirectionMatrix);
+
+        // modulate with material
+        totalMat.ambient *= materialColor.xyz;
+        totalMat.diffuse *= materialColor.xyz;
+
+        // compute the distance for shadow transition
+        float distance = (length(fPosition) - (shadowDistance - shadowTransitionDistance)) / shadowTransitionDistance;
+        float shadowDistanceFactor = clamp(1.0f - distance, 0.0f, 1.0f);
+
+        // modulate with shadow
+        float shadow = computeShadow(fPosition_ls, normal, lights[0].position, shadowDistanceFactor);
+
+        // modulate with light
+        vec4 lighting = vec4(min(totalMat.ambient + (1.0f - shadow) * (totalMat.diffuse + totalMat.specular), 1.0f), 1.0f);
+
+        // modulate with fog
+        fColor = mix(vec4(fogColor, 1.0f), lighting, visibility);
+    }
 }

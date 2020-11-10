@@ -12,7 +12,7 @@
 
 #include <memory>
 
-#include "BoundingBox.hpp"
+#include "Bounds.hpp"
 
 namespace vd::math {
     class Frustum {
@@ -29,7 +29,7 @@ namespace vd::math {
         void init();
         void update();
 
-        [[nodiscard]] CollisionRelationship checkAgainst(const BoundingBox& boundingBox) const;
+        [[nodiscard]] CollisionRelationship checkAgainst(const Bounds3& bounds) const;
     private:
         const int kPlaneCount = 6;
         const int kVertexCount = 8;

@@ -1,117 +1,119 @@
+//
+// Created by Vali on 9/21/2020.
+//
+
 #include "Terrain.hpp"
 
-#include "TerrainShader.hpp"
+namespace mod::terrain {
 
-namespace mod::terrain
-{
     Terrain::Terrain(const vd::EnginePtr& enginePtr, const std::string& configFilePath)
-        : Entity(enginePtr)
+        : vd::object::Entity(enginePtr)
+        , m_ConfigPtr(std::make_shared<TerrainConfig>(configFilePath))
     {
-        configPtr = std::make_shared<TerrainConfig>(configFilePath);
     }
 
     Terrain::~Terrain() = default;
 
-    void Terrain::init()
-    {
-        configPtr->parse();
+    void Terrain::init() {
+        m_ConfigPtr->parse();
 
-        configPtr->initializeObjects(getParentEngine());
+        auto& biomes = m_ConfigPtr->getBiomes();
+        for (const auto& biome : biomes) {
+            auto& objects = biome->getObjects();
+            for (auto& object : objects) {
+                object->setParentEngine(getParentEngine());
+            }
+        }
 
-        generatePatch(); // generate mesh;
+        m_RootNode = std::make_shared<TerrainNode>(nullptr,
+                                                   m_ConfigPtr,
+                                                   glm::vec2(0.0f, 0.0f),
+                                                   glm::vec2(1.0f, 1.0f),
+                                                   0,
+                                                   TerrainNode::eRootNode);
 
-        Entity::init(); // generate meshbuffer;
+        populateTree(m_RootNode);
+
+        generatePatch();
+
+        Entity::init();
     }
 
-    void Terrain::update()
-    {
+    void Terrain::update() {
+        auto& cameraPtr = getParentEngine()->getCamera();
+        if (cameraPtr->isCameraMoved() || cameraPtr->isCameraRotated()) {
+            //m_RootNode->Update(cameraPtr);
+            //m_RootNode->UpdateNeighbours();
+            for (const auto& imaginaryRootNode : m_ImaginaryRootNodes) {
+                imaginaryRootNode->Update(cameraPtr);
+            }
+
+            for (const auto& imaginaryRootNode : m_ImaginaryRootNodes) {
+                imaginaryRootNode->UpdateNeighbours();
+            }
+        }
     }
 
-    void Terrain::cleanUp()
-    {
+    void Terrain::cleanUp() {
+        m_RootNode->Clear();
+        m_ImaginaryRootNodes.clear();
+
+        m_RootNode = nullptr;
+
         Entity::cleanUp();
     }
 
-    const TerrainConfigPtr& Terrain::getTerrainConfig() const
-    {
-        return configPtr;
+    const TerrainConfigPtr& Terrain::GetTerrainConfig() const {
+        return m_ConfigPtr;
     }
 
-    void Terrain::generatePatch()
-    {
+    void Terrain::generatePatch() {
         vd::model::MeshPtr meshPtr = std::make_shared<vd::model::Mesh>();
 
-        const size_t size = configPtr->getSize();
+        auto& vertices = meshPtr->vertices;
+        vertices.resize(16);
 
-        for (size_t i = 0; i <= size; ++i)
-        {
-            for (size_t j = 0; j <= size; ++j)
-            {
-                meshPtr->vertices.emplace_back();
-                vd::model::Vertex& v = meshPtr->vertices.back();
+        vertices[0] = { .Position = glm::vec3(0.0f, 0.0f, 0.0f) };
+        vertices[1] = { .Position = glm::vec3(0.333f, 0.0f, 0.0f) };
+        vertices[2] = { .Position = glm::vec3(0.666f, 0.0f, 0.0f) };
+        vertices[3] = { .Position = glm::vec3(1.0f, 0.0f, 0.0f) };
 
-                float x = ((float)i / size);
-                float z = ((float)j / size);
+        vertices[4] = { .Position = glm::vec3(0.0f, 0.0f, 0.333f) };
+        vertices[5] = { .Position = glm::vec3(0.333f, 0.0f, 0.333f) };
+        vertices[6] = { .Position = glm::vec3(0.666f, 0.0f, 0.333f) };
+        vertices[7] = { .Position = glm::vec3(1.0f, 0.0f, 0.333f) };
 
-                float y = configPtr->getHeight(j, i);
+        vertices[8] = { .Position = glm::vec3(0.0f, 0.0f, 0.666f) };
+        vertices[9] = { .Position = glm::vec3(0.333f, 0.0f, 0.666f) };
+        vertices[10] = { .Position = glm::vec3(0.666f, 0.0f, 0.666f) };
+        vertices[11] = { .Position = glm::vec3(1.0f, 0.0f, 0.666f) };
 
-                v.Position = glm::vec3(i, y, j);
-                v.TexCoords = glm::vec2(x, z);
-            }
-        }
+        vertices[12] = { .Position = glm::vec3(0.0f, 0.0f, 1.0f) };
+        vertices[13] = { .Position = glm::vec3(0.333f, 0.0f, 1.0f) };
+        vertices[14] = { .Position = glm::vec3(0.666f, 0.0f, 1.0f) };
+        vertices[15] = { .Position = glm::vec3(1.0f, 0.0f, 1.0f) };
 
-        for (size_t i = 0; i <= size; ++i)
-        {
-            for (size_t j = 0; j <= size; ++j)
-            {
-                /*
-                 * z0 -- z1 -- z2
-                 * |     |     |
-                 * z3 --  c -- z4
-                 * |     |     |
-                 * z5 -- z6 -- z7
-                 */
-
-                float z0 = configPtr->getHeight(j - 1, i - 1);
-                float z1 = configPtr->getHeight(j, i - 1);
-                float z2 = configPtr->getHeight(j + 1, i - 1);
-
-                float z3 = configPtr->getHeight(j - 1, i);
-                float z4 = configPtr->getHeight(j + 1, i);
-
-                float z5 = configPtr->getHeight(j - 1, i + 1);
-                float z6 = configPtr->getHeight(j, i + 1);
-                float z7 = configPtr->getHeight(j + 1, i + 1);
-
-                glm::vec3 normal(0.0f);
-
-                normal.z = 1.0f / configPtr->getNormalStrength();
-                normal.x = z0 + 2*z3 + z5 - z2 - 2*z4 - z7;
-                normal.y = z0 + 2*z1 + z2 - z5 - 2*z6 - z7;
-
-                meshPtr->vertices[i * size + j].Normal = (glm::normalize(normal) + 1.0f) / 2.0f;
-            }
-        }
-
-        for (size_t i = 1; i <= size; ++i)
-        {
-            for (size_t j = 1; j <= size; ++j)
-            {
-                GLuint current = i * (size + 1) + j;
-                GLuint west = current - 1;
-                GLuint north = (i - 1) * (size + 1) + j;
-                GLuint northWest = north - 1;
-
-                meshPtr->indices.push_back(current);
-                meshPtr->indices.push_back(west);
-                meshPtr->indices.push_back(northWest);
-
-                meshPtr->indices.push_back(current);
-                meshPtr->indices.push_back(northWest);
-                meshPtr->indices.push_back(north);
-            }
-        }
+        setBufferGenerationStrategy(ePatch);
 
         getMeshes().push_back(meshPtr);
+    }
+
+    const std::vector<TerrainNode::ptr_type_t>& Terrain::GetRootNodes() const {
+        return m_ImaginaryRootNodes;
+    }
+
+    void Terrain::populateTree(const TerrainNode::ptr_type_t& root) {
+        // TODO: Set level offset
+        if (root->GetLevel() < 3) {
+            root->Populate();
+
+            for (auto& child : root->GetChildren()) {
+                auto terrainNodeChild = std::dynamic_pointer_cast<TerrainNode>(child);
+                populateTree(terrainNodeChild);
+            }
+        } else {
+            m_ImaginaryRootNodes.emplace_back(std::dynamic_pointer_cast<TerrainNode>(root));
+            m_ImaginaryRootNodes.back()->ResetLevel();
+        }
     }
 }

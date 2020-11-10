@@ -37,7 +37,7 @@ namespace mod::gui {
 
         shaderPtr->bind();
         shaderPtr->updateUniforms(guiQuadPtr, 0);
-        guiQuadPtr->getMeshBuffers()[0]->render();
+        guiQuadPtr->getBuffers()[0]->render();
 
         if (renderConfigPtr != nullptr)
             renderConfigPtr->disable();

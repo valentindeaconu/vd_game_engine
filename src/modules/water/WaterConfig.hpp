@@ -6,7 +6,6 @@
 #define VD_GAME_ENGINE_WATERCONFIG_HPP
 
 #include <engine/config/ConfigurationFile.hpp>
-#include <engine/foundation/imgloader/IMGLoader.hpp>
 #include <engine/model/Texture.hpp>
 
 #include <glm/glm.hpp>
@@ -58,8 +57,6 @@ namespace mod::water {
         uint32_t refractionHeight;
 
         std::unordered_map<std::string, WaterPack>  waterPackMap;
-
-        vd::imgloader::IMGLoaderPtr imgLoaderPtr;
     };
     typedef std::shared_ptr<WaterConfig>    WaterConfigPtr;
 }

@@ -3,10 +3,8 @@
 
 #include <engine/model/Mesh.hpp>
 
-namespace vd::buffer
-{
-    class Buffer
-    {
+namespace vd::buffer {
+    class Buffer {
     public:
         virtual void allocate(const vd::model::MeshPtr& meshPtr) = 0;
         virtual void render() = 0;

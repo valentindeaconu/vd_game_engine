@@ -14,8 +14,11 @@ namespace mod::player
     {
         //getWorldTransform().setTranslation(256.0f, 0.0f, 256.0f);
         //getWorldTransform().setTranslation(0.0f, 0.0f, 0.0f);
-        getWorldTransform().setTranslation(512.0f, 0.0f, 512.0f);
-        getWorldTransform().setScaling(0.5f, 0.5f, 0.5f);
+
+        float h = terrainPtr->GetTerrainConfig()->getHeight(0.0f, 0.0f);
+
+        getWorldTransform().setTranslation(0.0f, h + modelYOffset, 0.0f);
+        //getWorldTransform().setScaling(0.5f, 0.5f, 0.5f);
         vd::objloader::OBJLoaderPtr objLoaderPtr = std::make_shared<vd::objloader::OBJLoader>();
 
         vd::model::MeshPtrVec& meshPtrVec = getMeshes();
@@ -53,10 +56,9 @@ namespace mod::player
         currentUpwardsSpeed += kGravity * getParentEngine()->getFrameTime();
         currentPosition.y += currentUpwardsSpeed * getParentEngine()->getFrameTime();
 
-        float height = terrainPtr->getTerrainConfig()->getHeight(currentPosition.x, currentPosition.z);
+        float height = terrainPtr->GetTerrainConfig()->getHeight(currentPosition.x, currentPosition.z);
 
-        if (currentPosition.y < height + modelYOffset)
-        {
+        if (currentPosition.y < height + modelYOffset) {
             currentUpwardsSpeed = 0.0f;
             currentPosition.y = height + modelYOffset;
             isJumping = false;

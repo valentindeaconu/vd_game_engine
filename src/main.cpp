@@ -40,7 +40,11 @@
 #include <modules/water/WaterRenderer.hpp>
 #include <modules/water/WaterShader.hpp>
 
+// object finder
+#include <engine/core/ObjectManager.hpp>
+
 mod::terrain::TerrainPtr createTerrain(vd::EnginePtr& enginePtr);
+
 mod::player::PlayerPtr createPlayer(vd::EnginePtr& enginePtr, mod::terrain::TerrainPtr& terrainPtr);
 mod::sky::SkyPtr createSky(vd::EnginePtr& enginePtr);
 
@@ -57,10 +61,12 @@ int main(int argc, char ** argv) {
 
     /// Engine creation
 	vd::EnginePtr enginePtr = std::make_shared<vd::Engine>();
-	enginePtr->setup(1280, 720, "VD Game Engine");
+	enginePtr->setup(1280, 720, "VDGE");
 
 	/// Mods
-	mod::terrain::TerrainPtr terrainPtr = createTerrain(enginePtr);
+    createTerrain(enginePtr);
+
+    mod::terrain::TerrainPtr terrainPtr = vd::core::FindObjectOfType<mod::terrain::Terrain>::Get();
 
     mod::sky::SkyPtr skyPtr = createSky(enginePtr);
 
@@ -87,12 +93,12 @@ int main(int argc, char ** argv) {
               glm::vec2(0.250f, 0.250f));
 
     createGUI(enginePtr,
-              waterPtr->getRefractionFramebuffer()->getColorTexture(),
-              glm::vec2(-0.75f, -0.75f),
+              waterPtr->getReflectionFramebuffer()->getColorTexture(),
+              glm::vec2(0.75f, 0.75f),
               glm::vec2(0.250f, 0.250f));
 
     createGUI(enginePtr,
-              waterPtr->getReflectionFramebuffer()->getColorTexture(),
+              terrainPtr->GetTerrainConfig()->getNormalMap(),
               glm::vec2(0.75f, 0.75f),
               glm::vec2(0.250f, 0.250f));*/
 
@@ -109,6 +115,7 @@ mod::terrain::TerrainPtr createTerrain(vd::EnginePtr& enginePtr) {
 
     mod::terrain::TerrainPtr terrainPtr =
             std::make_shared<mod::terrain::Terrain>(enginePtr, "./resources/terrain_settings.cfg");
+
     mod::terrain::TerrainShaderPtr terrainShaderPtr = std::make_shared<mod::terrain::TerrainShader>();
 
     mod::terrain::TerrainRendererPtr terrainRendererPtr = std::make_shared<mod::terrain::TerrainRenderer>();
@@ -117,6 +124,8 @@ mod::terrain::TerrainPtr createTerrain(vd::EnginePtr& enginePtr) {
     terrainRendererPtr->setShader(terrainShaderPtr);
 
     enginePtr->getWorker()->subscribe(terrainRendererPtr);
+
+    vd::core::FindObjectOfType<mod::terrain::Terrain>::Provide(terrainPtr);
 
     return terrainPtr;
 }

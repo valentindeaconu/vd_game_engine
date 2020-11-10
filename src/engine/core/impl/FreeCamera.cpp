@@ -40,6 +40,8 @@ namespace vd::core::impl
     }
 
     void FreeCamera::update() {
+        Camera::update();
+
         float movAmt = speed;
         float rotAmt = speed * 0.5f;
 
@@ -75,7 +77,8 @@ namespace vd::core::impl
             }
         }
 
-        Camera::update();
+        if (inputHandlerPtr->getKeyHolding(GLFW_KEY_K))
+            Logger::log("Position (" + std::to_string(position.x) + ", " + std::to_string(position.y) + ", " + std::to_string(position.z) + ")");
     }
 
     void FreeCamera::reflect(float yAxisSymmetric) {

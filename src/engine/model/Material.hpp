@@ -12,19 +12,20 @@ namespace vd::model
     struct Material
     {
         std::string name;
-        Texture2DPtr diffusemap;
-        Texture2DPtr normalmap;
-        Texture2DPtr displacemap;
-        Texture2DPtr ambientmap;
-        Texture2DPtr specularmap;
-        Texture2DPtr alphamap;
-        Texture2DPtr bumpmap;
+        Texture2DPtr diffuseMap;
+        Texture2DPtr normalMap;
+        Texture2DPtr displaceMap;
+        Texture2DPtr ambientMap;
+        Texture2DPtr specularMap;
+        Texture2DPtr alphaMap;
+        Texture2DPtr bumpMap;
         glm::vec4 color;
         glm::vec3 emission;
         float shininess;
         float displaceScale;
         float horizontalScale;
     };
+    typedef std::vector<Material>   MaterialVec;
 }
 
 #endif // !__MATERIAL_HPP_

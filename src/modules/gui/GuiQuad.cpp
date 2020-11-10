@@ -33,7 +33,7 @@ namespace mod::gui {
 
         meshPtr->indices = { 0, 1, 2, 2, 1, 3 };
 
-        meshPtr->materials.push_back({ .diffusemap = texture });
+        meshPtr->materials.push_back({ .diffuseMap = texture });
 
         meshPtrVec.push_back(meshPtr);
 

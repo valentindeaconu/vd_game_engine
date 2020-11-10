@@ -26,10 +26,10 @@ namespace mod::player {
             auto _shaderPtr = renderingPass == vd::kernel::RenderingPass::eShadow ? this->getShadowShader() : shaderPtr;
 
             _shaderPtr->bind();
-            vd::buffer::MeshBufferPtrVec& meshBuffers = playerPtr->getMeshBuffers();
-            for (size_t meshIndex = 0; meshIndex < meshBuffers.size(); ++meshIndex) {
+            vd::buffer::BufferPtrVec& buffers = playerPtr->getBuffers();
+            for (size_t meshIndex = 0; meshIndex < buffers.size(); ++meshIndex) {
                 _shaderPtr->updateUniforms(playerPtr, meshIndex);
-                meshBuffers[meshIndex]->render();
+                buffers[meshIndex]->render();
             }
 
             if (renderConfigPtr != nullptr) {

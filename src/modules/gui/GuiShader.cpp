@@ -23,7 +23,7 @@ namespace mod::gui {
         setUniform("transform", entityPtr->getLocalTransform().get());
 
         vd::model::activeTexture(1);
-        entityPtr->getMeshes()[0]->materials[0].diffusemap->bind();
+        entityPtr->getMeshes()[0]->materials[0].diffuseMap->bind();
         setUniformi("guiTexture", 1);
     }
 }

@@ -32,10 +32,10 @@ namespace vd::shadow {
         {
             vd::model::Material& meshMaterial = meshPtr->materials.front();
 
-            if (meshMaterial.diffusemap != nullptr)
+            if (meshMaterial.diffuseMap != nullptr)
             {
                 vd::model::activeTexture(0);
-                meshMaterial.diffusemap->bind();
+                meshMaterial.diffuseMap->bind();
                 setUniformi("diffuseMap", 0);
             }
         }

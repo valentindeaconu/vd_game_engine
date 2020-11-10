@@ -9,7 +9,6 @@ namespace mod::water {
     WaterConfig::WaterConfig(const std::string &filePath)
         : ConfigurationFile(filePath)
     {
-        imgLoaderPtr = std::make_shared<vd::imgloader::IMGLoader>();
     }
 
     WaterConfig::~WaterConfig() = default;
