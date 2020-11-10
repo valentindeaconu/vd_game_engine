@@ -53,7 +53,7 @@ namespace mod::terrain {
         void UpdateNeighbours();
 
         void Populate() override;
-
+        
         [[nodiscard]] const glm::vec2& GetTopLeft() const;
 
         [[nodiscard]] const vd::math::Transform& GetTransform() const;
@@ -61,8 +61,6 @@ namespace mod::terrain {
         [[nodiscard]] const PointVec& GetEdgeMiddles() const;
 
         [[nodiscard]] const glm::vec4& GetTessFactors() const;
-
-        void SetNeighbour(const TerrainNode* neighbour, EdgeIndex neighbourIndex);
     private:
 
         void ComputeEdgeMiddles();

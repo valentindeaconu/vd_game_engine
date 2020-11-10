@@ -22,6 +22,8 @@ namespace vd::datastruct {
         virtual void Populate();
         virtual void Clear();
 
+        void ResetLevel();
+
         [[nodiscard]] int GetLevel() const;
         [[nodiscard]] int GetNodeIndex() const;
         [[nodiscard]] bool IsLeaf() const;
@@ -33,7 +35,7 @@ namespace vd::datastruct {
 
         const arr_type_t& GetChildren() const;
     protected:
-        const int m_kLevel;
+        int m_Level;
         const int m_kNodeIndex;
 
         bool m_Leaf;

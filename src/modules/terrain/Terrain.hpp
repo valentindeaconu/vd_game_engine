@@ -27,14 +27,16 @@ namespace mod::terrain {
 
         [[nodiscard]] const TerrainConfigPtr& GetTerrainConfig() const;
 
-        [[nodiscard]] const TerrainNode::ptr_type_t& GetRootNode() const;
+        [[nodiscard]] const std::vector<TerrainNode::ptr_type_t>& GetRootNodes() const;
 
     private:
         void generatePatch();
+        void populateTree(const TerrainNode::ptr_type_t& root);
 
         TerrainConfigPtr m_ConfigPtr;
 
         TerrainNode::ptr_type_t m_RootNode;
+        std::vector<TerrainNode::ptr_type_t> m_ImaginaryRootNodes;
     };
     typedef std::shared_ptr<Terrain>    TerrainPtr;
 }

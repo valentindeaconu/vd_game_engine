@@ -34,7 +34,7 @@ Optional* Use any IDE which supports CMake (CLion, Visual Studio, Qt Creator etc
 ## Features
 
 * SOLID architecture
-* Terrain with heights, normals and multiple textures, each texture defining a different biome
+* Quad-tree terrain with dynamic tessellation, multi-texturing, heights, normals, displacement and bump normals. 
 * Biome System (up to 32 biomes, with possibility to combine multiple biome)
 * Static Objects
 * Random Object Generator with possibility to spawn a certain object in a certain biome
@@ -58,6 +58,7 @@ Optional* Use any IDE which supports CMake (CLion, Visual Studio, Qt Creator etc
 * Post-rendering effects
 * Lens flare effect
 * Support for GUI Text
+* Frustum Culling for Terrain
 
 ## Meta-project related TODOs
 * Successfully built on UNIX systems

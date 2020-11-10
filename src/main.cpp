@@ -40,6 +40,9 @@
 #include <modules/water/WaterRenderer.hpp>
 #include <modules/water/WaterShader.hpp>
 
+// object finder
+#include <engine/core/ObjectManager.hpp>
+
 mod::terrain::TerrainPtr createTerrain(vd::EnginePtr& enginePtr);
 
 mod::player::PlayerPtr createPlayer(vd::EnginePtr& enginePtr, mod::terrain::TerrainPtr& terrainPtr);
@@ -61,7 +64,9 @@ int main(int argc, char ** argv) {
 	enginePtr->setup(1280, 720, "VDGE");
 
 	/// Mods
-    mod::terrain::TerrainPtr terrainPtr = createTerrain(enginePtr);
+    createTerrain(enginePtr);
+
+    mod::terrain::TerrainPtr terrainPtr = vd::core::FindObjectOfType<mod::terrain::Terrain>::Get();
 
     mod::sky::SkyPtr skyPtr = createSky(enginePtr);
 
@@ -70,7 +75,7 @@ int main(int argc, char ** argv) {
     createAndPlaceStaticObjects(enginePtr, terrainPtr);
 
 	/// Water must be the last element to draw, but before GUIs
-	//mod::water::WaterPtr waterPtr = createWater(enginePtr);
+	mod::water::WaterPtr waterPtr = createWater(enginePtr);
 
 	/// Engine init
 	vd::core::EntityCameraInitParameters entityCameraInitParameters = {
@@ -88,8 +93,8 @@ int main(int argc, char ** argv) {
               glm::vec2(0.250f, 0.250f));
 
     createGUI(enginePtr,
-              waterPtr->getRefractionFramebuffer()->getColorTexture(),
-              glm::vec2(-0.75f, -0.75f),
+              waterPtr->getReflectionFramebuffer()->getColorTexture(),
+              glm::vec2(0.75f, 0.75f),
               glm::vec2(0.250f, 0.250f));
 
     createGUI(enginePtr,
@@ -119,6 +124,8 @@ mod::terrain::TerrainPtr createTerrain(vd::EnginePtr& enginePtr) {
     terrainRendererPtr->setShader(terrainShaderPtr);
 
     enginePtr->getWorker()->subscribe(terrainRendererPtr);
+
+    vd::core::FindObjectOfType<mod::terrain::Terrain>::Provide(terrainPtr);
 
     return terrainPtr;
 }

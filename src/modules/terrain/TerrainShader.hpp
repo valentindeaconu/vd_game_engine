@@ -20,6 +20,7 @@ namespace mod::terrain {
         void updateUniforms(vd::object::EntityPtr entityPtr, size_t meshIndex) override;
     private:
         const int kBiomeCount;
+        const int kMaxLights;
     };
     typedef std::shared_ptr<TerrainShader>  TerrainShaderPtr;
 }

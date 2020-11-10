@@ -27,8 +27,8 @@ namespace mod::terrain {
         else if (command == "scaleXZ") {
             scaleXZ = std::stof(tokens[0]);
         }
-        else if (command == "tbnRange") {
-            tbnRange = std::stoi(tokens[0]);
+        else if (command == "highDetailRange") {
+            highDetailRange = std::stoi(tokens[0]);
         }
         else if (command == "tessellationFactor") {
             tessellationFactor = std::stoi(tokens[0]);
@@ -57,7 +57,7 @@ namespace mod::terrain {
             normalStrength = std::stof(tokens[0]);
         }
         else if (command.starts_with("lod") && command.ends_with("_range")) {
-            int index = command[3] - '0' - 1;
+            int index = std::stoi(command.substr(3)) - 1;
 
             if (index >= kDetailLevels) {
                 return;
@@ -138,8 +138,12 @@ namespace mod::terrain {
         splatMap = splatMapRendererPtr->getSplatMap();
         splatImg = splatMapRendererPtr->getSplatData();
 
-        worldTransform.setScaling(scaleXZ, scaleY, scaleXZ);
-        worldTransform.setTranslation(-scaleXZ/2.0f, 0.0f, -scaleXZ/2.0f);
+        vd::math::Transform transform;
+        transform.setScaling(scaleXZ, scaleY, scaleXZ);
+        transform.setTranslation(-scaleXZ/2.0f, 0.0f, -scaleXZ/2.0f);
+
+        this->worldTransform = transform.get();
+        this->inverseWorldTransform = transform.inverse();
     }
 
     int TerrainConfig::updateMorphingArea(int lod) const {
@@ -191,8 +195,8 @@ namespace mod::terrain {
         return tessellationInnerLevel;
     }
 
-    int TerrainConfig::getTbnRange() const {
-        return tbnRange;
+    int TerrainConfig::getHighDetailRange() const {
+        return highDetailRange;
     }
 
     int TerrainConfig::getMaxDetailLevel() const {
@@ -219,8 +223,12 @@ namespace mod::terrain {
         return heightImg;
     }
 
-    const vd::math::Transform& TerrainConfig::getTransform() const {
+    const glm::mat4& TerrainConfig::getTransform() const {
         return worldTransform;
+    }
+
+    const glm::mat4& TerrainConfig::getInverseTransform() const {
+        return inverseWorldTransform;
     }
 
     const BiomePtrVec& TerrainConfig::getBiomes() const {

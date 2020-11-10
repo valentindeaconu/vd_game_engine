@@ -23,13 +23,17 @@ namespace mod::terrain {
     }
 
     void TerrainRenderer::render(const vd::kernel::RenderingPass& renderingPass) {
-        if (isReady() && renderingPass == vd::kernel::eMain) {
+        if (isReady() && renderingPass != vd::kernel::eShadow) {
             if (renderConfigPtr != nullptr) {
                 renderConfigPtr->enable();
             }
 
+            const auto& rootNodes = terrainPtr->GetRootNodes();
             const auto& terrainConfigPtr = terrainPtr->GetTerrainConfig();
-            renderNode(terrainPtr->GetRootNode(), terrainConfigPtr);
+
+            for (auto& rootNode : rootNodes) {
+                renderNode(rootNode, terrainConfigPtr);
+            }
 
             if (renderConfigPtr != nullptr) {
                 renderConfigPtr->disable();
@@ -43,14 +47,9 @@ namespace mod::terrain {
                 shaderPtr->bind();
 
                 shaderPtr->setUniform("localModel", nodePtr->GetTransform().get());
-                shaderPtr->setUniform("worldModel", terrainConfigPtr->getTransform().get());
+                shaderPtr->setUniform("worldModel", terrainConfigPtr->getTransform());
 
                 shaderPtr->setUniform("tessFactor", nodePtr->GetTessFactors());
-
-                const auto& edgeMid = nodePtr->GetEdgeMiddles();
-                for (int i = 0; i < 4; ++i) {
-                    shaderPtr->setUniform("edgeMid[" + std::to_string(i) + "]", edgeMid[i]);
-                }
 
                 shaderPtr->updateUniforms(terrainPtr, 0);
 

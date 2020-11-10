@@ -23,7 +23,7 @@
 namespace mod::terrain {
     class TerrainConfig : public vd::config::ConfigurationFile {
     public:
-        static const int kDetailLevels = 6;
+        static const int kDetailLevels = 8;
         typedef std::array<int, kDetailLevels> LodVec;
 
         explicit TerrainConfig(const std::string& filePath);
@@ -46,7 +46,7 @@ namespace mod::terrain {
 
         [[nodiscard]] bool isLevelOfDetailEnabled() const;
 
-        [[nodiscard]] int getTbnRange() const;
+        [[nodiscard]] int getHighDetailRange() const;
 
         [[nodiscard]] int getMaxDetailLevel() const;
 
@@ -56,7 +56,8 @@ namespace mod::terrain {
 
         [[nodiscard]] const vd::img::ImageFPtr& getHeightImg() const;
 
-        [[nodiscard]] const vd::math::Transform& getTransform() const;
+        [[nodiscard]] const glm::mat4& getTransform() const;
+        [[nodiscard]] const glm::mat4& getInverseTransform() const;
 
         [[nodiscard]] const BiomePtrVec& getBiomes() const;
 
@@ -84,7 +85,7 @@ namespace mod::terrain {
 
         bool levelOfDetailEnabled;
 
-        int tbnRange;
+        int highDetailRange;
 
         float normalStrength;
 
@@ -102,7 +103,8 @@ namespace mod::terrain {
         std::array<int, kDetailLevels> lodRange;
         std::array<int, kDetailLevels> lodMorphingArea;
 
-        vd::math::Transform worldTransform;
+        glm::mat4 worldTransform;
+        glm::mat4 inverseWorldTransform;
     };
     typedef std::shared_ptr<TerrainConfig>  TerrainConfigPtr;
 }

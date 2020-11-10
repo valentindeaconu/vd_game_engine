@@ -46,6 +46,8 @@ add_executable(vd_game_engine
         src/engine/core/Window.hpp
         src/engine/core/AsyncWorker.cpp
         src/engine/core/AsyncWorker.hpp
+        src/engine/core/ObjectManager.hpp
+        src/engine/core/ObjectManager.cpp
         src/engine/foundation/img/Image.cpp
         src/engine/foundation/img/Image.hpp
         src/engine/foundation/img/imgloader/IIMGLoader.cpp

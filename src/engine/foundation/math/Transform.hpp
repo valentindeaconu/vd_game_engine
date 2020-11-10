@@ -13,10 +13,12 @@ namespace vd::math
         Transform();
 
         [[nodiscard]] glm::mat4 get() const;
+        [[nodiscard]] glm::mat4 inverse() const;
 
         [[nodiscard]] glm::mat4 getTranslation() const;
         [[nodiscard]] glm::mat4 getRotation() const;
         [[nodiscard]] glm::mat4 getScaling() const;
+
 
         void setTranslation(float x, float y, float z);
         void setTranslation(const glm::vec3& translation);
@@ -31,7 +33,7 @@ namespace vd::math
         void setYRotationAngle(float angle);
         [[nodiscard]] float getYAxisRotationAngle() const;
         void setZRotationAngle(float angle);
-        float getZAxisRotationAngle() const;
+        [[nodiscard]] float getZAxisRotationAngle() const;
 
         [[nodiscard]] const glm::quat& getXAxisRotation() const;
         [[nodiscard]] const glm::quat& getYAxisRotation() const;
@@ -39,6 +41,10 @@ namespace vd::math
 
         [[nodiscard]] glm::vec4 operator*(const glm::vec4& operand) const;
     private:
+        void computeTransform() const;
+        bool transformComputed;
+        glm::mat4 transform;
+
         glm::vec3 translation;
 
         glm::vec3 scaling;

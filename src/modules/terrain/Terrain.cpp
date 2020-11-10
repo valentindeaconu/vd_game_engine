@@ -32,6 +32,8 @@ namespace mod::terrain {
                                                    0,
                                                    TerrainNode::eRootNode);
 
+        populateTree(m_RootNode);
+
         generatePatch();
 
         Entity::init();
@@ -40,14 +42,23 @@ namespace mod::terrain {
     void Terrain::update() {
         auto& cameraPtr = getParentEngine()->getCamera();
         if (cameraPtr->isCameraMoved() || cameraPtr->isCameraRotated()) {
-            m_RootNode->Update(cameraPtr);
-            m_RootNode->UpdateNeighbours();
+            //m_RootNode->Update(cameraPtr);
+            //m_RootNode->UpdateNeighbours();
+            for (const auto& imaginaryRootNode : m_ImaginaryRootNodes) {
+                imaginaryRootNode->Update(cameraPtr);
+            }
+
+            for (const auto& imaginaryRootNode : m_ImaginaryRootNodes) {
+                imaginaryRootNode->UpdateNeighbours();
+            }
         }
     }
 
     void Terrain::cleanUp() {
-        //m_RootNodes.clear();
         m_RootNode->Clear();
+        m_ImaginaryRootNodes.clear();
+
+        m_RootNode = nullptr;
 
         Entity::cleanUp();
     }
@@ -87,7 +98,22 @@ namespace mod::terrain {
         getMeshes().push_back(meshPtr);
     }
 
-    const TerrainNode::ptr_type_t &Terrain::GetRootNode() const {
-        return m_RootNode;
+    const std::vector<TerrainNode::ptr_type_t>& Terrain::GetRootNodes() const {
+        return m_ImaginaryRootNodes;
+    }
+
+    void Terrain::populateTree(const TerrainNode::ptr_type_t& root) {
+        // TODO: Set level offset
+        if (root->GetLevel() < 3) {
+            root->Populate();
+
+            for (auto& child : root->GetChildren()) {
+                auto terrainNodeChild = std::dynamic_pointer_cast<TerrainNode>(child);
+                populateTree(terrainNodeChild);
+            }
+        } else {
+            m_ImaginaryRootNodes.emplace_back(std::dynamic_pointer_cast<TerrainNode>(root));
+            m_ImaginaryRootNodes.back()->ResetLevel();
+        }
     }
 }

@@ -10,7 +10,7 @@ namespace vd::datastruct {
     template<int Dim>
     Tree<Dim>::Tree()
         : m_kParent(nullptr)
-        , m_kLevel(0)
+        , m_Level(0)
         , m_kNodeIndex(-1)
         , m_Leaf(true)
     {
@@ -19,7 +19,7 @@ namespace vd::datastruct {
     template<int Dim>
     Tree<Dim>::Tree(const Tree* parent, int level, int nodeIndex)
         : m_kParent(parent)
-        , m_kLevel(level)
+        , m_Level(level)
         , m_kNodeIndex(nodeIndex)
         , m_Leaf(true)
     {
@@ -38,7 +38,7 @@ namespace vd::datastruct {
 
         m_Leaf = false;
         for (int i = 0; i < Dim; ++i) {
-            m_Children[i] = std::make_shared<Tree<Dim>>(this, m_kLevel + 1, i);
+            m_Children[i] = std::make_shared<Tree<Dim>>(this, m_Level + 1, i);
         }
     }
 
@@ -56,8 +56,14 @@ namespace vd::datastruct {
     }
 
     template<int Dim>
+    void Tree<Dim>::ResetLevel() {
+        m_Level = 0;
+    }
+
+
+    template<int Dim>
     int Tree<Dim>::GetLevel() const {
-        return m_kLevel;
+        return m_Level;
     }
 
     template<int Dim>

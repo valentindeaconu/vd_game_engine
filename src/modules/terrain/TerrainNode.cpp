@@ -23,31 +23,26 @@ namespace mod::terrain {
         m_Transform.setTranslation(topLeft.x, 0.0f, topLeft.y);
         m_Transform.setScaling(bottomRight.x - topLeft.x, 1.0f, bottomRight.x - topLeft.x);
 
-        const auto scaleXZ = terrainConfigPtr->getScaleXZ();
-        const auto rtRootNodes = float(std::sqrt(terrainConfigPtr->getRootNodes()));
-        const auto levelDivision = float(1 << level);
-
         ComputeEdgeMiddles();
     }
 
     void TerrainNode::Update(const vd::core::CameraPtr& cameraPtr) {
-        if ((m_kConfigPtr->isLevelOfDetailEnabled()) && (cameraPtr->isCameraRotated() || cameraPtr->isCameraMoved())) {
+        if ((m_kConfigPtr->isLevelOfDetailEnabled()) && cameraPtr->isCameraMoved()) {
             // Set this node as leaf
             this->Clear();
 
             // If this node's level is greater or equal to the maximum level, then just ignore it
-            if (m_kLevel < m_kConfigPtr->getMaxDetailLevel()) {
-                // Compute if this node exceeds his level of detail threshold
-                const auto levelMinRange = float(m_kConfigPtr->getLodRange()[m_kLevel]);
-
-                // Compute distance from each point to get the minimum distance from the patch to the camera position
+            if (m_Level < m_kConfigPtr->getMaxDetailLevel()) {
                 const auto& cameraPosition = cameraPtr->getPosition();
 
-                glm::vec4 distance;
+                // Compute if this node exceeds his level of detail threshold
+                const auto levelMinRange = float(m_kConfigPtr->getLodRange()[m_Level]);
+
+                // Compute distance from each point to get the minimum distance from the patch to the camera position
                 float nodeDistance;
                 for (int i = 0; i < 4; ++i) {
-                    distance[i] = glm::length(cameraPosition - m_EdgeMid[i]);
-                    nodeDistance = (i == 0) ? distance[i] : std::min(nodeDistance, distance[i]);
+                    float distance = glm::length(cameraPosition - m_EdgeMid[i]);
+                    nodeDistance = (i == 0) ? distance : std::min(nodeDistance, distance);
                 }
 
                 // If the distance is less than the current level minimum range, this node should divide
@@ -79,14 +74,14 @@ namespace mod::terrain {
             // TODO: What happens if the tessellation factor goes over limit (gl_MaxTessLevel)?
             //  Is that possible?
             for (int i = 0; i < 4; ++i) {
-                if (m_Neighbours[i] != nullptr && m_Neighbours[i]->GetLevel() >= m_kLevel) {
-                    int count = m_Neighbours[i]->GetLevel() - m_kLevel;
+                if (m_Neighbours[i] != nullptr && m_Neighbours[i]->GetLevel() >= m_Level) {
+                    int count = m_Neighbours[i]->GetLevel() - m_Level;
                     for (const vd::datastruct::Quadtree* r = m_Neighbours[i]; !r->IsLeaf(); r = r->GetChild(0).get())
                         ++count;
                     m_TessFactor[i] = float(1 << count);
                 }
             }
-        } else {
+        } else if (!m_Leaf) {
             // Update all children' neighbours
             for (auto& childPtr : m_Children) {
                 auto terrainNodePtr = std::dynamic_pointer_cast<TerrainNode>(childPtr);
@@ -111,10 +106,6 @@ namespace mod::terrain {
         return m_TessFactor;
     }
 
-    void TerrainNode::SetNeighbour(const TerrainNode* neighbour, EdgeIndex neighbourIndex) {
-        m_Neighbours[neighbourIndex] = neighbour;
-    }
-
     void TerrainNode::ComputeEdgeMiddles() {
         const auto& worldTransform = m_kConfigPtr->getTransform();
         const auto& heightImg = m_kConfigPtr->getHeightImg();
@@ -128,6 +119,7 @@ namespace mod::terrain {
         m_EdgeMid[eRight] = convertToWorldCoords(m_kBottomRight.x, m_kCenter.y);
         m_EdgeMid[eBottom] = convertToWorldCoords(m_kCenter.x, m_kBottomRight.y);
         m_EdgeMid[eLeft] = convertToWorldCoords(m_kTopLeft.x, m_kCenter.y);
+
     }
 
 
@@ -144,7 +136,7 @@ namespace mod::terrain {
                                                              m_kConfigPtr,
                                                              m_kTopLeft,
                                                              m_kCenter,
-                                                             m_kLevel + 1,
+                                                             m_Level + 1,
                                                              eTopLeft);
 
         // Top Right child
@@ -152,7 +144,7 @@ namespace mod::terrain {
                                                               m_kConfigPtr,
                                                               glm::vec2(m_kCenter.x, m_kTopLeft.y),
                                                               glm::vec2(m_kBottomRight.x, m_kCenter.y),
-                                                              m_kLevel + 1,
+                                                              m_Level + 1,
                                                               eTopRight);
 
         // Bottom Left child
@@ -160,7 +152,7 @@ namespace mod::terrain {
                                                                 m_kConfigPtr,
                                                                 glm::vec2(m_kTopLeft.x, m_kCenter.y),
                                                                 glm::vec2(m_kCenter.x, m_kBottomRight.y),
-                                                                m_kLevel + 1,
+                                                                m_Level + 1,
                                                                 eBottomLeft);
 
         // Bottom Right child
@@ -168,7 +160,7 @@ namespace mod::terrain {
                                                                  m_kConfigPtr,
                                                                  m_kCenter,
                                                                  m_kBottomRight,
-                                                                 m_kLevel + 1,
+                                                                 m_Level + 1,
                                                                  eBottomRight);
     }
 
@@ -201,11 +193,11 @@ namespace mod::terrain {
                 m_Neighbours[eLeft] = SearchNeighbour(grandfatherPtr,
                                                       westEstimatedBounds,
                                                       true,
-                                                      (NodeIndex) m_kNodeIndex);
+                                                      (NodeIndex) m_kParent->GetNodeIndex());
                 m_Neighbours[eTop] = SearchNeighbour(grandfatherPtr,
                                                      northEstimatedBounds,
                                                      true,
-                                                     (NodeIndex) m_kNodeIndex);
+                                                     (NodeIndex) m_kParent->GetNodeIndex());
                 break;
             }
             case eTopRight: {
@@ -215,12 +207,12 @@ namespace mod::terrain {
                 m_Neighbours[eRight] = SearchNeighbour(grandfatherPtr,
                                                        eastEstimatedBounds,
                                                        true,
-                                                       (NodeIndex) m_kNodeIndex);
+                                                       (NodeIndex) m_kParent->GetNodeIndex());
 
                 m_Neighbours[eTop] = SearchNeighbour(grandfatherPtr,
                                                      northEstimatedBounds,
                                                      true,
-                                                     (NodeIndex) m_kNodeIndex);
+                                                     (NodeIndex) m_kParent->GetNodeIndex());
                 break;
             }
             case eBottomLeft: {
@@ -230,11 +222,11 @@ namespace mod::terrain {
                 m_Neighbours[eLeft] = SearchNeighbour(grandfatherPtr,
                                                       westEstimatedBounds,
                                                       true,
-                                                      (NodeIndex) m_kNodeIndex);
+                                                      (NodeIndex) m_kParent->GetNodeIndex());
                 m_Neighbours[eBottom] = SearchNeighbour(grandfatherPtr,
                                                         southEstimatedBounds,
                                                         true,
-                                                        (NodeIndex) m_kNodeIndex);
+                                                        (NodeIndex) m_kParent->GetNodeIndex());
                 break;
             }
             case eBottomRight: {
@@ -244,11 +236,11 @@ namespace mod::terrain {
                 m_Neighbours[eRight] = SearchNeighbour(grandfatherPtr,
                                                        eastEstimatedBounds,
                                                        true,
-                                                       (NodeIndex) m_kNodeIndex);
+                                                       (NodeIndex) m_kParent->GetNodeIndex());
                 m_Neighbours[eBottom] = SearchNeighbour(grandfatherPtr,
                                                         southEstimatedBounds,
                                                         true,
-                                                        (NodeIndex) m_kNodeIndex);
+                                                        (NodeIndex) m_kParent->GetNodeIndex());
                 break;
             }
         }
@@ -294,8 +286,11 @@ namespace mod::terrain {
             return nullptr;
         }
 
+        bool skipToParentSearch = false;
         switch (nodePtr->ContainsSquare(searchingBounds)) {
-            case eOutside: return nullptr;
+            case eOutside:
+                skipToParentSearch = true;
+                break;
             case ePerfectMatch: return nodePtr;
             case eInside:
                 if (nodePtr->IsLeaf()) {
@@ -304,13 +299,15 @@ namespace mod::terrain {
                 break;
         }
 
-        for (int nodeIndex = 0; nodeIndex < 4; ++nodeIndex) {
-            if (caller == eRootNode || caller != nodeIndex) {
-                const auto& childPtr = std::dynamic_pointer_cast<TerrainNode>(nodePtr->GetChild(nodeIndex));
-                if (childPtr != nullptr) {
-                    auto resultPtr = SearchNeighbour(childPtr.get(), searchingBounds);
-                    if (resultPtr != nullptr) {
-                        return resultPtr;
+        if (!skipToParentSearch) {
+            for (int nodeIndex = 0; nodeIndex < 4; ++nodeIndex) {
+                if (caller == eRootNode || caller != nodeIndex) {
+                    const auto &childPtr = std::dynamic_pointer_cast<TerrainNode>(nodePtr->GetChild(nodeIndex));
+                    if (childPtr != nullptr) {
+                        auto resultPtr = SearchNeighbour(childPtr.get(), searchingBounds);
+                        if (resultPtr != nullptr) {
+                            return resultPtr;
+                        }
                     }
                 }
             }
@@ -323,4 +320,5 @@ namespace mod::terrain {
 
         return nullptr;
     }
+
 }
