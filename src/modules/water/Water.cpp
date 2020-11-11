@@ -5,13 +5,12 @@
 #include "Water.hpp"
 
 namespace mod::water {
-    Water::Water(const vd::EnginePtr &enginePtr, const std::string &configFilePath)
+    Water::Water(const vd::EnginePtr& enginePtr, const std::string& propsFilePath)
         : vd::object::Entity(enginePtr)
+        , m_PropsPtr(vd::misc::Properties::Create<vd::misc::Properties::eFile>(propsFilePath))
+        , m_ReflectionFBO(std::make_shared<vd::buffer::FrameBuffer>())
+        , m_RefractionFBO(std::make_shared<vd::buffer::FrameBuffer>())
     {
-        configPtr = std::make_shared<WaterConfig>(configFilePath);
-
-        reflectionFBO = std::make_shared<vd::buffer::FrameBuffer>();
-        refractionFBO = std::make_shared<vd::buffer::FrameBuffer>();
     }
 
     Water::~Water() = default;
@@ -20,62 +19,101 @@ namespace mod::water {
         getLocalTransform().setScaling(6000.0f, 0.0f, 6000.0f);
         getLocalTransform().setTranslation(-3000.0f, 180.0f, -3000.0f);
 
-        // asta merge also
-        //getLocalTransform().setScaling(250.0f, 0.0f, 260.0f);
-        //getLocalTransform().setTranslation(400.0f, -33.0f, 300.0f);
+        PopulatePacks();
 
-        configPtr->parse();
+        GeneratePatch();
 
-        generatePatch();
+        m_ReflectionFBO->allocate(m_PropsPtr->Get<int>("Reflection.Width"),
+                                  m_PropsPtr->Get<int>("Reflection.Height"),
+                                  true,
+                                  vd::buffer::DepthAttachment::eDepthBuffer);
 
-        reflectionFBO->allocate(configPtr->getReflectionWidth(),
-                                configPtr->getReflectionHeight(),
-                                true,
-                                vd::buffer::DepthAttachment::eDepthBuffer);
-
-        refractionFBO->allocate(configPtr->getRefractionWidth(),
-                                configPtr->getRefractionHeight(),
-                                true,
-                                vd::buffer::DepthAttachment::eDepthTexture);
+        m_RefractionFBO->allocate(m_PropsPtr->Get<int>("Refraction.Width"),
+                                  m_PropsPtr->Get<int>("Refraction.Height"),
+                                  true,
+                                  vd::buffer::DepthAttachment::eDepthTexture);
 
         Entity::init();
     }
 
     void Water::update() {
-        moveFactor += (configPtr->getWaveSpeed() * getParentEngine()->getFrameTime());
-        if (moveFactor >= 1.0f) {
-            moveFactor -= 1.0f;
+        const auto waveSpeed = m_PropsPtr->Get<float>("Wave.Speed");
+        m_MoveFactor += (waveSpeed * getParentEngine()->getFrameTime());
+        if (m_MoveFactor >= 1.0f) {
+            m_MoveFactor -= 1.0f;
         }
     }
 
     void Water::cleanUp() {
-        reflectionFBO->cleanUp();
-        refractionFBO->cleanUp();
+        m_ReflectionFBO->cleanUp();
+        m_RefractionFBO->cleanUp();
 
         Entity::cleanUp();
     }
 
-    const WaterConfigPtr &Water::getWaterConfig() const {
-        return configPtr;
+    const vd::misc::PropertiesPtr& Water::GetProperties() const {
+        return m_PropsPtr;
     }
 
-    const vd::buffer::FrameBufferPtr &Water::getReflectionFramebuffer() const {
-        return reflectionFBO;
+    const vd::model::Material& Water::GetMaterial() const {
+        auto it = m_PacksMap.find(m_CurrentPack);
+        if (it != m_PacksMap.end()) {
+            return it->second;
+        }
+
+        throw std::runtime_error("water current pack '" + m_CurrentPack + "' does not exists");
     }
 
-    const vd::buffer::FrameBufferPtr &Water::getRefractionFramebuffer() const {
-        return refractionFBO;
+    const vd::buffer::FrameBufferPtr &Water::GetReflectionFramebuffer() const {
+        return m_ReflectionFBO;
     }
 
-    float Water::getHeight() const {
+    const vd::buffer::FrameBufferPtr &Water::GetRefractionFramebuffer() const {
+        return m_RefractionFBO;
+    }
+
+    float Water::GetHeight() const {
         return 180.0f;
     }
 
-    float Water::getMoveFactor() const {
-       return moveFactor; //return (float) std::sin(moveFactor * 2 * std::numbers::pi) / 2.0f + 0.5f;
+    float Water::GetMoveFactor() const {
+        //return (float) std::sin(moveFactor * 2 * std::numbers::pi) / 2.0f + 0.5f;
+        return m_MoveFactor;
     }
 
-    void Water::generatePatch() {
+    void Water::PopulatePacks() {
+        for (int i = 0; ; ++i) {
+            try {
+                const std::string prefix = "Pack." + std::to_string(i);
+
+                vd::model::Material material;
+
+                material.name = m_PropsPtr->Get<std::string>(prefix + ".Name");
+                material.displaceMap = vd::model::TextureService::get(m_PropsPtr->Get<std::string>(prefix + ".DuDv"));
+                material.displaceMap->bind();
+                material.displaceMap->bilinearFilter();
+                material.displaceMap->unbind();
+
+                material.normalMap = vd::model::TextureService::get(m_PropsPtr->Get<std::string>(prefix + ".Normal"));
+                material.normalMap->bind();
+                material.normalMap->bilinearFilter();
+                material.normalMap->unbind();
+
+                m_PacksMap[material.name] = material;
+
+                if (i == 0) {
+                    m_CurrentPack = material.name;
+                }
+            } catch (std::invalid_argument& e) {
+                if (i == 0) {
+                    throw std::logic_error("water should have at least 1 material");
+                }
+                break;
+            }
+        }
+    }
+
+    void Water::GeneratePatch() {
         vd::model::MeshPtr meshPtr = std::make_shared<vd::model::Mesh>();
 
         meshPtr->vertices = {

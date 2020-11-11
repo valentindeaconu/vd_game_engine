@@ -4,35 +4,35 @@ namespace mod::sobj
 {
     StaticObjectRenderer::StaticObjectRenderer()
         : Renderer()
-        , staticObjectPlacerPtr(nullptr)
+        , m_StaticObjectPlacerPtr(nullptr)
     {
     }
 
     StaticObjectRenderer::~StaticObjectRenderer() = default;
 
-    void StaticObjectRenderer::init()
+    void StaticObjectRenderer::Init()
     {
-        if (isReady())
+        if (IsReady())
         {
-            staticObjectPlacerPtr->place();
+            m_StaticObjectPlacerPtr->place();
         }
     }
 
-    void StaticObjectRenderer::update() {
+    void StaticObjectRenderer::Update() {
 
     }
 
-    void StaticObjectRenderer::render(const vd::kernel::RenderingPass &renderingPass) {
-        if (isReady()) {
-            if (renderConfigPtr != nullptr) {
-                renderConfigPtr->enable();
+    void StaticObjectRenderer::Render(const vd::kernel::RenderingPass &renderingPass) {
+        if (IsReady()) {
+            if (m_ConfigPtr != nullptr) {
+                m_ConfigPtr->enable();
             }
 
-            auto _shaderPtr = renderingPass == vd::kernel::RenderingPass::eShadow ? this->getShadowShader() : shaderPtr;
+            auto _shaderPtr = renderingPass == vd::kernel::RenderingPass::eShadow ? this->GetShadowShader() : m_ShaderPtr;
 
             _shaderPtr->bind();
 
-            const PlacementInfoVec &placementInfos = staticObjectPlacerPtr->getPlacementInfos();
+            const PlacementInfoVec &placementInfos = m_StaticObjectPlacerPtr->getPlacementInfos();
             for (const auto& placementInfo : placementInfos) {
                 StaticObjectPtr staticObjectPtr = placementInfo.objectPtr;
                 staticObjectPtr->getWorldTransform().setTranslation(placementInfo.location);
@@ -48,14 +48,14 @@ namespace mod::sobj
                 }
             }
 
-            if (renderConfigPtr != nullptr) {
-                renderConfigPtr->disable();
+            if (m_ConfigPtr != nullptr) {
+                m_ConfigPtr->disable();
             }
         }
     }
 
-    void StaticObjectRenderer::cleanUp() {
-        const auto& biomeAtlas = staticObjectPlacerPtr->getTerrain()->GetTerrainConfig()->getBiomes();
+    void StaticObjectRenderer::CleanUp() {
+        const auto& biomeAtlas = m_StaticObjectPlacerPtr->getTerrain()->GetBiomes();
 
         for (const auto& biome : biomeAtlas) {
             if (!biome->getObjects().empty()) {
@@ -66,19 +66,19 @@ namespace mod::sobj
         }
     }
 
-    StaticObjectPlacerPtr& StaticObjectRenderer::getStaticObjectPlacer() {
-        return staticObjectPlacerPtr;
+    StaticObjectPlacerPtr& StaticObjectRenderer::GetStaticObjectPlacer() {
+        return m_StaticObjectPlacerPtr;
     }
 
-    const StaticObjectPlacerPtr& StaticObjectRenderer::getStaticObjectPlacer() const {
-        return staticObjectPlacerPtr;
+    const StaticObjectPlacerPtr& StaticObjectRenderer::GetStaticObjectPlacer() const {
+        return m_StaticObjectPlacerPtr;
     }
 
-    void StaticObjectRenderer::setStaticObjectPlacer(const StaticObjectPlacerPtr& staticObjectPlacerPtr) {
-        this->staticObjectPlacerPtr = staticObjectPlacerPtr;
+    void StaticObjectRenderer::SetStaticObjectPlacer(const StaticObjectPlacerPtr& staticObjectPlacerPtr) {
+        this->m_StaticObjectPlacerPtr = staticObjectPlacerPtr;
     }
 
-    bool StaticObjectRenderer::isReady() {
-        return Renderer::isReady() && staticObjectPlacerPtr != nullptr;
+    bool StaticObjectRenderer::IsReady() {
+        return Renderer::IsReady() && m_StaticObjectPlacerPtr != nullptr;
     }
 }

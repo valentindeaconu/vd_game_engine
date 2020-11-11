@@ -8,53 +8,53 @@ namespace mod::water {
 
     WaterRenderer::WaterRenderer()
         : vd::component::Renderer()
-        , waterPtr(nullptr)
+        , m_WaterPtr(nullptr)
     {
     }
 
     WaterRenderer::~WaterRenderer() = default;
 
-    void WaterRenderer::init() {
-        waterPtr->init();
+    void WaterRenderer::Init() {
+        m_WaterPtr->init();
     }
 
-    void WaterRenderer::update() {
-        waterPtr->update();
+    void WaterRenderer::Update() {
+        m_WaterPtr->update();
     }
 
-    void WaterRenderer::render(const vd::kernel::RenderingPass& renderingPass) {
-        if (isReady() && renderingPass == vd::kernel::RenderingPass::eMain) {
-            if (renderConfigPtr != nullptr) {
-                renderConfigPtr->enable();
+    void WaterRenderer::Render(const vd::kernel::RenderingPass& renderingPass) {
+        if (IsReady() && renderingPass == vd::kernel::RenderingPass::eMain) {
+            if (m_ConfigPtr != nullptr) {
+                m_ConfigPtr->enable();
             }
 
-            shaderPtr->bind();
-            shaderPtr->updateUniforms(waterPtr, 0);
-            waterPtr->getBuffers()[0]->render();
+            m_ShaderPtr->bind();
+            m_ShaderPtr->updateUniforms(m_WaterPtr, 0);
+            m_WaterPtr->getBuffers()[0]->render();
 
-            if (renderConfigPtr != nullptr) {
-                renderConfigPtr->disable();
+            if (m_ConfigPtr != nullptr) {
+                m_ConfigPtr->disable();
             }
         }
     }
 
-    void WaterRenderer::cleanUp() {
-        waterPtr->cleanUp();
+    void WaterRenderer::CleanUp() {
+        m_WaterPtr->cleanUp();
     }
 
-    WaterPtr &WaterRenderer::getWater() {
-        return waterPtr;
+    WaterPtr &WaterRenderer::GetWater() {
+        return m_WaterPtr;
     }
 
-    const WaterPtr &WaterRenderer::getWater() const {
-        return waterPtr;
+    const WaterPtr &WaterRenderer::GetWater() const {
+        return m_WaterPtr;
     }
 
-    void WaterRenderer::setWater(const WaterPtr &waterPtr) {
-        this->waterPtr = waterPtr;
+    void WaterRenderer::SetWater(const WaterPtr &waterPtr) {
+        this->m_WaterPtr = waterPtr;
     }
 
-    bool WaterRenderer::isReady() {
-        return Renderer::isReady() && waterPtr != nullptr;
+    bool WaterRenderer::IsReady() {
+        return Renderer::IsReady() && m_WaterPtr != nullptr;
     }
 }

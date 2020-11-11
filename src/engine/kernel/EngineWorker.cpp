@@ -3,7 +3,7 @@
 namespace vd::kernel {
     void Observable::subscribe(const ObserverPtr& observer) {
         core::AsyncWorkerPtr workerPtr = std::make_shared<core::AsyncWorker>([&]() {
-            observer->update();
+            observer->Update();
         });
         observers.emplace_back(observer, std::move(workerPtr));
     }
@@ -20,7 +20,7 @@ namespace vd::kernel {
 
     void Observable::broadcastInit() {
         for (auto& pair : observers) {
-            pair.first->init();
+            pair.first->Init();
         }
     }
 
@@ -34,19 +34,19 @@ namespace vd::kernel {
         }*/
 
         for (auto& pair : observers) {
-            pair.first->update();
+            pair.first->Update();
         }
     }
 
     void Observable::broadcastRender(const RenderingPass& renderingPass) {
         for (auto& pair : observers) {
-            pair.first->render(renderingPass);
+            pair.first->Render(renderingPass);
         }
     }
 
     void Observable::broadcastCleanUp() {
         for (auto& pair : observers) {
-            pair.first->cleanUp();
+            pair.first->CleanUp();
         }
     }
 

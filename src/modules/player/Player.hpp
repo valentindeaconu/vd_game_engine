@@ -28,7 +28,7 @@ namespace mod::player
 
         mod::terrain::TerrainPtr terrainPtr;
 
-        const float modelYOffset = 0.0f;
+        const float modelYOffset = 1.0f;
 
         const float kRunSpeed = 20.0f; // units per second
         const float kTurnSpeed = 160.f; // degrees per second

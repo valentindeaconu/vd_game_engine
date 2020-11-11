@@ -9,7 +9,7 @@ namespace mod::terrain {
     TerrainShader::TerrainShader()
         : vd::shader::Shader()
         , kBiomeCount(5)
-        , kMaxLights(2)
+        , kMaxLights(1)
     {
         loadAndAddShader("./resources/shaders/terrain/terrain_VS.glsl", vd::shader::eVertexShader);
         loadAndAddShader("./resources/shaders/terrain/terrain_TC.glsl", vd::shader::eTessellationControlShader);
@@ -56,10 +56,18 @@ namespace mod::terrain {
         addUniform("fogGradient");
         addUniform("fogColor");
 
+        addUniform("sun.direction");
+        addUniform("sun.color");
+        addUniform("sun.ambientStrength");
+        addUniform("sun.specularStrength");
+        addUniform("sun.shininess");
+
         for (size_t i = 0; i < kMaxLights; ++i) {
             std::string currentLightUniformNameBase = "lights[" + std::to_string(i) + "]";
 
+            addUniform(currentLightUniformNameBase + ".type");
             addUniform(currentLightUniformNameBase + ".position");
+            addUniform(currentLightUniformNameBase + ".direction");
             addUniform(currentLightUniformNameBase + ".color");
             addUniform(currentLightUniformNameBase + ".attenuation");
             addUniform(currentLightUniformNameBase + ".ambientStrength");
@@ -73,6 +81,8 @@ namespace mod::terrain {
     TerrainShader::~TerrainShader() = default;
 
     void TerrainShader::updateUniforms(vd::object::EntityPtr entityPtr, size_t meshIndex) {
+        setUniform("worldModel", entityPtr->getWorldTransform().get());
+
         auto& enginePtr = entityPtr->getParentEngine();
         setUniform("view", enginePtr->getCamera()->getViewMatrix());
         setUniform("projection", enginePtr->getWindow()->getProjectionMatrix());
@@ -91,28 +101,28 @@ namespace mod::terrain {
         setUniformi("shadowMap", 0);
 
         const auto& terrainPtr = std::dynamic_pointer_cast<Terrain>(entityPtr);
-        const auto& configPtr = terrainPtr->GetTerrainConfig();
+        const auto& propsPtr = terrainPtr->GetProperties();
 
-        setUniformf("scaleY", configPtr->getScaleY());
-        setUniformi("highDetailRange", configPtr->getHighDetailRange());
+        setUniformf("scaleY", propsPtr->Get<float>("ScaleY"));
+        setUniformi("highDetailRange", propsPtr->Get<int>("HighDetailRange"));
 
-        setUniformf("tessellationLevel", configPtr->getTessellationOuterLevel());
+        setUniformf("tessellationLevel", propsPtr->Get<float>("TessellationLevel"));
 
         vd::model::activeTexture(1);
-        configPtr->getHeightMap()->bind();
+        terrainPtr->GetHeightMap()->bind();
         setUniformi("heightMap", 1);
 
         vd::model::activeTexture(2);
-        configPtr->getNormalMap()->bind();
+        terrainPtr->GetNormalMap()->bind();
         setUniformi("normalMap", 2);
 
         vd::model::activeTexture(3);
-        configPtr->getSplatMap()->bind();
+        terrainPtr->GetSplatMap()->bind();
         setUniformi("splatMap", 3);
 
         int textureUnit = 4;
         for (int i = 0; i < kBiomeCount; ++i) {
-            vd::model::Material& material = configPtr->getBiomes()[i]->getMaterial();
+            vd::model::Material& material = terrainPtr->GetBiomes()[i]->getMaterial();
 
             vd::model::activeTexture(textureUnit);
             material.diffuseMap->bind();
@@ -139,26 +149,50 @@ namespace mod::terrain {
         static bool loadedBasics = false;
         if (!loadedBasics)
         {
-            auto& engineConfigPtr = enginePtr->getEngineConfig();
-            setUniformf("fogDensity", engineConfigPtr->getFogDensity());
-            setUniformf("fogGradient", engineConfigPtr->getFogGradient());
-            setUniform("fogColor", engineConfigPtr->getFogColor());
+            auto& propertiesPtr = vd::ObjectOfType<vd::misc::Properties>::Find();
 
-            auto& lights = engineConfigPtr->getLights();
-            for (size_t i = 0; i < kMaxLights; ++i)
-            {
-                if (i < lights.size())
-                {
+            setUniformf("fogDensity", propertiesPtr->Get<float>("Fog.Density"));
+            setUniformf("fogGradient", propertiesPtr->Get<float>("Fog.Gradient"));
+            setUniform("fogColor", propertiesPtr->Get<glm::vec3>("Fog.Color"));
+
+            auto& lightManager = vd::ObjectOfType<vd::light::LightManager>::Find();
+            auto& sunPtr = lightManager->GetSun();
+            setUniform("sun.direction", sunPtr->GetDirection());
+            setUniform("sun.color", sunPtr->GetColor());
+            setUniformf("sun.ambientStrength", sunPtr->GetAmbientStrength());
+            setUniformf("sun.specularStrength", sunPtr->GetSpecularStrength());
+            setUniformf("sun.shininess", sunPtr->GetShininess());
+
+            auto& lights = lightManager->GetLights();
+            for (size_t i = 0; i < kMaxLights; ++i) {
+                if (i < lights.size()) {
                     auto& lightPtr = lights[i];
 
                     std::string currentLightUniformNameBase = "lights[" + std::to_string(i) + "]";
 
-                    setUniform(currentLightUniformNameBase + ".position", lightPtr->getPosition());
-                    setUniform(currentLightUniformNameBase + ".color", lightPtr->getColor());
-                    setUniform(currentLightUniformNameBase + ".attenuation", lightPtr->getAttenuation());
-                    setUniformf(currentLightUniformNameBase + ".ambientStrength", lightPtr->getAmbientStrength());
-                    setUniformf(currentLightUniformNameBase + ".specularStrength", lightPtr->getSpecularStrength());
-                    setUniformf(currentLightUniformNameBase + ".shininess", lightPtr->getShininess());
+                    switch (lightPtr->GetType()) {
+                        case vd::light::eDirectional: {
+                            setUniformi(currentLightUniformNameBase + ".type", 0);
+                            setUniform(currentLightUniformNameBase + ".direction", lightPtr->GetDirection());
+                            break;
+                        }
+                        case vd::light::ePoint: {
+                            setUniformi(currentLightUniformNameBase + ".type", 1);
+                            setUniform(currentLightUniformNameBase + ".position", lightPtr->GetPosition());
+                            break;
+                        }
+                        case vd::light::eSpot:
+                        default: {
+                            setUniformi(currentLightUniformNameBase + ".type", 2);
+                            setUniform(currentLightUniformNameBase + ".position", lightPtr->GetPosition());
+                            break;
+                        }
+                    }
+                    setUniform(currentLightUniformNameBase + ".color", lightPtr->GetColor());
+                    setUniform(currentLightUniformNameBase + ".attenuation", lightPtr->GetAttenuation());
+                    setUniformf(currentLightUniformNameBase + ".ambientStrength", lightPtr->GetAmbientStrength());
+                    setUniformf(currentLightUniformNameBase + ".specularStrength", lightPtr->GetSpecularStrength());
+                    setUniformf(currentLightUniformNameBase + ".shininess", lightPtr->GetShininess());
                 }
             }
 

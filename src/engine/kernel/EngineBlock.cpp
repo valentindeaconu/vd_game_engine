@@ -32,11 +32,15 @@ namespace vd
 		// ShadowManager creation
 		shadowManagerPtr = std::make_shared<shadow::ShadowManager>();
 
+		// LightManager creation
+		m_LightManagerPtr = std::make_shared<light::LightManager>();
+		ObjectOfType<light::LightManager>::Provide(m_LightManagerPtr);
+
 		// Worker creation
 		engineWorkerPtr = std::make_shared<kernel::EngineWorker>();
 
 		// Config creation
-		configPtr = std::make_shared<config::EngineConfig>("./resources/engine_settings.cfg");
+		//configPtr = std::make_shared<config::EngineConfig>("./resources/engine_settings.cfg");
 
 		// Set shadow framebuffer
         config::MetaConfigPtr shadowConfigPtr = std::make_shared<config::MetaConfig>([]() {
@@ -52,7 +56,7 @@ namespace vd
 	}
 
 	void Engine::init(core::CameraInitParametersPtr cameraInitParametersPtr) {
-		// GL init configs
+		// GL Init configs
 		glClearColor(0.3f, 0.3f, 0.3f, 1.0f);
 		glEnable(GL_FRAMEBUFFER_SRGB);
 		glEnable(GL_DEPTH_TEST); // enable depth-testing
@@ -61,33 +65,38 @@ namespace vd
 		glCullFace(GL_BACK); // cull back face
 		glFrontFace(GL_CCW); // GL_CCW for counter clock-wise
 
-        // Config init
-        configPtr->parse();
+        // Config Init
+        // configPtr->parse();
 
-		// Camera init
+		// Camera Init
 		cameraMode = e3rdPersonCamera;
 
+		auto& propertiesPtr = ObjectOfType<vd::misc::Properties>::Find();
+
         vd::core::FreeCameraInitParameters cameraInitParameters = {
-                .initPosition = configPtr->getCameraPosition(),
-                .initTarget = configPtr->getCameraTarget(),
-                .speed = configPtr->getCameraSpeed()
+                .initPosition = propertiesPtr->Get<glm::vec3>("Camera.Position"),
+                .initTarget = propertiesPtr->Get<glm::vec3>("Camera.Target"),
+                .speed = propertiesPtr->Get<float>("Camera.Speed")
         };
 
         freeCameraPtr->init(&cameraInitParameters);
 		entityCameraPtr->init(cameraInitParametersPtr);
 
-		// Worker init
+		// Worker Init
 		engineWorkerPtr->init();
 
-		// Shadow Manager init
+		// Shadow Manager Init
 		shadowManagerPtr->init(windowPtr,
                          entityCameraPtr,
-                         configPtr->getShadowMapSize(),
-                         configPtr->getShadowDistance(),
-                         configPtr->getShadowTransitionDistance(),
-                         configPtr->getShadowOffset());
+                         propertiesPtr->Get<int>("Shadow.MapSize"),
+                         propertiesPtr->Get<int>("Shadow.Distance"),
+                         propertiesPtr->Get<int>("Shadow.TransitionDistance"),
+                         propertiesPtr->Get<int>("Shadow.Offset"));
 
-		// frustum init
+		// Light Manager Init
+		m_LightManagerPtr->Init();
+
+		// frustum Init
 		frustumPtr->init();
 	}
 
@@ -179,7 +188,7 @@ namespace vd
 
         frustumPtr->update();
 
-        shadowManagerPtr->update(configPtr->getLights().front());
+        shadowManagerPtr->update(m_LightManagerPtr->GetSun());
 
         engineWorkerPtr->update();
 	}
@@ -220,7 +229,7 @@ namespace vd
             }
         }
 
-        // final render scene
+        // final Render scene
         glViewport(0, 0, windowPtr->getWidth(), windowPtr->getHeight());
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -309,14 +318,6 @@ namespace vd
 
     const shadow::ShadowManagerPtr& Engine::getShadowManager() const {
 	    return shadowManagerPtr;
-	}
-
-	config::EngineConfigPtr& Engine::getEngineConfig() {
-		return configPtr;
-	}
-
-	const config::EngineConfigPtr& Engine::getEngineConfig() const {
-		return configPtr;
 	}
 
     const math::FrustumPtr& Engine::getFrustum() const {

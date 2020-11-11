@@ -28,10 +28,7 @@ include_directories(src/modules/terrain)
 add_executable(vd_game_engine
         src/engine/component/Renderer.cpp
         src/engine/component/Renderer.hpp
-        src/engine/config/ConfigurationFile.cpp
-        src/engine/config/ConfigurationFile.hpp
-        src/engine/config/EngineConfig.cpp
-        src/engine/config/EngineConfig.hpp
+        src/engine/component/IManager.hpp
         src/engine/config/MetaConfig.hpp
         src/engine/config/MetaConfig.cpp
         src/engine/core/impl/EntityCamera.cpp
@@ -46,8 +43,7 @@ add_executable(vd_game_engine
         src/engine/core/Window.hpp
         src/engine/core/AsyncWorker.cpp
         src/engine/core/AsyncWorker.hpp
-        src/engine/core/ObjectManager.hpp
-        src/engine/core/ObjectManager.cpp
+        src/engine/core/ObjectOfType.hpp
         src/engine/foundation/img/Image.cpp
         src/engine/foundation/img/Image.hpp
         src/engine/foundation/img/imgloader/IIMGLoader.cpp
@@ -82,10 +78,14 @@ add_executable(vd_game_engine
         src/engine/kernel/EngineBlock.hpp
         src/engine/kernel/EngineWorker.cpp
         src/engine/kernel/EngineWorker.hpp
+        src/engine/light/LightManager.cpp
+        src/engine/light/LightManager.hpp
+        src/engine/light/Light.cpp
+        src/engine/light/Light.hpp
         src/engine/logger/Logger.cpp
         src/engine/logger/Logger.hpp
-        src/engine/model/Light.cpp
-        src/engine/model/Light.hpp
+        src/engine/misc/Properties.cpp
+        src/engine/misc/Properties.hpp
         src/engine/model/Material.hpp
         src/engine/model/Mesh.hpp
         src/engine/model/Texture.cpp
@@ -125,8 +125,6 @@ add_executable(vd_game_engine
         src/modules/terrain/TerrainNode.hpp
         src/modules/terrain/Biome.cpp
         src/modules/terrain/Biome.hpp
-        src/modules/terrain/TerrainConfig.cpp
-        src/modules/terrain/TerrainConfig.hpp
         src/modules/terrain/TerrainRenderer.cpp
         src/modules/terrain/TerrainRenderer.hpp
         src/modules/terrain/normalmap/NormalMapShader.cpp
@@ -155,8 +153,6 @@ add_executable(vd_game_engine
         src/modules/water/WaterShader.hpp
         src/modules/water/WaterRenderer.cpp
         src/modules/water/WaterRenderer.hpp
-        src/modules/water/WaterConfig.cpp
-        src/modules/water/WaterConfig.hpp
         src/main.cpp)
 
 # dependencies

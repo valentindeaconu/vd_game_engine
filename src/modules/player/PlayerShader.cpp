@@ -4,7 +4,7 @@ namespace mod::player
 {
     PlayerShader::PlayerShader()
         : vd::shader::Shader()
-        , kMaxLights(2)
+        , kMaxLights(1)
     {
         loadAndAddShader("./resources/shaders/entity/entity_VS.glsl", vd::shader::eVertexShader);
         loadAndAddShader("./resources/shaders/entity/entity_FS.glsl", vd::shader::eFragmentShader);
@@ -21,11 +21,21 @@ namespace mod::player
         addUniform("fogGradient");
         addUniform("fogColor");
 
+        addUniform("sun.direction");
+        addUniform("sun.color");
+        addUniform("sun.ambientStrength");
+        addUniform("sun.specularStrength");
+        addUniform("sun.shininess");
+
+        addUniform("transparency");
+
         for (size_t i = 0; i < kMaxLights; ++i)
         {
             std::string currentLightUniformNameBase = "lights[" + std::to_string(i) + "]";
 
+            addUniform(currentLightUniformNameBase + ".type");
             addUniform(currentLightUniformNameBase + ".position");
+            addUniform(currentLightUniformNameBase + ".direction");
             addUniform(currentLightUniformNameBase + ".color");
             addUniform(currentLightUniformNameBase + ".attenuation");
             addUniform(currentLightUniformNameBase + ".ambientStrength");
@@ -47,6 +57,8 @@ namespace mod::player
         setUniform("projection", enginePtr->getWindow()->getProjectionMatrix());
 
         vd::model::MeshPtr& meshPtr = entityPtr->getMeshes()[meshIndex];
+
+        setUniformi("transparency", 0);
 
         if (!meshPtr->materials.empty())
         {
@@ -72,26 +84,50 @@ namespace mod::player
         static bool loadedBasics = false;
         if (!loadedBasics)
         {
-            auto& engineConfigPtr = enginePtr->getEngineConfig();
-            setUniformf("fogDensity", engineConfigPtr->getFogDensity());
-            setUniformf("fogGradient", engineConfigPtr->getFogGradient());
-            setUniform("fogColor", engineConfigPtr->getFogColor());
+            auto& propertiesPtr = vd::ObjectOfType<vd::misc::Properties>::Find();
 
-            auto& lights = engineConfigPtr->getLights();
-            for (size_t i = 0; i < kMaxLights; ++i)
-            {
-                if (i < lights.size())
-                {
+            setUniformf("fogDensity", propertiesPtr->Get<float>("Fog.Density"));
+            setUniformf("fogGradient", propertiesPtr->Get<float>("Fog.Gradient"));
+            setUniform("fogColor", propertiesPtr->Get<glm::vec3>("Fog.Color"));
+
+            auto& lightManager = vd::ObjectOfType<vd::light::LightManager>::Find();
+            auto& sunPtr = lightManager->GetSun();
+            setUniform("sun.direction", sunPtr->GetDirection());
+            setUniform("sun.color", sunPtr->GetColor());
+            setUniformf("sun.ambientStrength", sunPtr->GetAmbientStrength());
+            setUniformf("sun.specularStrength", sunPtr->GetSpecularStrength());
+            setUniformf("sun.shininess", sunPtr->GetShininess());
+
+            auto& lights = lightManager->GetLights();
+            for (size_t i = 0; i < kMaxLights; ++i) {
+                if (i < lights.size()) {
                     auto& lightPtr = lights[i];
 
                     std::string currentLightUniformNameBase = "lights[" + std::to_string(i) + "]";
 
-                    setUniform(currentLightUniformNameBase + ".position", lightPtr->getPosition());
-                    setUniform(currentLightUniformNameBase + ".color", lightPtr->getColor());
-                    setUniform(currentLightUniformNameBase + ".attenuation", lightPtr->getAttenuation());
-                    setUniformf(currentLightUniformNameBase + ".ambientStrength", lightPtr->getAmbientStrength());
-                    setUniformf(currentLightUniformNameBase + ".specularStrength", lightPtr->getSpecularStrength());
-                    setUniformf(currentLightUniformNameBase + ".shininess", lightPtr->getShininess());
+                    switch (lightPtr->GetType()) {
+                        case vd::light::eDirectional: {
+                            setUniformi(currentLightUniformNameBase + ".type", 0);
+                            setUniform(currentLightUniformNameBase + ".direction", lightPtr->GetDirection());
+                            break;
+                        }
+                        case vd::light::ePoint: {
+                            setUniformi(currentLightUniformNameBase + ".type", 1);
+                            setUniform(currentLightUniformNameBase + ".position", lightPtr->GetPosition());
+                            break;
+                        }
+                        case vd::light::eSpot:
+                        default: {
+                            setUniformi(currentLightUniformNameBase + ".type", 2);
+                            setUniform(currentLightUniformNameBase + ".position", lightPtr->GetPosition());
+                            break;
+                        }
+                    }
+                    setUniform(currentLightUniformNameBase + ".color", lightPtr->GetColor());
+                    setUniform(currentLightUniformNameBase + ".attenuation", lightPtr->GetAttenuation());
+                    setUniformf(currentLightUniformNameBase + ".ambientStrength", lightPtr->GetAmbientStrength());
+                    setUniformf(currentLightUniformNameBase + ".specularStrength", lightPtr->GetSpecularStrength());
+                    setUniformf(currentLightUniformNameBase + ".shininess", lightPtr->GetShininess());
                 }
             }
 

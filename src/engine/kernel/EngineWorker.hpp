@@ -18,10 +18,10 @@ namespace vd::kernel {
     class Observer
     {
     public:
-        virtual void init() = 0;
-        virtual void update() = 0;
-        virtual void render(const RenderingPass& renderingPass) = 0;
-        virtual void cleanUp() = 0;
+        virtual void Init() = 0;
+        virtual void Update() = 0;
+        virtual void Render(const RenderingPass& renderingPass) = 0;
+        virtual void CleanUp() = 0;
     };
     typedef std::shared_ptr<Observer>	ObserverPtr;
 

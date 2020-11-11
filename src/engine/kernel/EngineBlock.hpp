@@ -15,9 +15,11 @@
 #include <engine/core/impl/EntityCamera.hpp>
 #include <engine/core/impl/FreeCamera.hpp>
 
-#include <engine/config/EngineConfig.hpp>
+#include <engine/misc/Properties.hpp>
+#include <engine/core/ObjectOfType.hpp>
 
 #include <engine/shadow/ShadowManager.hpp>
+#include <engine/light/LightManager.hpp>
 
 #include <engine/glmodel/buffer/FrameBuffer.hpp>
 
@@ -70,9 +72,6 @@ namespace vd {
         shadow::ShadowManagerPtr& getShadowManager();
         [[nodiscard]] const shadow::ShadowManagerPtr& getShadowManager() const;
 
-		config::EngineConfigPtr& getEngineConfig();
-		[[nodiscard]] const config::EngineConfigPtr& getEngineConfig() const;
-
 		[[nodiscard]] const math::FrustumPtr& getFrustum() const;
 
 		[[nodiscard]] const glm::vec4& getClipPlane() const;
@@ -103,8 +102,7 @@ namespace vd {
 		core::CameraPtr freeCameraPtr;
 
 		shadow::ShadowManagerPtr shadowManagerPtr;
-
-		config::EngineConfigPtr configPtr;
+		light::LightManagerPtr m_LightManagerPtr;
 
 		kernel::EngineWorkerPtr engineWorkerPtr;
 

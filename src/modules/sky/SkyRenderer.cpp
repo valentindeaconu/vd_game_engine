@@ -3,59 +3,59 @@
 namespace mod::sky {
     SkyRenderer::SkyRenderer()
         : Renderer()
-        , skyPtr(nullptr)
+        , m_SkyPtr(nullptr)
     {
     }
 
     SkyRenderer::~SkyRenderer() = default;
 
-    void SkyRenderer::init() {
-        skyPtr->init();
+    void SkyRenderer::Init() {
+        m_SkyPtr->init();
     }
 
-    void SkyRenderer::update() {
-        skyPtr->update();
+    void SkyRenderer::Update() {
+        m_SkyPtr->update();
     }
 
-    void SkyRenderer::render(const vd::kernel::RenderingPass& renderingPass) {
-        if (isReady()) {
-            if (renderConfigPtr != nullptr) {
-                renderConfigPtr->enable();
+    void SkyRenderer::Render(const vd::kernel::RenderingPass& renderingPass) {
+        if (IsReady()) {
+            if (m_ConfigPtr != nullptr) {
+                m_ConfigPtr->enable();
             }
 
-            auto _shaderPtr = renderingPass == vd::kernel::RenderingPass::eShadow ? this->getShadowShader() : shaderPtr;
+            auto _shaderPtr = renderingPass == vd::kernel::RenderingPass::eShadow ? this->GetShadowShader() : m_ShaderPtr;
 
             _shaderPtr->bind();
-            vd::buffer::BufferPtrVec& buffers = skyPtr->getBuffers();
+            vd::buffer::BufferPtrVec& buffers = m_SkyPtr->getBuffers();
             for (size_t meshIndex = 0; meshIndex < buffers.size(); ++meshIndex) {
-                _shaderPtr->updateUniforms(skyPtr, meshIndex);
+                _shaderPtr->updateUniforms(m_SkyPtr, meshIndex);
                 buffers[meshIndex]->render();
             }
 
-            if (renderConfigPtr != nullptr) {
-                renderConfigPtr->disable();
+            if (m_ConfigPtr != nullptr) {
+                m_ConfigPtr->disable();
             }
         }
     }
 
-    void SkyRenderer::cleanUp() {
-        skyPtr->cleanUp();
+    void SkyRenderer::CleanUp() {
+        m_SkyPtr->cleanUp();
     }
 
-    SkyPtr& SkyRenderer::getSky() {
-        return skyPtr;
+    SkyPtr& SkyRenderer::GetSky() {
+        return m_SkyPtr;
     }
 
-    const SkyPtr& SkyRenderer::getSky() const {
-        return skyPtr;
+    const SkyPtr& SkyRenderer::GetSky() const {
+        return m_SkyPtr;
     }
 
-    void SkyRenderer::setSky(const SkyPtr& skyPtr) {
-        this->skyPtr = skyPtr;
+    void SkyRenderer::SetSky(const SkyPtr& skyPtr) {
+        this->m_SkyPtr = skyPtr;
     }
 
-    bool SkyRenderer::isReady()
+    bool SkyRenderer::IsReady()
     {
-        return Renderer::isReady() && skyPtr != nullptr;
+        return Renderer::IsReady() && m_SkyPtr != nullptr;
     }
 }

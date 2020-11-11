@@ -1,51 +1,43 @@
 #include "Renderer.hpp"
 
-namespace vd::component
-{
+namespace vd::component {
     Renderer::Renderer()
-        : renderConfigPtr(nullptr)
-        , shaderPtr(nullptr)
+        : m_ConfigPtr(nullptr)
+        , m_ShaderPtr(nullptr)
     {
     }
 
     Renderer::~Renderer() = default;
 
-    config::MetaConfigPtr& Renderer::getRenderConfig()
-    {
-        return renderConfigPtr;
+    config::MetaConfigPtr& Renderer::GetRenderConfig() {
+        return m_ConfigPtr;
     }
 
-    const config::MetaConfigPtr& Renderer::getRenderConfig() const
-    {
-        return renderConfigPtr;
+    const config::MetaConfigPtr& Renderer::GetRenderConfig() const {
+        return m_ConfigPtr;
     }
 
-    void Renderer::setRenderConfig(const config::MetaConfigPtr& renderConfigPtr)
-    {
-        this->renderConfigPtr = renderConfigPtr;
+    void Renderer::SetRenderConfig(const config::MetaConfigPtr& renderConfigPtr) {
+        this->m_ConfigPtr = renderConfigPtr;
     }
 
-    vd::shader::ShaderPtr& Renderer::getShader()
-    {
-        return shaderPtr;
+    vd::shader::ShaderPtr& Renderer::GetShader() {
+        return m_ShaderPtr;
     }
 
-    const vd::shader::ShaderPtr& Renderer::getShader() const
-    {
-        return shaderPtr;
+    const vd::shader::ShaderPtr& Renderer::GetShader() const {
+        return m_ShaderPtr;
     }
 
-    void Renderer::setShader(const vd::shader::ShaderPtr& shaderPtr)
-    {
-        this->shaderPtr = shaderPtr;
+    void Renderer::SetShader(const vd::shader::ShaderPtr& shaderPtr) {
+        this->m_ShaderPtr = shaderPtr;
     }
 
-    bool Renderer::isReady()
-    {
-        return shaderPtr != nullptr;
+    bool Renderer::IsReady() {
+        return m_ShaderPtr != nullptr;
     }
 
-    shadow::ShadowShaderPtr& Renderer::getShadowShader() const {
+    shadow::ShadowShaderPtr& Renderer::GetShadowShader() const {
         return shadow::GetShadowShader();
     }
 }

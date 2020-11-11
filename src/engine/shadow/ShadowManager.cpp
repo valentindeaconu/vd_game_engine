@@ -54,7 +54,7 @@ namespace vd::shadow {
         shadowBoxPtr = std::make_shared<ShadowBox>(windowPtr, cameraPtr, lightViewPtr, distance, offset);
     }
 
-    void ShadowManager::update(const model::LightPtr& sunPtr) {
+    void ShadowManager::update(const light::LightPtr& sunPtr) {
         shadowBoxPtr->update();
         updateLightView(sunPtr);
         updateProjection();
@@ -88,9 +88,9 @@ namespace vd::shadow {
         return *projectionPtr;
     }
 
-    void ShadowManager::updateLightView(const model::LightPtr& sunPtr) {
+    void ShadowManager::updateLightView(const light::LightPtr& sunPtr) {
         const glm::vec3 center = -shadowBoxPtr->getCenter();
-        const glm::vec3 lightDirection = glm::normalize(-sunPtr->getPosition());
+        const glm::vec3 lightDirection = glm::normalize(-sunPtr->GetDirection());
 
         const glm::vec3 x_unit = glm::vec3(1.0f, 0.0f, 0.0f);
         const glm::vec3 y_unit = glm::vec3(0.0f, 1.0f, 0.0f);

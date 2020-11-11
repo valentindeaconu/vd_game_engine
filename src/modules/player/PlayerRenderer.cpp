@@ -3,58 +3,58 @@
 namespace mod::player {
     PlayerRenderer::PlayerRenderer()
         : Renderer()
-        , playerPtr(nullptr)
+        , m_PlayerPtr(nullptr)
     {
     }
 
     PlayerRenderer::~PlayerRenderer() = default;
 
-    void PlayerRenderer::init() {
-        playerPtr->init();
+    void PlayerRenderer::Init() {
+        m_PlayerPtr->init();
     }
 
-    void PlayerRenderer::update() {
-        playerPtr->update();
+    void PlayerRenderer::Update() {
+        m_PlayerPtr->update();
     }
 
-    void PlayerRenderer::render(const vd::kernel::RenderingPass& renderingPass) {
-        if (isReady() && renderingPass != vd::kernel::eReflection && renderingPass != vd::kernel::eRefraction) {
-            if (renderConfigPtr != nullptr) {
-                renderConfigPtr->enable();
+    void PlayerRenderer::Render(const vd::kernel::RenderingPass& renderingPass) {
+        if (IsReady() && renderingPass != vd::kernel::eReflection && renderingPass != vd::kernel::eRefraction) {
+            if (m_ConfigPtr != nullptr) {
+                m_ConfigPtr->enable();
             }
 
-            auto _shaderPtr = renderingPass == vd::kernel::RenderingPass::eShadow ? this->getShadowShader() : shaderPtr;
+            auto _shaderPtr = renderingPass == vd::kernel::RenderingPass::eShadow ? this->GetShadowShader() : m_ShaderPtr;
 
             _shaderPtr->bind();
-            vd::buffer::BufferPtrVec& buffers = playerPtr->getBuffers();
+            vd::buffer::BufferPtrVec& buffers = m_PlayerPtr->getBuffers();
             for (size_t meshIndex = 0; meshIndex < buffers.size(); ++meshIndex) {
-                _shaderPtr->updateUniforms(playerPtr, meshIndex);
+                _shaderPtr->updateUniforms(m_PlayerPtr, meshIndex);
                 buffers[meshIndex]->render();
             }
 
-            if (renderConfigPtr != nullptr) {
-                renderConfigPtr->disable();
+            if (m_ConfigPtr != nullptr) {
+                m_ConfigPtr->disable();
             }
         }
     }
 
-    void PlayerRenderer::cleanUp() {
-        playerPtr->cleanUp();
+    void PlayerRenderer::CleanUp() {
+        m_PlayerPtr->cleanUp();
     }
 
-    PlayerPtr& PlayerRenderer::getPlayer() {
-        return playerPtr;
+    PlayerPtr& PlayerRenderer::GetPlayer() {
+        return m_PlayerPtr;
     }
 
-    const PlayerPtr& PlayerRenderer::getPlayer() const {
-        return playerPtr;
+    const PlayerPtr& PlayerRenderer::GetPlayer() const {
+        return m_PlayerPtr;
     }
 
-    void PlayerRenderer::setPlayer(const PlayerPtr& playerPtr) {
-        this->playerPtr = playerPtr;
+    void PlayerRenderer::SetPlayer(const PlayerPtr& playerPtr) {
+        this->m_PlayerPtr = playerPtr;
     }
 
-    bool PlayerRenderer::isReady() {
-        return Renderer::isReady() && playerPtr != nullptr;
+    bool PlayerRenderer::IsReady() {
+        return Renderer::IsReady() && m_PlayerPtr != nullptr;
     }
 }

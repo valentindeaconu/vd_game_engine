@@ -21,6 +21,7 @@ uniform mat4 view;
 // light constants
 #include "../lib/light_FS.glsl"
 uniform Light lights[MAX_LIGHTS];
+uniform Light sun;
 
 // shadow constants
 uniform float shadowDistance;
@@ -128,23 +129,19 @@ void main() {
         // compute light direction matrix
         mat3 lightDirectionMatrix = mat3(transpose(inverse(view)));
 
-        Material totalMat = intersectAllLights(lights, normalEye, viewDirN, lightDirectionMatrix);
-
-        // modulate with material
-        totalMat.ambient *= materialColor.xyz;
-        totalMat.diffuse *= materialColor.xyz;
-
-        // compute the distance for shadow transition
+        // compute shadow
         float distance = (length(fPosition) - (shadowDistance - shadowTransitionDistance)) / shadowTransitionDistance;
         float shadowDistanceFactor = clamp(1.0f - distance, 0.0f, 1.0f);
+        float shadow = computeShadow(fPosition_ls, normal, sun.direction, shadowDistanceFactor);
 
-        // modulate with shadow
-        float shadow = computeShadow(fPosition_ls, normal, lights[0].position, shadowDistanceFactor);
+        // modulate with lights
+        Material material;
+        material.ambient = materialColor.xyz;
+        material.diffuse = materialColor.xyz;
 
-        // modulate with light
-        vec4 lighting = vec4(min(totalMat.ambient + (1.0f - shadow) * (totalMat.diffuse + totalMat.specular), 1.0f), 1.0f);
+        vec3 lighting = modulateWithLightsAndShadow(sun, lights, normalEye, viewDirN, lightDirectionMatrix, fPosition.xyz, material, shadow);
 
         // modulate with fog
-        fColor = mix(vec4(fogColor, 1.0f), lighting, visibility);
+        fColor = mix(vec4(fogColor, 1.0f), vec4(lighting, 1.0f), visibility);
     }
 }

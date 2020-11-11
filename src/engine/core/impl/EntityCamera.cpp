@@ -45,7 +45,7 @@ namespace vd::core::impl {
                                                       verticalDistance);
 
         float allowedHeight =
-                terrainPtr->GetTerrainConfig()->getHeight(newPosition.x, newPosition.z) + offset.y;
+                terrainPtr->GetHeight(newPosition.x, newPosition.z) + offset.y;
 
         if (newPosition.y < allowedHeight) {
             newPosition.y = allowedHeight;

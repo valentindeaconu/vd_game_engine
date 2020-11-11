@@ -13,9 +13,10 @@ namespace mod::sobj
 
     void StaticObjectPlacer::place()
     {
-        auto& terrainConfig = terrainPtr->GetTerrainConfig();
-        const mod::terrain::BiomePtrVec& biomeAtlas = terrainConfig->getBiomes();
-        const auto terrainSize = int(terrainConfig->getScaleXZ()/2);
+        const auto scaleXZ = terrainPtr->GetProperties()->Get<float>("ScaleXZ");
+
+        const mod::terrain::BiomePtrVec& biomeAtlas = terrainPtr->GetBiomes();
+        const auto terrainSize = int(scaleXZ / 2.0f);
 
         auto onSurface = [&terrainSize](const float x, const float z) -> bool {
             return (x > -terrainSize && z > -terrainSize && x < terrainSize && z < terrainSize);
@@ -38,8 +39,7 @@ namespace mod::sobj
                     placementInfo.location.z = d(gen);
                 } while (!onSurface(placementInfo.location.x, placementInfo.location.z));
 
-                auto biomesAtLocation = terrainConfig->getBiomesAt(placementInfo.location.x,
-                                                                   placementInfo.location.z);
+                auto biomesAtLocation = terrainPtr->GetBiomesAt(placementInfo.location.x, placementInfo.location.z);
                 for (auto& biomeAtLocation : biomesAtLocation) {
                     if (!biomeAtLocation->getObjects().empty()) {
                         foundSomethingToPlace = true;
@@ -48,11 +48,10 @@ namespace mod::sobj
                 }
             } while (!foundSomethingToPlace);
 
-            placementInfo.location.y = terrainConfig->getHeight(placementInfo.location.x, placementInfo.location.z);
+            placementInfo.location.y = terrainPtr->GetHeight(placementInfo.location.x, placementInfo.location.z);
 
             std::vector<StaticObjectPtr> objectsAtLocation;
-            auto biomesAtLocation = terrainConfig->getBiomesAt(placementInfo.location.x,
-                                                               placementInfo.location.z);
+            auto biomesAtLocation = terrainPtr->GetBiomesAt(placementInfo.location.x, placementInfo.location.z);
             for (auto& biomeAtLocation : biomesAtLocation) {
                 auto& objects = biomeAtLocation->getObjects();
                 objectsAtLocation.insert(objectsAtLocation.begin(), objects.begin(), objects.end());

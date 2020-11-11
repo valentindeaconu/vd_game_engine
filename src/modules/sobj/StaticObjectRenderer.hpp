@@ -18,19 +18,19 @@ namespace mod::sobj
         StaticObjectRenderer();
         ~StaticObjectRenderer();
 
-        void init() override;
-        void update() override;
-        void render(const vd::kernel::RenderingPass& renderingPass) override;
-        void cleanUp() override;
+        void Init() override;
+        void Update() override;
+        void Render(const vd::kernel::RenderingPass& renderingPass) override;
+        void CleanUp() override;
 
-        StaticObjectPlacerPtr& getStaticObjectPlacer();
-        [[nodiscard]] const StaticObjectPlacerPtr& getStaticObjectPlacer() const;
-        void setStaticObjectPlacer(const StaticObjectPlacerPtr& staticObjectPlacerPtr);
+        StaticObjectPlacerPtr& GetStaticObjectPlacer();
+        [[nodiscard]] const StaticObjectPlacerPtr& GetStaticObjectPlacer() const;
+        void SetStaticObjectPlacer(const StaticObjectPlacerPtr& staticObjectPlacerPtr);
 
     private:
-        bool isReady() override;
+        bool IsReady() override;
 
-        StaticObjectPlacerPtr staticObjectPlacerPtr;
+        StaticObjectPlacerPtr m_StaticObjectPlacerPtr;
     };
     typedef std::shared_ptr<StaticObjectRenderer>	StaticObjectRendererPtr;
 }

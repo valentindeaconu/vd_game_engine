@@ -15,19 +15,19 @@ namespace mod::water {
         WaterRenderer();
         ~WaterRenderer();
 
-        void init() override;
-        void update() override;
-        void render(const vd::kernel::RenderingPass& renderingPass) override;
-        void cleanUp() override;
+        void Init() override;
+        void Update() override;
+        void Render(const vd::kernel::RenderingPass& renderingPass) override;
+        void CleanUp() override;
 
-        WaterPtr& getWater();
-        [[nodiscard]] const WaterPtr& getWater() const;
-        void setWater(const WaterPtr& waterPtr);
+        WaterPtr& GetWater();
+        [[nodiscard]] const WaterPtr& GetWater() const;
+        void SetWater(const WaterPtr& waterPtr);
 
     private:
-        bool isReady() override;
+        bool IsReady() override;
 
-        WaterPtr waterPtr;
+        WaterPtr m_WaterPtr;
     };
     typedef std::shared_ptr<WaterRenderer>  WaterRendererPtr;
 }

@@ -6,15 +6,19 @@
 
 namespace mod::terrain {
     TerrainNode::TerrainNode(const TerrainNode* parent,
-                             const TerrainConfigPtr& terrainConfigPtr,
                              const glm::vec2& topLeft,
                              const glm::vec2& bottomRight,
+                             const WorldCoordinatesConvertor& worldCoordinatesConvertor,
+                             int maxLevel,
+                             const std::vector<int>* lodRangesPtr,
                              int level,
                              NodeIndex nodeIndex)
             : vd::datastruct::Quadtree(parent, level, nodeIndex)
-            , m_kConfigPtr(terrainConfigPtr)
             , m_kTopLeft(topLeft)
             , m_kBottomRight(bottomRight)
+            , m_WorldCoordinatesConvertor(worldCoordinatesConvertor)
+            , m_kMaxLevelOfDetail(maxLevel)
+            , m_kLevelOfDetailRangesPtr(lodRangesPtr)
             , m_kCenter((topLeft.x + bottomRight.x) / 2.0f, (topLeft.y + bottomRight.y) / 2.0f)
             , m_TessFactor(1.0f)
     {
@@ -27,34 +31,32 @@ namespace mod::terrain {
     }
 
     void TerrainNode::Update(const vd::core::CameraPtr& cameraPtr) {
-        if ((m_kConfigPtr->isLevelOfDetailEnabled()) && cameraPtr->isCameraMoved()) {
-            // Set this node as leaf
-            this->Clear();
+        // Set this node as leaf
+        this->Clear();
 
-            // If this node's level is greater or equal to the maximum level, then just ignore it
-            if (m_Level < m_kConfigPtr->getMaxDetailLevel()) {
-                const auto& cameraPosition = cameraPtr->getPosition();
+        // If this node's level is greater or equal to the maximum level, then just ignore it
+        if (m_Level < m_kMaxLevelOfDetail) {
+            const auto& cameraPosition = cameraPtr->getPosition();
 
-                // Compute if this node exceeds his level of detail threshold
-                const auto levelMinRange = float(m_kConfigPtr->getLodRange()[m_Level]);
+            // Compute if this node exceeds his level of detail threshold
+            const auto levelMinRange = float(m_kLevelOfDetailRangesPtr->at(m_Level));
 
-                // Compute distance from each point to get the minimum distance from the patch to the camera position
-                float nodeDistance;
-                for (int i = 0; i < 4; ++i) {
-                    float distance = glm::length(cameraPosition - m_EdgeMid[i]);
-                    nodeDistance = (i == 0) ? distance : std::min(nodeDistance, distance);
-                }
+            // Compute distance from each point to get the minimum distance from the patch to the camera position
+            float nodeDistance;
+            for (int i = 0; i < 4; ++i) {
+                float distance = glm::length(cameraPosition - m_EdgeMid[i]);
+                nodeDistance = (i == 0) ? distance : std::min(nodeDistance, distance);
+            }
 
-                // If the distance is less than the current level minimum range, this node should divide
-                if (nodeDistance <= levelMinRange) {
-                    // Set this node as being a parent, and create its children
-                    Populate();
+            // If the distance is less than the current level minimum range, this node should divide
+            if (nodeDistance <= levelMinRange) {
+                // Set this node as being a parent, and create its children
+                Populate();
 
-                    // Update all children
-                    for (auto& childPtr : m_Children) {
-                        auto terrainNodePtr = std::dynamic_pointer_cast<TerrainNode>(childPtr);
-                        terrainNodePtr->Update(cameraPtr);
-                    }
+                // Update all children
+                for (auto& childPtr : m_Children) {
+                    auto terrainNodePtr = std::dynamic_pointer_cast<TerrainNode>(childPtr);
+                    terrainNodePtr->Update(cameraPtr);
                 }
             }
         }
@@ -107,19 +109,10 @@ namespace mod::terrain {
     }
 
     void TerrainNode::ComputeEdgeMiddles() {
-        const auto& worldTransform = m_kConfigPtr->getTransform();
-        const auto& heightImg = m_kConfigPtr->getHeightImg();
-
-        auto convertToWorldCoords = [&](float x, float y) {
-            const auto h = vd::img::ImageHelper::texture(*heightImg, glm::vec2(x, y)).r;
-            return glm::vec3(worldTransform * glm::vec4(x, h, y, 1.0f));
-        };
-
-        m_EdgeMid[eTop] = convertToWorldCoords(m_kCenter.x, m_kTopLeft.y);
-        m_EdgeMid[eRight] = convertToWorldCoords(m_kBottomRight.x, m_kCenter.y);
-        m_EdgeMid[eBottom] = convertToWorldCoords(m_kCenter.x, m_kBottomRight.y);
-        m_EdgeMid[eLeft] = convertToWorldCoords(m_kTopLeft.x, m_kCenter.y);
-
+        m_EdgeMid[eTop] = m_WorldCoordinatesConvertor(m_kCenter.x, m_kTopLeft.y);
+        m_EdgeMid[eRight] = m_WorldCoordinatesConvertor(m_kBottomRight.x, m_kCenter.y);
+        m_EdgeMid[eBottom] = m_WorldCoordinatesConvertor(m_kCenter.x, m_kBottomRight.y);
+        m_EdgeMid[eLeft] = m_WorldCoordinatesConvertor(m_kTopLeft.x, m_kCenter.y);
     }
 
 
@@ -133,33 +126,41 @@ namespace mod::terrain {
 
         // Top Left child
         m_Children[eTopLeft] = std::make_shared<TerrainNode>(this,
-                                                             m_kConfigPtr,
                                                              m_kTopLeft,
                                                              m_kCenter,
+                                                             m_WorldCoordinatesConvertor,
+                                                             m_kMaxLevelOfDetail,
+                                                             m_kLevelOfDetailRangesPtr,
                                                              m_Level + 1,
                                                              eTopLeft);
 
         // Top Right child
         m_Children[eTopRight] = std::make_shared<TerrainNode>(this,
-                                                              m_kConfigPtr,
                                                               glm::vec2(m_kCenter.x, m_kTopLeft.y),
                                                               glm::vec2(m_kBottomRight.x, m_kCenter.y),
+                                                              m_WorldCoordinatesConvertor,
+                                                              m_kMaxLevelOfDetail,
+                                                              m_kLevelOfDetailRangesPtr,
                                                               m_Level + 1,
                                                               eTopRight);
 
         // Bottom Left child
         m_Children[eBottomLeft] = std::make_shared<TerrainNode>(this,
-                                                                m_kConfigPtr,
                                                                 glm::vec2(m_kTopLeft.x, m_kCenter.y),
                                                                 glm::vec2(m_kCenter.x, m_kBottomRight.y),
+                                                                m_WorldCoordinatesConvertor,
+                                                                m_kMaxLevelOfDetail,
+                                                                m_kLevelOfDetailRangesPtr,
                                                                 m_Level + 1,
                                                                 eBottomLeft);
 
         // Bottom Right child
         m_Children[eBottomRight] = std::make_shared<TerrainNode>(this,
-                                                                 m_kConfigPtr,
                                                                  m_kCenter,
                                                                  m_kBottomRight,
+                                                                 m_WorldCoordinatesConvertor,
+                                                                 m_kMaxLevelOfDetail,
+                                                                 m_kLevelOfDetailRangesPtr,
                                                                  m_Level + 1,
                                                                  eBottomRight);
     }

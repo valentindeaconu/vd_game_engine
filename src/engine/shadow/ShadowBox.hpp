@@ -5,7 +5,7 @@
 #ifndef VD_GAME_ENGINE_SHADOWBOX_HPP
 #define VD_GAME_ENGINE_SHADOWBOX_HPP
 
-#include <engine/model/Light.hpp>
+#include <engine/light/Light.hpp>
 #include <engine/core/Camera.hpp>
 #include <engine/core/Window.hpp>
 

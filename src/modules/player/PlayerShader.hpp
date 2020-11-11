@@ -3,6 +3,9 @@
 
 #include <engine/shader/Shader.hpp>
 
+#include <engine/core/ObjectOfType.hpp>
+#include <engine/misc/Properties.hpp>
+
 namespace mod::player
 {
     class PlayerShader : public vd::shader::Shader

@@ -28,7 +28,7 @@ namespace mod::sky
 
         meshPtrVec.push_back(meshPtr);
 
-        Entity::init(); // call super.init() to initialize meshBuffers;
+        Entity::init(); // call super.Init() to initialize meshBuffers;
     }
 
     void Sky::update()
@@ -38,6 +38,6 @@ namespace mod::sky
 
     void Sky::cleanUp()
     {
-        Entity::cleanUp(); // call super.cleanUp() to clear meshBuffers;
+        Entity::cleanUp(); // call super.CleanUp() to clear meshBuffers;
     }
 }

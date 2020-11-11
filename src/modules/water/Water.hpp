@@ -9,41 +9,48 @@
 
 #include <engine/glmodel/buffer/FrameBuffer.hpp>
 
-#include "WaterConfig.hpp"
+#include <engine/misc/Properties.hpp>
 
 #include <memory>
 #include <numbers>
+#include <unordered_map>
 
 namespace mod::water {
     class Water : public vd::object::Entity {
     public:
-        Water(const vd::EnginePtr& enginePtr, const std::string& configFilePath);
+        Water(const vd::EnginePtr& enginePtr, const std::string& propsFilePath);
         ~Water();
 
         void init() override;
         void update() override;
         void cleanUp() override;
 
-        [[nodiscard]] const WaterConfigPtr& getWaterConfig() const;
+        [[nodiscard]] const vd::misc::PropertiesPtr& GetProperties() const;
 
-        [[nodiscard]] const vd::buffer::FrameBufferPtr& getReflectionFramebuffer() const;
-        [[nodiscard]] const vd::buffer::FrameBufferPtr& getRefractionFramebuffer() const;
+        [[nodiscard]] const vd::model::Material& GetMaterial() const;
 
-        [[nodiscard]] float getHeight() const;
-        [[nodiscard]] float getMoveFactor() const;
+        [[nodiscard]] const vd::buffer::FrameBufferPtr& GetReflectionFramebuffer() const;
+        [[nodiscard]] const vd::buffer::FrameBufferPtr& GetRefractionFramebuffer() const;
+
+        [[nodiscard]] float GetHeight() const;
+
+        [[nodiscard]] float GetMoveFactor() const;
     private:
-        void generatePatch();
+        void PopulatePacks();
+        void GeneratePatch();
 
-        WaterConfigPtr	configPtr;
+        std::string m_CurrentPack;
 
-        float moveFactor;
+        float m_MoveFactor;
 
-        vd::buffer::FrameBufferPtr reflectionFBO;
-        vd::buffer::FrameBufferPtr refractionFBO;
+        std::unordered_map<std::string, vd::model::Material> m_PacksMap;
+
+        vd::misc::PropertiesPtr m_PropsPtr;
+
+        vd::buffer::FrameBufferPtr m_ReflectionFBO;
+        vd::buffer::FrameBufferPtr m_RefractionFBO;
     };
     typedef std::shared_ptr<Water>  WaterPtr;
 }
-
-
 
 #endif //VD_GAME_ENGINE_WATER_HPP

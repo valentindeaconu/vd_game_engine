@@ -8,7 +8,6 @@
 #include <engine/component/Renderer.hpp>
 
 #include "Terrain.hpp"
-#include "TerrainConfig.hpp"
 #include "TerrainNode.hpp"
 
 namespace mod::terrain {
@@ -17,21 +16,21 @@ namespace mod::terrain {
         TerrainRenderer();
         ~TerrainRenderer();
 
-        void init() override;
-        void update() override;
-        void render(const vd::kernel::RenderingPass& renderingPass) override;
-        void cleanUp() override;
+        void Init() override;
+        void Update() override;
+        void Render(const vd::kernel::RenderingPass& renderingPass) override;
+        void CleanUp() override;
 
-        TerrainPtr& getTerrain();
-        [[nodiscard]] const TerrainPtr& getTerrain() const;
-        void setTerrain(const TerrainPtr& terrainPtr);
+        TerrainPtr& GetTerrain();
+        [[nodiscard]] const TerrainPtr& GetTerrain() const;
+        void SetTerrain(const TerrainPtr& terrainPtr);
 
     private:
-        void renderNode(const TerrainNode::ptr_type_t& nodePtr, const TerrainConfigPtr& terrainConfigPtr);
+        void renderNode(const TerrainNode::ptr_type_t& nodePtr);
 
-        bool isReady() override;
+        bool IsReady() override;
 
-        TerrainPtr terrainPtr;
+        TerrainPtr m_TerrainPtr;
     };
     typedef std::shared_ptr<TerrainRenderer>	TerrainRendererPtr;
 }

@@ -11,34 +11,27 @@
 
 #include <engine/shadow/ShadowShader.hpp>
 
-namespace vd::component
-{
-    class Renderer : public kernel::Observer
-    {
+namespace vd::component {
+    class Renderer : public kernel::Observer {
     public:
         Renderer();
         ~Renderer();
 
-        virtual void init() = 0;
-        virtual void update() = 0;
-        virtual void render(const kernel::RenderingPass& renderingPass) = 0;
-        virtual void cleanUp() = 0;
+        config::MetaConfigPtr& GetRenderConfig();
+        [[nodiscard]] const config::MetaConfigPtr& GetRenderConfig() const;
+        void SetRenderConfig(const config::MetaConfigPtr& renderConfigPtr);
 
-        config::MetaConfigPtr& getRenderConfig();
-        [[nodiscard]] const config::MetaConfigPtr& getRenderConfig() const;
-        void setRenderConfig(const config::MetaConfigPtr& renderConfigPtr);
-
-        shader::ShaderPtr& getShader();
-        [[nodiscard]] const shader::ShaderPtr& getShader() const;
-        void setShader(const vd::shader::ShaderPtr& shaderPtr);
+        shader::ShaderPtr& GetShader();
+        [[nodiscard]] const shader::ShaderPtr& GetShader() const;
+        void SetShader(const vd::shader::ShaderPtr& shaderPtr);
 
     protected:
-        virtual bool isReady();
+        virtual bool IsReady();
 
-        [[nodiscard]] shadow::ShadowShaderPtr& getShadowShader() const;
+        [[nodiscard]] shadow::ShadowShaderPtr& GetShadowShader() const;
 
-        config::MetaConfigPtr renderConfigPtr;
-        shader::ShaderPtr shaderPtr;
+        config::MetaConfigPtr m_ConfigPtr;
+        shader::ShaderPtr m_ShaderPtr;
     };
     typedef std::shared_ptr<Renderer>	RendererPtr;
 }

@@ -17,38 +17,45 @@ uniform sampler2D specularMap;
 
 uniform vec3 fogColor;
 
+uniform int transparency = 1;
+
 #include "../lib/light_FS.glsl"
 
 uniform Light lights[MAX_LIGHTS];
+uniform Light sun;
 
 void main() 
 {	
 	vec4 diffuseColor = texture(diffuseMap, fTexCoords);
-	
-	if (diffuseColor.a < 0.01f)
-	{
+
+	if (transparency == 1 && diffuseColor.a < 0.01f) {
 		discard;
 	}
-	
+
+	vec4 specularColor = texture(specularMap, fTexCoords);
+
 	//in eye coordinates, the viewer is situated at the origin
 	vec3 cameraPosEye = vec3(0.0f);
 	//transform normal
 	vec3 normalEye = normalize(fNormalMatrix * fNormal);	
 	//compute view direction 
 	vec3 viewDirN = normalize(cameraPosEye - fPosition.xyz);
-	
-	//intersect with all lights
-	Material totalMat = intersectAllLights(lights, normalEye, viewDirN, fLightDirectionMatrix);
-	
-	//modulate with lighting
-	totalMat.ambient *= diffuseColor.xyz;
-	totalMat.diffuse *= diffuseColor.xyz;
-	
-	//modulate with specular map
-	vec4 specularColor = texture(specularMap, fTexCoords);
-	totalMat.specular *= specularColor.xyz;
+
+	//modulate with lights
+	Material material;
+	material.ambient = diffuseColor.xyz;
+	material.diffuse = diffuseColor.xyz;
+	material.specular = specularColor.xyz;
+
+	vec3 lighting = modulateWithLightsAndShadow(sun,
+												lights,
+												normalEye,
+												viewDirN,
+												fLightDirectionMatrix,
+												fPosition.xyz,
+												material,
+												0.0f);
 
 	//combine results
-    fColor = vec4(min(totalMat.ambient + totalMat.diffuse + totalMat.specular, 1.0f), diffuseColor.a);
-	fColor = mix(vec4(fogColor, 1.0f), fColor, fVisibility);
+	fColor = vec4(mix(fogColor, lighting, fVisibility), diffuseColor.a);
 }

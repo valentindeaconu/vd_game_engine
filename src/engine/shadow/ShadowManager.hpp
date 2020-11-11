@@ -29,7 +29,7 @@ namespace vd::shadow {
                   float distance,
                   float transition,
                   float offset);
-        void update(const model::LightPtr& sunPtr);
+        void update(const light::LightPtr& sunPtr);
         void cleanUp();
 
         [[nodiscard]] float getDistance() const;
@@ -42,7 +42,7 @@ namespace vd::shadow {
         [[nodiscard]] const glm::mat4& getViewMatrix() const;
         [[nodiscard]] const glm::mat4& getProjectionMatrix() const;
     private:
-        void updateLightView(const model::LightPtr& sunPtr);
+        void updateLightView(const light::LightPtr& sunPtr);
         void updateProjection();
 
         int mapSize;

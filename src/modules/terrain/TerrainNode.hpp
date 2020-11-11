@@ -9,6 +9,7 @@
 #include <engine/foundation/img/imghelper/ImageHelper.hpp>
 #include <engine/foundation/math/Transform.hpp>
 #include <engine/foundation/math/Bounds.hpp>
+#include <engine/misc/Properties.hpp>
 
 #include <engine/foundation/datastruct/Tree.hpp>
 
@@ -17,8 +18,6 @@
 #include <memory>
 #include <vector>
 #include <array>
-
-#include "TerrainConfig.hpp"
 
 namespace mod::terrain {
     class TerrainNode : public vd::datastruct::Quadtree {
@@ -42,10 +41,14 @@ namespace mod::terrain {
 
         typedef std::array<glm::vec3, 4> PointVec;
 
+        typedef std::function<glm::vec3(float, float)> WorldCoordinatesConvertor;
+
         TerrainNode(const TerrainNode* parent,
-                    const TerrainConfigPtr& terrainConfigPtr,
                     const glm::vec2& topLeft,
                     const glm::vec2& bottomRight,
+                    const WorldCoordinatesConvertor& worldCoordinatesConvertor,
+                    int maxLevel,
+                    const std::vector<int>* lodRangesPtr,
                     int level,
                     NodeIndex nodeIndex);
 
@@ -78,7 +81,10 @@ namespace mod::terrain {
                                                   bool parentSearch = false,
                                                   NodeIndex caller = eRootNode);
 
-        const TerrainConfigPtr m_kConfigPtr;
+        WorldCoordinatesConvertor m_WorldCoordinatesConvertor;
+
+        const int m_kMaxLevelOfDetail;
+        const std::vector<int>* m_kLevelOfDetailRangesPtr;
 
         const glm::vec2 m_kTopLeft;
         const glm::vec2 m_kBottomRight;

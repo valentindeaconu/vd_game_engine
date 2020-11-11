@@ -15,21 +15,21 @@ namespace mod::gui {
         GuiRenderer();
         ~GuiRenderer();
 
-        void init() override;
-        void update() override;
-        void render(const vd::kernel::RenderingPass& renderingPass) override;
-        void cleanUp() override;
+        void Init() override;
+        void Update() override;
+        void Render(const vd::kernel::RenderingPass& renderingPass) override;
+        void CleanUp() override;
 
-        GuiQuadPtr& getGuiQuad();
-        [[nodiscard]] const GuiQuadPtr& getGuiQuad() const;
-        void setGuiQuad(const GuiQuadPtr& guiQuadPtr);
+        GuiQuadPtr& GetGuiQuad();
+        [[nodiscard]] const GuiQuadPtr& GetGuiQuad() const;
+        void SetGuiQuad(const GuiQuadPtr& guiQuadPtr);
 
     private:
-        bool isReady() override;
+        bool IsReady() override;
 
-        bool initialised;
+        bool m_Initialised;
 
-        GuiQuadPtr guiQuadPtr;
+        GuiQuadPtr m_GuiQuadPtr;
     };
     typedef std::shared_ptr<GuiRenderer>	GuiRendererPtr;
 }

@@ -41,7 +41,9 @@
 #include <modules/water/WaterShader.hpp>
 
 // object finder
-#include <engine/core/ObjectManager.hpp>
+#include <engine/core/ObjectOfType.hpp>
+
+#include <engine/misc/Properties.hpp>
 
 mod::terrain::TerrainPtr createTerrain(vd::EnginePtr& enginePtr);
 
@@ -58,6 +60,9 @@ mod::water::WaterPtr createWater(vd::EnginePtr& enginePtr);
                                 const glm::vec2& scale);
 
 int main(int argc, char ** argv) {
+    // Read global properties
+    auto globalPropertiesPtr = vd::misc::Properties::Create<vd::misc::Properties::eFile>("./resources/global.properties");
+    vd::ObjectOfType<vd::misc::Properties>::Provide(globalPropertiesPtr);
 
     /// Engine creation
 	vd::EnginePtr enginePtr = std::make_shared<vd::Engine>();
@@ -66,7 +71,7 @@ int main(int argc, char ** argv) {
 	/// Mods
     createTerrain(enginePtr);
 
-    mod::terrain::TerrainPtr terrainPtr = vd::core::FindObjectOfType<mod::terrain::Terrain>::Get();
+    mod::terrain::TerrainPtr terrainPtr = vd::ObjectOfType<mod::terrain::Terrain>::Find();
 
     mod::sky::SkyPtr skyPtr = createSky(enginePtr);
 
@@ -77,7 +82,7 @@ int main(int argc, char ** argv) {
 	/// Water must be the last element to draw, but before GUIs
 	mod::water::WaterPtr waterPtr = createWater(enginePtr);
 
-	/// Engine init
+	/// Engine Init
 	vd::core::EntityCameraInitParameters entityCameraInitParameters = {
         .entityPtr = playerPtr,
         .terrainPtr = terrainPtr,
@@ -93,7 +98,7 @@ int main(int argc, char ** argv) {
               glm::vec2(0.250f, 0.250f));
 
     createGUI(enginePtr,
-              waterPtr->getReflectionFramebuffer()->getColorTexture(),
+              waterPtr->GetReflectionFramebuffer()->getColorTexture(),
               glm::vec2(0.75f, 0.75f),
               glm::vec2(0.250f, 0.250f));
 
@@ -114,18 +119,18 @@ mod::terrain::TerrainPtr createTerrain(vd::EnginePtr& enginePtr) {
                                                      []() { glFrontFace(GL_CW); });
 
     mod::terrain::TerrainPtr terrainPtr =
-            std::make_shared<mod::terrain::Terrain>(enginePtr, "./resources/terrain_settings.cfg");
+            std::make_shared<mod::terrain::Terrain>(enginePtr, "./resources/terrain.properties");
 
     mod::terrain::TerrainShaderPtr terrainShaderPtr = std::make_shared<mod::terrain::TerrainShader>();
 
     mod::terrain::TerrainRendererPtr terrainRendererPtr = std::make_shared<mod::terrain::TerrainRenderer>();
-    terrainRendererPtr->setTerrain(terrainPtr);
-    terrainRendererPtr->setRenderConfig(ccwConfigPtr);
-    terrainRendererPtr->setShader(terrainShaderPtr);
+    terrainRendererPtr->SetTerrain(terrainPtr);
+    terrainRendererPtr->SetRenderConfig(ccwConfigPtr);
+    terrainRendererPtr->SetShader(terrainShaderPtr);
 
     enginePtr->getWorker()->subscribe(terrainRendererPtr);
 
-    vd::core::FindObjectOfType<mod::terrain::Terrain>::Provide(terrainPtr);
+    vd::ObjectOfType<mod::terrain::Terrain>::Provide(terrainPtr);
 
     return terrainPtr;
 }
@@ -139,9 +144,9 @@ mod::player::PlayerPtr createPlayer(vd::EnginePtr& enginePtr, mod::terrain::Terr
     mod::player::PlayerShaderPtr playerShaderPtr = std::make_shared<mod::player::PlayerShader>();
 
     mod::player::PlayerRendererPtr playerRendererPtr = std::make_shared<mod::player::PlayerRenderer>();
-    playerRendererPtr->setPlayer(playerPtr);
-    playerRendererPtr->setRenderConfig(ccwConfigPtr);
-    playerRendererPtr->setShader(playerShaderPtr);
+    playerRendererPtr->SetPlayer(playerPtr);
+    playerRendererPtr->SetRenderConfig(ccwConfigPtr);
+    playerRendererPtr->SetShader(playerShaderPtr);
 
     enginePtr->getWorker()->subscribe(playerRendererPtr);
 
@@ -161,9 +166,9 @@ mod::sky::SkyPtr createSky(vd::EnginePtr& enginePtr) {
     mod::sky::SkyShaderPtr skyShaderPtr = std::make_shared<mod::sky::SkyShader>();
 
     mod::sky::SkyRendererPtr skyRendererPtr = std::make_shared<mod::sky::SkyRenderer>();
-    skyRendererPtr->setSky(skyPtr);
-    skyRendererPtr->setRenderConfig(skyConfigPtr);
-    skyRendererPtr->setShader(skyShaderPtr);
+    skyRendererPtr->SetSky(skyPtr);
+    skyRendererPtr->SetRenderConfig(skyConfigPtr);
+    skyRendererPtr->SetShader(skyShaderPtr);
 
     enginePtr->getWorker()->subscribe(skyRendererPtr);
 
@@ -180,15 +185,15 @@ void createAndPlaceStaticObjects(vd::EnginePtr& enginePtr, mod::terrain::Terrain
     mod::sobj::StaticObjectShaderPtr staticObjectShaderPtr = std::make_shared<mod::sobj::StaticObjectShader>();
 
     mod::sobj::StaticObjectRendererPtr staticObjectRendererPtr = std::make_shared<mod::sobj::StaticObjectRenderer>();
-    staticObjectRendererPtr->setStaticObjectPlacer(staticObjectPlacerPtr);
-    staticObjectRendererPtr->setRenderConfig(ccwConfigPtr);
-    staticObjectRendererPtr->setShader(staticObjectShaderPtr);
+    staticObjectRendererPtr->SetStaticObjectPlacer(staticObjectPlacerPtr);
+    staticObjectRendererPtr->SetRenderConfig(ccwConfigPtr);
+    staticObjectRendererPtr->SetShader(staticObjectShaderPtr);
 
     enginePtr->getWorker()->subscribe(staticObjectRendererPtr);
 }
 
 mod::water::WaterPtr createWater(vd::EnginePtr& enginePtr) {
-    mod::water::WaterPtr waterPtr = std::make_shared<mod::water::Water>(enginePtr, "./resources/water_settings.cfg");
+    mod::water::WaterPtr waterPtr = std::make_shared<mod::water::Water>(enginePtr, "./resources/water.properties");
     mod::water::WaterShaderPtr waterShaderPtr = std::make_shared<mod::water::WaterShader>();
 
     vd::config::MetaConfigPtr waterConfigPtr = std::make_shared<vd::config::MetaConfig>([]() {
@@ -201,37 +206,37 @@ mod::water::WaterPtr createWater(vd::EnginePtr& enginePtr) {
     });
 
     mod::water::WaterRendererPtr waterRendererPtr = std::make_shared<mod::water::WaterRenderer>();
-    waterRendererPtr->setWater(waterPtr);
-    waterRendererPtr->setRenderConfig(waterConfigPtr);
-    waterRendererPtr->setShader(waterShaderPtr);
+    waterRendererPtr->SetWater(waterPtr);
+    waterRendererPtr->SetRenderConfig(waterConfigPtr);
+    waterRendererPtr->SetShader(waterShaderPtr);
 
     auto preconditionFunc = [&]() {
-        return enginePtr->getCamera()->getPosition().y > waterPtr->getHeight();
+        return enginePtr->getCamera()->getPosition().y > waterPtr->GetHeight();
     };
 
     auto reflectionEnableFunc = [&]{
-        enginePtr->setClipPlane(glm::vec4(0.0f, 1.0f, 0.0f, -waterPtr->getHeight() + 1.0f));
+        enginePtr->setClipPlane(glm::vec4(0.0f, 1.0f, 0.0f, -waterPtr->GetHeight() + 1.0f));
         glEnable(GL_CLIP_DISTANCE0);
 
-        enginePtr->getCamera()->reflect(waterPtr->getHeight());
+        enginePtr->getCamera()->reflect(waterPtr->GetHeight());
     };
 
     auto reflectionDisableFunc = [&]() {
         enginePtr->setClipPlane(glm::vec4(0.0f));
         glDisable(GL_CLIP_DISTANCE0);
 
-        enginePtr->getCamera()->reflect(waterPtr->getHeight());
+        enginePtr->getCamera()->reflect(waterPtr->GetHeight());
     };
 
     auto reflectionCfgPtr = std::make_shared<vd::config::MetaConfig>(reflectionEnableFunc, reflectionDisableFunc);
 
-    enginePtr->addRenderingFramebuffer(waterPtr->getReflectionFramebuffer(),
+    enginePtr->addRenderingFramebuffer(waterPtr->GetReflectionFramebuffer(),
                                        preconditionFunc,
                                        reflectionCfgPtr,
                                        vd::kernel::RenderingPass::eReflection);
 
     auto refractionEnableFunc = [&]{
-        enginePtr->setClipPlane(glm::vec4(0.0f, -1.0f, 0.0f, waterPtr->getHeight()));
+        enginePtr->setClipPlane(glm::vec4(0.0f, -1.0f, 0.0f, waterPtr->GetHeight()));
         glEnable(GL_CLIP_DISTANCE0);
     };
 
@@ -242,7 +247,7 @@ mod::water::WaterPtr createWater(vd::EnginePtr& enginePtr) {
 
     auto refractionCfgPtr = std::make_shared<vd::config::MetaConfig>(refractionEnableFunc, refractionDisableFunc);
 
-    enginePtr->addRenderingFramebuffer(waterPtr->getRefractionFramebuffer(),
+    enginePtr->addRenderingFramebuffer(waterPtr->GetRefractionFramebuffer(),
                                        preconditionFunc,
                                        refractionCfgPtr,
                                        vd::kernel::RenderingPass::eRefraction);
@@ -265,9 +270,9 @@ mod::water::WaterPtr createWater(vd::EnginePtr& enginePtr) {
     mod::gui::GuiShaderPtr guiShaderPtr = std::make_shared<mod::gui::GuiShader>();
 
     mod::gui::GuiRendererPtr  guiRendererPtr = std::make_shared<mod::gui::GuiRenderer>();
-    guiRendererPtr->setRenderConfig(ccwConfigPtr);
-    guiRendererPtr->setGuiQuad(guiQuadPtr);
-    guiRendererPtr->setShader(guiShaderPtr);
+    guiRendererPtr->SetRenderConfig(ccwConfigPtr);
+    guiRendererPtr->SetShader(guiShaderPtr);
+    guiRendererPtr->SetGuiQuad(guiQuadPtr);
 
     enginePtr->getWorker()->subscribe(guiRendererPtr);
 }

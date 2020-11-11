@@ -27,9 +27,11 @@ namespace mod::sky
         static bool loadedBasics = false;
         if (!loadedBasics)
         {
-            auto& engineConfigPtr = enginePtr->getEngineConfig();
-            setUniformf("fogDensity", engineConfigPtr->getFogSkyDensity());
-            setUniform("fogColor", engineConfigPtr->getFogColor());
+            auto& propertiesPtr = vd::ObjectOfType<vd::misc::Properties>::Find();
+
+            setUniformf("fogDensity", propertiesPtr->Get<float>("Fog.SkyDensity"));
+            setUniform("fogColor", propertiesPtr->Get<glm::vec3>("Fog.Color"));
+
             loadedBasics = true;
         }
     }

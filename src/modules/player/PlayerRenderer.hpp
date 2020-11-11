@@ -13,19 +13,19 @@ namespace mod::player {
         PlayerRenderer();
         ~PlayerRenderer();
 
-        void init() override;
-        void update() override;
-        void render(const vd::kernel::RenderingPass& renderingPass) override;
-        void cleanUp() override;
+        void Init() override;
+        void Update() override;
+        void Render(const vd::kernel::RenderingPass& renderingPass) override;
+        void CleanUp() override;
 
-        PlayerPtr& getPlayer();
-        [[nodiscard]] const PlayerPtr& getPlayer() const;
-        void setPlayer(const PlayerPtr& playerPtr);
+        PlayerPtr& GetPlayer();
+        [[nodiscard]] const PlayerPtr& GetPlayer() const;
+        void SetPlayer(const PlayerPtr& playerPtr);
 
     private:
-        bool isReady() override;
+        bool IsReady() override;
 
-        PlayerPtr playerPtr;
+        PlayerPtr m_PlayerPtr;
     };
     typedef std::shared_ptr<PlayerRenderer>	PlayerRendererPtr;
 }

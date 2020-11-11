@@ -20,7 +20,7 @@ uniform float tiling;
 uniform vec3 cameraPosition;
 
 // lighting for normal mapping
-uniform vec3 sunPosition;
+uniform vec3 sunDirection;
 
 void main() 
 {
@@ -38,7 +38,7 @@ void main()
 	toCamera = cameraPosition - worldCoordinates.xyz;
 
 	// compute from light vector
-	fromLightVector = worldCoordinates.xyz - sunPosition;
+	fromLightVector = worldCoordinates.xyz - sunDirection;
 
 	// compute vertex position
 	clipSpace = projection * eyeSpaceCoordinates;

@@ -32,7 +32,7 @@ namespace mod::water {
         addUniform("normalMap");
         addUniform("depthMap");
 
-        addUniform("sunPosition");
+        addUniform("sunDirection");
         addUniform("sunColor");
         addUniform("shineDamper");
         addUniform("reflectivity");
@@ -59,41 +59,44 @@ namespace mod::water {
         setUniformf("farPlane", enginePtr->getWindow()->getFarPlane());
 
         vd::model::activeTexture(0);
-        waterPtr->getReflectionFramebuffer()->getColorTexture()->bind();
+        waterPtr->GetReflectionFramebuffer()->getColorTexture()->bind();
         setUniformi("reflectionTexture", 0);
 
         vd::model::activeTexture(1);
-        waterPtr->getRefractionFramebuffer()->getColorTexture()->bind();
+        waterPtr->GetRefractionFramebuffer()->getColorTexture()->bind();
         setUniformi("refractionTexture", 1);
 
         vd::model::activeTexture(2);
-        waterPtr->getRefractionFramebuffer()->getDepthTexture()->bind();
+        waterPtr->GetRefractionFramebuffer()->getDepthTexture()->bind();
         setUniformi("depthMap", 2);
 
-        setUniform("sunPosition", enginePtr->getEngineConfig()->getLights().front()->getPosition());
-        setUniform("sunColor", enginePtr->getEngineConfig()->getLights().front()->getColor());
+        auto& lightManager = vd::ObjectOfType<vd::light::LightManager>::Find();
+        auto& sunPtr = lightManager->GetSun();
 
-        setUniformf("moveFactor", waterPtr->getMoveFactor());
+        setUniform("sunDirection", sunPtr->GetDirection());
+        setUniform("sunColor", sunPtr->GetColor());
 
-        auto& waterConfigPtr = waterPtr->getWaterConfig();
+        setUniformf("moveFactor", waterPtr->GetMoveFactor());
 
+        auto& waterMaterial = waterPtr->GetMaterial();
         vd::model::activeTexture(3);
-        waterConfigPtr->getDuDvMap("Chill")->bind();
+        waterMaterial.displaceMap->bind();
         setUniformi("dudvMap", 3);
 
         vd::model::activeTexture(4);
-        waterConfigPtr->getNormalMap("Chill")->bind();
+        waterMaterial.normalMap->bind();
         setUniformi("normalMap", 4);
 
         static bool loadedBasics = false;
-        if (!loadedBasics)
-        {
-            setUniformf("tiling", waterConfigPtr->getTiling());
-            setUniformf("waveStrength", waterConfigPtr->getWaveStrength());
-            setUniformf("shineDamper", waterConfigPtr->getShineDamper());
-            setUniformf("reflectivity", waterConfigPtr->getReflectivity());
+        if (!loadedBasics) {
+            auto& propsPtr = waterPtr->GetProperties();
 
-            setUniform("baseColor", waterConfigPtr->getBaseColor());
+            setUniformf("tiling", propsPtr->Get<float>("Tiling"));
+            setUniformf("waveStrength", propsPtr->Get<float>("Wave.Strength"));
+            setUniformf("shineDamper", propsPtr->Get<float>("ShineDamper"));
+            setUniformf("reflectivity", propsPtr->Get<float>("Reflectivity"));
+
+            setUniform("baseColor", propsPtr->Get<glm::vec3>("BaseColor"));
 
             loadedBasics = true;
         }

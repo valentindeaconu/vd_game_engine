@@ -12,19 +12,15 @@ namespace mod::player
 
     void Player::init()
     {
-        //getWorldTransform().setTranslation(256.0f, 0.0f, 256.0f);
-        //getWorldTransform().setTranslation(0.0f, 0.0f, 0.0f);
-
-        float h = terrainPtr->GetTerrainConfig()->getHeight(0.0f, 0.0f);
+        float h = terrainPtr->GetHeight(0.0f, 0.0f);
 
         getWorldTransform().setTranslation(0.0f, h + modelYOffset, 0.0f);
-        //getWorldTransform().setScaling(0.5f, 0.5f, 0.5f);
         vd::objloader::OBJLoaderPtr objLoaderPtr = std::make_shared<vd::objloader::OBJLoader>();
 
         vd::model::MeshPtrVec& meshPtrVec = getMeshes();
-        objLoaderPtr->load("./resources/objects/myriam", "myriam.obj", meshPtrVec);
+        objLoaderPtr->load("./resources/objects/nanosuit", "nanosuit.obj", meshPtrVec);
 
-        Entity::init(); // call super.init() to initialize meshBuffers;
+        Entity::init(); // call super.Init() to initialize meshBuffers;
     }
 
     void Player::update() {
@@ -56,7 +52,7 @@ namespace mod::player
         currentUpwardsSpeed += kGravity * getParentEngine()->getFrameTime();
         currentPosition.y += currentUpwardsSpeed * getParentEngine()->getFrameTime();
 
-        float height = terrainPtr->GetTerrainConfig()->getHeight(currentPosition.x, currentPosition.z);
+        float height = terrainPtr->GetHeight(currentPosition.x, currentPosition.z);
 
         if (currentPosition.y < height + modelYOffset) {
             currentUpwardsSpeed = 0.0f;
@@ -69,7 +65,7 @@ namespace mod::player
 
     void Player::cleanUp()
     {
-        Entity::cleanUp(); // call super.cleanUp() to clear meshBuffers;
+        Entity::cleanUp(); // call super.CleanUp() to clear meshBuffers;
     }
 
     void Player::jump()

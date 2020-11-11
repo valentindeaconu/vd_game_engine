@@ -13,19 +13,19 @@ namespace mod::sky {
         SkyRenderer();
         ~SkyRenderer();
 
-        void init() override;
-        void update() override;
-        void render(const vd::kernel::RenderingPass& renderingPass) override;
-        void cleanUp() override;
+        void Init() override;
+        void Update() override;
+        void Render(const vd::kernel::RenderingPass& renderingPass) override;
+        void CleanUp() override;
 
-        SkyPtr& getSky();
-        [[nodiscard]] const SkyPtr& getSky() const;
-        void setSky(const SkyPtr& skyPtr);
+        SkyPtr& GetSky();
+        [[nodiscard]] const SkyPtr& GetSky() const;
+        void SetSky(const SkyPtr& skyPtr);
 
     private:
-        bool isReady() override;
+        bool IsReady() override;
 
-        SkyPtr skyPtr;
+        SkyPtr m_SkyPtr;
     };
 
     typedef std::shared_ptr<SkyRenderer>	SkyRendererPtr;
