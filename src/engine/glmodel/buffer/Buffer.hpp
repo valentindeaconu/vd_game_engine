@@ -6,9 +6,9 @@
 namespace vd::buffer {
     class Buffer {
     public:
-        virtual void allocate(const vd::model::MeshPtr& meshPtr) = 0;
-        virtual void render() = 0;
-        virtual void cleanUp() = 0;
+        virtual void Allocate(const vd::model::MeshPtr& meshPtr) = 0;
+        virtual void Render() = 0;
+        virtual void CleanUp() = 0;
     };
     typedef std::shared_ptr<Buffer>	BufferPtr;
     typedef std::vector<BufferPtr>	BufferPtrVec;

@@ -2,29 +2,29 @@
 
 namespace vd::buffer {
     MeshBuffer::MeshBuffer()
-        : vaoId(0)
-        , vbId(0)
-        , ebId(0)
+        : m_VaoId(0)
+        , m_VboId(0)
+        , m_EboId(0)
     {
     };
 
     MeshBuffer::~MeshBuffer() = default;
 
-    void MeshBuffer::allocate(const vd::model::MeshPtr& meshPtr) {
-        this->meshPtr = meshPtr;
+    void MeshBuffer::Allocate(const vd::model::MeshPtr& meshPtr) {
+        this->m_MeshPtr = meshPtr;
 
         // Create buffers/arrays
-        glGenVertexArrays(1, &vaoId);
-        glGenBuffers(1, &vbId);
-        glGenBuffers(1, &ebId);
+        glGenVertexArrays(1, &m_VaoId);
+        glGenBuffers(1, &m_VboId);
+        glGenBuffers(1, &m_EboId);
 
-        glBindVertexArray(vaoId);
+        glBindVertexArray(m_VaoId);
 
         // Load data into vertex buffers
-        glBindBuffer(GL_ARRAY_BUFFER, vbId);
+        glBindBuffer(GL_ARRAY_BUFFER, m_VboId);
         glBufferData(GL_ARRAY_BUFFER, meshPtr->vertices.size() * sizeof(vd::model::Vertex), &meshPtr->vertices[0], GL_STATIC_DRAW);
 
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebId);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_EboId);
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, meshPtr->indices.size() * sizeof(GLuint), &meshPtr->indices[0], GL_STATIC_DRAW);
 
         // Set the vertex attribute pointers
@@ -43,22 +43,22 @@ namespace vd::buffer {
         glBindVertexArray(0);
     }
 
-    void MeshBuffer::render()
+    void MeshBuffer::Render()
     {
-        std::vector<GLuint>& indices = meshPtr->indices;
+        std::vector<GLuint>& indices = m_MeshPtr->indices;
 
-        glBindVertexArray(vaoId);
+        glBindVertexArray(m_VaoId);
         glDrawElements(GL_TRIANGLES, (GLsizei)indices.size(), GL_UNSIGNED_INT, 0);
         glBindVertexArray(0);
     }
 
-    void MeshBuffer::cleanUp()
+    void MeshBuffer::CleanUp()
     {
-        glBindVertexArray(vaoId);
+        glBindVertexArray(m_VaoId);
 
-        glDeleteBuffers(1, &vbId);
-        glDeleteBuffers(1, &ebId);
-        glDeleteVertexArrays(1, &vaoId);
+        glDeleteBuffers(1, &m_VboId);
+        glDeleteBuffers(1, &m_EboId);
+        glDeleteVertexArrays(1, &m_VaoId);
 
         glBindVertexArray(0);
     }

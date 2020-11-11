@@ -3,10 +3,11 @@
 
 #include <engine/shader/Shader.hpp>
 
-namespace mod::sky
-{
-    class SkyShader : public vd::shader::Shader
-    {
+#include <engine/kernel/EngineBlock.hpp>
+#include <engine/core/ObjectOfType.hpp>
+
+namespace mod::sky {
+    class SkyShader : public vd::shader::Shader {
     public:
         SkyShader();
         ~SkyShader();

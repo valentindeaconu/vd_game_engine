@@ -18,15 +18,13 @@ namespace mod::sky
 
     SkyShader::~SkyShader() = default;
 
-    void SkyShader::updateUniforms(vd::object::EntityPtr entityPtr, size_t meshIndex)
-    {
-        auto& enginePtr = entityPtr->getParentEngine();
+    void SkyShader::updateUniforms(vd::object::EntityPtr entityPtr, size_t meshIndex) {
+        auto& enginePtr = vd::ObjectOfType<vd::Engine>::Find();
         setUniform("view", glm::mat4(glm::mat3(enginePtr->getCamera()->getViewMatrix())));
         setUniform("projection", enginePtr->getWindow()->getProjectionMatrix());
 
         static bool loadedBasics = false;
-        if (!loadedBasics)
-        {
+        if (!loadedBasics) {
             auto& propertiesPtr = vd::ObjectOfType<vd::misc::Properties>::Find();
 
             setUniformf("fogDensity", propertiesPtr->Get<float>("Fog.SkyDensity"));

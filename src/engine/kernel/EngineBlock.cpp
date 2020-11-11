@@ -17,20 +17,25 @@ namespace vd
 	void Engine::setup(int windowWidth, int windowHeight, const char* windowTitle) {
 		// InputHandler creation
 		inputHandlerPtr = std::make_shared<core::InputHandler>();
+        ObjectOfType<core::InputHandler>::Provide(inputHandlerPtr);
 		
 		// Window creation
 		windowPtr = std::make_shared<core::Window>(inputHandlerPtr);
 		windowPtr->create(windowWidth, windowHeight, windowTitle);
+		ObjectOfType<core::Window>::Provide(windowPtr);
 
 		// Camera creation
         entityCameraPtr = std::make_shared<core::impl::EntityCamera>(inputHandlerPtr);
 		freeCameraPtr = std::make_shared<core::impl::FreeCamera>(inputHandlerPtr);
+		ObjectOfType<core::Camera>::Provide(entityCameraPtr);
 
 		// Frustum creation
-		frustumPtr = std::make_shared<math::Frustum>(windowPtr, entityCameraPtr);
+        m_FrustumCullingManagerPtr = std::make_shared<culling::FrustumCullingManager>();
+        ObjectOfType<culling::FrustumCullingManager>::Provide(m_FrustumCullingManagerPtr);
 
 		// ShadowManager creation
 		shadowManagerPtr = std::make_shared<shadow::ShadowManager>();
+		vd::ObjectOfType<vd::shadow::ShadowManager>::Provide(shadowManagerPtr);
 
 		// LightManager creation
 		m_LightManagerPtr = std::make_shared<light::LightManager>();
@@ -38,9 +43,6 @@ namespace vd
 
 		// Worker creation
 		engineWorkerPtr = std::make_shared<kernel::EngineWorker>();
-
-		// Config creation
-		//configPtr = std::make_shared<config::EngineConfig>("./resources/engine_settings.cfg");
 
 		// Set shadow framebuffer
         config::MetaConfigPtr shadowConfigPtr = std::make_shared<config::MetaConfig>([]() {
@@ -97,7 +99,7 @@ namespace vd
 		m_LightManagerPtr->Init();
 
 		// frustum Init
-		frustumPtr->init();
+        m_FrustumCullingManagerPtr->Init();
 	}
 
 	void Engine::start() {
@@ -186,7 +188,7 @@ namespace vd
             entityCameraPtr->update();
         }
 
-        frustumPtr->update();
+        m_FrustumCullingManagerPtr->Update();
 
         shadowManagerPtr->update(m_LightManagerPtr->GetSun());
 
@@ -202,13 +204,13 @@ namespace vd
                 rfb.configPtr->enable();
             }
 
-            rfb.frameBufferPtr->bind();
+            rfb.frameBufferPtr->Bind();
 
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
             this->engineWorkerPtr->render(rfb.renderingPass);
 
-            rfb.frameBufferPtr->unbind();
+            rfb.frameBufferPtr->Unbind();
 
             if (rfb.configPtr != nullptr)
                 rfb.configPtr->disable();
@@ -242,6 +244,8 @@ namespace vd
 		engineWorkerPtr->cleanUp();
 
 		shadowManagerPtr->cleanUp();
+
+        m_FrustumCullingManagerPtr->CleanUp();
 
 		glfwTerminate();
 	}
@@ -319,10 +323,6 @@ namespace vd
     const shadow::ShadowManagerPtr& Engine::getShadowManager() const {
 	    return shadowManagerPtr;
 	}
-
-    const math::FrustumPtr& Engine::getFrustum() const {
-        return frustumPtr;
-    }
 
     const glm::vec4& Engine::getClipPlane() const {
 	    return clipPlane;

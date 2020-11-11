@@ -7,12 +7,13 @@
 
 #include <engine/shader/Shader.hpp>
 
+#include <engine/shadow/ShadowManager.hpp>
+#include <engine/core/ObjectOfType.hpp>
+
 #include <memory>
 
-namespace vd::shadow
-{
-    class ShadowShader : public vd::shader::Shader
-    {
+namespace vd::shadow {
+    class ShadowShader : public vd::shader::Shader {
     public:
         ShadowShader();
         ~ShadowShader();

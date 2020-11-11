@@ -15,11 +15,11 @@ namespace mod::water {
     WaterRenderer::~WaterRenderer() = default;
 
     void WaterRenderer::Init() {
-        m_WaterPtr->init();
+        m_WaterPtr->Init();
     }
 
     void WaterRenderer::Update() {
-        m_WaterPtr->update();
+        m_WaterPtr->Update();
     }
 
     void WaterRenderer::Render(const vd::kernel::RenderingPass& renderingPass) {
@@ -30,7 +30,7 @@ namespace mod::water {
 
             m_ShaderPtr->bind();
             m_ShaderPtr->updateUniforms(m_WaterPtr, 0);
-            m_WaterPtr->getBuffers()[0]->render();
+            m_WaterPtr->GetBuffers()[0]->Render();
 
             if (m_ConfigPtr != nullptr) {
                 m_ConfigPtr->disable();
@@ -39,7 +39,7 @@ namespace mod::water {
     }
 
     void WaterRenderer::CleanUp() {
-        m_WaterPtr->cleanUp();
+        m_WaterPtr->CleanUp();
     }
 
     WaterPtr &WaterRenderer::GetWater() {

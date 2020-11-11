@@ -6,16 +6,16 @@
 
 namespace vd::buffer {
     PatchBuffer::PatchBuffer()
-        : vaoId(0)
-        , vbId(0)
-        , size(0)
+        : m_VaoId(0)
+        , m_VboId(0)
+        , m_Size(0)
     {
     }
 
     PatchBuffer::~PatchBuffer() = default;
 
-    void PatchBuffer::allocate(const model::MeshPtr& meshPtr) {
-        size = meshPtr->vertices.size();
+    void PatchBuffer::Allocate(const model::MeshPtr& meshPtr) {
+        m_Size = meshPtr->vertices.size();
 
         std::vector<glm::vec2> patchVertices;
         patchVertices.reserve(meshPtr->vertices.size());
@@ -24,34 +24,34 @@ namespace vd::buffer {
             patchVertices.emplace_back(v.Position.x, v.Position.z);
         }
 
-        glGenVertexArrays(1, &vaoId);
-        glGenBuffers(1, &vbId);
+        glGenVertexArrays(1, &m_VaoId);
+        glGenBuffers(1, &m_VboId);
 
-        glBindVertexArray(vaoId);
+        glBindVertexArray(m_VaoId);
 
-        glBindBuffer(GL_ARRAY_BUFFER, vbId);
-        glBufferData(GL_ARRAY_BUFFER, size * sizeof(glm::vec2), &patchVertices[0], GL_STATIC_DRAW);
+        glBindBuffer(GL_ARRAY_BUFFER, m_VboId);
+        glBufferData(GL_ARRAY_BUFFER, m_Size * sizeof(glm::vec2), &patchVertices[0], GL_STATIC_DRAW);
 
         glEnableVertexAttribArray(0);
         glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(glm::vec2), (GLvoid*)0);
-        glPatchParameteri(GL_PATCH_VERTICES, size);
+        glPatchParameteri(GL_PATCH_VERTICES, m_Size);
 
         glBindVertexArray(0);
     }
 
-    void PatchBuffer::render() {
-        glBindVertexArray(vaoId);
+    void PatchBuffer::Render() {
+        glBindVertexArray(m_VaoId);
 
-        glDrawArrays(GL_PATCHES, 0, size);
+        glDrawArrays(GL_PATCHES, 0, m_Size);
 
         glBindVertexArray(0);
     }
 
-    void PatchBuffer::cleanUp() {
-        glBindVertexArray(vaoId);
+    void PatchBuffer::CleanUp() {
+        glBindVertexArray(m_VaoId);
 
-        glDeleteBuffers(1, &vbId);
-        glDeleteVertexArrays(1, &vaoId);
+        glDeleteBuffers(1, &m_VboId);
+        glDeleteVertexArrays(1, &m_VaoId);
 
         glBindVertexArray(0);
     }

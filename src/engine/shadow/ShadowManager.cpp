@@ -29,27 +29,27 @@ namespace vd::shadow {
         this->distance = distance;
         this->transitionDistance = transitionDistance;
 
-        this->frameBufferPtr->allocate(mapSize,
+        this->frameBufferPtr->Allocate(mapSize,
                                        mapSize,
                                        false,
                                        buffer::DepthAttachment::eDepthTexture);
 
-        this->frameBufferPtr->getDepthTexture()->bind();
+        this->frameBufferPtr->GetDepthTexture()->bind();
 
-        this->frameBufferPtr->getDepthTexture()->noFilter();
-        this->frameBufferPtr->getDepthTexture()->wrapClampToBorder();
+        this->frameBufferPtr->GetDepthTexture()->noFilter();
+        this->frameBufferPtr->GetDepthTexture()->wrapClampToBorder();
 
         float border[] = {1.0f, 1.0f, 1.0f, 1.0f};
         glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, border);
 
-        this->frameBufferPtr->getDepthTexture()->unbind();
+        this->frameBufferPtr->GetDepthTexture()->unbind();
 
-        this->frameBufferPtr->bind();
+        this->frameBufferPtr->Bind();
 
         glDrawBuffer(GL_NONE);
         glReadBuffer(GL_NONE);
 
-        this->frameBufferPtr->unbind();
+        this->frameBufferPtr->Unbind();
 
         shadowBoxPtr = std::make_shared<ShadowBox>(windowPtr, cameraPtr, lightViewPtr, distance, offset);
     }
@@ -61,7 +61,7 @@ namespace vd::shadow {
     }
 
     void ShadowManager::cleanUp() {
-        frameBufferPtr->cleanUp();
+        frameBufferPtr->CleanUp();
     }
 
     float ShadowManager::getDistance() const {
@@ -77,7 +77,7 @@ namespace vd::shadow {
     }
 
     const model::Texture2DPtr& ShadowManager::getShadowTexture() const {
-        return frameBufferPtr->getDepthTexture();
+        return frameBufferPtr->GetDepthTexture();
     }
 
     const glm::mat4& ShadowManager::getViewMatrix() const {

@@ -15,13 +15,13 @@ namespace vd::buffer {
         PatchBuffer();
         ~PatchBuffer();
 
-        void allocate(const vd::model::MeshPtr& meshPtr);
-        void render() override;
-        void cleanUp() override;
+        void Allocate(const vd::model::MeshPtr& meshPtr) override;
+        void Render() override;
+        void CleanUp() override;
     private:
-        GLuint vaoId;
-        GLuint vbId;
-        size_t size;
+        GLuint m_VaoId;
+        GLuint m_VboId;
+        size_t m_Size;
 
         vd::model::MeshPtr meshPtr;
     };

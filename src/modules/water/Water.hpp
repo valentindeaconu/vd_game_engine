@@ -11,6 +11,9 @@
 
 #include <engine/misc/Properties.hpp>
 
+#include <engine/core/ObjectOfType.hpp>
+#include <engine/kernel/EngineBlock.hpp>
+
 #include <memory>
 #include <numbers>
 #include <unordered_map>
@@ -18,12 +21,12 @@
 namespace mod::water {
     class Water : public vd::object::Entity {
     public:
-        Water(const vd::EnginePtr& enginePtr, const std::string& propsFilePath);
+        explicit Water(const std::string& propsFilePath);
         ~Water();
 
-        void init() override;
-        void update() override;
-        void cleanUp() override;
+        void Init() override;
+        void Update() override;
+        void CleanUp() override;
 
         [[nodiscard]] const vd::misc::PropertiesPtr& GetProperties() const;
 
@@ -38,6 +41,9 @@ namespace mod::water {
     private:
         void PopulatePacks();
         void GeneratePatch();
+
+        // Engine required to get current frame time
+        vd::EnginePtr m_EnginePtr;
 
         std::string m_CurrentPack;
 

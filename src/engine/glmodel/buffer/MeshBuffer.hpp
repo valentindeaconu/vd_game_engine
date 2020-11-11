@@ -14,15 +14,15 @@ namespace vd::buffer {
         MeshBuffer();
         ~MeshBuffer();
 
-        void allocate(const vd::model::MeshPtr& meshPtr);
-        void render() override;
-        void cleanUp() override;
+        void Allocate(const vd::model::MeshPtr& meshPtr) override;
+        void Render() override;
+        void CleanUp() override;
     private:
-        GLuint vaoId;
-        GLuint vbId;
-        GLuint ebId;
+        GLuint m_VaoId;
+        GLuint m_VboId;
+        GLuint m_EboId;
 
-        vd::model::MeshPtr meshPtr;
+        vd::model::MeshPtr m_MeshPtr;
     };
     typedef std::shared_ptr<MeshBuffer>	MeshBufferPtr;
 }

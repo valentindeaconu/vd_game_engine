@@ -7,6 +7,9 @@
 
 #include <engine/shader/Shader.hpp>
 
+#include <engine/kernel/EngineBlock.hpp>
+#include <engine/core/ObjectOfType.hpp>
+
 #include <memory>
 
 #include "Terrain.hpp"

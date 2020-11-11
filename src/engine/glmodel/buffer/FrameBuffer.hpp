@@ -23,32 +23,33 @@ namespace vd::buffer {
         FrameBuffer();
         ~FrameBuffer();
 
-        void bind() const;
-        static void unbind();
+        void Bind() const;
+        static void Unbind();
 
-        void allocate(int width,
+        void Allocate(int width,
                       int height,
                       bool withColorTexture = true,
                       const DepthAttachment& depthAttachment = DepthAttachment::eNone);
-        void cleanUp();
+        void CleanUp();
 
-        [[nodiscard]] GLuint getId() const;
+        [[nodiscard]] GLuint GetId() const;
 
-        [[nodiscard]] const model::Texture2DPtr& getColorTexture() const;
+        [[nodiscard]] const model::Texture2DPtr& GetColorTexture() const;
 
-        [[nodiscard]] const model::Texture2DPtr& getDepthTexture() const;
-        [[nodiscard]] GLuint getDepthBufferId() const;
+        [[nodiscard]] const model::Texture2DPtr& GetDepthTexture() const;
+
+        [[nodiscard]] GLuint GetDepthBufferId() const;
     private:
-        GLuint fboId;
+        GLuint m_FboId;
 
-        model::Texture2DPtr colorTexture;
+        model::Texture2DPtr m_ColorTexture;
 
-        size_t width;
-        size_t height;
+        size_t m_Width;
+        size_t m_Height;
 
-        DepthAttachment depthAttachment;
-        model::Texture2DPtr depthTexture;
-        GLuint depthBufferId;
+        DepthAttachment m_DepthAttachment;
+        model::Texture2DPtr m_DepthTexture;
+        GLuint m_DepthBufferId;
     };
     typedef std::shared_ptr<FrameBuffer>    FrameBufferPtr;
 }

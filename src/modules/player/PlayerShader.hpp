@@ -3,13 +3,15 @@
 
 #include <engine/shader/Shader.hpp>
 
+#include <engine/kernel/EngineBlock.hpp>
+
+#include <engine/light/LightManager.hpp>
+
 #include <engine/core/ObjectOfType.hpp>
 #include <engine/misc/Properties.hpp>
 
-namespace mod::player
-{
-    class PlayerShader : public vd::shader::Shader
-    {
+namespace mod::player {
+    class PlayerShader : public vd::shader::Shader {
     public:
         PlayerShader();
         ~PlayerShader();

@@ -11,6 +11,9 @@
 
 #include <engine/misc/Properties.hpp>
 
+#include <engine/core/Camera.hpp>
+#include <engine/core/ObjectOfType.hpp>
+
 #include <memory>
 #include <vector>
 #include <cmath>
@@ -23,12 +26,12 @@
 namespace mod::terrain {
     class Terrain : public vd::object::Entity {
     public:
-        Terrain(const vd::EnginePtr& enginePtr, const std::string& propsFilePath);
+        explicit Terrain(const std::string& propsFilePath);
         ~Terrain();
 
-        void init() override;
-        void update() override;
-        void cleanUp() override;
+        void Init() override;
+        void Update() override;
+        void CleanUp() override;
 
         [[nodiscard]] const vd::misc::PropertiesPtr& GetProperties() const;
 
@@ -52,6 +55,9 @@ namespace mod::terrain {
         void PopulateTree(const TerrainNode::ptr_type_t& root);
 
         vd::misc::PropertiesPtr m_PropsPtr;
+
+        // Camera required for update optimization
+        vd::core::CameraPtr m_CameraPtr;
 
         // Level of detail nodes
         TerrainNode::ptr_type_t m_RootNode;

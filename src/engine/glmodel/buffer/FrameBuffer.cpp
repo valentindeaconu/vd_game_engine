@@ -7,43 +7,41 @@
 namespace vd::buffer {
 
     FrameBuffer::FrameBuffer()
-        : fboId(0)
-        , colorTexture(nullptr)
-        , depthTexture(nullptr)
-        , depthAttachment()
-        , depthBufferId(0)
-        , width(0)
-        , height(0)
+        : m_FboId(0)
+        , m_ColorTexture(nullptr)
+        , m_DepthTexture(nullptr)
+        , m_DepthAttachment()
+        , m_DepthBufferId(0)
+        , m_Width(0)
+        , m_Height(0)
     {
     }
 
-    FrameBuffer::~FrameBuffer()
-    {
-    }
+    FrameBuffer::~FrameBuffer() = default;
 
-    void FrameBuffer::bind() const {
+    void FrameBuffer::Bind() const {
         glBindTexture(GL_TEXTURE_2D, 0);
 
-        glBindFramebuffer(GL_FRAMEBUFFER, fboId);
-        glViewport(0, 0, width, height);
+        glBindFramebuffer(GL_FRAMEBUFFER, m_FboId);
+        glViewport(0, 0, m_Width, m_Height);
     }
 
-    void FrameBuffer::unbind() {
+    void FrameBuffer::Unbind() {
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
 
-    void FrameBuffer::allocate(int width, int height, bool withColorTexture, const DepthAttachment& depthAttachment) {
-        this->width = width;
-        this->height = height;
-        this->depthAttachment = depthAttachment;
+    void FrameBuffer::Allocate(int width, int height, bool withColorTexture, const DepthAttachment& depthAttachment) {
+        this->m_Width = width;
+        this->m_Height = height;
+        this->m_DepthAttachment = depthAttachment;
 
-        glGenFramebuffers(1, &fboId);
-        glBindFramebuffer(GL_FRAMEBUFFER, fboId);
+        glGenFramebuffers(1, &m_FboId);
+        glBindFramebuffer(GL_FRAMEBUFFER, m_FboId);
 
         if (withColorTexture) {
             glDrawBuffer(GL_COLOR_ATTACHMENT0);
-            this->colorTexture = model::TextureService::get(width, height, model::Attachment::eColor);
-            glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, this->colorTexture->getId(), 0);
+            this->m_ColorTexture = model::TextureService::get(width, height, model::Attachment::eColor);
+            glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, this->m_ColorTexture->getId(), 0);
         } else {
             glDrawBuffer(GL_NONE);
             glReadBuffer(GL_NONE);
@@ -53,42 +51,42 @@ namespace vd::buffer {
             case eNone:
                 break;
             case eDepthTexture:
-                this->depthTexture = model::TextureService::get(width, height, model::Attachment::eDepth);
-                glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, this->depthTexture->getId(), 0);
+                this->m_DepthTexture = model::TextureService::get(width, height, model::Attachment::eDepth);
+                glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, this->m_DepthTexture->getId(), 0);
                 break;
             case eDepthBuffer:
-                glGenRenderbuffers(1, &this->depthBufferId);
-                glBindRenderbuffer(GL_RENDERBUFFER, this->depthBufferId);
+                glGenRenderbuffers(1, &this->m_DepthBufferId);
+                glBindRenderbuffer(GL_RENDERBUFFER, this->m_DepthBufferId);
                 glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, width, height);
-                glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, this->depthBufferId);
+                glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, this->m_DepthBufferId);
                 break;
         }
 
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
 
-    void FrameBuffer::cleanUp() {
-        glDeleteFramebuffers(1, &fboId);
+    void FrameBuffer::CleanUp() {
+        glDeleteFramebuffers(1, &m_FboId);
 
-        if (this->depthAttachment == DepthAttachment::eDepthBuffer) {
-            glDeleteRenderbuffers(1, &this->depthBufferId);
+        if (this->m_DepthAttachment == DepthAttachment::eDepthBuffer) {
+            glDeleteRenderbuffers(1, &this->m_DepthBufferId);
         }
     }
 
-    GLuint FrameBuffer::getId() const {
-        return fboId;
+    GLuint FrameBuffer::GetId() const {
+        return m_FboId;
     }
 
-    const model::Texture2DPtr& FrameBuffer::getColorTexture() const {
-        return colorTexture;
+    const model::Texture2DPtr& FrameBuffer::GetColorTexture() const {
+        return m_ColorTexture;
     }
 
-    const model::Texture2DPtr& FrameBuffer::getDepthTexture() const {
-        return depthTexture;
+    const model::Texture2DPtr& FrameBuffer::GetDepthTexture() const {
+        return m_DepthTexture;
     }
 
-    GLuint FrameBuffer::getDepthBufferId() const {
-        return depthBufferId;
+    GLuint FrameBuffer::GetDepthBufferId() const {
+        return m_DepthBufferId;
     }
 
 }

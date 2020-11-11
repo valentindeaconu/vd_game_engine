@@ -81,15 +81,15 @@ namespace mod::terrain {
     TerrainShader::~TerrainShader() = default;
 
     void TerrainShader::updateUniforms(vd::object::EntityPtr entityPtr, size_t meshIndex) {
-        setUniform("worldModel", entityPtr->getWorldTransform().get());
+        setUniform("worldModel", entityPtr->GetWorldTransform().get());
 
-        auto& enginePtr = entityPtr->getParentEngine();
+        auto& enginePtr = vd::ObjectOfType<vd::Engine>::Find();
         setUniform("view", enginePtr->getCamera()->getViewMatrix());
         setUniform("projection", enginePtr->getWindow()->getProjectionMatrix());
 
         setUniform("cameraPosition", enginePtr->getCamera()->getPosition());
 
-        auto shadowManagerPtr = entityPtr->getParentEngine()->getShadowManager();
+        auto shadowManagerPtr = enginePtr->getShadowManager();
         setUniformf("shadowDistance", shadowManagerPtr->getDistance());
         setUniformf("shadowTransitionDistance", shadowManagerPtr->getTransitionDistance());
 

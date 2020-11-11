@@ -17,7 +17,7 @@ namespace mod::gui {
 
     void GuiRenderer::Init() {
         if (!m_Initialised) {
-            m_GuiQuadPtr->init();
+            m_GuiQuadPtr->Init();
             m_Initialised = false;
         }
     }
@@ -37,14 +37,14 @@ namespace mod::gui {
 
         m_ShaderPtr->bind();
         m_ShaderPtr->updateUniforms(m_GuiQuadPtr, 0);
-        m_GuiQuadPtr->getBuffers()[0]->render();
+        m_GuiQuadPtr->GetBuffers()[0]->Render();
 
         if (m_ConfigPtr != nullptr)
             m_ConfigPtr->disable();
     }
 
     void GuiRenderer::CleanUp() {
-        m_GuiQuadPtr->cleanUp();
+        m_GuiQuadPtr->CleanUp();
     }
 
     GuiQuadPtr &GuiRenderer::GetGuiQuad() {

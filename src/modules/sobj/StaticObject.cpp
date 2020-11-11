@@ -3,28 +3,27 @@
 namespace mod::sobj
 {
     StaticObject::StaticObject(const std::string& path, const std::string& objFile)
-        : Entity(nullptr)
-        , path(path)
+        : path(path)
         , objFile(objFile)
     {
     }
 
     StaticObject::~StaticObject() = default;
 
-    void StaticObject::init() {
+    void StaticObject::Init() {
         vd::objloader::OBJLoader objLoader;
 
-        vd::model::MeshPtrVec& meshPtrVec = getMeshes();
+        vd::model::MeshPtrVec& meshPtrVec = GetMeshes();
         objLoader.load(path, objFile, meshPtrVec);
 
-        Entity::init(); // call super.Init() to initialize meshBuffers;
+        Entity::Init(); // call super.Init() to initialize meshBuffers;
     }
 
-    void StaticObject::update() {
+    void StaticObject::Update() {
 
     }
 
-    void StaticObject::cleanUp() {
-        Entity::cleanUp();
+    void StaticObject::CleanUp() {
+        Entity::CleanUp();
     }
 }

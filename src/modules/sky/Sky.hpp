@@ -5,17 +5,15 @@
 
 #include <memory>
 
-namespace mod::sky
-{
-    class Sky : public vd::object::Entity
-    {
+namespace mod::sky {
+    class Sky : public vd::object::Entity {
     public:
-        Sky(const vd::EnginePtr& enginePtr);
+        Sky();
         ~Sky();
 
-        void init() override;
-        void update() override;
-        void cleanUp() override;
+        void Init() override;
+        void Update() override;
+        void CleanUp() override;
     private:
         const std::vector<float> kSkyboxVertices = {
             -1.0f, -1.0f, -1.0f,    // 0

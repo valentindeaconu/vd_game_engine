@@ -1,17 +1,12 @@
 #include "Sky.hpp"
 
-namespace mod::sky
-{
-    Sky::Sky(const vd::EnginePtr& enginePtr)
-        : Entity(enginePtr)
-    {
-    }
+namespace mod::sky {
 
+    Sky::Sky() = default;
     Sky::~Sky() = default;
 
-    void Sky::init()
-    {
-        vd::model::MeshPtrVec& meshPtrVec = getMeshes();
+    void Sky::Init() {
+        vd::model::MeshPtrVec& meshPtrVec = GetMeshes();
 
         vd::model::MeshPtr meshPtr = std::make_shared<vd::model::Mesh>();
 
@@ -28,16 +23,13 @@ namespace mod::sky
 
         meshPtrVec.push_back(meshPtr);
 
-        Entity::init(); // call super.Init() to initialize meshBuffers;
+        Entity::Init(); // call super.Init() to initialize meshBuffers;
     }
 
-    void Sky::update()
-    {
-        // here should be the input handler for player movement
+    void Sky::Update() {
     }
 
-    void Sky::cleanUp()
-    {
-        Entity::cleanUp(); // call super.CleanUp() to clear meshBuffers;
+    void Sky::CleanUp() {
+        Entity::CleanUp(); // call super.CleanUp() to clear meshBuffers;
     }
 }

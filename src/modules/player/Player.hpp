@@ -2,38 +2,43 @@
 #define __PLAYER_HPP_
 
 #include <engine/object/Entity.hpp>
+
 #include <engine/foundation/objloader/OBJLoader.hpp>
 
+#include <engine/core/ObjectOfType.hpp>
+
+#include <engine/kernel/EngineBlock.hpp>
+#include <engine/core/InputHandler.hpp>
 #include <modules/terrain/Terrain.hpp>
 
-namespace mod::player
-{
-    class Player : public vd::object::Entity
-    {
+namespace mod::player {
+    class Player : public vd::object::Entity {
     public:
-        Player(const vd::EnginePtr& enginePtr, const mod::terrain::TerrainPtr& terrainPtr);
+        Player();
         ~Player();
 
-        void init() override;
-        void update() override;
-        void cleanUp() override;
+        void Init() override;
+        void Update() override;
+        void CleanUp() override;
     private:
-        void jump();
-        void input();
+        void Jump();
+        void Input();
 
-        float currentSpeed;
-        float currentTurnSpeed;
-        float currentUpwardsSpeed;
-        bool isJumping;
+        const float m_kModelYOffset;
 
-        mod::terrain::TerrainPtr terrainPtr;
+        float m_CurrentSpeed;
+        float m_CurrentTurnSpeed;
+        float m_CurrentUpwardsSpeed;
+        bool m_IsJumping;
 
-        const float modelYOffset = 1.0f;
+        vd::EnginePtr m_EnginePtr;
+        vd::core::InputHandlerPtr m_InputHandlerPtr;
+        mod::terrain::TerrainPtr m_TerrainPtr;
 
-        const float kRunSpeed = 20.0f; // units per second
-        const float kTurnSpeed = 160.f; // degrees per second
-        const float kGravity = -50.f; // units per second
-        const float kJumpPower = 25.0f; // units per second
+        const float m_kRunSpeed = 20.0f; // units per second
+        const float m_kTurnSpeed = 160.f; // degrees per second
+        const float m_kGravity = -50.f; // units per second
+        const float m_kJumpPower = 25.0f; // units per second
     };
     typedef std::shared_ptr<Player>	PlayerPtr;
 }

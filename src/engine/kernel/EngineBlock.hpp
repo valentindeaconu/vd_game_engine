@@ -25,7 +25,7 @@
 
 #include <engine/config/MetaConfig.hpp>
 
-#include <engine/foundation/math/Frustum.hpp>
+#include <engine/culling/FrustumCullingManager.hpp>
 
 namespace vd {
 	class Engine {
@@ -72,8 +72,6 @@ namespace vd {
         shadow::ShadowManagerPtr& getShadowManager();
         [[nodiscard]] const shadow::ShadowManagerPtr& getShadowManager() const;
 
-		[[nodiscard]] const math::FrustumPtr& getFrustum() const;
-
 		[[nodiscard]] const glm::vec4& getClipPlane() const;
 		void setClipPlane(const glm::vec4& clipPlane);
 
@@ -106,7 +104,7 @@ namespace vd {
 
 		kernel::EngineWorkerPtr engineWorkerPtr;
 
-        math::FrustumPtr frustumPtr;
+        culling::FrustumCullingManagerPtr m_FrustumCullingManagerPtr;
 
 		glm::vec4 clipPlane;
 

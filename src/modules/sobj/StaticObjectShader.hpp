@@ -3,10 +3,11 @@
 
 #include <engine/shader/Shader.hpp>
 
-namespace mod::sobj
-{
-    class StaticObjectShader : public vd::shader::Shader
-    {
+#include <engine/kernel/EngineBlock.hpp>
+#include <engine/core/ObjectOfType.hpp>
+
+namespace mod::sobj {
+    class StaticObjectShader : public vd::shader::Shader {
     public:
         StaticObjectShader();
         ~StaticObjectShader();

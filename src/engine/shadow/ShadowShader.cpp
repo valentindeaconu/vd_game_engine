@@ -20,20 +20,18 @@ namespace vd::shadow {
     ShadowShader::~ShadowShader() = default;
 
     void ShadowShader::updateUniforms(vd::object::EntityPtr entityPtr, size_t meshIndex) {
-        setUniform("model", entityPtr->getWorldTransform().get());
+        setUniform("model", entityPtr->GetWorldTransform().get());
 
-        auto shadowManagerPtr = entityPtr->getParentEngine()->getShadowManager();
+        auto shadowManagerPtr = vd::ObjectOfType<vd::shadow::ShadowManager>::Find();
         setUniform("view", shadowManagerPtr->getViewMatrix());
         setUniform("projection", shadowManagerPtr->getProjectionMatrix());
 
-        vd::model::MeshPtr& meshPtr = entityPtr->getMeshes()[meshIndex];
+        vd::model::MeshPtr& meshPtr = entityPtr->GetMeshes()[meshIndex];
 
-        if (!meshPtr->materials.empty())
-        {
+        if (!meshPtr->materials.empty()) {
             vd::model::Material& meshMaterial = meshPtr->materials.front();
 
-            if (meshMaterial.diffuseMap != nullptr)
-            {
+            if (meshMaterial.diffuseMap != nullptr) {
                 vd::model::activeTexture(0);
                 meshMaterial.diffuseMap->bind();
                 setUniformi("diffuseMap", 0);

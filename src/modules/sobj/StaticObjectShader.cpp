@@ -1,7 +1,7 @@
 #include "StaticObjectShader.hpp"
 
-namespace mod::sobj
-{
+namespace mod::sobj {
+
     StaticObjectShader::StaticObjectShader()
         : vd::shader::Shader()
         , kMaxLights(1)
@@ -27,8 +27,7 @@ namespace mod::sobj
         addUniform("sun.specularStrength");
         addUniform("sun.shininess");
 
-        for (size_t i = 0; i < kMaxLights; ++i)
-        {
+        for (size_t i = 0; i < kMaxLights; ++i) {
             std::string currentLightUniformNameBase = "lights[" + std::to_string(i) + "]";
 
             addUniform(currentLightUniformNameBase + ".type");
@@ -46,29 +45,25 @@ namespace mod::sobj
 
     StaticObjectShader::~StaticObjectShader() = default;
 
-    void StaticObjectShader::updateUniforms(vd::object::EntityPtr entityPtr, size_t meshIndex)
-    {
-        setUniform("model", entityPtr->getWorldTransform().get());
+    void StaticObjectShader::updateUniforms(vd::object::EntityPtr entityPtr, size_t meshIndex) {
+        setUniform("model", entityPtr->GetWorldTransform().get());
 
-        auto enginePtr = entityPtr->getParentEngine();
+        auto& enginePtr = vd::ObjectOfType<vd::Engine>::Find();
         setUniform("view", enginePtr->getCamera()->getViewMatrix());
         setUniform("projection", enginePtr->getWindow()->getProjectionMatrix());
 
-        vd::model::MeshPtr& meshPtr = entityPtr->getMeshes()[meshIndex];
+        vd::model::MeshPtr& meshPtr = entityPtr->GetMeshes()[meshIndex];
 
-        if (!meshPtr->materials.empty())
-        {
+        if (!meshPtr->materials.empty()) {
             vd::model::Material& meshMaterial = meshPtr->materials.front();
 
-            if (meshMaterial.diffuseMap != nullptr)
-            {
+            if (meshMaterial.diffuseMap != nullptr) {
                 vd::model::activeTexture(0);
                 meshMaterial.diffuseMap->bind();
                 setUniformi("diffuseMap", 0);
             }
 
-            if (meshMaterial.specularMap != nullptr)
-            {
+            if (meshMaterial.specularMap != nullptr) {
                 vd::model::activeTexture(1);
                 meshMaterial.specularMap->bind();
                 setUniformi("specularMap", 1);
@@ -78,8 +73,7 @@ namespace mod::sobj
         setUniform("clipPlane", enginePtr->getClipPlane());
 
         static bool loadedBasics = false;
-        if (!loadedBasics)
-        {
+        if (!loadedBasics) {
             auto& propertiesPtr = vd::ObjectOfType<vd::misc::Properties>::Find();
 
             setUniformf("fogDensity", propertiesPtr->Get<float>("Fog.Density"));

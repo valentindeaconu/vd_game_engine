@@ -10,11 +10,11 @@ namespace mod::player {
     PlayerRenderer::~PlayerRenderer() = default;
 
     void PlayerRenderer::Init() {
-        m_PlayerPtr->init();
+        m_PlayerPtr->Init();
     }
 
     void PlayerRenderer::Update() {
-        m_PlayerPtr->update();
+        m_PlayerPtr->Update();
     }
 
     void PlayerRenderer::Render(const vd::kernel::RenderingPass& renderingPass) {
@@ -26,10 +26,10 @@ namespace mod::player {
             auto _shaderPtr = renderingPass == vd::kernel::RenderingPass::eShadow ? this->GetShadowShader() : m_ShaderPtr;
 
             _shaderPtr->bind();
-            vd::buffer::BufferPtrVec& buffers = m_PlayerPtr->getBuffers();
+            vd::buffer::BufferPtrVec& buffers = m_PlayerPtr->GetBuffers();
             for (size_t meshIndex = 0; meshIndex < buffers.size(); ++meshIndex) {
                 _shaderPtr->updateUniforms(m_PlayerPtr, meshIndex);
-                buffers[meshIndex]->render();
+                buffers[meshIndex]->Render();
             }
 
             if (m_ConfigPtr != nullptr) {
@@ -39,7 +39,7 @@ namespace mod::player {
     }
 
     void PlayerRenderer::CleanUp() {
-        m_PlayerPtr->cleanUp();
+        m_PlayerPtr->CleanUp();
     }
 
     PlayerPtr& PlayerRenderer::GetPlayer() {

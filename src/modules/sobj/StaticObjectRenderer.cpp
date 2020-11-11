@@ -10,10 +10,10 @@ namespace mod::sobj
 
     StaticObjectRenderer::~StaticObjectRenderer() = default;
 
-    void StaticObjectRenderer::Init()
-    {
-        if (IsReady())
-        {
+    void StaticObjectRenderer::Init() {
+        m_FrustumCullingManagerPtr = vd::ObjectOfType<vd::culling::FrustumCullingManager>::Find();
+
+        if (IsReady()) {
             m_StaticObjectPlacerPtr->place();
         }
     }
@@ -23,6 +23,8 @@ namespace mod::sobj
     }
 
     void StaticObjectRenderer::Render(const vd::kernel::RenderingPass &renderingPass) {
+        using vd::collision::Detector;
+
         if (IsReady()) {
             if (m_ConfigPtr != nullptr) {
                 m_ConfigPtr->enable();
@@ -35,15 +37,17 @@ namespace mod::sobj
             const PlacementInfoVec &placementInfos = m_StaticObjectPlacerPtr->getPlacementInfos();
             for (const auto& placementInfo : placementInfos) {
                 StaticObjectPtr staticObjectPtr = placementInfo.objectPtr;
-                staticObjectPtr->getWorldTransform().setTranslation(placementInfo.location);
-                staticObjectPtr->update();
+                staticObjectPtr->GetWorldTransform().setTranslation(placementInfo.location);
+                staticObjectPtr->Update();
 
-                if (staticObjectPtr->shouldBeRendered()) {
+                if (Detector::IsAnyTransformedBounds3InsideFrustum(staticObjectPtr->GetBoundingBoxes(),
+                                                                   staticObjectPtr->GetWorldTransform(),
+                                                                   m_FrustumCullingManagerPtr->GetFrustum())) {
                     for (size_t meshIndex = 0;
-                         meshIndex < staticObjectPtr->getBuffers().size();
+                         meshIndex < staticObjectPtr->GetBuffers().size();
                          ++meshIndex) {
                         _shaderPtr->updateUniforms(staticObjectPtr, meshIndex);
-                        staticObjectPtr->getBuffers()[meshIndex]->render();
+                        staticObjectPtr->GetBuffers()[meshIndex]->Render();
                     }
                 }
             }
@@ -60,7 +64,7 @@ namespace mod::sobj
         for (const auto& biome : biomeAtlas) {
             if (!biome->getObjects().empty()) {
                 for (const auto& object : biome->getObjects()) {
-                    object->cleanUp();
+                    object->CleanUp();
                 }
             }
         }

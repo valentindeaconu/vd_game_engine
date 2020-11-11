@@ -67,6 +67,7 @@ int main(int argc, char ** argv) {
     /// Engine creation
 	vd::EnginePtr enginePtr = std::make_shared<vd::Engine>();
 	enginePtr->setup(1280, 720, "VDGE");
+	vd::ObjectOfType<vd::Engine>::Provide(enginePtr);
 
 	/// Mods
     createTerrain(enginePtr);
@@ -98,7 +99,7 @@ int main(int argc, char ** argv) {
               glm::vec2(0.250f, 0.250f));
 
     createGUI(enginePtr,
-              waterPtr->GetReflectionFramebuffer()->getColorTexture(),
+              waterPtr->GetReflectionFramebuffer()->GetColorTexture(),
               glm::vec2(0.75f, 0.75f),
               glm::vec2(0.250f, 0.250f));
 
@@ -119,7 +120,7 @@ mod::terrain::TerrainPtr createTerrain(vd::EnginePtr& enginePtr) {
                                                      []() { glFrontFace(GL_CW); });
 
     mod::terrain::TerrainPtr terrainPtr =
-            std::make_shared<mod::terrain::Terrain>(enginePtr, "./resources/terrain.properties");
+            std::make_shared<mod::terrain::Terrain>("./resources/terrain.properties");
 
     mod::terrain::TerrainShaderPtr terrainShaderPtr = std::make_shared<mod::terrain::TerrainShader>();
 
@@ -140,7 +141,7 @@ mod::player::PlayerPtr createPlayer(vd::EnginePtr& enginePtr, mod::terrain::Terr
             std::make_shared<vd::config::MetaConfig>([]() { glFrontFace(GL_CCW); },
                                                      []() { glFrontFace(GL_CW); });
 
-    mod::player::PlayerPtr playerPtr = std::make_shared<mod::player::Player>(enginePtr, terrainPtr);
+    mod::player::PlayerPtr playerPtr = std::make_shared<mod::player::Player>();
     mod::player::PlayerShaderPtr playerShaderPtr = std::make_shared<mod::player::PlayerShader>();
 
     mod::player::PlayerRendererPtr playerRendererPtr = std::make_shared<mod::player::PlayerRenderer>();
@@ -162,7 +163,7 @@ mod::sky::SkyPtr createSky(vd::EnginePtr& enginePtr) {
         glFrontFace(GL_CW);
     });
 
-    mod::sky::SkyPtr skyPtr = std::make_shared<mod::sky::Sky>(enginePtr);
+    mod::sky::SkyPtr skyPtr = std::make_shared<mod::sky::Sky>();
     mod::sky::SkyShaderPtr skyShaderPtr = std::make_shared<mod::sky::SkyShader>();
 
     mod::sky::SkyRendererPtr skyRendererPtr = std::make_shared<mod::sky::SkyRenderer>();
@@ -193,7 +194,7 @@ void createAndPlaceStaticObjects(vd::EnginePtr& enginePtr, mod::terrain::Terrain
 }
 
 mod::water::WaterPtr createWater(vd::EnginePtr& enginePtr) {
-    mod::water::WaterPtr waterPtr = std::make_shared<mod::water::Water>(enginePtr, "./resources/water.properties");
+    mod::water::WaterPtr waterPtr = std::make_shared<mod::water::Water>("./resources/water.properties");
     mod::water::WaterShaderPtr waterShaderPtr = std::make_shared<mod::water::WaterShader>();
 
     vd::config::MetaConfigPtr waterConfigPtr = std::make_shared<vd::config::MetaConfig>([]() {
@@ -266,7 +267,7 @@ mod::water::WaterPtr createWater(vd::EnginePtr& enginePtr) {
                                                      []() { glFrontFace(GL_CW); });
 
     mod::gui::GuiQuadPtr guiQuadPtr =
-            std::make_shared<mod::gui::GuiQuad>(enginePtr, texturePtr, position, scale);
+            std::make_shared<mod::gui::GuiQuad>(texturePtr, position, scale);
     mod::gui::GuiShaderPtr guiShaderPtr = std::make_shared<mod::gui::GuiShader>();
 
     mod::gui::GuiRendererPtr  guiRendererPtr = std::make_shared<mod::gui::GuiRenderer>();

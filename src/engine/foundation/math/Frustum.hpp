@@ -12,29 +12,13 @@
 
 #include <memory>
 
+#include "Plane.hpp"
 #include "Bounds.hpp"
 
 namespace vd::math {
     class Frustum {
     public:
-        enum CollisionRelationship {
-            eIntersect = 0,
-            eInside,
-            eOutside
-        };
-
-        Frustum(const core::WindowPtr& windowPtr, const core::CameraPtr& cameraPtr);
-        ~Frustum();
-
-        void init();
-        void update();
-
-        [[nodiscard]] CollisionRelationship checkAgainst(const Bounds3& bounds) const;
-    private:
-        const int kPlaneCount = 6;
-        const int kVertexCount = 8;
-
-        enum FrustumPlane {
+        enum Plane {
             eNear = 0,
             eFar,
             eBottom,
@@ -42,8 +26,9 @@ namespace vd::math {
             eLeft,
             eRight
         };
+        static const int kPlaneCount = 6;
 
-        enum FrustumVertex {
+        enum Vertex {
             eNearBottomLeft = 0,
             eNearBottomRight,
             eNearTopLeft,
@@ -53,33 +38,23 @@ namespace vd::math {
             eFarTopLeft,
             eFarTopRight
         };
+        static const int kVertexCount = 8;
 
-        struct Plane {
-            glm::vec3 n;
-            float d;
-        };
-        typedef std::vector<Plane>      PlaneVec;
         typedef std::vector<glm::vec3>  VertexVec;
 
-        void updatePlanes();
-        [[nodiscard]] Plane computePlane(const glm::vec3& bl,
-                                         const glm::vec3& br,
-                                         const glm::vec3& tl,
-                                         const glm::vec3& tr) const;
+        Frustum();
+        ~Frustum();
 
-        void updateFrustumVertices();
-        void updateWidthsAndHeights();
+        [[nodiscard]] PlaneVec& GetPlanes();
+        [[nodiscard]] const PlaneVec& GetPlanes() const;
+        void SetPlanes(const PlaneVec& planes);
 
-        struct {
-            float width;
-            float height;
-        } near, far;
-
-        PlaneVec planes;
-        VertexVec vertices;
-
-        core::WindowPtr windowPtr;
-        core::CameraPtr cameraPtr;
+        [[nodiscard]] VertexVec& GetVertices();
+        [[nodiscard]] const VertexVec& GetVertices() const;
+        void SetVertices(const VertexVec& vertices);
+    private:
+        PlaneVec m_Planes;
+        VertexVec m_Vertices;
     };
     typedef std::shared_ptr<Frustum>    FrustumPtr;
 }

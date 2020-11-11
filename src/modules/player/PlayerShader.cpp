@@ -29,8 +29,7 @@ namespace mod::player
 
         addUniform("transparency");
 
-        for (size_t i = 0; i < kMaxLights; ++i)
-        {
+        for (size_t i = 0; i < kMaxLights; ++i) {
             std::string currentLightUniformNameBase = "lights[" + std::to_string(i) + "]";
 
             addUniform(currentLightUniformNameBase + ".type");
@@ -48,15 +47,14 @@ namespace mod::player
 
     PlayerShader::~PlayerShader() = default;
 
-    void PlayerShader::updateUniforms(vd::object::EntityPtr entityPtr, size_t meshIndex)
-    {
-        setUniform("model", entityPtr->getWorldTransform().get());
+    void PlayerShader::updateUniforms(vd::object::EntityPtr entityPtr, size_t meshIndex) {
+        setUniform("model", entityPtr->GetWorldTransform().get());
 
-        auto enginePtr = entityPtr->getParentEngine();
+        auto enginePtr = vd::ObjectOfType<vd::Engine>::Find();
         setUniform("view", enginePtr->getCamera()->getViewMatrix());
         setUniform("projection", enginePtr->getWindow()->getProjectionMatrix());
 
-        vd::model::MeshPtr& meshPtr = entityPtr->getMeshes()[meshIndex];
+        vd::model::MeshPtr& meshPtr = entityPtr->GetMeshes()[meshIndex];
 
         setUniformi("transparency", 0);
 
@@ -82,8 +80,7 @@ namespace mod::player
         setUniform("clipPlane", enginePtr->getClipPlane());
 
         static bool loadedBasics = false;
-        if (!loadedBasics)
-        {
+        if (!loadedBasics) {
             auto& propertiesPtr = vd::ObjectOfType<vd::misc::Properties>::Find();
 
             setUniformf("fogDensity", propertiesPtr->Get<float>("Fog.Density"));

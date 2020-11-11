@@ -26,6 +26,8 @@ include_directories(src/modules/sobj)
 include_directories(src/modules/terrain)
 
 add_executable(vd_game_engine
+        src/engine/collision/Detector.cpp
+        src/engine/collision/Detector.hpp
         src/engine/component/Renderer.cpp
         src/engine/component/Renderer.hpp
         src/engine/component/IManager.hpp
@@ -44,6 +46,8 @@ add_executable(vd_game_engine
         src/engine/core/AsyncWorker.cpp
         src/engine/core/AsyncWorker.hpp
         src/engine/core/ObjectOfType.hpp
+        src/engine/culling/FrustumCullingManager.cpp
+        src/engine/culling/FrustumCullingManager.hpp
         src/engine/foundation/img/Image.cpp
         src/engine/foundation/img/Image.hpp
         src/engine/foundation/img/imgloader/IIMGLoader.cpp
@@ -61,8 +65,8 @@ add_executable(vd_game_engine
         src/engine/foundation/math/Frustum.hpp
         src/engine/foundation/math/Bounds.cpp
         src/engine/foundation/math/Bounds.hpp
-        src/engine/foundation/math/Util.cpp
-        src/engine/foundation/math/Util.hpp
+        src/engine/foundation/math/Plane.hpp
+        src/engine/foundation/math/Plane.cpp
         src/engine/foundation/datastruct/Tree.cpp
         src/engine/foundation/datastruct/Tree.hpp
         src/engine/foundation/algorithm/TreeHelper.cpp

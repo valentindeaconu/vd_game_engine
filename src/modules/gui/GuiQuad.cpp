@@ -5,22 +5,19 @@
 #include "GuiQuad.hpp"
 
 namespace mod::gui {
-
-    GuiQuad::GuiQuad(const vd::EnginePtr &enginePtr,
-                     const vd::model::Texture2DPtr& texture,
+    GuiQuad::GuiQuad(const vd::model::Texture2DPtr& texture,
                      const glm::vec2& position,
                      const glm::vec2& scale)
-       : Entity(enginePtr)
-       , texture(texture)
+       : m_Texture(texture)
    {
-        this->getLocalTransform().setTranslation(position.x, position.y, 0.0f);
-        this->getLocalTransform().setScaling(scale.x, scale.y, 1.0f);
+       this->GetLocalTransform().setTranslation(position.x, position.y, 0.0f);
+       this->GetLocalTransform().setScaling(scale.x, scale.y, 1.0f);
     }
 
     GuiQuad::~GuiQuad() = default;
 
-    void GuiQuad::init() {
-        vd::model::MeshPtrVec& meshPtrVec = getMeshes();
+    void GuiQuad::Init() {
+        vd::model::MeshPtrVec& meshPtrVec = GetMeshes();
 
         vd::model::MeshPtr meshPtr = std::make_shared<vd::model::Mesh>();
 
@@ -33,18 +30,18 @@ namespace mod::gui {
 
         meshPtr->indices = { 0, 1, 2, 2, 1, 3 };
 
-        meshPtr->materials.push_back({ .diffuseMap = texture });
+        meshPtr->materials.push_back({ .diffuseMap = m_Texture });
 
         meshPtrVec.push_back(meshPtr);
 
-        Entity::init();
+        Entity::Init();
     }
 
-    void GuiQuad::update() {
+    void GuiQuad::Update() {
 
     }
 
-    void GuiQuad::cleanUp() {
-        Entity::cleanUp();
+    void GuiQuad::CleanUp() {
+        Entity::CleanUp();
     }
 }

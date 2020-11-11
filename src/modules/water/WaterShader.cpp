@@ -47,9 +47,9 @@ namespace mod::water {
     void WaterShader::updateUniforms(vd::object::EntityPtr entityPtr, size_t meshIndex) {
         WaterPtr waterPtr = std::dynamic_pointer_cast<Water>(entityPtr);
 
-        setUniform("model", waterPtr->getLocalTransform().get());
+        setUniform("model", waterPtr->GetLocalTransform().get());
 
-        auto& enginePtr = entityPtr->getParentEngine();
+        auto& enginePtr = vd::ObjectOfType<vd::Engine>::Find();
         setUniform("view", enginePtr->getCamera()->getViewMatrix());
         setUniform("projection", enginePtr->getWindow()->getProjectionMatrix());
 
@@ -59,15 +59,15 @@ namespace mod::water {
         setUniformf("farPlane", enginePtr->getWindow()->getFarPlane());
 
         vd::model::activeTexture(0);
-        waterPtr->GetReflectionFramebuffer()->getColorTexture()->bind();
+        waterPtr->GetReflectionFramebuffer()->GetColorTexture()->bind();
         setUniformi("reflectionTexture", 0);
 
         vd::model::activeTexture(1);
-        waterPtr->GetRefractionFramebuffer()->getColorTexture()->bind();
+        waterPtr->GetRefractionFramebuffer()->GetColorTexture()->bind();
         setUniformi("refractionTexture", 1);
 
         vd::model::activeTexture(2);
-        waterPtr->GetRefractionFramebuffer()->getDepthTexture()->bind();
+        waterPtr->GetRefractionFramebuffer()->GetDepthTexture()->bind();
         setUniformi("depthMap", 2);
 
         auto& lightManager = vd::ObjectOfType<vd::light::LightManager>::Find();

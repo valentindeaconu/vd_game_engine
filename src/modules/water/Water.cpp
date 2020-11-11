@@ -5,9 +5,9 @@
 #include "Water.hpp"
 
 namespace mod::water {
-    Water::Water(const vd::EnginePtr& enginePtr, const std::string& propsFilePath)
-        : vd::object::Entity(enginePtr)
-        , m_PropsPtr(vd::misc::Properties::Create<vd::misc::Properties::eFile>(propsFilePath))
+    Water::Water(const std::string& propsFilePath)
+        : m_PropsPtr(vd::misc::Properties::Create<vd::misc::Properties::eFile>(propsFilePath))
+        , m_MoveFactor(0.0f)
         , m_ReflectionFBO(std::make_shared<vd::buffer::FrameBuffer>())
         , m_RefractionFBO(std::make_shared<vd::buffer::FrameBuffer>())
     {
@@ -15,40 +15,42 @@ namespace mod::water {
 
     Water::~Water() = default;
 
-    void Water::init() {
-        getLocalTransform().setScaling(6000.0f, 0.0f, 6000.0f);
-        getLocalTransform().setTranslation(-3000.0f, 180.0f, -3000.0f);
+    void Water::Init() {
+        m_EnginePtr = vd::ObjectOfType<vd::Engine>::Find();
+
+        GetLocalTransform().setScaling(6000.0f, 0.0f, 6000.0f);
+        GetLocalTransform().setTranslation(-3000.0f, 180.0f, -3000.0f);
 
         PopulatePacks();
 
         GeneratePatch();
 
-        m_ReflectionFBO->allocate(m_PropsPtr->Get<int>("Reflection.Width"),
+        m_ReflectionFBO->Allocate(m_PropsPtr->Get<int>("Reflection.Width"),
                                   m_PropsPtr->Get<int>("Reflection.Height"),
                                   true,
                                   vd::buffer::DepthAttachment::eDepthBuffer);
 
-        m_RefractionFBO->allocate(m_PropsPtr->Get<int>("Refraction.Width"),
+        m_RefractionFBO->Allocate(m_PropsPtr->Get<int>("Refraction.Width"),
                                   m_PropsPtr->Get<int>("Refraction.Height"),
                                   true,
                                   vd::buffer::DepthAttachment::eDepthTexture);
 
-        Entity::init();
+        Entity::Init();
     }
 
-    void Water::update() {
+    void Water::Update() {
         const auto waveSpeed = m_PropsPtr->Get<float>("Wave.Speed");
-        m_MoveFactor += (waveSpeed * getParentEngine()->getFrameTime());
+        m_MoveFactor += (waveSpeed * m_EnginePtr->getFrameTime());
         if (m_MoveFactor >= 1.0f) {
             m_MoveFactor -= 1.0f;
         }
     }
 
-    void Water::cleanUp() {
-        m_ReflectionFBO->cleanUp();
-        m_RefractionFBO->cleanUp();
+    void Water::CleanUp() {
+        m_ReflectionFBO->CleanUp();
+        m_RefractionFBO->CleanUp();
 
-        Entity::cleanUp();
+        Entity::CleanUp();
     }
 
     const vd::misc::PropertiesPtr& Water::GetProperties() const {
@@ -125,7 +127,7 @@ namespace mod::water {
 
         meshPtr->indices = { 0, 2, 1, 1, 2, 3 };
 
-        getMeshes().push_back(meshPtr);
+        GetMeshes().push_back(meshPtr);
     }
 }
 

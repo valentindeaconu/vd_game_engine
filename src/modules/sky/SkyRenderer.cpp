@@ -10,11 +10,11 @@ namespace mod::sky {
     SkyRenderer::~SkyRenderer() = default;
 
     void SkyRenderer::Init() {
-        m_SkyPtr->init();
+        m_SkyPtr->Init();
     }
 
     void SkyRenderer::Update() {
-        m_SkyPtr->update();
+        m_SkyPtr->Update();
     }
 
     void SkyRenderer::Render(const vd::kernel::RenderingPass& renderingPass) {
@@ -26,10 +26,10 @@ namespace mod::sky {
             auto _shaderPtr = renderingPass == vd::kernel::RenderingPass::eShadow ? this->GetShadowShader() : m_ShaderPtr;
 
             _shaderPtr->bind();
-            vd::buffer::BufferPtrVec& buffers = m_SkyPtr->getBuffers();
+            vd::buffer::BufferPtrVec& buffers = m_SkyPtr->GetBuffers();
             for (size_t meshIndex = 0; meshIndex < buffers.size(); ++meshIndex) {
                 _shaderPtr->updateUniforms(m_SkyPtr, meshIndex);
-                buffers[meshIndex]->render();
+                buffers[meshIndex]->Render();
             }
 
             if (m_ConfigPtr != nullptr) {
@@ -39,7 +39,7 @@ namespace mod::sky {
     }
 
     void SkyRenderer::CleanUp() {
-        m_SkyPtr->cleanUp();
+        m_SkyPtr->CleanUp();
     }
 
     SkyPtr& SkyRenderer::GetSky() {

@@ -15,11 +15,11 @@ namespace mod::terrain {
     TerrainRenderer::~TerrainRenderer() = default;
 
     void TerrainRenderer::Init() {
-        m_TerrainPtr->init();
+        m_TerrainPtr->Init();
     }
 
     void TerrainRenderer::Update() {
-        m_TerrainPtr->update();
+        m_TerrainPtr->Update();
     }
 
     void TerrainRenderer::Render(const vd::kernel::RenderingPass& renderingPass) {
@@ -50,8 +50,8 @@ namespace mod::terrain {
 
                 m_ShaderPtr->updateUniforms(m_TerrainPtr, 0);
 
-                vd::buffer::BufferPtrVec& buffers = m_TerrainPtr->getBuffers();
-                buffers[0]->render();
+                vd::buffer::BufferPtrVec& buffers = m_TerrainPtr->GetBuffers();
+                buffers[0]->Render();
             } else {
                 const auto& children = nodePtr->GetChildren();
                 for (const auto& child : children) {
@@ -62,7 +62,7 @@ namespace mod::terrain {
     }
 
     void TerrainRenderer::CleanUp() {
-        m_TerrainPtr->cleanUp();
+        m_TerrainPtr->CleanUp();
     }
 
     TerrainPtr& TerrainRenderer::GetTerrain() {

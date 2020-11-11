@@ -35,7 +35,7 @@ namespace vd::core::impl {
         float horizontalDistance = computeHorizontalDistance();
         float verticalDistance = computeVerticalDistance();
 
-        auto worldTransform = entityPtr->getWorldTransform();
+        auto worldTransform = entityPtr->GetWorldTransform();
         glm::vec3 entityPosition = worldTransform.getTranslationVector() + offset;
         float entityAngle = worldTransform.getYAxisRotationAngle();
 
