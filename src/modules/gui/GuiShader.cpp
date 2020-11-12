@@ -20,7 +20,7 @@ namespace mod::gui {
     GuiShader::~GuiShader() = default;
 
     void GuiShader::updateUniforms(vd::object::EntityPtr entityPtr, size_t meshIndex) {
-        setUniform("transform", entityPtr->GetLocalTransform().get());
+        setUniform("transform", entityPtr->GetLocalTransform().Get());
 
         vd::model::activeTexture(1);
         entityPtr->GetMeshes()[0]->materials[0].diffuseMap->bind();

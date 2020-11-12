@@ -10,8 +10,8 @@ namespace mod::gui {
                      const glm::vec2& scale)
        : m_Texture(texture)
    {
-       this->GetLocalTransform().setTranslation(position.x, position.y, 0.0f);
-       this->GetLocalTransform().setScaling(scale.x, scale.y, 1.0f);
+       this->GetLocalTransform().SetTranslation(position.x, position.y, 0.0f);
+       this->GetLocalTransform().SetScaling(scale.x, scale.y, 1.0f);
     }
 
     GuiQuad::~GuiQuad() = default;

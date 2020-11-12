@@ -20,7 +20,7 @@ namespace vd::shadow {
     ShadowShader::~ShadowShader() = default;
 
     void ShadowShader::updateUniforms(vd::object::EntityPtr entityPtr, size_t meshIndex) {
-        setUniform("model", entityPtr->GetWorldTransform().get());
+        setUniform("model", entityPtr->GetWorldTransform().Get());
 
         auto shadowManagerPtr = vd::ObjectOfType<vd::shadow::ShadowManager>::Find();
         setUniform("view", shadowManagerPtr->getViewMatrix());

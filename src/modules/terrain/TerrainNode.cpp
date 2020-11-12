@@ -24,8 +24,8 @@ namespace mod::terrain {
     {
         assert((bottomRight.x - topLeft.x) == (bottomRight.y - topLeft.y));
 
-        m_Transform.setTranslation(topLeft.x, 0.0f, topLeft.y);
-        m_Transform.setScaling(bottomRight.x - topLeft.x, 1.0f, bottomRight.x - topLeft.x);
+        m_Transform.SetTranslation(topLeft.x, 0.0f, topLeft.y);
+        m_Transform.SetScaling(bottomRight.x - topLeft.x, 1.0f, bottomRight.x - topLeft.x);
 
         ComputeEdgeMiddles();
     }

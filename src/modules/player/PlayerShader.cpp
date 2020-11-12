@@ -48,7 +48,7 @@ namespace mod::player
     PlayerShader::~PlayerShader() = default;
 
     void PlayerShader::updateUniforms(vd::object::EntityPtr entityPtr, size_t meshIndex) {
-        setUniform("model", entityPtr->GetWorldTransform().get());
+        setUniform("model", entityPtr->GetWorldTransform().Get());
 
         auto enginePtr = vd::ObjectOfType<vd::Engine>::Find();
         setUniform("view", enginePtr->getCamera()->getViewMatrix());

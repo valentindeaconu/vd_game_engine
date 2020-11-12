@@ -21,8 +21,8 @@ namespace mod::terrain {
         // Create world transform
         const auto scaleXZ = m_PropsPtr->Get<float>("ScaleXZ");
         const auto scaleY = m_PropsPtr->Get<float>("ScaleY");
-        GetWorldTransform().setScaling(scaleXZ, scaleY, scaleXZ);
-        GetWorldTransform().setTranslation(-scaleXZ / 2.0f, 0.0f, -scaleXZ / 2.0f);
+        GetWorldTransform().SetScaling(scaleXZ, scaleY, scaleXZ);
+        GetWorldTransform().SetTranslation(-scaleXZ / 2.0f, 0.0f, -scaleXZ / 2.0f);
 
         PopulateBiomes();
 
@@ -230,7 +230,7 @@ namespace mod::terrain {
                const auto kScale = m_PropsPtr->Get<float>(objectPrefix + ".Scale");
 
                 sobj::StaticObjectPtr staticObjectPtr = std::make_shared<sobj::StaticObject>(kLocation, kFile);
-                staticObjectPtr->GetWorldTransform().setScaling(kScale, kScale, kScale);
+                staticObjectPtr->GetWorldTransform().SetScaling(kScale, kScale, kScale);
                 staticObjectPtr->Init();
 
                 biomePtr->addObject(staticObjectPtr);

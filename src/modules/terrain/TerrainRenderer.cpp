@@ -45,7 +45,7 @@ namespace mod::terrain {
             if (nodePtr->IsLeaf()) {
                 m_ShaderPtr->bind();
 
-                m_ShaderPtr->setUniform("localModel", nodePtr->GetTransform().get());
+                m_ShaderPtr->setUniform("localModel", nodePtr->GetTransform().Get());
                 m_ShaderPtr->setUniform("tessFactor", nodePtr->GetTessFactors());
 
                 m_ShaderPtr->updateUniforms(m_TerrainPtr, 0);

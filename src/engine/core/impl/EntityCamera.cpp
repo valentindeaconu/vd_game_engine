@@ -36,8 +36,8 @@ namespace vd::core::impl {
         float verticalDistance = computeVerticalDistance();
 
         auto worldTransform = entityPtr->GetWorldTransform();
-        glm::vec3 entityPosition = worldTransform.getTranslationVector() + offset;
-        float entityAngle = worldTransform.getYAxisRotationAngle();
+        glm::vec3 entityPosition = worldTransform.GetTranslationVector() + offset;
+        float entityAngle = worldTransform.GetYAxisRotationAngle();
 
         glm::vec3 newPosition = computeCameraPosition(entityPosition,
                                                       entityAngle,

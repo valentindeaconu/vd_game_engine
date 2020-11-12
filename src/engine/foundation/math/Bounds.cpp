@@ -78,8 +78,8 @@ namespace vd::math {
 
     Bounds3 Bounds3::withTransform(const Transform& transform) const {
         return Bounds3(
-            glm::vec3(transform.get() * glm::vec4(m_Left, 1.0f)),
-            glm::vec3(transform.get() * glm::vec4(m_Right, 1.0f))
+            glm::vec3(transform.Get() * glm::vec4(m_Left, 1.0f)),
+            glm::vec3(transform.Get() * glm::vec4(m_Right, 1.0f))
         );
     }
 

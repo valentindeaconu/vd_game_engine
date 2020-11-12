@@ -47,7 +47,7 @@ namespace mod::water {
     void WaterShader::updateUniforms(vd::object::EntityPtr entityPtr, size_t meshIndex) {
         WaterPtr waterPtr = std::dynamic_pointer_cast<Water>(entityPtr);
 
-        setUniform("model", waterPtr->GetLocalTransform().get());
+        setUniform("model", waterPtr->GetLocalTransform().Get());
 
         auto& enginePtr = vd::ObjectOfType<vd::Engine>::Find();
         setUniform("view", enginePtr->getCamera()->getViewMatrix());

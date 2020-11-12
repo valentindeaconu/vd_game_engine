@@ -46,7 +46,7 @@ namespace mod::sobj {
     StaticObjectShader::~StaticObjectShader() = default;
 
     void StaticObjectShader::updateUniforms(vd::object::EntityPtr entityPtr, size_t meshIndex) {
-        setUniform("model", entityPtr->GetWorldTransform().get());
+        setUniform("model", entityPtr->GetWorldTransform().Get());
 
         auto& enginePtr = vd::ObjectOfType<vd::Engine>::Find();
         setUniform("view", enginePtr->getCamera()->getViewMatrix());

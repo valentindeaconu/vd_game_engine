@@ -37,7 +37,7 @@ namespace mod::sobj
             const PlacementInfoVec &placementInfos = m_StaticObjectPlacerPtr->getPlacementInfos();
             for (const auto& placementInfo : placementInfos) {
                 StaticObjectPtr staticObjectPtr = placementInfo.objectPtr;
-                staticObjectPtr->GetWorldTransform().setTranslation(placementInfo.location);
+                staticObjectPtr->GetWorldTransform().SetTranslation(placementInfo.location);
                 staticObjectPtr->Update();
 
                 if (Detector::IsAnyTransformedBounds3InsideFrustum(staticObjectPtr->GetBoundingBoxes(),

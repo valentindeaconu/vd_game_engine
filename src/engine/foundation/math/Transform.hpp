@@ -5,58 +5,58 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/quaternion.hpp>
 
-namespace vd::math
-{
-    class Transform
-    {
+namespace vd::math {
+    class Transform {
     public:
         Transform();
 
-        [[nodiscard]] glm::mat4 get() const;
-        [[nodiscard]] glm::mat4 inverse() const;
+        [[nodiscard]] glm::mat4 Get() const;
+        [[nodiscard]] glm::mat4 Inverse() const;
 
-        [[nodiscard]] glm::mat4 getTranslation() const;
-        [[nodiscard]] glm::mat4 getRotation() const;
-        [[nodiscard]] glm::mat4 getScaling() const;
+        [[nodiscard]] glm::mat4 GetTranslation() const;
+        [[nodiscard]] glm::mat4 GetRotation() const;
+        [[nodiscard]] glm::mat4 GetScaling() const;
 
+        void SetTranslation(float x, float y, float z);
+        void SetTranslation(const glm::vec3& translation);
+        [[nodiscard]] const glm::vec3& GetTranslationVector() const;
 
-        void setTranslation(float x, float y, float z);
-        void setTranslation(const glm::vec3& translation);
-        [[nodiscard]] const glm::vec3& getTranslationVector() const;
+        void SetScaling(float x, float y, float z);
+        void SetScaling(const glm::vec3& scaling);
+        [[nodiscard]] const glm::vec3& GetScalingVector() const;
 
-        void setScaling(float x, float y, float z);
-        void setScaling(const glm::vec3& scaling);
-        [[nodiscard]] const glm::vec3& getScalingVector() const;
+        void SetXRotationAngle(float angle);
+        [[nodiscard]] float GetXAxisRotationAngle() const;
 
-        void setXRotationAngle(float angle);
-        [[nodiscard]] float getXAxisRotationAngle() const;
-        void setYRotationAngle(float angle);
-        [[nodiscard]] float getYAxisRotationAngle() const;
-        void setZRotationAngle(float angle);
-        [[nodiscard]] float getZAxisRotationAngle() const;
+        void SetYRotationAngle(float angle);
+        [[nodiscard]] float GetYAxisRotationAngle() const;
 
-        [[nodiscard]] const glm::quat& getXAxisRotation() const;
-        [[nodiscard]] const glm::quat& getYAxisRotation() const;
-        [[nodiscard]] const glm::quat& getZAxisRotation() const;
+        void SetZRotationAngle(float angle);
+        [[nodiscard]] float GetZAxisRotationAngle() const;
+
+        [[nodiscard]] const glm::quat& GetXAxisRotation() const;
+        [[nodiscard]] const glm::quat& GetYAxisRotation() const;
+        [[nodiscard]] const glm::quat& GetZAxisRotation() const;
 
         [[nodiscard]] glm::vec4 operator*(const glm::vec4& operand) const;
     private:
-        void computeTransform() const;
-        bool transformComputed;
-        glm::mat4 transform;
+        void ComputeTransform() const;
 
-        glm::vec3 translation;
+        bool m_TransformComputed;
+        glm::mat4 m_Transform;
 
-        glm::vec3 scaling;
+        glm::vec3 m_Translation;
 
-        float xAxisRotationAngle;
-        glm::quat xAxisRotation;
+        glm::vec3 m_Scaling;
 
-        float yAxisRotationAngle;
-        glm::quat yAxisRotation;
+        float m_XAxisRotationAngle;
+        glm::quat m_XAxisRotation;
 
-        float zAxisRotationAngle;
-        glm::quat zAxisRotation;
+        float m_YAxisRotationAngle;
+        glm::quat m_YAxisRotation;
+
+        float m_ZAxisRotationAngle;
+        glm::quat m_ZAxisRotation;
     };
 }
 

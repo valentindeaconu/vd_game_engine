@@ -18,8 +18,8 @@ namespace mod::water {
     void Water::Init() {
         m_EnginePtr = vd::ObjectOfType<vd::Engine>::Find();
 
-        GetLocalTransform().setScaling(6000.0f, 0.0f, 6000.0f);
-        GetLocalTransform().setTranslation(-3000.0f, 180.0f, -3000.0f);
+        GetLocalTransform().SetScaling(6000.0f, 0.0f, 6000.0f);
+        GetLocalTransform().SetTranslation(-3000.0f, 180.0f, -3000.0f);
 
         PopulatePacks();
 

@@ -18,7 +18,7 @@ namespace mod::player {
         m_InputHandlerPtr = vd::ObjectOfType<vd::core::InputHandler>::Find();
 
         float h = m_TerrainPtr->GetHeight(0.0f, 0.0f);
-        GetWorldTransform().setTranslation(0.0f, h + m_kModelYOffset, 0.0f);
+        GetWorldTransform().SetTranslation(0.0f, h + m_kModelYOffset, 0.0f);
 
         vd::model::MeshPtrVec& meshPtrVec = GetMeshes();
         vd::objloader::OBJLoader objLoader;
@@ -31,7 +31,7 @@ namespace mod::player {
         if (m_EnginePtr->getCameraMode() == vd::Engine::e3rdPersonCamera)
             Input();
 
-        float currentAngle = GetWorldTransform().getYAxisRotationAngle();
+        float currentAngle = GetWorldTransform().GetYAxisRotationAngle();
         currentAngle += m_CurrentTurnSpeed * m_EnginePtr->getFrameTime();
 
         if (currentAngle >= 360.0f) {
@@ -40,13 +40,13 @@ namespace mod::player {
             currentAngle = 360.0f - currentAngle;
         }
 
-        GetWorldTransform().setYRotationAngle(currentAngle);
+        GetWorldTransform().SetYRotationAngle(currentAngle);
 
         float distance = m_CurrentSpeed * m_EnginePtr->getFrameTime();
         float dx = distance * glm::sin(glm::radians(currentAngle));
         float dz = distance * glm::cos(glm::radians(currentAngle));
 
-        glm::vec3 currentPosition = GetWorldTransform().getTranslationVector();
+        glm::vec3 currentPosition = GetWorldTransform().GetTranslationVector();
         currentPosition.x += dx;
         currentPosition.z += dz;
 
@@ -61,7 +61,7 @@ namespace mod::player {
             m_IsJumping = false;
         }
 
-        GetWorldTransform().setTranslation(currentPosition);
+        GetWorldTransform().SetTranslation(currentPosition);
     }
 
     void Player::CleanUp() {

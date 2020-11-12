@@ -81,7 +81,7 @@ namespace mod::terrain {
     TerrainShader::~TerrainShader() = default;
 
     void TerrainShader::updateUniforms(vd::object::EntityPtr entityPtr, size_t meshIndex) {
-        setUniform("worldModel", entityPtr->GetWorldTransform().get());
+        setUniform("worldModel", entityPtr->GetWorldTransform().Get());
 
         auto& enginePtr = vd::ObjectOfType<vd::Engine>::Find();
         setUniform("view", enginePtr->getCamera()->getViewMatrix());
