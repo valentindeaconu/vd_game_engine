@@ -1,8 +1,8 @@
 #ifndef __ENTITY_HPP_
 #define __ENTITY_HPP_
 
-#include <engine/foundation/math/Transform.hpp>
-#include <engine/foundation/math/Bounds.hpp>
+#include <engine/math/Transform.hpp>
+#include <engine/math/Bounds.hpp>
 #include <engine/model/Mesh.hpp>
 
 #include <engine/glmodel/buffer/MeshBuffer.hpp>
@@ -23,25 +23,15 @@ namespace vd::object {
         virtual void Update() = 0;
         virtual void CleanUp();
 
-        vd::math::Transform& GetLocalTransform();
-        [[nodiscard]] const vd::math::Transform& GetLocalTransform() const;
-        void SetLocalTransform(const vd::math::Transform& transform);
+        vd::math::Transform& LocalTransform();
 
-        vd::math::Transform& GetWorldTransform();
-        [[nodiscard]] const vd::math::Transform& GetWorldTransform() const;
-        void SetWorldTransform(const vd::math::Transform& transform);
+        vd::math::Transform& WorldTransform();
 
-        vd::model::MeshPtrVec& GetMeshes();
-        [[nodiscard]] const vd::model::MeshPtrVec& GetMeshes() const;
-        void SetMeshes(const vd::model::MeshPtrVec& meshes);
+        vd::model::MeshPtrVec& Meshes();
 
-        vd::buffer::BufferPtrVec& GetBuffers();
-        [[nodiscard]] const vd::buffer::BufferPtrVec& GetBuffers() const;
+        vd::buffer::BufferPtrVec& Buffers();
 
-        vd::math::Bounds3Vec& GetBoundingBoxes();
-        [[nodiscard]] const vd::math::Bounds3Vec& GetBoundingBoxes() const;
-        void SetBoundingBoxes(const vd::math::Bounds3Vec& boundingBoxes);
-
+        vd::math::Bounds3Vec& BoundingBoxes();
     protected:
         void SetBufferGenerationStrategy(const BufferGenerationStrategy& strategy);
 

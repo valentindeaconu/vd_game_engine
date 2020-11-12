@@ -5,8 +5,8 @@
 #ifndef VD_GAME_ENGINE_FRUSTUM_HPP
 #define VD_GAME_ENGINE_FRUSTUM_HPP
 
-#include <engine/core/Window.hpp>
-#include <engine/core/Camera.hpp>
+#include <engine/window/Window.hpp>
+#include <engine/camera/ICamera.hpp>
 
 #include <glm/glm.hpp>
 

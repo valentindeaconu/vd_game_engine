@@ -8,7 +8,7 @@
 #include <engine/shader/Shader.hpp>
 
 #include <engine/shadow/ShadowManager.hpp>
-#include <engine/core/ObjectOfType.hpp>
+#include <engine/misc/ObjectOfType.hpp>
 
 #include <memory>
 
@@ -22,8 +22,6 @@ namespace vd::shadow {
     private:
     };
     typedef std::shared_ptr<ShadowShader> ShadowShaderPtr;
-
-    ShadowShaderPtr& GetShadowShader();
 }
 
 

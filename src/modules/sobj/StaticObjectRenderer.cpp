@@ -1,10 +1,12 @@
 #include "StaticObjectRenderer.hpp"
 
-namespace mod::sobj
-{
-    StaticObjectRenderer::StaticObjectRenderer()
-        : Renderer()
-        , m_StaticObjectPlacerPtr(nullptr)
+namespace mod::sobj {
+    StaticObjectRenderer::StaticObjectRenderer(StaticObjectPlacerPtr staticObjectPlacerPtr,
+                                               vd::shader::ShaderPtr shaderPtr,
+                                               vd::Consumer beforeExecution,
+                                               vd::Consumer afterExecution)
+        : IRenderer(std::move(shaderPtr), std::move(beforeExecution), std::move(afterExecution))
+        , m_StaticObjectPlacerPtr(staticObjectPlacerPtr)
     {
     }
 
@@ -22,40 +24,44 @@ namespace mod::sobj
 
     }
 
-    void StaticObjectRenderer::Render(const vd::kernel::RenderingPass &renderingPass) {
+    void StaticObjectRenderer::Render(const params_t& params) {
+        if (!IsReady()) {
+            vd::Logger::warn("StaticObjectRenderer was not ready to render");
+            return;
+        }
+
         using vd::collision::Detector;
 
-        if (IsReady()) {
-            if (m_ConfigPtr != nullptr) {
-                m_ConfigPtr->enable();
-            }
+        const auto& renderingPass = params.at("RenderingPass");
 
-            auto _shaderPtr = renderingPass == vd::kernel::RenderingPass::eShadow ? this->GetShadowShader() : m_ShaderPtr;
+        Prepare();
 
-            _shaderPtr->bind();
+        vd::shader::ShaderPtr shaderPtr = m_ShaderPtr;
+        if (renderingPass == "Shadow") {
+            shaderPtr = vd::ObjectOfType<vd::shadow::ShadowShader>::Find();
+        }
 
-            const PlacementInfoVec &placementInfos = m_StaticObjectPlacerPtr->getPlacementInfos();
-            for (const auto& placementInfo : placementInfos) {
-                StaticObjectPtr staticObjectPtr = placementInfo.objectPtr;
-                staticObjectPtr->GetWorldTransform().SetTranslation(placementInfo.location);
-                staticObjectPtr->Update();
+        shaderPtr->bind();
 
-                if (Detector::IsAnyTransformedBounds3InsideFrustum(staticObjectPtr->GetBoundingBoxes(),
-                                                                   staticObjectPtr->GetWorldTransform(),
-                                                                   m_FrustumCullingManagerPtr->GetFrustum())) {
-                    for (size_t meshIndex = 0;
-                         meshIndex < staticObjectPtr->GetBuffers().size();
-                         ++meshIndex) {
-                        _shaderPtr->updateUniforms(staticObjectPtr, meshIndex);
-                        staticObjectPtr->GetBuffers()[meshIndex]->Render();
-                    }
+        const PlacementInfoVec &placementInfos = m_StaticObjectPlacerPtr->getPlacementInfos();
+        for (const auto& placementInfo : placementInfos) {
+            StaticObjectPtr staticObjectPtr = placementInfo.objectPtr;
+            staticObjectPtr->WorldTransform().SetTranslation(placementInfo.location);
+            staticObjectPtr->Update();
+
+            if (Detector::IsAnyTransformedBounds3InsideFrustum(staticObjectPtr->BoundingBoxes(),
+                                                               staticObjectPtr->WorldTransform(),
+                                                               m_FrustumCullingManagerPtr->GetFrustum())) {
+                for (size_t meshIndex = 0;
+                     meshIndex < staticObjectPtr->Buffers().size();
+                     ++meshIndex) {
+                    shaderPtr->updateUniforms(staticObjectPtr, meshIndex);
+                    staticObjectPtr->Buffers()[meshIndex]->Render();
                 }
             }
-
-            if (m_ConfigPtr != nullptr) {
-                m_ConfigPtr->disable();
-            }
         }
+
+        Finish();
     }
 
     void StaticObjectRenderer::CleanUp() {
@@ -70,19 +76,7 @@ namespace mod::sobj
         }
     }
 
-    StaticObjectPlacerPtr& StaticObjectRenderer::GetStaticObjectPlacer() {
-        return m_StaticObjectPlacerPtr;
-    }
-
-    const StaticObjectPlacerPtr& StaticObjectRenderer::GetStaticObjectPlacer() const {
-        return m_StaticObjectPlacerPtr;
-    }
-
-    void StaticObjectRenderer::SetStaticObjectPlacer(const StaticObjectPlacerPtr& staticObjectPlacerPtr) {
-        this->m_StaticObjectPlacerPtr = staticObjectPlacerPtr;
-    }
-
     bool StaticObjectRenderer::IsReady() {
-        return Renderer::IsReady() && m_StaticObjectPlacerPtr != nullptr;
+        return IRenderer::IsReady() && m_StaticObjectPlacerPtr != nullptr;
     }
 }

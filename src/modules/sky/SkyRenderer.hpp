@@ -1,26 +1,27 @@
 #ifndef __SKY_RENDERER_HPP_
 #define __SKY_RENDERER_HPP_
 
-#include <engine/component/Renderer.hpp>
+#include <engine/component/IRenderer.hpp>
+
+#include <engine/shadow/ShadowShader.hpp>
 
 #include <string>
 
 #include "Sky.hpp"
 
 namespace mod::sky {
-    class SkyRenderer : public vd::component::Renderer {
+    class SkyRenderer : public vd::component::IRenderer {
     public:
-        SkyRenderer();
+        SkyRenderer(SkyPtr skyPtr,
+                    vd::shader::ShaderPtr shaderPtr,
+                    vd::Consumer beforeExecution = vd::g_kEmptyConsumer,
+                    vd::Consumer afterExecution = vd::g_kEmptyConsumer);
         ~SkyRenderer();
 
         void Init() override;
         void Update() override;
-        void Render(const vd::kernel::RenderingPass& renderingPass) override;
+        void Render(const params_t& params) override;
         void CleanUp() override;
-
-        SkyPtr& GetSky();
-        [[nodiscard]] const SkyPtr& GetSky() const;
-        void SetSky(const SkyPtr& skyPtr);
 
     private:
         bool IsReady() override;

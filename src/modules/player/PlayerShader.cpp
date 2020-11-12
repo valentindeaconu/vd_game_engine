@@ -48,36 +48,32 @@ namespace mod::player
     PlayerShader::~PlayerShader() = default;
 
     void PlayerShader::updateUniforms(vd::object::EntityPtr entityPtr, size_t meshIndex) {
-        setUniform("model", entityPtr->GetWorldTransform().Get());
+        setUniform("model", entityPtr->WorldTransform().Get());
 
-        auto enginePtr = vd::ObjectOfType<vd::Engine>::Find();
-        setUniform("view", enginePtr->getCamera()->getViewMatrix());
-        setUniform("projection", enginePtr->getWindow()->getProjectionMatrix());
+        setUniform("view", vd::ObjectOfType<vd::camera::ICamera>::Find()->ViewMatrix());
+        setUniform("projection", vd::ObjectOfType<vd::window::Window>::Find()->ProjectionMatrix());
 
-        vd::model::MeshPtr& meshPtr = entityPtr->GetMeshes()[meshIndex];
+        vd::model::MeshPtr& meshPtr = entityPtr->Meshes()[meshIndex];
 
         setUniformi("transparency", 0);
 
-        if (!meshPtr->materials.empty())
-        {
+        if (!meshPtr->materials.empty()) {
             vd::model::Material& meshMaterial = meshPtr->materials.front();
 
-            if (meshMaterial.diffuseMap != nullptr)
-            {
+            if (meshMaterial.diffuseMap != nullptr) {
                 vd::model::activeTexture(0);
                 meshMaterial.diffuseMap->bind();
                 setUniformi("diffuseMap", 0);
             }
 
-            if (meshMaterial.specularMap != nullptr)
-            {
+            if (meshMaterial.specularMap != nullptr) {
                 vd::model::activeTexture(1);
                 meshMaterial.specularMap->bind();
                 setUniformi("specularMap", 1);
             }
         }
 
-        setUniform("clipPlane", enginePtr->getClipPlane());
+        setUniform("clipPlane", vd::ObjectOfType<vd::Engine>::Find()->getClipPlane());
 
         static bool loadedBasics = false;
         if (!loadedBasics) {

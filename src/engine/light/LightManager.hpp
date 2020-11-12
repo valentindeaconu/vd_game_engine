@@ -10,7 +10,7 @@
 
 #include <engine/component/IManager.hpp>
 
-#include <engine/core/ObjectOfType.hpp>
+#include <engine/misc/ObjectOfType.hpp>
 #include <engine/misc/Properties.hpp>
 
 #include "Light.hpp"
@@ -25,8 +25,8 @@ class LightManager : public vd::component::IManager {
         void Update() override;
         void CleanUp() override;
 
-        const LightPtr& GetSun() const;
-        const std::vector<LightPtr>& GetLights() const;
+        [[nodiscard]] const LightPtr& GetSun() const;
+        [[nodiscard]] const std::vector<LightPtr>& GetLights() const;
     private:
         LightPtr    m_Sun;
         std::vector<LightPtr>   m_Lights;

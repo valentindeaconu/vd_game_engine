@@ -14,15 +14,15 @@ namespace mod::terrain {
     Terrain::~Terrain() = default;
 
     void Terrain::Init() {
-        m_CameraPtr = vd::ObjectOfType<vd::core::Camera>::Find();
+        m_CameraPtr = vd::ObjectOfType<vd::camera::ICamera>::Find();
 
         CreateProps();
 
         // Create world transform
         const auto scaleXZ = m_PropsPtr->Get<float>("ScaleXZ");
         const auto scaleY = m_PropsPtr->Get<float>("ScaleY");
-        GetWorldTransform().SetScaling(scaleXZ, scaleY, scaleXZ);
-        GetWorldTransform().SetTranslation(-scaleXZ / 2.0f, 0.0f, -scaleXZ / 2.0f);
+        WorldTransform().SetScaling(scaleXZ, scaleY, scaleXZ);
+        WorldTransform().SetTranslation(-scaleXZ / 2.0f, 0.0f, -scaleXZ / 2.0f);
 
         PopulateBiomes();
 
@@ -30,7 +30,7 @@ namespace mod::terrain {
 
         auto convertToWorldCoords = [&](float x, float y) {
             const auto h = vd::img::ImageHelper::texture(*m_HeightImg, glm::vec2(x, y)).r;
-            return glm::vec3(GetWorldTransform() * glm::vec4(x, h, y, 1.0f));
+            return glm::vec3(WorldTransform() * glm::vec4(x, h, y, 1.0f));
         };
 
         m_RootNode = std::make_shared<TerrainNode>(nullptr,
@@ -51,7 +51,7 @@ namespace mod::terrain {
 
     void Terrain::Update() {
         if (m_PropsPtr->Get<bool>("LevelOfDetailEnabled")) {
-            if (m_CameraPtr->isCameraMoved() || m_CameraPtr->isCameraRotated()) {
+            if (m_CameraPtr->CameraMoved() || m_CameraPtr->CameraRotated()) {
                 for (const auto& imaginaryRootNode : m_ImaginaryRootNodes) {
                     imaginaryRootNode->Update(m_CameraPtr);
                 }
@@ -230,7 +230,7 @@ namespace mod::terrain {
                const auto kScale = m_PropsPtr->Get<float>(objectPrefix + ".Scale");
 
                 sobj::StaticObjectPtr staticObjectPtr = std::make_shared<sobj::StaticObject>(kLocation, kFile);
-                staticObjectPtr->GetWorldTransform().SetScaling(kScale, kScale, kScale);
+                staticObjectPtr->WorldTransform().SetScaling(kScale, kScale, kScale);
                 staticObjectPtr->Init();
 
                 biomePtr->addObject(staticObjectPtr);
@@ -268,7 +268,7 @@ namespace mod::terrain {
 
         SetBufferGenerationStrategy(ePatch);
 
-        GetMeshes().push_back(meshPtr);
+        Meshes().push_back(meshPtr);
     }
 
     void Terrain::PopulateTree(const TerrainNode::ptr_type_t& root) {

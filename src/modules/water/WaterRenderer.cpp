@@ -6,9 +6,12 @@
 
 namespace mod::water {
 
-    WaterRenderer::WaterRenderer()
-        : vd::component::Renderer()
-        , m_WaterPtr(nullptr)
+    WaterRenderer::WaterRenderer(WaterPtr waterPtr,
+                                 vd::shader::ShaderPtr shaderPtr,
+                                 vd::Consumer beforeExecution,
+                                 vd::Consumer afterExecution)
+        : IRenderer(std::move(shaderPtr), std::move(beforeExecution), std::move(afterExecution))
+        , m_WaterPtr(std::move(waterPtr))
     {
     }
 
@@ -22,20 +25,26 @@ namespace mod::water {
         m_WaterPtr->Update();
     }
 
-    void WaterRenderer::Render(const vd::kernel::RenderingPass& renderingPass) {
-        if (IsReady() && renderingPass == vd::kernel::RenderingPass::eMain) {
-            if (m_ConfigPtr != nullptr) {
-                m_ConfigPtr->enable();
-            }
-
-            m_ShaderPtr->bind();
-            m_ShaderPtr->updateUniforms(m_WaterPtr, 0);
-            m_WaterPtr->GetBuffers()[0]->Render();
-
-            if (m_ConfigPtr != nullptr) {
-                m_ConfigPtr->disable();
-            }
+    void WaterRenderer::Render(const params_t& params) {
+        if (!IsReady()) {
+            vd::Logger::warn("WaterRenderer was not ready to render");
+            return;
         }
+
+        const auto& renderingPass = params.at("RenderingPass");
+        if (renderingPass != "Main") {
+            return;
+        }
+
+        Prepare();
+
+        m_ShaderPtr->bind();
+
+        m_ShaderPtr->updateUniforms(m_WaterPtr, 0);
+
+        m_WaterPtr->Buffers()[0]->Render();
+
+        Finish();
     }
 
     void WaterRenderer::CleanUp() {
@@ -55,6 +64,6 @@ namespace mod::water {
     }
 
     bool WaterRenderer::IsReady() {
-        return Renderer::IsReady() && m_WaterPtr != nullptr;
+        return IRenderer::IsReady() && m_WaterPtr != nullptr;
     }
 }

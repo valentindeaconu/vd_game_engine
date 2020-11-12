@@ -5,10 +5,10 @@
 #ifndef VD_GAME_ENGINE_TERRAINNODE_HPP
 #define VD_GAME_ENGINE_TERRAINNODE_HPP
 
-#include <engine/core/Camera.hpp>
+#include <engine/camera/ICamera.hpp>
 #include <engine/foundation/img/imghelper/ImageHelper.hpp>
-#include <engine/foundation/math/Transform.hpp>
-#include <engine/foundation/math/Bounds.hpp>
+#include <engine/math/Transform.hpp>
+#include <engine/math/Bounds.hpp>
 #include <engine/misc/Properties.hpp>
 
 #include <engine/foundation/datastruct/Tree.hpp>
@@ -52,7 +52,7 @@ namespace mod::terrain {
                     int level,
                     NodeIndex nodeIndex);
 
-        void Update(const vd::core::CameraPtr& cameraPtr);
+        void Update(const vd::camera::CameraPtr& cameraPtr);
         void UpdateNeighbours();
 
         void Populate() override;

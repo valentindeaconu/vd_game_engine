@@ -6,10 +6,14 @@
 #define VD_GAME_ENGINE_SHADOWMANAGER_HPP
 
 #include <engine/foundation/GL.hpp>
+
+#include <engine/component/IManager.hpp>
+
 #include <engine/model/Texture.hpp>
 
-#include <engine/core/Window.hpp>
-#include <engine/core/Camera.hpp>
+#include <engine/misc/ObjectOfType.hpp>
+#include <engine/misc/Properties.hpp>
+#include <engine/light/LightManager.hpp>
 
 #include <engine/glmodel/buffer/FrameBuffer.hpp>
 
@@ -18,44 +22,41 @@
 #include "ShadowBox.hpp"
 
 namespace vd::shadow {
-    class ShadowManager {
+    class ShadowManager : public component::IManager {
     public:
         ShadowManager();
         ~ShadowManager();
 
-        void init(const core::WindowPtr& windowPtr,
-                  const core::CameraPtr& cameraPtr,
-                  int mapSize,
-                  float distance,
-                  float transition,
-                  float offset);
-        void update(const light::LightPtr& sunPtr);
-        void cleanUp();
+        void Init() override;
+        void Update() override;
+        void CleanUp() override;
 
-        [[nodiscard]] float getDistance() const;
-        [[nodiscard]] float getTransitionDistance() const;
+        [[nodiscard]] float Distance() const;
+        [[nodiscard]] float TransitionDistance() const;
 
-        [[nodiscard]] const buffer::FrameBufferPtr& getFramebuffer() const;
+        [[nodiscard]] const buffer::FrameBufferPtr& FrameBuffer() const;
 
-        [[nodiscard]] const model::Texture2DPtr& getShadowTexture() const;
+        [[nodiscard]] const model::Texture2DPtr& ShadowTexture() const;
 
-        [[nodiscard]] const glm::mat4& getViewMatrix() const;
-        [[nodiscard]] const glm::mat4& getProjectionMatrix() const;
+        [[nodiscard]] const glm::mat4& ViewMatrix() const;
+        [[nodiscard]] const glm::mat4& ProjectionMatrix() const;
     private:
-        void updateLightView(const light::LightPtr& sunPtr);
-        void updateProjection();
+        void UpdateView();
+        void UpdateProjection();
 
-        int mapSize;
+        int m_MapSize;
 
-        float distance;
-        float transitionDistance;
+        float m_Distance;
+        float m_TransitionDistance;
 
-        buffer::FrameBufferPtr frameBufferPtr;
+        buffer::FrameBufferPtr m_FrameBufferPtr;
 
-        ShadowBoxPtr shadowBoxPtr;
+        ShadowBoxPtr m_ShadowBoxPtr;
 
-        std::shared_ptr<glm::mat4> lightViewPtr;
-        std::shared_ptr<glm::mat4> projectionPtr;
+        vd::light::LightPtr m_SunPtr;
+
+        std::shared_ptr<glm::mat4> m_ViewPtr;
+        std::shared_ptr<glm::mat4> m_ProjectionPtr;
     };
     typedef std::shared_ptr<ShadowManager>  ShadowManagerPtr;
 }

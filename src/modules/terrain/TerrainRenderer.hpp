@@ -5,28 +5,28 @@
 #ifndef VD_GAME_ENGINE_TERRAINRENDERER_HPP
 #define VD_GAME_ENGINE_TERRAINRENDERER_HPP
 
-#include <engine/component/Renderer.hpp>
+#include <engine/component/IRenderer.hpp>
+
+#include <engine/shadow/ShadowShader.hpp>
 
 #include "Terrain.hpp"
 #include "TerrainNode.hpp"
 
 namespace mod::terrain {
-    class TerrainRenderer : public vd::component::Renderer {
+    class TerrainRenderer : public vd::component::IRenderer {
     public:
-        TerrainRenderer();
+        TerrainRenderer(TerrainPtr terrainPtr,
+                        vd::shader::ShaderPtr shaderPtr,
+                        vd::Consumer beforeExecution = vd::g_kEmptyConsumer,
+                        vd::Consumer afterExecution = vd::g_kEmptyConsumer);
         ~TerrainRenderer();
 
         void Init() override;
         void Update() override;
-        void Render(const vd::kernel::RenderingPass& renderingPass) override;
+        void Render(const params_t& params) override;
         void CleanUp() override;
-
-        TerrainPtr& GetTerrain();
-        [[nodiscard]] const TerrainPtr& GetTerrain() const;
-        void SetTerrain(const TerrainPtr& terrainPtr);
-
     private:
-        void renderNode(const TerrainNode::ptr_type_t& nodePtr);
+        void RenderNode(const TerrainNode::ptr_type_t& nodePtr);
 
         bool IsReady() override;
 

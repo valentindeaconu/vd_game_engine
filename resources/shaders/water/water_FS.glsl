@@ -21,7 +21,7 @@ uniform float moveFactor;
 uniform float shineDamper;
 uniform float reflectivity;
 uniform vec3 sunColor;
-uniform vec4 baseColor;
+uniform vec3 baseColor;
 uniform float nearPlane;
 uniform float farPlane;
 
@@ -73,8 +73,8 @@ void main()
 	vec3 specularHighlights = sunColor * specular * reflectivity * clamp(waterDepth / 5.0f, 0.0f, 1.0f);
 
 	vec4 waterColor = mix(reflectionColor  + vec4(specularHighlights, 0.0f), refractionColor, refractiveFactor);
-	waterColor = mix(waterColor, baseColor, 0.2f);
+	waterColor = mix(waterColor, vec4(baseColor, 1.0f), 0.2f);
 
-	fColor = mix(waterColor, baseColor, 0.35f);
+	fColor = mix(waterColor, vec4(baseColor, 1.0f), 0.35f);
 	fColor.a = clamp(waterDepth / 5.0f, 0.0f, 1.0f);
 }

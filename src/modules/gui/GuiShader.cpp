@@ -20,10 +20,10 @@ namespace mod::gui {
     GuiShader::~GuiShader() = default;
 
     void GuiShader::updateUniforms(vd::object::EntityPtr entityPtr, size_t meshIndex) {
-        setUniform("transform", entityPtr->GetLocalTransform().Get());
+        setUniform("transform", entityPtr->LocalTransform().Get());
 
         vd::model::activeTexture(1);
-        entityPtr->GetMeshes()[0]->materials[0].diffuseMap->bind();
+        entityPtr->Meshes()[0]->materials[0].diffuseMap->bind();
         setUniformi("guiTexture", 1);
     }
 }

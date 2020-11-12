@@ -3,25 +3,23 @@
 
 #include <engine/foundation/objloader/OBJLoader.hpp>
 
+#include <engine/misc/ObjectOfType.hpp>
 #include <modules/terrain/Terrain.hpp>
 
 #include <unordered_map>
 #include <vector>
 #include <random>
 
-namespace mod::sobj
-{
-    struct PlacementInfo
-    {
+namespace mod::sobj {
+    struct PlacementInfo {
         glm::vec3 location;
         StaticObjectPtr objectPtr;
     };
     typedef std::vector<PlacementInfo>		PlacementInfoVec;
 
-    class StaticObjectPlacer
-    {
+    class StaticObjectPlacer {
     public:
-        StaticObjectPlacer(const terrain::TerrainPtr& terrainPtr, size_t objectCount, float marginOffset);
+        StaticObjectPlacer(size_t objectCount, float marginOffset);
         ~StaticObjectPlacer();
 
         void place();

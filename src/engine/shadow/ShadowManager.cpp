@@ -6,91 +6,90 @@
 
 namespace vd::shadow {
     ShadowManager::ShadowManager()
-        : mapSize(0)
-        , distance(0.0f)
-        , transitionDistance(0.0f)
-        , frameBufferPtr(nullptr)
+        : m_MapSize(0)
+        , m_Distance(0.0f)
+        , m_TransitionDistance(0.0f)
+        , m_FrameBufferPtr(nullptr)
     {
-        lightViewPtr = std::make_shared<glm::mat4>(1.0f);
-        projectionPtr = std::make_shared<glm::mat4>(1.0f);
-        frameBufferPtr = std::make_shared<buffer::FrameBuffer>();
+        m_ViewPtr = std::make_shared<glm::mat4>(1.0f);
+        m_ProjectionPtr = std::make_shared<glm::mat4>(1.0f);
+        m_FrameBufferPtr = std::make_shared<buffer::FrameBuffer>();
     }
 
     ShadowManager::~ShadowManager() = default;
 
-    void ShadowManager::init(const core::WindowPtr& windowPtr,
-                             const core::CameraPtr& cameraPtr,
-                             int mapSize,
-                             float distance,
-                             float transitionDistance,
-                             float offset)
-    {
-        this->mapSize = mapSize;
-        this->distance = distance;
-        this->transitionDistance = transitionDistance;
+    void ShadowManager::Init() {
+        auto& propertiesPtr = ObjectOfType<vd::misc::Properties>::Find();
 
-        this->frameBufferPtr->Allocate(mapSize,
-                                       mapSize,
-                                       false,
-                                       buffer::DepthAttachment::eDepthTexture);
+        m_MapSize = propertiesPtr->Get<int>("Shadow.MapSize");
+        m_Distance = propertiesPtr->Get<int>("Shadow.Distance");
+        m_TransitionDistance = propertiesPtr->Get<int>("Shadow.TransitionDistance");
 
-        this->frameBufferPtr->GetDepthTexture()->bind();
+        m_FrameBufferPtr->Allocate(m_MapSize, m_MapSize,false,buffer::DepthAttachment::eDepthTexture);
 
-        this->frameBufferPtr->GetDepthTexture()->noFilter();
-        this->frameBufferPtr->GetDepthTexture()->wrapClampToBorder();
+        m_FrameBufferPtr->GetDepthTexture()->bind();
+
+        m_FrameBufferPtr->GetDepthTexture()->noFilter();
+        m_FrameBufferPtr->GetDepthTexture()->wrapClampToBorder();
 
         float border[] = {1.0f, 1.0f, 1.0f, 1.0f};
         glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, border);
 
-        this->frameBufferPtr->GetDepthTexture()->unbind();
+        m_FrameBufferPtr->GetDepthTexture()->unbind();
 
-        this->frameBufferPtr->Bind();
+        m_FrameBufferPtr->Bind();
 
         glDrawBuffer(GL_NONE);
         glReadBuffer(GL_NONE);
 
-        this->frameBufferPtr->Unbind();
+        m_FrameBufferPtr->Unbind();
 
-        shadowBoxPtr = std::make_shared<ShadowBox>(windowPtr, cameraPtr, lightViewPtr, distance, offset);
+        m_ShadowBoxPtr = std::make_shared<ShadowBox>(m_ViewPtr, m_Distance, propertiesPtr->Get<int>("Shadow.Offset"));
+
+        m_ShadowBoxPtr->Link();
+
+        auto& lightManagerPtr = ObjectOfType<vd::light::LightManager>::Find();
+        m_SunPtr = lightManagerPtr->GetSun();
     }
 
-    void ShadowManager::update(const light::LightPtr& sunPtr) {
-        shadowBoxPtr->update();
-        updateLightView(sunPtr);
-        updateProjection();
+    void ShadowManager::Update() {
+        m_ShadowBoxPtr->Update();
+
+        UpdateView();
+        UpdateProjection();
     }
 
-    void ShadowManager::cleanUp() {
-        frameBufferPtr->CleanUp();
+    void ShadowManager::CleanUp() {
+        m_FrameBufferPtr->CleanUp();
     }
 
-    float ShadowManager::getDistance() const {
-        return distance;
+    float ShadowManager::Distance() const {
+        return m_Distance;
     }
 
-    float ShadowManager::getTransitionDistance() const {
-        return transitionDistance;
+    float ShadowManager::TransitionDistance() const {
+        return m_TransitionDistance;
     }
 
-    const buffer::FrameBufferPtr &ShadowManager::getFramebuffer() const {
-        return frameBufferPtr;
+    const buffer::FrameBufferPtr &ShadowManager::FrameBuffer() const {
+        return m_FrameBufferPtr;
     }
 
-    const model::Texture2DPtr& ShadowManager::getShadowTexture() const {
-        return frameBufferPtr->GetDepthTexture();
+    const model::Texture2DPtr& ShadowManager::ShadowTexture() const {
+        return m_FrameBufferPtr->GetDepthTexture();
     }
 
-    const glm::mat4& ShadowManager::getViewMatrix() const {
-        return *lightViewPtr;
+    const glm::mat4& ShadowManager::ViewMatrix() const {
+        return *m_ViewPtr;
     }
 
-    const glm::mat4& ShadowManager::getProjectionMatrix() const {
-        return *projectionPtr;
+    const glm::mat4& ShadowManager::ProjectionMatrix() const {
+        return *m_ProjectionPtr;
     }
 
-    void ShadowManager::updateLightView(const light::LightPtr& sunPtr) {
-        const glm::vec3 center = -shadowBoxPtr->getCenter();
-        const glm::vec3 lightDirection = glm::normalize(-sunPtr->GetDirection());
+    void ShadowManager::UpdateView() {
+        const glm::vec3 center = -m_ShadowBoxPtr->Center();
+        const glm::vec3 lightDirection = glm::normalize(-m_SunPtr->GetDirection());
 
         const glm::vec3 x_unit = glm::vec3(1.0f, 0.0f, 0.0f);
         const glm::vec3 y_unit = glm::vec3(0.0f, 1.0f, 0.0f);
@@ -101,22 +100,17 @@ namespace vd::shadow {
         yaw = lightDirection.z > 0 ? yaw - 180 : yaw;
         yaw = (float) glm::radians(yaw);
 
-
-        *lightViewPtr = glm::rotate(glm::mat4(1.0f), pitch, x_unit);
-        *lightViewPtr = glm::rotate(*lightViewPtr, yaw, y_unit);
-        *lightViewPtr = glm::translate(*lightViewPtr, center);
+        *m_ViewPtr = glm::rotate(glm::mat4(1.0f), pitch, x_unit);
+        *m_ViewPtr = glm::rotate(*m_ViewPtr, yaw, y_unit);
+        *m_ViewPtr = glm::translate(*m_ViewPtr, center);
     }
 
-    void ShadowManager::updateProjection() {
-        /**projectionPtr = glm::ortho(shadowBoxPtr->getX().min, shadowBoxPtr->getX().max,
-                shadowBoxPtr->getY().min, shadowBoxPtr->getY().max,
-                shadowBoxPtr->getZ().min, shadowBoxPtr->getZ().max);*/
-
-        *projectionPtr = glm::mat4(1.0f);
-        (*projectionPtr)[0][0] = 2.0f / (shadowBoxPtr->getX().max - shadowBoxPtr->getX().min);
-        (*projectionPtr)[1][1] = 2.0f / (shadowBoxPtr->getY().max - shadowBoxPtr->getY().min);
-        (*projectionPtr)[2][2] = -2.0f / (shadowBoxPtr->getZ().max - shadowBoxPtr->getZ().min);
-        (*projectionPtr)[3][3] = 1.0f;
+    void ShadowManager::UpdateProjection() {
+        *m_ProjectionPtr = glm::mat4(1.0f);
+        (*m_ProjectionPtr)[0][0] = 2.0f / (m_ShadowBoxPtr->X().max - m_ShadowBoxPtr->X().min);
+        (*m_ProjectionPtr)[1][1] = 2.0f / (m_ShadowBoxPtr->Y().max - m_ShadowBoxPtr->Y().min);
+        (*m_ProjectionPtr)[2][2] = -2.0f / (m_ShadowBoxPtr->Z().max - m_ShadowBoxPtr->Z().min);
+        (*m_ProjectionPtr)[3][3] = 1.0f;
     }
 
 }

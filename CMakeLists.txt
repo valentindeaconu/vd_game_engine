@@ -12,7 +12,7 @@ include_directories(src/engine/core/impl)
 include_directories(src/engine/foundation)
 include_directories(src/engine/foundation/img/imgloader)
 include_directories(src/engine/foundation/img/model)
-include_directories(src/engine/foundation/math)
+include_directories(src/engine/math)
 include_directories(src/engine/foundation/objloader)
 include_directories(src/engine/glmodel/buffer)
 include_directories(src/engine/kernel)
@@ -28,24 +28,25 @@ include_directories(src/modules/terrain)
 add_executable(vd_game_engine
         src/engine/collision/Detector.cpp
         src/engine/collision/Detector.hpp
-        src/engine/component/Renderer.cpp
-        src/engine/component/Renderer.hpp
+        src/engine/component/IRenderer.cpp
+        src/engine/component/IRenderer.hpp
+        src/engine/component/IManager.cpp
         src/engine/component/IManager.hpp
         src/engine/config/MetaConfig.hpp
         src/engine/config/MetaConfig.cpp
-        src/engine/core/impl/EntityCamera.cpp
-        src/engine/core/impl/EntityCamera.hpp
-        src/engine/core/impl/FreeCamera.cpp
-        src/engine/core/impl/FreeCamera.hpp
-        src/engine/core/Camera.cpp
-        src/engine/core/Camera.hpp
-        src/engine/core/InputHandler.cpp
-        src/engine/core/InputHandler.hpp
-        src/engine/core/Window.cpp
-        src/engine/core/Window.hpp
+        src/engine/camera/third/ThirdPersonCamera.cpp
+        src/engine/camera/third/ThirdPersonCamera.hpp
+        src/engine/camera/free/FreeCamera.cpp
+        src/engine/camera/free/FreeCamera.hpp
+        src/engine/camera/ICamera.cpp
+        src/engine/camera/ICamera.hpp
+        src/engine/event/EventHandler.cpp
+        src/engine/event/EventHandler.hpp
+        src/engine/window/Window.cpp
+        src/engine/window/Window.hpp
         src/engine/core/AsyncWorker.cpp
         src/engine/core/AsyncWorker.hpp
-        src/engine/core/ObjectOfType.hpp
+        src/engine/misc/ObjectOfType.hpp
         src/engine/culling/FrustumCullingManager.cpp
         src/engine/culling/FrustumCullingManager.hpp
         src/engine/foundation/img/Image.cpp
@@ -56,19 +57,21 @@ add_executable(vd_game_engine
         src/engine/foundation/img/imgloader/IMGLoader.hpp
         src/engine/foundation/img/imghelper/ImageHelper.cpp
         src/engine/foundation/img/imghelper/ImageHelper.hpp
-        src/engine/foundation/math/Transform.cpp
-        src/engine/foundation/math/Transform.hpp
+        src/engine/math/Transform.cpp
+        src/engine/math/Transform.hpp
         src/engine/foundation/objloader/OBJLoader.cpp
         src/engine/foundation/objloader/OBJLoader.hpp
         src/engine/foundation/GL.hpp
-        src/engine/foundation/math/Frustum.cpp
-        src/engine/foundation/math/Frustum.hpp
-        src/engine/foundation/math/Bounds.cpp
-        src/engine/foundation/math/Bounds.hpp
-        src/engine/foundation/math/Plane.hpp
-        src/engine/foundation/math/Plane.cpp
+        src/engine/math/Frustum.cpp
+        src/engine/math/Frustum.hpp
+        src/engine/math/Bounds.cpp
+        src/engine/math/Bounds.hpp
+        src/engine/math/Plane.hpp
+        src/engine/math/Plane.cpp
         src/engine/foundation/datastruct/Tree.cpp
         src/engine/foundation/datastruct/Tree.hpp
+        src/engine/foundation/datastruct/Observer.cpp
+        src/engine/foundation/datastruct/Observer.hpp
         src/engine/foundation/algorithm/TreeHelper.cpp
         src/engine/foundation/algorithm/TreeHelper.hpp
         src/engine/glmodel/buffer/Buffer.hpp
@@ -78,10 +81,10 @@ add_executable(vd_game_engine
         src/engine/glmodel/buffer/FrameBuffer.hpp
         src/engine/glmodel/buffer/PatchBuffer.cpp
         src/engine/glmodel/buffer/PatchBuffer.hpp
-        src/engine/kernel/EngineBlock.cpp
-        src/engine/kernel/EngineBlock.hpp
-        src/engine/kernel/EngineWorker.cpp
-        src/engine/kernel/EngineWorker.hpp
+        src/engine/kernel/Engine.cpp
+        src/engine/kernel/Engine.hpp
+        src/engine/kernel/EngineFactory.cpp
+        src/engine/kernel/EngineFactory.hpp
         src/engine/light/LightManager.cpp
         src/engine/light/LightManager.hpp
         src/engine/light/Light.cpp
@@ -90,6 +93,7 @@ add_executable(vd_game_engine
         src/engine/logger/Logger.hpp
         src/engine/misc/Properties.cpp
         src/engine/misc/Properties.hpp
+        src/engine/misc/Types.hpp
         src/engine/model/Material.hpp
         src/engine/model/Mesh.hpp
         src/engine/model/Texture.cpp
@@ -157,7 +161,7 @@ add_executable(vd_game_engine
         src/modules/water/WaterShader.hpp
         src/modules/water/WaterRenderer.cpp
         src/modules/water/WaterRenderer.hpp
-        src/main.cpp)
+        src/main.cpp src/engine/camera/first/FirstPersonCamera.cpp src/engine/camera/first/FirstPersonCamera.hpp src/engine/component/RenderingPass.cpp src/engine/component/RenderingPass.hpp)
 
 # dependencies
 

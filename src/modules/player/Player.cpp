@@ -14,13 +14,14 @@ namespace mod::player {
 
     void Player::Init() {
         m_EnginePtr = vd::ObjectOfType<vd::Engine>::Find();
+        m_CameraManagerPtr = vd::ObjectOfType<vd::camera::CameraManager>::Find();
         m_TerrainPtr = vd::ObjectOfType<mod::terrain::Terrain>::Find();
-        m_InputHandlerPtr = vd::ObjectOfType<vd::core::InputHandler>::Find();
+        m_EventHandlerPtr = vd::ObjectOfType<vd::event::EventHandler>::Find();
 
         float h = m_TerrainPtr->GetHeight(0.0f, 0.0f);
-        GetWorldTransform().SetTranslation(0.0f, h + m_kModelYOffset, 0.0f);
+        WorldTransform().SetTranslation(0.0f, h + m_kModelYOffset, 0.0f);
 
-        vd::model::MeshPtrVec& meshPtrVec = GetMeshes();
+        vd::model::MeshPtrVec& meshPtrVec = Meshes();
         vd::objloader::OBJLoader objLoader;
         objLoader.load("./resources/objects/nanosuit", "nanosuit.obj", meshPtrVec);
 
@@ -28,10 +29,10 @@ namespace mod::player {
     }
 
     void Player::Update() {
-        if (m_EnginePtr->getCameraMode() == vd::Engine::e3rdPersonCamera)
+        if (m_CameraManagerPtr->Mode() == vd::camera::CameraManager::eThirdPerson)
             Input();
 
-        float currentAngle = GetWorldTransform().GetYAxisRotationAngle();
+        float currentAngle = WorldTransform().GetYAxisRotationAngle();
         currentAngle += m_CurrentTurnSpeed * m_EnginePtr->getFrameTime();
 
         if (currentAngle >= 360.0f) {
@@ -40,13 +41,13 @@ namespace mod::player {
             currentAngle = 360.0f - currentAngle;
         }
 
-        GetWorldTransform().SetYRotationAngle(currentAngle);
+        WorldTransform().SetYRotationAngle(currentAngle);
 
         float distance = m_CurrentSpeed * m_EnginePtr->getFrameTime();
         float dx = distance * glm::sin(glm::radians(currentAngle));
         float dz = distance * glm::cos(glm::radians(currentAngle));
 
-        glm::vec3 currentPosition = GetWorldTransform().GetTranslationVector();
+        glm::vec3 currentPosition = WorldTransform().GetTranslationVector();
         currentPosition.x += dx;
         currentPosition.z += dz;
 
@@ -61,11 +62,15 @@ namespace mod::player {
             m_IsJumping = false;
         }
 
-        GetWorldTransform().SetTranslation(currentPosition);
+        WorldTransform().SetTranslation(currentPosition);
     }
 
     void Player::CleanUp() {
         Entity::CleanUp(); // call super.CleanUp() to clear meshBuffers;
+    }
+
+    float Player::ModelYOffset() const {
+        return m_kModelYOffset;
     }
 
     void Player::Jump() {
@@ -77,23 +82,23 @@ namespace mod::player {
     }
 
     void Player::Input() {
-        if (m_InputHandlerPtr->getKeyHolding(GLFW_KEY_W)) {
+        if (m_EventHandlerPtr->KeyHolding(GLFW_KEY_W)) {
             this->m_CurrentSpeed = m_kRunSpeed;
-        } else if (m_InputHandlerPtr->getKeyHolding(GLFW_KEY_S)) {
+        } else if (m_EventHandlerPtr->KeyHolding(GLFW_KEY_S)) {
             this->m_CurrentSpeed = -m_kRunSpeed;
         } else {
             this->m_CurrentSpeed = 0.0f;
         }
 
-        if (m_InputHandlerPtr->getKeyHolding(GLFW_KEY_D)) {
+        if (m_EventHandlerPtr->KeyHolding(GLFW_KEY_D)) {
             this->m_CurrentTurnSpeed = -m_kTurnSpeed;
-        } else if (m_InputHandlerPtr->getKeyHolding(GLFW_KEY_A)) {
+        } else if (m_EventHandlerPtr->KeyHolding(GLFW_KEY_A)) {
             this->m_CurrentTurnSpeed = m_kTurnSpeed;
         } else {
             this->m_CurrentTurnSpeed = 0.0f;
         }
 
-        if (m_InputHandlerPtr->getKeyDown(GLFW_KEY_SPACE)) {
+        if (m_EventHandlerPtr->KeyDown(GLFW_KEY_SPACE)) {
             Jump();
         }
     }

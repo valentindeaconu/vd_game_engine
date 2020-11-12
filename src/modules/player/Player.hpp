@@ -5,10 +5,11 @@
 
 #include <engine/foundation/objloader/OBJLoader.hpp>
 
-#include <engine/core/ObjectOfType.hpp>
+#include <engine/misc/ObjectOfType.hpp>
 
-#include <engine/kernel/EngineBlock.hpp>
-#include <engine/core/InputHandler.hpp>
+#include <engine/kernel/Engine.hpp>
+#include <engine/camera/ICamera.hpp>
+#include <engine/event/EventHandler.hpp>
 #include <modules/terrain/Terrain.hpp>
 
 namespace mod::player {
@@ -20,6 +21,8 @@ namespace mod::player {
         void Init() override;
         void Update() override;
         void CleanUp() override;
+
+        [[nodiscard]] float ModelYOffset() const;
     private:
         void Jump();
         void Input();
@@ -32,7 +35,8 @@ namespace mod::player {
         bool m_IsJumping;
 
         vd::EnginePtr m_EnginePtr;
-        vd::core::InputHandlerPtr m_InputHandlerPtr;
+        vd::camera::CameraManagerPtr m_CameraManagerPtr;
+        vd::event::EventHandlerPtr m_EventHandlerPtr;
         mod::terrain::TerrainPtr m_TerrainPtr;
 
         const float m_kRunSpeed = 20.0f; // units per second

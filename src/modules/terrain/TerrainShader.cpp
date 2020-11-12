@@ -81,23 +81,22 @@ namespace mod::terrain {
     TerrainShader::~TerrainShader() = default;
 
     void TerrainShader::updateUniforms(vd::object::EntityPtr entityPtr, size_t meshIndex) {
-        setUniform("worldModel", entityPtr->GetWorldTransform().Get());
+        setUniform("worldModel", entityPtr->WorldTransform().Get());
 
-        auto& enginePtr = vd::ObjectOfType<vd::Engine>::Find();
-        setUniform("view", enginePtr->getCamera()->getViewMatrix());
-        setUniform("projection", enginePtr->getWindow()->getProjectionMatrix());
+        setUniform("view", vd::ObjectOfType<vd::camera::ICamera>::Find()->ViewMatrix());
+        setUniform("projection", vd::ObjectOfType<vd::window::Window>::Find()->ProjectionMatrix());
 
-        setUniform("cameraPosition", enginePtr->getCamera()->getPosition());
+        setUniform("cameraPosition", vd::ObjectOfType<vd::camera::ICamera>::Find()->Position());
 
-        auto shadowManagerPtr = enginePtr->getShadowManager();
-        setUniformf("shadowDistance", shadowManagerPtr->getDistance());
-        setUniformf("shadowTransitionDistance", shadowManagerPtr->getTransitionDistance());
+        auto shadowManagerPtr = vd::ObjectOfType<vd::shadow::ShadowManager>::Find();
+        setUniformf("shadowDistance", shadowManagerPtr->Distance());
+        setUniformf("shadowTransitionDistance", shadowManagerPtr->TransitionDistance());
 
-        setUniform("lightView", shadowManagerPtr->getViewMatrix());
-        setUniform("lightProjection", shadowManagerPtr->getProjectionMatrix());
+        setUniform("lightView", shadowManagerPtr->ViewMatrix());
+        setUniform("lightProjection", shadowManagerPtr->ProjectionMatrix());
 
         vd::model::activeTexture(0);
-        shadowManagerPtr->getShadowTexture()->bind();
+        shadowManagerPtr->ShadowTexture()->bind();
         setUniformi("shadowMap", 0);
 
         const auto& terrainPtr = std::dynamic_pointer_cast<Terrain>(entityPtr);
@@ -144,7 +143,7 @@ namespace mod::terrain {
             setUniformf("materials[" + std::to_string(i) + "].heightScaling", material.displaceScale);
         }
 
-        setUniform("clipPlane", enginePtr->getClipPlane());
+        setUniform("clipPlane", vd::ObjectOfType<vd::Engine>::Find()->getClipPlane());
 
         static bool loadedBasics = false;
         if (!loadedBasics)

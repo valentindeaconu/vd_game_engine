@@ -6,9 +6,12 @@
 
 namespace mod::terrain {
 
-    TerrainRenderer::TerrainRenderer()
-        : vd::component::Renderer()
-        , m_TerrainPtr(nullptr)
+    TerrainRenderer::TerrainRenderer(TerrainPtr terrainPtr,
+                                     vd::shader::ShaderPtr shaderPtr,
+                                     vd::Consumer beforeExecution,
+                                     vd::Consumer afterExecution)
+        : IRenderer(std::move(shaderPtr), std::move(beforeExecution), std::move(afterExecution))
+        , m_TerrainPtr(std::move(terrainPtr))
     {
     }
 
@@ -22,25 +25,31 @@ namespace mod::terrain {
         m_TerrainPtr->Update();
     }
 
-    void TerrainRenderer::Render(const vd::kernel::RenderingPass& renderingPass) {
-        if (IsReady() && renderingPass != vd::kernel::eShadow) {
-            if (m_ConfigPtr != nullptr) {
-                m_ConfigPtr->enable();
-            }
-
-            const auto& rootNodes = m_TerrainPtr->GetRootNodes();
-
-            for (auto& rootNode : rootNodes) {
-                renderNode(rootNode);
-            }
-
-            if (m_ConfigPtr != nullptr) {
-                m_ConfigPtr->disable();
-            }
+    void TerrainRenderer::Render(const params_t& params) {
+        if (!IsReady()) {
+            vd::Logger::warn("TerrainRenderer was not ready to render");
+            return;
         }
+
+        const auto& renderingPass = params.at("RenderingPass");
+        if (renderingPass == "Shadow") {
+            return;
+        }
+
+        Prepare();
+
+        m_ShaderPtr->bind();
+
+        const auto& rootNodes = m_TerrainPtr->GetRootNodes();
+
+        for (auto& rootNode : rootNodes) {
+            RenderNode(rootNode);
+        }
+
+        Finish();
     }
 
-    void TerrainRenderer::renderNode(const TerrainNode::ptr_type_t& nodePtr) {
+    void TerrainRenderer::RenderNode(const TerrainNode::ptr_type_t& nodePtr) {
         if (nodePtr != nullptr) {
             if (nodePtr->IsLeaf()) {
                 m_ShaderPtr->bind();
@@ -50,12 +59,12 @@ namespace mod::terrain {
 
                 m_ShaderPtr->updateUniforms(m_TerrainPtr, 0);
 
-                vd::buffer::BufferPtrVec& buffers = m_TerrainPtr->GetBuffers();
+                vd::buffer::BufferPtrVec& buffers = m_TerrainPtr->Buffers();
                 buffers[0]->Render();
             } else {
                 const auto& children = nodePtr->GetChildren();
                 for (const auto& child : children) {
-                    renderNode(std::dynamic_pointer_cast<TerrainNode>(child));
+                    RenderNode(std::dynamic_pointer_cast<TerrainNode>(child));
                 }
             }
         }
@@ -65,19 +74,7 @@ namespace mod::terrain {
         m_TerrainPtr->CleanUp();
     }
 
-    TerrainPtr& TerrainRenderer::GetTerrain() {
-        return m_TerrainPtr;
-    }
-
-    const TerrainPtr& TerrainRenderer::GetTerrain() const {
-        return m_TerrainPtr;
-    }
-
-    void TerrainRenderer::SetTerrain(const TerrainPtr& terrainPtr) {
-        this->m_TerrainPtr = terrainPtr;
-    }
-
     bool TerrainRenderer::IsReady() {
-        return Renderer::IsReady() && m_TerrainPtr != nullptr;
+        return IRenderer::IsReady() && m_TerrainPtr != nullptr;
     }
 }

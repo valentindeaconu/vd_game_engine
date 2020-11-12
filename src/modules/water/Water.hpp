@@ -11,8 +11,8 @@
 
 #include <engine/misc/Properties.hpp>
 
-#include <engine/core/ObjectOfType.hpp>
-#include <engine/kernel/EngineBlock.hpp>
+#include <engine/misc/ObjectOfType.hpp>
+#include <engine/kernel/Engine.hpp>
 
 #include <memory>
 #include <numbers>

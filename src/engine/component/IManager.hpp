@@ -5,12 +5,14 @@
 #ifndef VD_GAME_ENGINE_IMANAGER_HPP
 #define VD_GAME_ENGINE_IMANAGER_HPP
 
+#include <engine/foundation/datastruct/Observer.hpp>
+
 namespace vd::component {
-    class IManager {
+    class IManager : public vd::datastruct::Observer {
     public:
-        virtual void Init() = 0;
-        virtual void Update() = 0;
-        virtual void CleanUp() = 0;
+        static const vd::datastruct::Observable::priority_t kDefaultPriority = 100;
+
+        void Render(const vd::datastruct::Observer::params_t& params) override;
     };
 }
 

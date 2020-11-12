@@ -46,13 +46,12 @@ namespace mod::sobj {
     StaticObjectShader::~StaticObjectShader() = default;
 
     void StaticObjectShader::updateUniforms(vd::object::EntityPtr entityPtr, size_t meshIndex) {
-        setUniform("model", entityPtr->GetWorldTransform().Get());
+        setUniform("model", entityPtr->WorldTransform().Get());
 
-        auto& enginePtr = vd::ObjectOfType<vd::Engine>::Find();
-        setUniform("view", enginePtr->getCamera()->getViewMatrix());
-        setUniform("projection", enginePtr->getWindow()->getProjectionMatrix());
+        setUniform("view", vd::ObjectOfType<vd::camera::ICamera>::Find()->ViewMatrix());
+        setUniform("projection", vd::ObjectOfType<vd::window::Window>::Find()->ProjectionMatrix());
 
-        vd::model::MeshPtr& meshPtr = entityPtr->GetMeshes()[meshIndex];
+        vd::model::MeshPtr& meshPtr = entityPtr->Meshes()[meshIndex];
 
         if (!meshPtr->materials.empty()) {
             vd::model::Material& meshMaterial = meshPtr->materials.front();
@@ -70,7 +69,7 @@ namespace mod::sobj {
             }
         }
 
-        setUniform("clipPlane", enginePtr->getClipPlane());
+        setUniform("clipPlane", vd::ObjectOfType<vd::Engine>::Find()->getClipPlane());
 
         static bool loadedBasics = false;
         if (!loadedBasics) {

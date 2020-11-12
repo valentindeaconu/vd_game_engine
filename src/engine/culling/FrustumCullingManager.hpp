@@ -7,10 +7,10 @@
 
 #include <engine/component/IManager.hpp>
 
-#include <engine/foundation/math/Plane.hpp>
-#include <engine/foundation/math/Frustum.hpp>
+#include <engine/math/Plane.hpp>
+#include <engine/math/Frustum.hpp>
 
-#include <engine/core/ObjectOfType.hpp>
+#include <engine/misc/ObjectOfType.hpp>
 
 #include <memory>
 
@@ -34,8 +34,8 @@ namespace vd::culling {
 
         struct { float width, height; } m_Near, m_Far;
 
-        core::WindowPtr m_WindowPtr;
-        core::CameraPtr m_CameraPtr;
+        window::WindowPtr m_WindowPtr;
+        camera::CameraPtr m_CameraPtr;
     };
     typedef std::shared_ptr<FrustumCullingManager>  FrustumCullingManagerPtr;
 }

@@ -13,7 +13,7 @@ namespace mod::sobj
     void StaticObject::Init() {
         vd::objloader::OBJLoader objLoader;
 
-        vd::model::MeshPtrVec& meshPtrVec = GetMeshes();
+        vd::model::MeshPtrVec& meshPtrVec = Meshes();
         objLoader.load(path, objFile, meshPtrVec);
 
         Entity::Init(); // call super.Init() to initialize meshBuffers;

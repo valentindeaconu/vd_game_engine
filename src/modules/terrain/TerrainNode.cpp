@@ -30,13 +30,13 @@ namespace mod::terrain {
         ComputeEdgeMiddles();
     }
 
-    void TerrainNode::Update(const vd::core::CameraPtr& cameraPtr) {
+    void TerrainNode::Update(const vd::camera::CameraPtr& cameraPtr) {
         // Set this node as leaf
         this->Clear();
 
         // If this node's level is greater or equal to the maximum level, then just ignore it
         if (m_Level < m_kMaxLevelOfDetail) {
-            const auto& cameraPosition = cameraPtr->getPosition();
+            const auto& cameraPosition = cameraPtr->Position();
 
             // Compute if this node exceeds his level of detail threshold
             const auto levelMinRange = float(m_kLevelOfDetailRangesPtr->at(m_Level));

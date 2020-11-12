@@ -3,11 +3,13 @@
 
 #include <engine/shader/Shader.hpp>
 
-#include <engine/kernel/EngineBlock.hpp>
+#include <engine/kernel/Engine.hpp>
 
 #include <engine/light/LightManager.hpp>
 
-#include <engine/core/ObjectOfType.hpp>
+#include <engine/misc/ObjectOfType.hpp>
+#include <engine/window/Window.hpp>
+#include <engine/camera/ICamera.hpp>
 #include <engine/misc/Properties.hpp>
 
 namespace mod::player {

@@ -3,8 +3,11 @@
 
 #include <engine/shader/Shader.hpp>
 
-#include <engine/kernel/EngineBlock.hpp>
-#include <engine/core/ObjectOfType.hpp>
+#include <engine/misc/ObjectOfType.hpp>
+#include <engine/misc/Properties.hpp>
+#include <engine/kernel/Engine.hpp>
+#include <engine/camera/ICamera.hpp>
+#include <engine/window/Window.hpp>
 
 namespace mod::sky {
     class SkyShader : public vd::shader::Shader {

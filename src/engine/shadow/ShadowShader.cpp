@@ -20,13 +20,13 @@ namespace vd::shadow {
     ShadowShader::~ShadowShader() = default;
 
     void ShadowShader::updateUniforms(vd::object::EntityPtr entityPtr, size_t meshIndex) {
-        setUniform("model", entityPtr->GetWorldTransform().Get());
+        setUniform("model", entityPtr->WorldTransform().Get());
 
         auto shadowManagerPtr = vd::ObjectOfType<vd::shadow::ShadowManager>::Find();
-        setUniform("view", shadowManagerPtr->getViewMatrix());
-        setUniform("projection", shadowManagerPtr->getProjectionMatrix());
+        setUniform("view", shadowManagerPtr->ViewMatrix());
+        setUniform("projection", shadowManagerPtr->ProjectionMatrix());
 
-        vd::model::MeshPtr& meshPtr = entityPtr->GetMeshes()[meshIndex];
+        vd::model::MeshPtr& meshPtr = entityPtr->Meshes()[meshIndex];
 
         if (!meshPtr->materials.empty()) {
             vd::model::Material& meshMaterial = meshPtr->materials.front();
@@ -37,11 +37,5 @@ namespace vd::shadow {
                 setUniformi("diffuseMap", 0);
             }
         }
-    }
-
-    ShadowShaderPtr& GetShadowShader() {
-        static ShadowShaderPtr shadowShaderPtr = std::make_shared<ShadowShader>();
-
-        return shadowShaderPtr;
     }
 }

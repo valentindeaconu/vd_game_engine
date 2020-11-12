@@ -2,11 +2,11 @@
 
 namespace mod::sobj
 {
-    StaticObjectPlacer::StaticObjectPlacer(const mod::terrain::TerrainPtr& terrainPtr, size_t objectCount, float marginOffset)
-        : terrainPtr(terrainPtr)
-        , objectCount(objectCount)
+    StaticObjectPlacer::StaticObjectPlacer(size_t objectCount, float marginOffset)
+        : objectCount(objectCount)
         , marginOffset(marginOffset)
     {
+        terrainPtr = vd::ObjectOfType<mod::terrain::Terrain>::Find();
     }
 
     StaticObjectPlacer::~StaticObjectPlacer() = default;

@@ -11,8 +11,8 @@
 
 #include <engine/misc/Properties.hpp>
 
-#include <engine/core/Camera.hpp>
-#include <engine/core/ObjectOfType.hpp>
+#include <engine/camera/ICamera.hpp>
+#include <engine/misc/ObjectOfType.hpp>
 
 #include <memory>
 #include <vector>
@@ -57,7 +57,7 @@ namespace mod::terrain {
         vd::misc::PropertiesPtr m_PropsPtr;
 
         // Camera required for update optimization
-        vd::core::CameraPtr m_CameraPtr;
+        vd::camera::CameraPtr m_CameraPtr;
 
         // Level of detail nodes
         TerrainNode::ptr_type_t m_RootNode;

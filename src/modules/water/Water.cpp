@@ -18,8 +18,8 @@ namespace mod::water {
     void Water::Init() {
         m_EnginePtr = vd::ObjectOfType<vd::Engine>::Find();
 
-        GetLocalTransform().SetScaling(6000.0f, 0.0f, 6000.0f);
-        GetLocalTransform().SetTranslation(-3000.0f, 180.0f, -3000.0f);
+        LocalTransform().SetScaling(6000.0f, 0.0f, 6000.0f);
+        LocalTransform().SetTranslation(-3000.0f, 180.0f, -3000.0f);
 
         PopulatePacks();
 
@@ -127,7 +127,7 @@ namespace mod::water {
 
         meshPtr->indices = { 0, 2, 1, 1, 2, 3 };
 
-        GetMeshes().push_back(meshPtr);
+        Meshes().push_back(meshPtr);
     }
 }
 

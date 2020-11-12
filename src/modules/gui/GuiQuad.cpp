@@ -10,14 +10,14 @@ namespace mod::gui {
                      const glm::vec2& scale)
        : m_Texture(texture)
    {
-       this->GetLocalTransform().SetTranslation(position.x, position.y, 0.0f);
-       this->GetLocalTransform().SetScaling(scale.x, scale.y, 1.0f);
+       this->LocalTransform().SetTranslation(position.x, position.y, 0.0f);
+       this->LocalTransform().SetScaling(scale.x, scale.y, 1.0f);
     }
 
     GuiQuad::~GuiQuad() = default;
 
     void GuiQuad::Init() {
-        vd::model::MeshPtrVec& meshPtrVec = GetMeshes();
+        vd::model::MeshPtrVec& meshPtrVec = Meshes();
 
         vd::model::MeshPtr meshPtr = std::make_shared<vd::model::Mesh>();
 

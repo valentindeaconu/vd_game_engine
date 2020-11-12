@@ -6,7 +6,7 @@ namespace mod::sky {
     Sky::~Sky() = default;
 
     void Sky::Init() {
-        vd::model::MeshPtrVec& meshPtrVec = GetMeshes();
+        vd::model::MeshPtrVec& meshPtrVec = Meshes();
 
         vd::model::MeshPtr meshPtr = std::make_shared<vd::model::Mesh>();
 

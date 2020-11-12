@@ -47,16 +47,15 @@ namespace mod::water {
     void WaterShader::updateUniforms(vd::object::EntityPtr entityPtr, size_t meshIndex) {
         WaterPtr waterPtr = std::dynamic_pointer_cast<Water>(entityPtr);
 
-        setUniform("model", waterPtr->GetLocalTransform().Get());
+        setUniform("model", waterPtr->LocalTransform().Get());
 
-        auto& enginePtr = vd::ObjectOfType<vd::Engine>::Find();
-        setUniform("view", enginePtr->getCamera()->getViewMatrix());
-        setUniform("projection", enginePtr->getWindow()->getProjectionMatrix());
+        setUniform("view", vd::ObjectOfType<vd::camera::ICamera>::Find()->ViewMatrix());
+        setUniform("projection", vd::ObjectOfType<vd::window::Window>::Find()->ProjectionMatrix());
 
-        setUniform("cameraPosition", enginePtr->getCamera()->getPosition());
+        setUniform("cameraPosition", vd::ObjectOfType<vd::camera::ICamera>::Find()->Position());
 
-        setUniformf("nearPlane", enginePtr->getWindow()->getNearPlane());
-        setUniformf("farPlane", enginePtr->getWindow()->getFarPlane());
+        setUniformf("nearPlane", vd::ObjectOfType<vd::window::Window>::Find()->NearPlane());
+        setUniformf("farPlane", vd::ObjectOfType<vd::window::Window>::Find()->FarPlane());
 
         vd::model::activeTexture(0);
         waterPtr->GetReflectionFramebuffer()->GetColorTexture()->bind();
@@ -95,7 +94,6 @@ namespace mod::water {
             setUniformf("waveStrength", propsPtr->Get<float>("Wave.Strength"));
             setUniformf("shineDamper", propsPtr->Get<float>("ShineDamper"));
             setUniformf("reflectivity", propsPtr->Get<float>("Reflectivity"));
-
             setUniform("baseColor", propsPtr->Get<glm::vec3>("BaseColor"));
 
             loadedBasics = true;

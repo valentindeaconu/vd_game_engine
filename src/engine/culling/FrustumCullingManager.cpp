@@ -15,8 +15,8 @@ namespace vd::culling {
     FrustumCullingManager::~FrustumCullingManager() = default;
 
     void FrustumCullingManager::Init() {
-        m_CameraPtr = ObjectOfType<core::Camera>::Find();
-        m_WindowPtr = ObjectOfType<core::Window>::Find();
+        m_CameraPtr = ObjectOfType<camera::ICamera>::Find();
+        m_WindowPtr = ObjectOfType<window::Window>::Find();
 
         UpdateVertices();
         UpdatePlanes();
@@ -39,19 +39,19 @@ namespace vd::culling {
     }
 
     void FrustumCullingManager::UpdateVertices() {
-        glm::vec3 cameraPosition = m_CameraPtr->getPosition();
-        glm::vec3 forward = m_CameraPtr->getDirection();
-        glm::vec3 right = m_CameraPtr->getRightDirection();
-        glm::vec3 up = m_CameraPtr->getUpDirection();
+        glm::vec3 cameraPosition = m_CameraPtr->Position();
+        glm::vec3 forward = m_CameraPtr->Forward();
+        glm::vec3 right = m_CameraPtr->Right();
+        glm::vec3 up = m_CameraPtr->Up();
 
-        float zNear = m_WindowPtr->getNearPlane();
-        float zFar = m_WindowPtr->getFarPlane();
+        float zNear = m_WindowPtr->NearPlane();
+        float zFar = m_WindowPtr->FarPlane();
 
         // Compute center points
         glm::vec3 fc = cameraPosition + (forward * zFar); // far plane center point
         glm::vec3 nc = cameraPosition + (forward * zNear); // near plane center point
 
-        if (m_WindowPtr->isPerspectiveChanged()) {
+        if (m_WindowPtr->PerspectiveChanged()) {
             UpdateWidthsAndHeights();
         }
 
@@ -113,10 +113,10 @@ namespace vd::culling {
     }
 
     void FrustumCullingManager::UpdateWidthsAndHeights() {
-        float zNear = m_WindowPtr->getNearPlane();
-        float zFar = m_WindowPtr->getFarPlane();
-        float fovY = m_WindowPtr->getFieldOfView();
-        float aspect = m_WindowPtr->getAspectRatio();
+        float zNear = m_WindowPtr->NearPlane();
+        float zFar = m_WindowPtr->FarPlane();
+        float fovY = m_WindowPtr->FieldOfView();
+        float aspect = m_WindowPtr->AspectRatio();
 
         m_Far.width = zFar * std::tan(glm::radians(fovY));
         m_Near.width = zNear * std::tan(glm::radians(fovY));
