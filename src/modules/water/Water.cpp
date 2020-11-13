@@ -8,8 +8,8 @@ namespace mod::water {
     Water::Water(const std::string& propsFilePath)
         : m_PropsPtr(vd::misc::Properties::Create<vd::misc::Properties::eFile>(propsFilePath))
         , m_MoveFactor(0.0f)
-        , m_ReflectionFBO(std::make_shared<vd::buffer::FrameBuffer>())
-        , m_RefractionFBO(std::make_shared<vd::buffer::FrameBuffer>())
+        , m_ReflectionFBO(std::make_shared<vd::gl::FrameBuffer>())
+        , m_RefractionFBO(std::make_shared<vd::gl::FrameBuffer>())
     {
     }
 
@@ -28,12 +28,12 @@ namespace mod::water {
         m_ReflectionFBO->Allocate(m_PropsPtr->Get<int>("Reflection.Width"),
                                   m_PropsPtr->Get<int>("Reflection.Height"),
                                   true,
-                                  vd::buffer::DepthAttachment::eDepthBuffer);
+                                  vd::gl::DepthAttachment::eDepthBuffer);
 
         m_RefractionFBO->Allocate(m_PropsPtr->Get<int>("Refraction.Width"),
                                   m_PropsPtr->Get<int>("Refraction.Height"),
                                   true,
-                                  vd::buffer::DepthAttachment::eDepthTexture);
+                                  vd::gl::DepthAttachment::eDepthTexture);
 
         Entity::Init();
     }
@@ -66,11 +66,11 @@ namespace mod::water {
         throw std::runtime_error("water current pack '" + m_CurrentPack + "' does not exists");
     }
 
-    const vd::buffer::FrameBufferPtr &Water::GetReflectionFramebuffer() const {
+    const vd::gl::FrameBufferPtr &Water::GetReflectionFramebuffer() const {
         return m_ReflectionFBO;
     }
 
-    const vd::buffer::FrameBufferPtr &Water::GetRefractionFramebuffer() const {
+    const vd::gl::FrameBufferPtr &Water::GetRefractionFramebuffer() const {
         return m_RefractionFBO;
     }
 
@@ -91,15 +91,15 @@ namespace mod::water {
                 vd::model::Material material;
 
                 material.name = m_PropsPtr->Get<std::string>(prefix + ".Name");
-                material.displaceMap = vd::model::TextureService::get(m_PropsPtr->Get<std::string>(prefix + ".DuDv"));
-                material.displaceMap->bind();
-                material.displaceMap->bilinearFilter();
-                material.displaceMap->unbind();
+                material.displaceMap = vd::gl::TextureService::Get(m_PropsPtr->Get<std::string>(prefix + ".DuDv"));
+                material.displaceMap->Bind();
+                material.displaceMap->BilinearFilter();
+                material.displaceMap->Unbind();
 
-                material.normalMap = vd::model::TextureService::get(m_PropsPtr->Get<std::string>(prefix + ".Normal"));
-                material.normalMap->bind();
-                material.normalMap->bilinearFilter();
-                material.normalMap->unbind();
+                material.normalMap = vd::gl::TextureService::Get(m_PropsPtr->Get<std::string>(prefix + ".Normal"));
+                material.normalMap->Bind();
+                material.normalMap->BilinearFilter();
+                material.normalMap->Unbind();
 
                 m_PacksMap[material.name] = material;
 
@@ -119,10 +119,10 @@ namespace mod::water {
         vd::model::MeshPtr meshPtr = std::make_shared<vd::model::Mesh>();
 
         meshPtr->vertices = {
-                { .Position = glm::vec3(0.0f, 0.0f, 1.0f) },
-                { .Position = glm::vec3(0.0f, 0.0f, 0.0f) },
-                { .Position = glm::vec3(1.0f, 0.0f, 1.0f) },
-                { .Position = glm::vec3(1.0f, 0.0f, 0.0f) }
+                vd::model::Vertex(glm::vec3(0.0f, 0.0f, 1.0f)),
+                vd::model::Vertex(glm::vec3(0.0f, 0.0f, 0.0f)),
+                vd::model::Vertex(glm::vec3(1.0f, 0.0f, 1.0f)),
+                vd::model::Vertex(glm::vec3(1.0f, 0.0f, 0.0f))
         };
 
         meshPtr->indices = { 0, 2, 1, 1, 2, 3 };

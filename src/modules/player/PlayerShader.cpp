@@ -50,7 +50,7 @@ namespace mod::player
     void PlayerShader::updateUniforms(vd::object::EntityPtr entityPtr, size_t meshIndex) {
         setUniform("model", entityPtr->WorldTransform().Get());
 
-        setUniform("view", vd::ObjectOfType<vd::camera::ICamera>::Find()->ViewMatrix());
+        setUniform("view", vd::ObjectOfType<vd::camera::Camera>::Find()->ViewMatrix());
         setUniform("projection", vd::ObjectOfType<vd::window::Window>::Find()->ProjectionMatrix());
 
         vd::model::MeshPtr& meshPtr = entityPtr->Meshes()[meshIndex];
@@ -61,14 +61,14 @@ namespace mod::player
             vd::model::Material& meshMaterial = meshPtr->materials.front();
 
             if (meshMaterial.diffuseMap != nullptr) {
-                vd::model::activeTexture(0);
-                meshMaterial.diffuseMap->bind();
+                vd::gl::ActiveTexture(0);
+                meshMaterial.diffuseMap->Bind();
                 setUniformi("diffuseMap", 0);
             }
 
             if (meshMaterial.specularMap != nullptr) {
-                vd::model::activeTexture(1);
-                meshMaterial.specularMap->bind();
+                vd::gl::ActiveTexture(1);
+                meshMaterial.specularMap->Bind();
                 setUniformi("specularMap", 1);
             }
         }

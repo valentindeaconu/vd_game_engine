@@ -10,7 +10,7 @@
 
 #include <engine/component/IManager.hpp>
 
-#include <engine/misc/ObjectOfType.hpp>
+#include <engine/kernel/ObjectOfType.hpp>
 #include <engine/misc/Properties.hpp>
 
 #include "Light.hpp"

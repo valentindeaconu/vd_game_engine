@@ -22,8 +22,8 @@
 #include <modules/terrain/TerrainShader.hpp>
 
 // shadow
-#include <engine/shadow/ShadowManager.hpp>
-#include <engine/shadow/ShadowShader.hpp>
+#include <modules/shadow/ShadowManager.hpp>
+#include <modules/shadow/ShadowShader.hpp>
 
 // object generator
 #include <modules/sobj/StaticObjectRenderer.hpp>
@@ -41,7 +41,7 @@
 #include <modules/water/WaterShader.hpp>
 
 // object finder
-#include <engine/misc/ObjectOfType.hpp>
+#include <engine/kernel/ObjectOfType.hpp>
 
 #include <engine/misc/Properties.hpp>
 
@@ -59,7 +59,7 @@ void createAndPlaceStaticObjects(vd::EnginePtr& enginePtr);
 mod::water::WaterPtr createWater(vd::EnginePtr& enginePtr);
 
 [[maybe_unused]] void createGUI(vd::EnginePtr& enginePtr,
-                                const vd::model::Texture2DPtr& texturePtr,
+                                const vd::gl::Texture2DPtr& texturePtr,
                                 const glm::vec2& position,
                                 const glm::vec2& scale);
 
@@ -163,11 +163,11 @@ mod::sky::SkyPtr createSky(vd::EnginePtr& enginePtr) {
 }
 
 void createShadow(vd::EnginePtr& enginePtr) {
-    vd::shadow::ShadowManagerPtr shadowManagerPtr = std::make_shared<vd::shadow::ShadowManager>();
+    mod::shadow::ShadowManagerPtr shadowManagerPtr = std::make_shared<mod::shadow::ShadowManager>();
 
-    enginePtr->Subscribe(shadowManagerPtr, vd::shadow::ShadowManager::kDefaultPriority);
+    enginePtr->Subscribe(shadowManagerPtr, mod::shadow::ShadowManager::kDefaultPriority);
 
-    vd::ObjectOfType<vd::shadow::ShadowManager>::Provide(shadowManagerPtr);
+    vd::ObjectOfType<mod::shadow::ShadowManager>::Provide(shadowManagerPtr);
 
     vd::component::RenderingPass shadowRenderingPass(
         "Shadow",
@@ -180,8 +180,8 @@ void createShadow(vd::EnginePtr& enginePtr) {
 
     enginePtr->Add(shadowRenderingPass);
 
-    vd::shadow::ShadowShaderPtr shadowShaderPtr = std::make_shared<vd::shadow::ShadowShader>();
-    vd::ObjectOfType<vd::shadow::ShadowShader>::Provide(shadowShaderPtr);
+    mod::shadow::ShadowShaderPtr shadowShaderPtr = std::make_shared<mod::shadow::ShadowShader>();
+    vd::ObjectOfType<mod::shadow::ShadowShader>::Provide(shadowShaderPtr);
 }
 
 void createAndPlaceStaticObjects(vd::EnginePtr& enginePtr) {
@@ -214,21 +214,21 @@ mod::water::WaterPtr createWater(vd::EnginePtr& enginePtr) {
             std::make_shared<mod::water::WaterRenderer>(waterPtr, waterShaderPtr, before, after);
 
     vd::Predicate passPrecondition = [w = waterPtr.get()]() {
-        return vd::ObjectOfType<vd::camera::ICamera>::Find()->Position().y > w->GetHeight();
+        return vd::ObjectOfType<vd::camera::Camera>::Find()->Position().y > w->GetHeight();
     };
 
     vd::Consumer reflectionPassBefore = [e = enginePtr.get(), w = waterPtr.get()] {
         e->setClipPlane(glm::vec4(0.0f, 1.0f, 0.0f, -w->GetHeight() + 1.0f));
         glEnable(GL_CLIP_DISTANCE0);
 
-        vd::ObjectOfType<vd::camera::ICamera>::Find()->Reflect(vd::camera::ICamera::eY, w->GetHeight());
+        vd::ObjectOfType<vd::camera::Camera>::Find()->Reflect(vd::camera::Camera::eY, w->GetHeight());
     };
 
     vd::Consumer reflectionPassAfter = [e = enginePtr.get(), w = waterPtr.get()] {
         e->setClipPlane(glm::vec4(0.0f));
         glDisable(GL_CLIP_DISTANCE0);
 
-        vd::ObjectOfType<vd::camera::ICamera>::Find()->Reflect(vd::camera::ICamera::eY, w->GetHeight());
+        vd::ObjectOfType<vd::camera::Camera>::Find()->Reflect(vd::camera::Camera::eY, w->GetHeight());
     };
 
     vd::component::RenderingPass reflectionPass(
@@ -269,7 +269,7 @@ mod::water::WaterPtr createWater(vd::EnginePtr& enginePtr) {
 }
 
 [[maybe_unused]] void createGUI(vd::EnginePtr& enginePtr,
-               const vd::model::Texture2DPtr& texturePtr,
+               const vd::gl::Texture2DPtr& texturePtr,
                const glm::vec2& position,
                const glm::vec2& scale) {
     mod::gui::GuiQuadPtr guiQuadPtr =

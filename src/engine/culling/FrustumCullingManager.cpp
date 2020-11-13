@@ -15,7 +15,7 @@ namespace vd::culling {
     FrustumCullingManager::~FrustumCullingManager() = default;
 
     void FrustumCullingManager::Init() {
-        m_CameraPtr = ObjectOfType<camera::ICamera>::Find();
+        m_CameraPtr = ObjectOfType<camera::Camera>::Find();
         m_WindowPtr = ObjectOfType<window::Window>::Find();
 
         UpdateVertices();

@@ -8,7 +8,7 @@ namespace vd::component {
 
     RenderingPass::RenderingPass(std::string name,
                                  const RenderingPass::priority_t& priority,
-                                 buffer::FrameBufferPtr  frameBufferPtr,
+                                 gl::FrameBufferPtr  frameBufferPtr,
                                  vd::Predicate precondition,
                                  vd::Consumer beforeExecution,
                                  vd::Consumer afterExecution)
@@ -44,7 +44,7 @@ namespace vd::component {
         return m_Priority;
     }
 
-    const buffer::FrameBufferPtr &RenderingPass::FrameBuffer() const {
+    const gl::FrameBufferPtr &RenderingPass::FrameBuffer() const {
         return m_FrameBufferPtr;
     }
 

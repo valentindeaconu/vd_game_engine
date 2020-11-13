@@ -7,11 +7,11 @@
 
 #include <engine/object/Entity.hpp>
 
-#include <engine/glmodel/buffer/FrameBuffer.hpp>
+#include <engine/api/gl/FrameBuffer.hpp>
 
 #include <engine/misc/Properties.hpp>
 
-#include <engine/misc/ObjectOfType.hpp>
+#include <engine/kernel/ObjectOfType.hpp>
 #include <engine/kernel/Engine.hpp>
 
 #include <memory>
@@ -32,8 +32,8 @@ namespace mod::water {
 
         [[nodiscard]] const vd::model::Material& GetMaterial() const;
 
-        [[nodiscard]] const vd::buffer::FrameBufferPtr& GetReflectionFramebuffer() const;
-        [[nodiscard]] const vd::buffer::FrameBufferPtr& GetRefractionFramebuffer() const;
+        [[nodiscard]] const vd::gl::FrameBufferPtr& GetReflectionFramebuffer() const;
+        [[nodiscard]] const vd::gl::FrameBufferPtr& GetRefractionFramebuffer() const;
 
         [[nodiscard]] float GetHeight() const;
 
@@ -53,8 +53,8 @@ namespace mod::water {
 
         vd::misc::PropertiesPtr m_PropsPtr;
 
-        vd::buffer::FrameBufferPtr m_ReflectionFBO;
-        vd::buffer::FrameBufferPtr m_RefractionFBO;
+        vd::gl::FrameBufferPtr m_ReflectionFBO;
+        vd::gl::FrameBufferPtr m_RefractionFBO;
     };
     typedef std::shared_ptr<Water>  WaterPtr;
 }

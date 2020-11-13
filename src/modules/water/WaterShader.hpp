@@ -7,8 +7,8 @@
 
 #include <engine/shader/Shader.hpp>
 
-#include <engine/misc/ObjectOfType.hpp>
-#include <engine/camera/ICamera.hpp>
+#include <engine/kernel/ObjectOfType.hpp>
+#include <engine/camera/Camera.hpp>
 #include <engine/window/Window.hpp>
 #include <engine/light/LightManager.hpp>
 

@@ -3,13 +3,12 @@
 
 #include <engine/object/Entity.hpp>
 
-#include <engine/foundation/objloader/OBJLoader.hpp>
-
-#include <engine/misc/ObjectOfType.hpp>
+#include <engine/kernel/ObjectOfType.hpp>
 
 #include <engine/kernel/Engine.hpp>
-#include <engine/camera/ICamera.hpp>
+#include <engine/camera/Camera.hpp>
 #include <engine/event/EventHandler.hpp>
+#include <engine/loader/ObjectLoader.hpp>
 #include <modules/terrain/Terrain.hpp>
 
 namespace mod::player {

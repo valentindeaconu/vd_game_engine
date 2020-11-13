@@ -5,11 +5,9 @@
 #include "GuiQuad.hpp"
 
 namespace mod::gui {
-    GuiQuad::GuiQuad(const vd::model::Texture2DPtr& texture,
-                     const glm::vec2& position,
-                     const glm::vec2& scale)
-       : m_Texture(texture)
-   {
+    GuiQuad::GuiQuad(vd::gl::Texture2DPtr texture, const glm::vec2& position, const glm::vec2& scale)
+       : m_Texture(std::move(texture))
+    {
        this->LocalTransform().SetTranslation(position.x, position.y, 0.0f);
        this->LocalTransform().SetScaling(scale.x, scale.y, 1.0f);
     }
@@ -22,10 +20,10 @@ namespace mod::gui {
         vd::model::MeshPtr meshPtr = std::make_shared<vd::model::Mesh>();
 
         meshPtr->vertices = {
-                { .Position = glm::vec3(-1.0f, 1.0f, 0.0f) },
-                { .Position = glm::vec3(-1.0f, -1.0f, 0.0f) },
-                { .Position = glm::vec3(1.0f, 1.0f, 0.0f) },
-                { .Position = glm::vec3(1.0f, -1.0f, 0.0f) }
+                vd::model::Vertex(glm::vec3(-1.0f, 1.0f, 0.0f)),
+                vd::model::Vertex(glm::vec3(-1.0f, -1.0f, 0.0f)),
+                vd::model::Vertex(glm::vec3(1.0f, 1.0f, 0.0f)),
+                vd::model::Vertex(glm::vec3(1.0f, -1.0f, 0.0f))
         };
 
         meshPtr->indices = { 0, 1, 2, 2, 1, 3 };

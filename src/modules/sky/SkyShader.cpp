@@ -19,7 +19,7 @@ namespace mod::sky
     SkyShader::~SkyShader() = default;
 
     void SkyShader::updateUniforms(vd::object::EntityPtr entityPtr, size_t meshIndex) {
-        setUniform("view", glm::mat4(glm::mat3(vd::ObjectOfType<vd::camera::ICamera>::Find()->ViewMatrix())));
+        setUniform("view", glm::mat4(glm::mat3(vd::ObjectOfType<vd::camera::Camera>::Find()->ViewMatrix())));
         setUniform("projection", vd::ObjectOfType<vd::window::Window>::Find()->ProjectionMatrix());
 
         static bool loadedBasics = false;

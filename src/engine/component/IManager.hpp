@@ -5,7 +5,7 @@
 #ifndef VD_GAME_ENGINE_IMANAGER_HPP
 #define VD_GAME_ENGINE_IMANAGER_HPP
 
-#include <engine/foundation/datastruct/Observer.hpp>
+#include <engine/datastruct/Observer.hpp>
 
 namespace vd::component {
     class IManager : public vd::datastruct::Observer {

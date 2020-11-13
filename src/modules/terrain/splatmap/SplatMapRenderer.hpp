@@ -17,18 +17,18 @@ namespace mod::terrain::splatmap {
         explicit SplatMapRenderer(int size);
         ~SplatMapRenderer();
 
-        void render(const vd::model::Texture2DPtr& normalMap, float scaleY, const BiomePtrVec& biomes);
+        void render(const vd::gl::Texture2DPtr& normalMap, float scaleY, const BiomePtrVec& biomes);
 
-        [[nodiscard]] const vd::model::Texture2DPtr& getSplatMap() const;
+        [[nodiscard]] const vd::gl::Texture2DPtr& getSplatMap() const;
 
-        [[nodiscard]] const vd::img::ImageIPtr& getSplatData() const;
+        [[nodiscard]] const vd::model::ImagePtr<uint32_t, vd::model::ImageFormat::eR>& getSplatData() const;
     private:
         const int kBiomeCount;
 
         SplatMapShaderPtr shaderPtr;
 
-        vd::model::Texture2DPtr splatMap;
-        vd::img::ImageIPtr      splatImg;
+        vd::gl::Texture2DPtr splatMap;
+        vd::model::ImagePtr<uint32_t, vd::model::ImageFormat::eR> splatImg;
 
         int size;
     };

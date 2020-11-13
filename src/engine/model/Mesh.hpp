@@ -1,7 +1,11 @@
-#ifndef __MESH_HPP_
-#define __MESH_HPP_
+//
+// Created by Vali on 11/11/2020.
+//
 
-#include <engine/foundation/GL.hpp>
+#ifndef VD_GAME_ENGINE_MESH_HPP
+#define VD_GAME_ENGINE_MESH_HPP
+
+#include <engine/api/gl/GL.hpp>
 
 #include <string>
 #include <vector>
@@ -26,4 +30,4 @@ namespace vd::model {
     typedef std::vector<MeshPtr>	MeshPtrVec;
 }
 
-#endif // !__MESH_HPP_
+#endif //VD_GAME_ENGINE_MESH_HPP

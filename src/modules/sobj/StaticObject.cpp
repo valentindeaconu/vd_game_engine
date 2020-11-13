@@ -1,20 +1,18 @@
 #include "StaticObject.hpp"
 
-namespace mod::sobj
-{
-    StaticObject::StaticObject(const std::string& path, const std::string& objFile)
-        : path(path)
-        , objFile(objFile)
+#include <utility>
+
+namespace mod::sobj {
+    StaticObject::StaticObject(std::string path, std::string objFile)
+        : path(std::move(path))
+        , objFile(std::move(objFile))
     {
     }
 
     StaticObject::~StaticObject() = default;
 
     void StaticObject::Init() {
-        vd::objloader::OBJLoader objLoader;
-
-        vd::model::MeshPtrVec& meshPtrVec = Meshes();
-        objLoader.load(path, objFile, meshPtrVec);
+        this->Meshes() = vd::loader::ObjectLoader::Load(path + '/' + objFile);
 
         Entity::Init(); // call super.Init() to initialize meshBuffers;
     }

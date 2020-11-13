@@ -3,12 +3,11 @@
 
 #include <engine/component/IRenderer.hpp>
 
-#include <engine/shadow/ShadowShader.hpp>
-
 #include <engine/collision/Detector.hpp>
 
 #include <engine/culling/FrustumCullingManager.hpp>
 
+#include <modules/shadow/ShadowShader.hpp>
 #include <modules/terrain/Terrain.hpp>
 
 #include "StaticObjectPlacer.hpp"

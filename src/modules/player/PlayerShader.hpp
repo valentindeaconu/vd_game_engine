@@ -7,9 +7,9 @@
 
 #include <engine/light/LightManager.hpp>
 
-#include <engine/misc/ObjectOfType.hpp>
+#include <engine/kernel/ObjectOfType.hpp>
 #include <engine/window/Window.hpp>
-#include <engine/camera/ICamera.hpp>
+#include <engine/camera/Camera.hpp>
 #include <engine/misc/Properties.hpp>
 
 namespace mod::player {

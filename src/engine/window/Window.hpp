@@ -8,13 +8,13 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-#include <engine/foundation/GL.hpp>
+#include <engine/api/gl/GL.hpp>
 
 #include <engine/misc/Types.hpp>
 
 #include <engine/logger/Logger.hpp>
 
-#include <engine/misc/ObjectOfType.hpp>
+#include <engine/kernel/ObjectOfType.hpp>
 #include <engine/event/EventHandler.hpp>
 
 #include <engine/component/IManager.hpp>

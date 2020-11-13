@@ -14,7 +14,7 @@ namespace mod::terrain {
     Terrain::~Terrain() = default;
 
     void Terrain::Init() {
-        m_CameraPtr = vd::ObjectOfType<vd::camera::ICamera>::Find();
+        m_CameraPtr = vd::ObjectOfType<vd::camera::Camera>::Find();
 
         CreateProps();
 
@@ -29,7 +29,7 @@ namespace mod::terrain {
         ComputeMaps();
 
         auto convertToWorldCoords = [&](float x, float y) {
-            const auto h = vd::img::ImageHelper::texture(*m_HeightImg, glm::vec2(x, y)).r;
+            const auto h = m_HeightImg->Get<float, vd::math::Interpolation::eBilinear>(glm::vec2(x, y));
             return glm::vec3(WorldTransform() * glm::vec4(x, h, y, 1.0f));
         };
 
@@ -84,15 +84,15 @@ namespace mod::terrain {
         return m_Biomes;
     }
 
-    const vd::model::Texture2DPtr& Terrain::GetHeightMap() const {
+    const vd::gl::Texture2DPtr& Terrain::GetHeightMap() const {
         return m_HeightMap;
     }
 
-    const vd::model::Texture2DPtr& Terrain::GetNormalMap() const {
+    const vd::gl::Texture2DPtr& Terrain::GetNormalMap() const {
         return m_NormalMap;
     }
 
-    const vd::model::Texture2DPtr& Terrain::GetSplatMap() const {
+    const vd::gl::Texture2DPtr& Terrain::GetSplatMap() const {
         return m_SplatMap;
     }
 
@@ -110,7 +110,7 @@ namespace mod::terrain {
         float rx = (x + (scaleXZ / 2.0f)) / scaleXZ;
         float rz = (z + (scaleXZ / 2.0f)) / scaleXZ;
 
-        const auto height = vd::img::ImageHelper::texture(*m_HeightImg, glm::vec2(rz, rx)).r;
+        const auto height = m_HeightImg->Get<float, vd::math::Interpolation::eBilinear>(glm::vec2(rz, rx));
 
         return height * scaleY;
     }
@@ -130,7 +130,7 @@ namespace mod::terrain {
         float rx = (x + (scaleXZ / 2.0f)) / scaleXZ;
         float rz = (z + (scaleXZ / 2.0f)) / scaleXZ;
 
-        const auto mask = vd::img::ImageHelper::texture(*m_SplatImg, glm::vec2(rz, rx)).r;
+        const auto mask = m_SplatImg->Get<uint32_t, vd::math::Interpolation::eNearestNeighbour>(glm::vec2(rz, rx));
 
         for (size_t k = 0; k < m_Biomes.size(); ++k) {
             if ((mask & (1 << k)) != 0) {
@@ -175,20 +175,20 @@ namespace mod::terrain {
 
                 const std::string materialPrefix = prefix + ".Material";
                 vd::model::Material material;
-                material.diffuseMap = vd::model::TextureService::get(m_PropsPtr->Get<std::string>(materialPrefix + ".Diffuse"));
-                material.diffuseMap->bind();
-                material.diffuseMap->trilinearFilter();
-                material.diffuseMap->unbind();
+                material.diffuseMap = vd::gl::TextureService::Get(m_PropsPtr->Get<std::string>(materialPrefix + ".Diffuse"));
+                material.diffuseMap->Bind();
+                material.diffuseMap->TrilinearFilter();
+                material.diffuseMap->Unbind();
 
-                material.normalMap = vd::model::TextureService::get(m_PropsPtr->Get<std::string>(materialPrefix + ".Normal"));
-                material.normalMap->bind();
-                material.normalMap->bilinearFilter();
-                material.normalMap->unbind();
+                material.normalMap = vd::gl::TextureService::Get(m_PropsPtr->Get<std::string>(materialPrefix + ".Normal"));
+                material.normalMap->Bind();
+                material.normalMap->BilinearFilter();
+                material.normalMap->Unbind();
 
-                material.displaceMap = vd::model::TextureService::get(m_PropsPtr->Get<std::string>(materialPrefix + ".Displace"));
-                material.displaceMap->bind();
-                material.displaceMap->bilinearFilter();
-                material.displaceMap->unbind();
+                material.displaceMap = vd::gl::TextureService::Get(m_PropsPtr->Get<std::string>(materialPrefix + ".Displace"));
+                material.displaceMap->Bind();
+                material.displaceMap->BilinearFilter();
+                material.displaceMap->Unbind();
 
                 material.displaceScale = m_PropsPtr->Get<float>(materialPrefix + ".HeightScaling");
                 material.horizontalScale = m_PropsPtr->Get<float>(materialPrefix + ".HorizontalScaling");
@@ -204,17 +204,18 @@ namespace mod::terrain {
     }
 
     void Terrain::ComputeMaps() {
-        vd::img::IMGLoader imgLoader;
-        m_HeightImg = imgLoader.loadFloatImage(m_PropsPtr->Get<std::string>("HeightMap"));
-        m_HeightMap = std::make_shared<vd::model::Texture2D>(m_HeightImg);
+        m_HeightImg = vd::loader::ImageLoader::Load<float, vd::model::ImageFormat::eR>(m_PropsPtr->Get<std::string>("HeightMap"));
+
+        // TODO: Use TextureService
+        m_HeightMap = std::make_shared<vd::gl::Texture2D>(m_HeightImg);
 
         normalmap::NormalMapRendererPtr normalMapRendererPtr =
-                std::make_shared<normalmap::NormalMapRenderer>(int(m_HeightMap->getWidth()));
+                std::make_shared<normalmap::NormalMapRenderer>(int(m_HeightMap->Width()));
         normalMapRendererPtr->render(m_HeightMap, m_PropsPtr->Get<float>("NormalStrength"));
         m_NormalMap = normalMapRendererPtr->getNormalMap();
 
         splatmap::SplatMapRendererPtr splatMapRendererPtr =
-                std::make_shared<splatmap::SplatMapRenderer>(int(m_HeightMap->getWidth()));
+                std::make_shared<splatmap::SplatMapRenderer>(int(m_HeightMap->Width()));
         splatMapRendererPtr->render(m_HeightMap, m_PropsPtr->Get<float>("ScaleY"), m_Biomes);
         m_SplatMap = splatMapRendererPtr->getSplatMap();
         m_SplatImg = splatMapRendererPtr->getSplatData();
@@ -246,25 +247,25 @@ namespace mod::terrain {
         auto& vertices = meshPtr->vertices;
         vertices.resize(16);
 
-        vertices[0] = { .Position = glm::vec3(0.0f, 0.0f, 0.0f) };
-        vertices[1] = { .Position = glm::vec3(0.333f, 0.0f, 0.0f) };
-        vertices[2] = { .Position = glm::vec3(0.666f, 0.0f, 0.0f) };
-        vertices[3] = { .Position = glm::vec3(1.0f, 0.0f, 0.0f) };
+        vertices[0] = vd::model::Vertex(glm::vec3(0.0f, 0.0f, 0.0f));
+        vertices[1] = vd::model::Vertex(glm::vec3(0.333f, 0.0f, 0.0f));
+        vertices[2] = vd::model::Vertex(glm::vec3(0.666f, 0.0f, 0.0f) );
+        vertices[3] = vd::model::Vertex(glm::vec3(1.0f, 0.0f, 0.0f) );
 
-        vertices[4] = { .Position = glm::vec3(0.0f, 0.0f, 0.333f) };
-        vertices[5] = { .Position = glm::vec3(0.333f, 0.0f, 0.333f) };
-        vertices[6] = { .Position = glm::vec3(0.666f, 0.0f, 0.333f) };
-        vertices[7] = { .Position = glm::vec3(1.0f, 0.0f, 0.333f) };
+        vertices[4] = vd::model::Vertex(glm::vec3(0.0f, 0.0f, 0.333f));
+        vertices[5] = vd::model::Vertex(glm::vec3(0.333f, 0.0f, 0.333f));
+        vertices[6] = vd::model::Vertex(glm::vec3(0.666f, 0.0f, 0.333f));
+        vertices[7] = vd::model::Vertex(glm::vec3(1.0f, 0.0f, 0.333f));
 
-        vertices[8] = { .Position = glm::vec3(0.0f, 0.0f, 0.666f) };
-        vertices[9] = { .Position = glm::vec3(0.333f, 0.0f, 0.666f) };
-        vertices[10] = { .Position = glm::vec3(0.666f, 0.0f, 0.666f) };
-        vertices[11] = { .Position = glm::vec3(1.0f, 0.0f, 0.666f) };
+        vertices[8] = vd::model::Vertex(glm::vec3(0.0f, 0.0f, 0.666f));
+        vertices[9] = vd::model::Vertex(glm::vec3(0.333f, 0.0f, 0.666f));
+        vertices[10] = vd::model::Vertex(glm::vec3(0.666f, 0.0f, 0.666f));
+        vertices[11] = vd::model::Vertex(glm::vec3(1.0f, 0.0f, 0.666f));
 
-        vertices[12] = { .Position = glm::vec3(0.0f, 0.0f, 1.0f) };
-        vertices[13] = { .Position = glm::vec3(0.333f, 0.0f, 1.0f) };
-        vertices[14] = { .Position = glm::vec3(0.666f, 0.0f, 1.0f) };
-        vertices[15] = { .Position = glm::vec3(1.0f, 0.0f, 1.0f) };
+        vertices[12] = vd::model::Vertex(glm::vec3(0.0f, 0.0f, 1.0f));
+        vertices[13] = vd::model::Vertex(glm::vec3(0.333f, 0.0f, 1.0f));
+        vertices[14] = vd::model::Vertex(glm::vec3(0.666f, 0.0f, 1.0f));
+        vertices[15] = vd::model::Vertex(glm::vec3(1.0f, 0.0f, 1.0f));
 
         SetBufferGenerationStrategy(ePatch);
 

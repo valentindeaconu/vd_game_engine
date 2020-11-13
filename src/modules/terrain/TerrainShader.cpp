@@ -83,20 +83,20 @@ namespace mod::terrain {
     void TerrainShader::updateUniforms(vd::object::EntityPtr entityPtr, size_t meshIndex) {
         setUniform("worldModel", entityPtr->WorldTransform().Get());
 
-        setUniform("view", vd::ObjectOfType<vd::camera::ICamera>::Find()->ViewMatrix());
+        setUniform("view", vd::ObjectOfType<vd::camera::Camera>::Find()->ViewMatrix());
         setUniform("projection", vd::ObjectOfType<vd::window::Window>::Find()->ProjectionMatrix());
 
-        setUniform("cameraPosition", vd::ObjectOfType<vd::camera::ICamera>::Find()->Position());
+        setUniform("cameraPosition", vd::ObjectOfType<vd::camera::Camera>::Find()->Position());
 
-        auto shadowManagerPtr = vd::ObjectOfType<vd::shadow::ShadowManager>::Find();
+        auto shadowManagerPtr = vd::ObjectOfType<mod::shadow::ShadowManager>::Find();
         setUniformf("shadowDistance", shadowManagerPtr->Distance());
         setUniformf("shadowTransitionDistance", shadowManagerPtr->TransitionDistance());
 
         setUniform("lightView", shadowManagerPtr->ViewMatrix());
         setUniform("lightProjection", shadowManagerPtr->ProjectionMatrix());
 
-        vd::model::activeTexture(0);
-        shadowManagerPtr->ShadowTexture()->bind();
+        vd::gl::ActiveTexture(0);
+        shadowManagerPtr->ShadowTexture()->Bind();
         setUniformi("shadowMap", 0);
 
         const auto& terrainPtr = std::dynamic_pointer_cast<Terrain>(entityPtr);
@@ -107,34 +107,34 @@ namespace mod::terrain {
 
         setUniformf("tessellationLevel", propsPtr->Get<float>("TessellationLevel"));
 
-        vd::model::activeTexture(1);
-        terrainPtr->GetHeightMap()->bind();
+        vd::gl::ActiveTexture(1);
+        terrainPtr->GetHeightMap()->Bind();
         setUniformi("heightMap", 1);
 
-        vd::model::activeTexture(2);
-        terrainPtr->GetNormalMap()->bind();
+        vd::gl::ActiveTexture(2);
+        terrainPtr->GetNormalMap()->Bind();
         setUniformi("normalMap", 2);
 
-        vd::model::activeTexture(3);
-        terrainPtr->GetSplatMap()->bind();
+        vd::gl::ActiveTexture(3);
+        terrainPtr->GetSplatMap()->Bind();
         setUniformi("splatMap", 3);
 
         int textureUnit = 4;
         for (int i = 0; i < kBiomeCount; ++i) {
             vd::model::Material& material = terrainPtr->GetBiomes()[i]->getMaterial();
 
-            vd::model::activeTexture(textureUnit);
-            material.diffuseMap->bind();
+            vd::gl::ActiveTexture(textureUnit);
+            material.diffuseMap->Bind();
             setUniformi("materials[" + std::to_string(i) + "].diffuseMap", textureUnit);
             ++textureUnit;
 
-            vd::model::activeTexture(textureUnit);
-            material.normalMap->bind();
+            vd::gl::ActiveTexture(textureUnit);
+            material.normalMap->Bind();
             setUniformi("materials[" + std::to_string(i) + "].normalMap", textureUnit);
             ++textureUnit;
 
-            vd::model::activeTexture(textureUnit);
-            material.displaceMap->bind();
+            vd::gl::ActiveTexture(textureUnit);
+            material.displaceMap->Bind();
             setUniformi("materials[" + std::to_string(i) + "].displaceMap", textureUnit);
             ++textureUnit;
 

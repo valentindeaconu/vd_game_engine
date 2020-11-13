@@ -6,7 +6,7 @@
 
 namespace vd::camera::impl {
     FreeCamera::FreeCamera(const glm::vec3& position, const glm::vec3& target)
-        : ICamera()
+        : Camera()
         , m_Speed(4.0f)
         , m_RotationSensitivity(0.5f)
         , m_Pitch(0.0f)

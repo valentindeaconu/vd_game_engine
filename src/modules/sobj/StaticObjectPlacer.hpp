@@ -1,9 +1,7 @@
 #ifndef __STATIC_OBJECT_PLACER_HPP_
 #define __STATIC_OBJECT_PLACER_HPP_
 
-#include <engine/foundation/objloader/OBJLoader.hpp>
-
-#include <engine/misc/ObjectOfType.hpp>
+#include <engine/kernel/ObjectOfType.hpp>
 #include <modules/terrain/Terrain.hpp>
 
 #include <unordered_map>

@@ -10,7 +10,7 @@
 #include <engine/math/Plane.hpp>
 #include <engine/math/Frustum.hpp>
 
-#include <engine/misc/ObjectOfType.hpp>
+#include <engine/kernel/ObjectOfType.hpp>
 
 #include <memory>
 

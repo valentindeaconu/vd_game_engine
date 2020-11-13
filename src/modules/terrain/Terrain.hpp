@@ -7,12 +7,10 @@
 
 #include <engine/object/Entity.hpp>
 
-#include <engine/foundation/algorithm/TreeHelper.hpp>
-
 #include <engine/misc/Properties.hpp>
 
-#include <engine/camera/ICamera.hpp>
-#include <engine/misc/ObjectOfType.hpp>
+#include <engine/camera/Camera.hpp>
+#include <engine/kernel/ObjectOfType.hpp>
 
 #include <memory>
 #include <vector>
@@ -39,9 +37,9 @@ namespace mod::terrain {
 
         [[nodiscard]] const BiomePtrVec& GetBiomes() const;
 
-        [[nodiscard]] const vd::model::Texture2DPtr& GetHeightMap() const;
-        [[nodiscard]] const vd::model::Texture2DPtr& GetNormalMap() const;
-        [[nodiscard]] const vd::model::Texture2DPtr& GetSplatMap() const;
+        [[nodiscard]] const vd::gl::Texture2DPtr& GetHeightMap() const;
+        [[nodiscard]] const vd::gl::Texture2DPtr& GetNormalMap() const;
+        [[nodiscard]] const vd::gl::Texture2DPtr& GetSplatMap() const;
 
         [[nodiscard]] float GetHeight(float x, float z) const;
         [[nodiscard]] BiomePtrVec GetBiomesAt(float x, float z) const;
@@ -67,13 +65,13 @@ namespace mod::terrain {
         BiomePtrVec m_Biomes;
 
         // Maps
-        vd::img::ImageFPtr m_HeightImg;
-        vd::model::Texture2DPtr m_HeightMap;
+        vd::model::ImagePtr<float, vd::model::ImageFormat::eR> m_HeightImg;
+        vd::gl::Texture2DPtr m_HeightMap;
 
-        vd::model::Texture2DPtr m_NormalMap;
+        vd::gl::Texture2DPtr m_NormalMap;
 
-        vd::img::ImageIPtr m_SplatImg;
-        vd::model::Texture2DPtr m_SplatMap;
+        vd::model::ImagePtr<uint32_t, vd::model::ImageFormat::eR> m_SplatImg;
+        vd::gl::Texture2DPtr m_SplatMap;
 
         // Level of detail ranges
         std::vector<int> m_LevelOfDetailRanges;

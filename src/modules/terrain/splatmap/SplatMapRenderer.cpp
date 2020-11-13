@@ -20,24 +20,25 @@ namespace mod::terrain::splatmap {
             shaderPtr->addUniform("biomes[" + std::to_string(i) + "].maxHeight");
         }
 
-        splatMap = std::make_shared<vd::model::Texture2D>(size, size);
+        // TODO: Use TextureService
+        splatMap = std::make_shared<vd::gl::Texture2D>(size, size);
 
-        splatMap->generate();
-        splatMap->bind();
-        splatMap->bilinearFilter();
+        splatMap->Generate();
+        splatMap->Bind();
+        splatMap->BilinearFilter();
 
         glTexStorage2D(GL_TEXTURE_2D, int(std::log(size) / std::log(2)), GL_R32UI, size, size);
 
-        splatMap->unbind();
+        splatMap->Unbind();
     }
 
     SplatMapRenderer::~SplatMapRenderer() = default;
 
-    void SplatMapRenderer::render(const vd::model::Texture2DPtr& normalMap, float scaleY, const BiomePtrVec& biomes) {
+    void SplatMapRenderer::render(const vd::gl::Texture2DPtr& normalMap, float scaleY, const BiomePtrVec& biomes) {
         shaderPtr->bind();
 
-        vd::model::activeTexture(0);
-        normalMap->bind();
+        vd::gl::ActiveTexture(0);
+        normalMap->Bind();
         shaderPtr->setUniformi("normalMap", 0);
         shaderPtr->setUniformi("size", size);
         shaderPtr->setUniformf("scaleY", scaleY);
@@ -48,36 +49,35 @@ namespace mod::terrain::splatmap {
             shaderPtr->setUniformf("biomes[" + std::to_string(i) + "].maxHeight", biomePtr->getMaxHeight());
         }
 
-        glBindImageTexture(0, splatMap->getId(), 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_R32UI);
+        glBindImageTexture(0, splatMap->Id(), 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_R32UI);
         glDispatchCompute(size/16, size/16, 1);
         glFinish();
 
-        normalMap->unbind();
+        normalMap->Unbind();
 
-        splatMap->bind();
-        splatMap->bilinearFilter();
+        splatMap->Bind();
+        splatMap->BilinearFilter();
 
-        std::vector<uint32_t> outBuffer(size * size);
-        glGetTexImage(GL_TEXTURE_2D, 0, GL_RED_INTEGER, GL_UNSIGNED_INT, &outBuffer[0]);
+        splatImg = std::make_shared<vd::model::Image<uint32_t, vd::model::ImageFormat::eR>>(size, size);
+        splatImg->Data().resize(size * size);
 
-        if (std::any_of(outBuffer.begin(), outBuffer.end(), [](auto x) { return x == 2; })) {
+        glGetTexImage(GL_TEXTURE_2D, 0, GL_RED_INTEGER, GL_UNSIGNED_INT, &splatImg->Data()[0]); //&outBuffer[0]);
+
+        if (std::any_of(splatImg->Data().begin(), splatImg->Data().end(), [](auto x) {
+            return x == 2;
+        })) {
             int a = 0;
-            a++;
+            ++a;
         }
 
-        splatImg = std::make_shared<vd::img::ImageI>(size, size);
-        for (auto r : outBuffer) {
-            splatImg->expand(vd::img::Pixel<uint32_t>(r, 0, 0, 0));
-        }
-
-        splatMap->unbind();
+        splatMap->Unbind();
     }
 
-    const vd::model::Texture2DPtr& SplatMapRenderer::getSplatMap() const {
+    const vd::gl::Texture2DPtr& SplatMapRenderer::getSplatMap() const {
         return splatMap;
     }
 
-    const vd::img::ImageIPtr &SplatMapRenderer::getSplatData() const {
+    const vd::model::ImagePtr<uint32_t, vd::model::ImageFormat::eR>& SplatMapRenderer::getSplatData() const {
         return splatImg;
     }
 }

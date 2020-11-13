@@ -5,6 +5,8 @@
 #ifndef VD_GAME_ENGINE_NORMALMAPRENDERER_HPP
 #define VD_GAME_ENGINE_NORMALMAPRENDERER_HPP
 
+#include <engine/api/gl/Texture.hpp>
+
 #include <memory>
 
 #include "NormalMapShader.hpp"
@@ -15,13 +17,13 @@ namespace mod::terrain::normalmap {
         explicit NormalMapRenderer(int size);
         ~NormalMapRenderer();
 
-        void render(const vd::model::Texture2DPtr& heightMap, float strength);
+        void render(const vd::gl::Texture2DPtr& heightMap, float strength);
 
-        [[nodiscard]] const vd::model::Texture2DPtr& getNormalMap() const;
+        [[nodiscard]] const vd::gl::Texture2DPtr& getNormalMap() const;
     private:
         NormalMapShaderPtr shaderPtr;
 
-        vd::model::Texture2DPtr normalMap;
+        vd::gl::Texture2DPtr normalMap;
 
         int size;
     };

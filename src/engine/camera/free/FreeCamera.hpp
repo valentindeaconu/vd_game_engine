@@ -5,12 +5,12 @@
 #ifndef VD_GAME_ENGINE_FREECAMERA_HPP
 #define VD_GAME_ENGINE_FREECAMERA_HPP
 
-#include <engine/camera/ICamera.hpp>
+#include <engine/camera/Camera.hpp>
 
 #include <engine/logger/Logger.hpp>
 
 namespace vd::camera::impl {
-    class FreeCamera : public camera::ICamera {
+    class FreeCamera : public camera::Camera {
     public:
         FreeCamera(const glm::vec3& position, const glm::vec3& target);
         ~FreeCamera();

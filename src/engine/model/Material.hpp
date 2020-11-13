@@ -1,24 +1,26 @@
-#ifndef __MATERIAL_HPP_
-#define __MATERIAL_HPP_
+//
+// Created by Vali on 11/11/2020.
+//
+
+#ifndef VD_GAME_ENGINE_MATERIAL_HPP
+#define VD_GAME_ENGINE_MATERIAL_HPP
 
 #include <glm/glm.hpp>
 
 #include <string>
 
-#include "Texture.hpp"
+#include <engine/api/gl/Texture.hpp>
 
-namespace vd::model
-{
-    struct Material
-    {
+namespace vd::model {
+    struct Material {
         std::string name;
-        Texture2DPtr diffuseMap;
-        Texture2DPtr normalMap;
-        Texture2DPtr displaceMap;
-        Texture2DPtr ambientMap;
-        Texture2DPtr specularMap;
-        Texture2DPtr alphaMap;
-        Texture2DPtr bumpMap;
+        gl::Texture2DPtr diffuseMap;
+        gl::Texture2DPtr normalMap;
+        gl::Texture2DPtr displaceMap;
+        gl::Texture2DPtr ambientMap;
+        gl::Texture2DPtr specularMap;
+        gl::Texture2DPtr alphaMap;
+        gl::Texture2DPtr bumpMap;
         glm::vec4 color;
         glm::vec3 emission;
         float shininess;
@@ -28,4 +30,4 @@ namespace vd::model
     typedef std::vector<Material>   MaterialVec;
 }
 
-#endif // !__MATERIAL_HPP_
+#endif // !VD_GAME_ENGINE_MATERIAL_HPP

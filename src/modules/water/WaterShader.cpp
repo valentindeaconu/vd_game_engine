@@ -49,24 +49,24 @@ namespace mod::water {
 
         setUniform("model", waterPtr->LocalTransform().Get());
 
-        setUniform("view", vd::ObjectOfType<vd::camera::ICamera>::Find()->ViewMatrix());
+        setUniform("view", vd::ObjectOfType<vd::camera::Camera>::Find()->ViewMatrix());
         setUniform("projection", vd::ObjectOfType<vd::window::Window>::Find()->ProjectionMatrix());
 
-        setUniform("cameraPosition", vd::ObjectOfType<vd::camera::ICamera>::Find()->Position());
+        setUniform("cameraPosition", vd::ObjectOfType<vd::camera::Camera>::Find()->Position());
 
         setUniformf("nearPlane", vd::ObjectOfType<vd::window::Window>::Find()->NearPlane());
         setUniformf("farPlane", vd::ObjectOfType<vd::window::Window>::Find()->FarPlane());
 
-        vd::model::activeTexture(0);
-        waterPtr->GetReflectionFramebuffer()->GetColorTexture()->bind();
+        vd::gl::ActiveTexture(0);
+        waterPtr->GetReflectionFramebuffer()->GetColorTexture()->Bind();
         setUniformi("reflectionTexture", 0);
 
-        vd::model::activeTexture(1);
-        waterPtr->GetRefractionFramebuffer()->GetColorTexture()->bind();
+        vd::gl::ActiveTexture(1);
+        waterPtr->GetRefractionFramebuffer()->GetColorTexture()->Bind();
         setUniformi("refractionTexture", 1);
 
-        vd::model::activeTexture(2);
-        waterPtr->GetRefractionFramebuffer()->GetDepthTexture()->bind();
+        vd::gl::ActiveTexture(2);
+        waterPtr->GetRefractionFramebuffer()->GetDepthTexture()->Bind();
         setUniformi("depthMap", 2);
 
         auto& lightManager = vd::ObjectOfType<vd::light::LightManager>::Find();
@@ -78,12 +78,12 @@ namespace mod::water {
         setUniformf("moveFactor", waterPtr->GetMoveFactor());
 
         auto& waterMaterial = waterPtr->GetMaterial();
-        vd::model::activeTexture(3);
-        waterMaterial.displaceMap->bind();
+        vd::gl::ActiveTexture(3);
+        waterMaterial.displaceMap->Bind();
         setUniformi("dudvMap", 3);
 
-        vd::model::activeTexture(4);
-        waterMaterial.normalMap->bind();
+        vd::gl::ActiveTexture(4);
+        waterMaterial.normalMap->Bind();
         setUniformi("normalMap", 4);
 
         static bool loadedBasics = false;

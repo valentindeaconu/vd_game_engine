@@ -5,13 +5,12 @@
 #ifndef VD_GAME_ENGINE_TERRAINNODE_HPP
 #define VD_GAME_ENGINE_TERRAINNODE_HPP
 
-#include <engine/camera/ICamera.hpp>
-#include <engine/foundation/img/imghelper/ImageHelper.hpp>
+#include <engine/camera/Camera.hpp>
 #include <engine/math/Transform.hpp>
 #include <engine/math/Bounds.hpp>
 #include <engine/misc/Properties.hpp>
 
-#include <engine/foundation/datastruct/Tree.hpp>
+#include <engine/datastruct/Tree.hpp>
 
 #include <glm/glm.hpp>
 

@@ -1,12 +1,12 @@
 #include "ThirdPersonCamera.hpp"
 
-#include <engine/misc/ObjectOfType.hpp>
+#include <engine/kernel/ObjectOfType.hpp>
 #include <modules/terrain/Terrain.hpp>
 #include <modules/player/Player.hpp>
 
 namespace vd::camera::impl {
     ThirdPersonCamera::ThirdPersonCamera()
-        : ICamera()
+        : Camera()
         , m_Pitch(0.0f)
         , m_DistanceFromPlayer(0.0f)
         , m_AngleAroundPlayer(0.0f)
@@ -31,7 +31,7 @@ namespace vd::camera::impl {
          m_Offset = glm::vec3(0.0f, playerPtr->ModelYOffset(), 0.0f);
     }
 
-    void impl::ThirdPersonCamera::Reflect(const ICamera::Axis& axis, float amount) {
+    void impl::ThirdPersonCamera::Reflect(const Camera::Axis& axis, float amount) {
         switch (axis) {
             case eX: {
                 float totalOffset = 2.0f * std::abs(m_Position.x - amount);

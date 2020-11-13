@@ -7,12 +7,12 @@
 
 #include <engine/shader/Shader.hpp>
 
-#include <engine/misc/ObjectOfType.hpp>
+#include <engine/kernel/ObjectOfType.hpp>
 #include <engine/kernel/Engine.hpp>
 #include <engine/window/Window.hpp>
-#include <engine/camera/ICamera.hpp>
-#include <engine/shadow/ShadowManager.hpp>
+#include <engine/camera/Camera.hpp>
 #include <engine/light/LightManager.hpp>
+#include <modules/shadow/ShadowManager.hpp>
 
 #include <memory>
 

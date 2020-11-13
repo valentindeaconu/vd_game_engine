@@ -22,8 +22,8 @@ namespace mod::gui {
     void GuiShader::updateUniforms(vd::object::EntityPtr entityPtr, size_t meshIndex) {
         setUniform("transform", entityPtr->LocalTransform().Get());
 
-        vd::model::activeTexture(1);
-        entityPtr->Meshes()[0]->materials[0].diffuseMap->bind();
+        vd::gl::ActiveTexture(1);
+        entityPtr->Meshes()[0]->materials[0].diffuseMap->Bind();
         setUniformi("guiTexture", 1);
     }
 }

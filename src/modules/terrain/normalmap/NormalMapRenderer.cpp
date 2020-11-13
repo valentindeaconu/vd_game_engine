@@ -14,39 +14,40 @@ namespace mod::terrain::normalmap {
         shaderPtr->addUniform("size");
         shaderPtr->addUniform("strength");
 
-        normalMap = std::make_shared<vd::model::Texture2D>(size, size);
+        // TODO: Use TextureService
+        normalMap = std::make_shared<vd::gl::Texture2D>(size, size);
 
-        normalMap->generate();
-        normalMap->bind();
-        normalMap->bilinearFilter();
+        normalMap->Generate();
+        normalMap->Bind();
+        normalMap->BilinearFilter();
 
         glTexStorage2D(GL_TEXTURE_2D, int(std::log(size) / std::log(2)), GL_RGBA32F, size, size);
 
-        normalMap->unbind();
+        normalMap->Unbind();
     }
 
     NormalMapRenderer::~NormalMapRenderer() = default;
 
-    void NormalMapRenderer::render(const vd::model::Texture2DPtr& heightMap, float strength) {
+    void NormalMapRenderer::render(const vd::gl::Texture2DPtr& heightMap, float strength) {
         shaderPtr->bind();
 
-        vd::model::activeTexture(0);
-        heightMap->bind();
+        vd::gl::ActiveTexture(0);
+        heightMap->Bind();
         shaderPtr->setUniformi("heightMap", 0);
         shaderPtr->setUniformi("size", size);
         shaderPtr->setUniformf("strength", strength);
 
-        glBindImageTexture(0, normalMap->getId(), 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA32F);
+        glBindImageTexture(0, normalMap->Id(), 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA32F);
         glDispatchCompute(size/16, size/16, 1);
         glFinish();
 
-        heightMap->unbind();
+        heightMap->Unbind();
 
-        normalMap->bind();
-        normalMap->bilinearFilter();
+        normalMap->Bind();
+        normalMap->BilinearFilter();
     }
 
-    const vd::model::Texture2DPtr& NormalMapRenderer::getNormalMap() const {
+    const vd::gl::Texture2DPtr& NormalMapRenderer::getNormalMap() const {
         return normalMap;
     }
 }

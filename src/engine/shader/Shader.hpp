@@ -1,7 +1,7 @@
 #ifndef __SHADER_HPP_
 #define __SHADER_HPP_
 
-#include <engine/foundation/GL.hpp>
+#include <engine/api/gl/GL.hpp>
 #include <engine/object/Entity.hpp>
 #include <engine/logger/Logger.hpp>
 

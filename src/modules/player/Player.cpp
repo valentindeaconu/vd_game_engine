@@ -21,9 +21,7 @@ namespace mod::player {
         float h = m_TerrainPtr->GetHeight(0.0f, 0.0f);
         WorldTransform().SetTranslation(0.0f, h + m_kModelYOffset, 0.0f);
 
-        vd::model::MeshPtrVec& meshPtrVec = Meshes();
-        vd::objloader::OBJLoader objLoader;
-        objLoader.load("./resources/objects/nanosuit", "nanosuit.obj", meshPtrVec);
+        this->Meshes() = vd::loader::ObjectLoader::Load("./resources/objects/nanosuit/nanosuit.obj");
 
         Entity::Init(); // call super.Init() to initialize meshBuffers;
     }

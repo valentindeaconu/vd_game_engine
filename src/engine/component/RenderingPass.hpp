@@ -7,7 +7,7 @@
 
 #include <engine/misc/Types.hpp>
 
-#include <engine/glmodel/buffer/FrameBuffer.hpp>
+#include <engine/api/gl/FrameBuffer.hpp>
 
 #include <string>
 
@@ -18,7 +18,7 @@ namespace vd::component {
 
         RenderingPass(std::string  name,
                       const priority_t& priority,
-                      buffer::FrameBufferPtr  frameBufferPtr,
+                      gl::FrameBufferPtr  frameBufferPtr,
                       vd::Predicate precondition = g_kEmptyPredicate,
                       vd::Consumer beforeExecution = g_kEmptyConsumer,
                       vd::Consumer afterExecution = g_kEmptyConsumer);
@@ -32,7 +32,7 @@ namespace vd::component {
         [[nodiscard]] const std::string& Name() const;
         [[nodiscard]] const priority_t& Priority() const;
 
-        [[nodiscard]] const buffer::FrameBufferPtr& FrameBuffer() const;
+        [[nodiscard]] const gl::FrameBufferPtr& FrameBuffer() const;
     private:
         std::string m_Name;
         priority_t m_Priority;
@@ -41,7 +41,7 @@ namespace vd::component {
         vd::Consumer m_BeforeExecution;
         vd::Consumer m_AfterExecution;
 
-        buffer::FrameBufferPtr m_FrameBufferPtr;
+        gl::FrameBufferPtr m_FrameBufferPtr;
     };
 }
 

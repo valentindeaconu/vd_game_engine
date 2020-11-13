@@ -38,7 +38,7 @@ namespace mod::sobj {
 
         vd::shader::ShaderPtr shaderPtr = m_ShaderPtr;
         if (renderingPass == "Shadow") {
-            shaderPtr = vd::ObjectOfType<vd::shadow::ShadowShader>::Find();
+            shaderPtr = vd::ObjectOfType<mod::shadow::ShadowShader>::Find();
         }
 
         shaderPtr->bind();

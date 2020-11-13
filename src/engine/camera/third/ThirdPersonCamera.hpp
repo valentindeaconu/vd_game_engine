@@ -5,13 +5,13 @@
 #ifndef VD_GAME_ENGINE_THIRDPERSONCAMERA_HPP
 #define VD_GAME_ENGINE_THIRDPERSONCAMERA_HPP
 
-#include <engine/camera/ICamera.hpp>
+#include <engine/camera/Camera.hpp>
 #include <engine/math/Transform.hpp>
 
 #include <functional>
 
 namespace vd::camera::impl {
-    class ThirdPersonCamera : public ICamera {
+    class ThirdPersonCamera : public Camera {
     public:
         typedef std::function<vd::math::Transform(void)> PlayerTransformGetter;
         typedef std::function<float(float, float)> HeightGetter;

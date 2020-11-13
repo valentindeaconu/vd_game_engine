@@ -7,7 +7,7 @@
 
 #include <engine/component/IRenderer.hpp>
 
-#include <engine/shadow/ShadowShader.hpp>
+#include <modules/shadow/ShadowShader.hpp>
 
 #include "Terrain.hpp"
 #include "TerrainNode.hpp"

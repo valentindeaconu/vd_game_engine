@@ -12,16 +12,14 @@
 namespace mod::gui {
     class GuiQuad : public vd::object::Entity {
     public:
-        GuiQuad(const vd::model::Texture2DPtr& texture,
-                const glm::vec2& position,
-                const glm::vec2& scale);
+        GuiQuad(vd::gl::Texture2DPtr texture, const glm::vec2& position, const glm::vec2& scale);
         ~GuiQuad();
 
         void Init() override;
         void Update() override;
         void CleanUp() override;
     private:
-        vd::model::Texture2DPtr m_Texture;
+        vd::gl::Texture2DPtr m_Texture;
     };
     typedef std::shared_ptr<GuiQuad>    GuiQuadPtr;
 }

@@ -35,11 +35,24 @@ namespace vd {
         enginePtr->Subscribe(lightManagerPtr, vd::component::IManager::kDefaultPriority);
         vd::ObjectOfType<light::LightManager>::Provide(lightManagerPtr);
 
+        // Injector creation & Injection
+        Inject();
+
         enginePtr->Link();
 
         // Register engine to singleton manager
         vd::ObjectOfType<vd::Engine>::Provide(enginePtr);
 
         return enginePtr;
+    }
+
+    void EngineFactory::Inject() {
+        // Object Loader
+        loader::impl::TinyObjLoaderImplPtr tinyObjLoaderImplPtr = std::make_shared<loader::impl::TinyObjLoaderImpl>();
+        vd::ObjectOfType<loader::impl::IObjectLoader>::Provide(tinyObjLoaderImplPtr);
+
+        // Image Loader
+        loader::impl::StbiImplPtr stbiImplPtr = std::make_shared<loader::impl::StbiImpl>();
+        vd::ObjectOfType<loader::impl::IImageLoader>::Provide(stbiImplPtr);
     }
 }

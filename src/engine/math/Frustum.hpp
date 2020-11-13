@@ -6,7 +6,7 @@
 #define VD_GAME_ENGINE_FRUSTUM_HPP
 
 #include <engine/window/Window.hpp>
-#include <engine/camera/ICamera.hpp>
+#include <engine/camera/Camera.hpp>
 
 #include <glm/glm.hpp>
 

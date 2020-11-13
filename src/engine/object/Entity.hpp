@@ -5,8 +5,8 @@
 #include <engine/math/Bounds.hpp>
 #include <engine/model/Mesh.hpp>
 
-#include <engine/glmodel/buffer/MeshBuffer.hpp>
-#include <engine/glmodel/buffer/PatchBuffer.hpp>
+#include <engine/api/gl/MeshBuffer.hpp>
+#include <engine/api/gl/PatchBuffer.hpp>
 
 namespace vd::object {
     class Entity {
@@ -23,29 +23,29 @@ namespace vd::object {
         virtual void Update() = 0;
         virtual void CleanUp();
 
-        vd::math::Transform& LocalTransform();
+        math::Transform& LocalTransform();
 
-        vd::math::Transform& WorldTransform();
+        math::Transform& WorldTransform();
 
-        vd::model::MeshPtrVec& Meshes();
+        model::MeshPtrVec& Meshes();
 
-        vd::buffer::BufferPtrVec& Buffers();
+        gl::BufferPtrVec& Buffers();
 
-        vd::math::Bounds3Vec& BoundingBoxes();
+        math::Bounds3Vec& BoundingBoxes();
     protected:
         void SetBufferGenerationStrategy(const BufferGenerationStrategy& strategy);
 
     private:
         void GenerateBuffers();
 
-        vd::math::Transform m_LocalTransform;
-        vd::math::Transform m_WorldTransform;
+        math::Transform m_LocalTransform;
+        math::Transform m_WorldTransform;
 
         BufferGenerationStrategy m_Strategy;
 
-        vd::model::MeshPtrVec m_Meshes;
-        vd::buffer::BufferPtrVec m_Buffers;
-        vd::math::Bounds3Vec m_BoundingBoxes;
+        model::MeshPtrVec m_Meshes;
+        gl::BufferPtrVec m_Buffers;
+        math::Bounds3Vec m_BoundingBoxes;
     };
     typedef std::shared_ptr<Entity>	EntityPtr;
 }

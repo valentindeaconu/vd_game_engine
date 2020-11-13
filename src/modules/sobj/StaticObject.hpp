@@ -2,12 +2,14 @@
 #define __STATIC_OBJECT_HPP_
 
 #include <engine/object/Entity.hpp>
-#include <engine/foundation/objloader/OBJLoader.hpp>
+
+#include <engine/kernel/ObjectOfType.hpp>
+#include <engine/loader/ObjectLoader.hpp>
 
 namespace mod::sobj {
     class StaticObject : public vd::object::Entity {
     public:
-        StaticObject(const std::string& path, const std::string& objFile);
+        StaticObject(std::string path, std::string objFile);
         ~StaticObject();
 
         void Init() override;

@@ -1,7 +1,7 @@
 #ifndef __ENGINE_BLOCK_HPP_
 #define __ENGINE_BLOCK_HPP_
 
-#include <engine/foundation/GL.hpp>
+#include <engine/api/gl/GL.hpp>
 
 #include <thread>
 #include <iostream>
@@ -9,13 +9,13 @@
 #include <vector>
 #include <list>
 
-#include <engine/foundation/datastruct/Observer.hpp>
+#include <engine/datastruct/Observer.hpp>
 
 #include <engine/misc/Types.hpp>
 
 #include <engine/component/RenderingPass.hpp>
 
-#include <engine/misc/ObjectOfType.hpp>
+#include <engine/kernel/ObjectOfType.hpp>
 #include <engine/window/Window.hpp>
 
 namespace vd {

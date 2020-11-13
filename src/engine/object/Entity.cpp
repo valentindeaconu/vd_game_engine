@@ -22,23 +22,23 @@ namespace vd::object
         m_Buffers.clear();
     }
 
-    vd::math::Transform& Entity::LocalTransform() {
+    math::Transform& Entity::LocalTransform() {
         return m_LocalTransform;
     }
 
-    vd::math::Transform& Entity::WorldTransform() {
+    math::Transform& Entity::WorldTransform() {
         return m_WorldTransform;
     }
 
-    vd::model::MeshPtrVec& Entity::Meshes() {
+    model::MeshPtrVec& Entity::Meshes() {
         return m_Meshes;
     }
 
-    vd::buffer::BufferPtrVec& Entity::Buffers() {
+    gl::BufferPtrVec& Entity::Buffers() {
         return m_Buffers;
     }
 
-    vd::math::Bounds3Vec& Entity::BoundingBoxes() {
+    math::Bounds3Vec& Entity::BoundingBoxes() {
         return m_BoundingBoxes;
     }
 
@@ -51,9 +51,9 @@ namespace vd::object
 
         for (auto& mesh : m_Meshes) {
             if (m_Strategy == eMesh) {
-                m_Buffers.push_back(std::make_shared<vd::buffer::MeshBuffer>());
+                m_Buffers.push_back(std::make_shared<gl::MeshBuffer>());
             } else {
-                m_Buffers.push_back(std::make_shared<vd::buffer::PatchBuffer>());
+                m_Buffers.push_back(std::make_shared<gl::PatchBuffer>());
             }
             m_Buffers.back()->Allocate(mesh);
 

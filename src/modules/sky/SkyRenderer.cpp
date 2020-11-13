@@ -32,12 +32,12 @@ namespace mod::sky {
 
         vd::shader::ShaderPtr shaderPtr = m_ShaderPtr;
         if (renderingPass == "Shadow") {
-            shaderPtr = vd::ObjectOfType<vd::shadow::ShadowShader>::Find();
+            shaderPtr = vd::ObjectOfType<mod::shadow::ShadowShader>::Find();
         }
 
         shaderPtr->bind();
 
-        vd::buffer::BufferPtrVec& buffers = m_SkyPtr->Buffers();
+        vd::gl::BufferPtrVec& buffers = m_SkyPtr->Buffers();
         for (size_t meshIndex = 0; meshIndex < buffers.size(); ++meshIndex) {
             shaderPtr->updateUniforms(m_SkyPtr, meshIndex);
             buffers[meshIndex]->Render();

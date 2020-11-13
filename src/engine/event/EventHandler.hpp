@@ -5,7 +5,7 @@
 #ifndef VD_GAME_ENGINE_EVENT_HPP
 #define VD_GAME_ENGINE_EVENT_HPP
 
-#include <engine/foundation/GL.hpp>
+#include <engine/api/gl/GL.hpp>
 
 #include <glm/glm.hpp>
 
@@ -16,7 +16,7 @@
 #include <engine/misc/Types.hpp>
 #include <engine/component/IManager.hpp>
 
-#include <engine/misc/ObjectOfType.hpp>
+#include <engine/kernel/ObjectOfType.hpp>
 
 namespace vd::event {
     class EventHandlerManager;

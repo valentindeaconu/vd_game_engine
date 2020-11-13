@@ -1,7 +1,7 @@
 #ifndef __RENDERER_HPP_
 #define __RENDERER_HPP_
 
-#include <engine/foundation/datastruct/Observer.hpp>
+#include <engine/datastruct/Observer.hpp>
 #include <engine/shader/Shader.hpp>
 
 #include <engine/misc/Types.hpp>

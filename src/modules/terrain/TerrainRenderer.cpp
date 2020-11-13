@@ -59,7 +59,7 @@ namespace mod::terrain {
 
                 m_ShaderPtr->updateUniforms(m_TerrainPtr, 0);
 
-                vd::buffer::BufferPtrVec& buffers = m_TerrainPtr->Buffers();
+                vd::gl::BufferPtrVec& buffers = m_TerrainPtr->Buffers();
                 buffers[0]->Render();
             } else {
                 const auto& children = nodePtr->GetChildren();
