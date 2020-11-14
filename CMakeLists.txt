@@ -15,6 +15,7 @@ include_directories(src/engine/core)
 include_directories(src/engine/culling)
 include_directories(src/engine/datastruct)
 include_directories(src/engine/event)
+include_directories(src/engine/exception)
 include_directories(src/engine/kernel)
 include_directories(src/engine/light)
 include_directories(src/engine/loader)
@@ -70,6 +71,8 @@ add_executable(vd_game_engine
         src/engine/datastruct/Observer.hpp
         src/engine/event/EventHandler.cpp
         src/engine/event/EventHandler.hpp
+        src/engine/exception/Exceptions.cpp
+        src/engine/exception/Exceptions.hpp
         src/engine/kernel/Engine.cpp
         src/engine/kernel/Engine.hpp
         src/engine/kernel/EngineFactory.cpp
@@ -79,14 +82,24 @@ add_executable(vd_game_engine
         src/engine/light/LightManager.hpp
         src/engine/light/Light.cpp
         src/engine/light/Light.hpp
+        src/engine/loader/FileLoader.cpp
+        src/engine/loader/FileLoader.hpp
         src/engine/loader/ImageLoader.cpp
         src/engine/loader/ImageLoader.hpp
         src/engine/loader/ObjectLoader.cpp
         src/engine/loader/ObjectLoader.hpp
+        src/engine/loader/ShaderLoader.cpp
+        src/engine/loader/ShaderLoader.hpp
+        src/engine/loader/PropertiesLoader.cpp
+        src/engine/loader/PropertiesLoader.hpp
+        src/engine/loader/impl/StreamImpl.cpp
+        src/engine/loader/impl/StreamImpl.hpp
         src/engine/loader/impl/StbiImpl.cpp
         src/engine/loader/impl/StbiImpl.hpp
         src/engine/loader/impl/TinyObjLoaderImpl.cpp
         src/engine/loader/impl/TinyObjLoaderImpl.hpp
+        src/engine/loader/impl/VDGEGLSLImpl.cpp
+        src/engine/loader/impl/VDGEGLSLImpl.hpp
         src/engine/logger/Logger.cpp
         src/engine/logger/Logger.hpp
         src/engine/math/Frustum.cpp

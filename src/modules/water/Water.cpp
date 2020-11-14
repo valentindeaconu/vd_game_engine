@@ -6,7 +6,7 @@
 
 namespace mod::water {
     Water::Water(const std::string& propsFilePath)
-        : m_PropsPtr(vd::misc::Properties::Create<vd::misc::Properties::eFile>(propsFilePath))
+        : m_PropsPtr(vd::loader::PropertiesLoader::Load(propsFilePath))
         , m_MoveFactor(0.0f)
         , m_ReflectionFBO(std::make_shared<vd::gl::FrameBuffer>())
         , m_RefractionFBO(std::make_shared<vd::gl::FrameBuffer>())

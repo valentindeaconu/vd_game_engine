@@ -19,6 +19,17 @@
 // Injection
 #include <engine/loader/impl/TinyObjLoaderImpl.hpp>
 #include <engine/loader/impl/StbiImpl.hpp>
+#include <engine/loader/impl/StreamImpl.hpp>
+#include <engine/loader/impl/VDGEGLSLImpl.hpp>
+#include <engine/misc/Properties.hpp>
+
+// Properties Loader
+#include <engine/loader/PropertiesLoader.hpp>
+
+// Logger
+#include <engine/logger/Logger.hpp>
+
+#include <string>
 
 namespace vd {
     class EngineFactory {

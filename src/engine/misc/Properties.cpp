@@ -5,19 +5,6 @@
 #include "Properties.hpp"
 
 namespace vd::misc {
-    template<> PropertiesPtr Properties::Create<Properties::PropertiesInputType::eString>(const std::string& content) {
-        PropertiesPtr ptr = std::make_shared<Properties>();
-        ptr->Parse(content);
-
-        return ptr;
-    }
-
-    template<> PropertiesPtr Properties::Create<Properties::PropertiesInputType::eFile>(const std::string& input) {
-        std::string content = ReadFile(input);
-
-        return Properties::Create<eString>(content);
-    }
-
     Properties::Properties()
         : m_Map()
     {
@@ -169,58 +156,4 @@ namespace vd::misc {
         this->Change(key, std::vector<std::string>({ value }));
     }
 
-    std::string Properties::ReadFile(const std::string& filePath) {
-        std::ifstream in(filePath);
-
-        if (!in.is_open()) {
-            throw std::invalid_argument("no properties file found at location " + filePath);
-        }
-
-        std::string content;
-
-        in.seekg(0, std::ios::end);
-        content.reserve(in.tellg());
-        in.seekg(0, std::ios::beg);
-
-        content.assign(std::istreambuf_iterator<char>(in), std::istreambuf_iterator<char>());
-
-        in.close();
-
-        return content;
-    }
-
-    void Properties::Parse(const std::string& content) {
-        std::vector<std::string> lines;
-
-        boost::split(lines, content, [](char c) { return c == '\n'; });
-
-        for (size_t i = 0; i < lines.size(); ++i) {
-            std::string& line = lines[i];
-            boost::trim(line);
-
-            // Ignore empty lines and comment lines
-            if (line.empty() || line.starts_with("#")) {
-                continue;
-            }
-
-            std::vector<std::string> key_and_value;
-            boost::split(key_and_value, line, [](char c) { return c == '='; });
-
-            if (key_and_value.size() != 2) {
-                vd::Logger::warn("could not find a valid key-value pair on line " + std::to_string(i));
-                continue;
-            }
-
-            std::string& key = key_and_value[0];
-            std::string& value = key_and_value[1];
-
-            boost::trim(key);
-            boost::trim(value);
-
-            std::vector<std::string> values;
-            boost::split(values, value, [](char c) { return c == ' '; });
-
-            this->m_Map[key] = values;
-        }
-    }
 }

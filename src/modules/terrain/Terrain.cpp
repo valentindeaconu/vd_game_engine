@@ -7,7 +7,7 @@
 namespace mod::terrain {
 
     Terrain::Terrain(const std::string& propsFilePath)
-        : m_PropsPtr(vd::misc::Properties::Create<vd::misc::Properties::eFile>(propsFilePath))
+        : m_PropsPtr(vd::loader::PropertiesLoader::Load(propsFilePath))
     {
     }
 

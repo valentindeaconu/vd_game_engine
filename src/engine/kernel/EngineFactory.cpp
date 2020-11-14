@@ -8,7 +8,7 @@ namespace vd {
 
     EnginePtr EngineFactory::Create() {
         // Engine creation
-        vd::EnginePtr enginePtr = std::make_shared<vd::Engine>();
+        EnginePtr enginePtr = std::make_shared<vd::Engine>();
 
         // Default managers: InputHandler, Window, Camera
 
@@ -23,36 +23,52 @@ namespace vd {
         // Camera creation
         camera::CameraManagerPtr cameraManagerPtr = std::make_shared<camera::CameraManager>();
         enginePtr->Subscribe(cameraManagerPtr, 3);
-        vd::ObjectOfType<camera::CameraManager>::Provide(cameraManagerPtr);
+        ObjectOfType<camera::CameraManager>::Provide(cameraManagerPtr);
 
         // FrustumCullingManager creation
         culling::FrustumCullingManagerPtr frustumCullingManagerPtr = std::make_shared<culling::FrustumCullingManager>();
         enginePtr->Subscribe(frustumCullingManagerPtr, vd::component::IManager::kDefaultPriority);
-        vd::ObjectOfType<culling::FrustumCullingManager>::Provide(frustumCullingManagerPtr);
+        ObjectOfType<culling::FrustumCullingManager>::Provide(frustumCullingManagerPtr);
 
         // LightManager creation
         light::LightManagerPtr lightManagerPtr = std::make_shared<light::LightManager>();
         enginePtr->Subscribe(lightManagerPtr, vd::component::IManager::kDefaultPriority);
-        vd::ObjectOfType<light::LightManager>::Provide(lightManagerPtr);
+        ObjectOfType<light::LightManager>::Provide(lightManagerPtr);
 
         // Injector creation & Injection
-        Inject();
+        try {
+            Inject();
+        } catch (std::exception& e) {
+            Logger::terminate("Could not inject basic dependencies, error: " + std::string(e.what()), 1);
+        }
 
         enginePtr->Link();
 
         // Register engine to singleton manager
-        vd::ObjectOfType<vd::Engine>::Provide(enginePtr);
+        ObjectOfType<vd::Engine>::Provide(enginePtr);
 
         return enginePtr;
     }
 
     void EngineFactory::Inject() {
+        // File Loader
+        loader::impl::StreamImplPtr streamImplPtr = std::make_shared<loader::impl::StreamImpl>();
+        ObjectOfType<loader::impl::IFileLoader>::Provide(streamImplPtr);
+
+        // Read global properties
+        misc::PropertiesPtr propertiesPtr = loader::PropertiesLoader::Load("./resources/global.properties");
+        vd::ObjectOfType<vd::misc::Properties>::Provide(propertiesPtr);
+
         // Object Loader
         loader::impl::TinyObjLoaderImplPtr tinyObjLoaderImplPtr = std::make_shared<loader::impl::TinyObjLoaderImpl>();
-        vd::ObjectOfType<loader::impl::IObjectLoader>::Provide(tinyObjLoaderImplPtr);
+        ObjectOfType<loader::impl::IObjectLoader>::Provide(tinyObjLoaderImplPtr);
 
         // Image Loader
         loader::impl::StbiImplPtr stbiImplPtr = std::make_shared<loader::impl::StbiImpl>();
-        vd::ObjectOfType<loader::impl::IImageLoader>::Provide(stbiImplPtr);
+        ObjectOfType<loader::impl::IImageLoader>::Provide(stbiImplPtr);
+
+        // Shader Loader
+        loader::impl::VDGEGLSLImplPtr vdge_glsl_implPtr = std::make_shared<loader::impl::VDGEGLSLImpl>();
+        ObjectOfType<loader::impl::IShaderLoader>::Provide(vdge_glsl_implPtr);
     }
 }

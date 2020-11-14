@@ -14,29 +14,12 @@
 
 #include <glm/glm.hpp>
 
-#include <engine/logger/Logger.hpp>
-
-#include <boost/algorithm/string.hpp>
-#include <boost/foreach.hpp>
-
 namespace vd::misc {
     class Properties;
     typedef std::shared_ptr<Properties> PropertiesPtr;
 
     class Properties {
     public:
-        enum PropertiesInputType {
-            eFile = 0,
-            eString
-        };
-
-        /**
-         * Create an instance of Properties
-         * @tparam type File or String defining the format of the input
-         * @return an instance of Properties created using the given input
-         */
-        template<PropertiesInputType type> static PropertiesPtr Create(const std::string&);
-
         Properties();
         ~Properties();
 
@@ -93,9 +76,6 @@ namespace vd::misc {
          */
         void Change(const std::string& key, const std::string& value);
     private:
-        static std::string ReadFile(const std::string& filePath);
-        void Parse(const std::string& content);
-
         std::unordered_map<std::string, std::vector<std::string>> m_Map;
     };
 }

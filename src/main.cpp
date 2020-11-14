@@ -43,8 +43,6 @@
 // object finder
 #include <engine/kernel/ObjectOfType.hpp>
 
-#include <engine/misc/Properties.hpp>
-
 const vd::Consumer g_CCWConsumer = []() { glFrontFace(GL_CCW); };
 const vd::Consumer g_CWConsumer = []() { glFrontFace(GL_CW); };
 
@@ -64,10 +62,6 @@ mod::water::WaterPtr createWater(vd::EnginePtr& enginePtr);
                                 const glm::vec2& scale);
 
 int main(int argc, char ** argv) {
-    // Read global properties
-    auto globalPropertiesPtr = vd::misc::Properties::Create<vd::misc::Properties::eFile>("./resources/global.properties");
-    vd::ObjectOfType<vd::misc::Properties>::Provide(globalPropertiesPtr);
-
     /// Engine creation
     vd::EnginePtr enginePtr = vd::EngineFactory::Create();
 

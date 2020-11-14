@@ -7,7 +7,7 @@
 
 #include <engine/object/Entity.hpp>
 
-#include <engine/misc/Properties.hpp>
+#include <engine/loader/PropertiesLoader.hpp>
 
 #include <engine/camera/Camera.hpp>
 #include <engine/kernel/ObjectOfType.hpp>

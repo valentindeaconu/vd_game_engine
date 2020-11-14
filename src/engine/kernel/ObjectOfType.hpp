@@ -5,23 +5,18 @@
 #ifndef VD_GAME_ENGINE_OBJECTOFTYPE_HPP
 #define VD_GAME_ENGINE_OBJECTOFTYPE_HPP
 
+#include <engine/exception/Exceptions.hpp>
+
 #include <unordered_map>
 #include <memory>
-#include <exception>
 
 namespace vd {
-    struct dependency_missing : public std::exception {
-        [[nodiscard]] const char* what() const noexcept override {
-            return "missing dependency";
-        }
-    };
-
     template <typename T>
     class ObjectOfType {
     public:
         static const std::shared_ptr<T>& Find() {
             if (m_Instance == nullptr)
-                throw dependency_missing();
+                throw MissingDependency(typeid(T).name());
             return m_Instance;
         }
         static void Provide(const std::shared_ptr<T>& object) { m_Instance = object; }

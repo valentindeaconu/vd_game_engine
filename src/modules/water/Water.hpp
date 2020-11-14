@@ -9,7 +9,7 @@
 
 #include <engine/api/gl/FrameBuffer.hpp>
 
-#include <engine/misc/Properties.hpp>
+#include <engine/loader/PropertiesLoader.hpp>
 
 #include <engine/kernel/ObjectOfType.hpp>
 #include <engine/kernel/Engine.hpp>
