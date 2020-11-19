@@ -7,6 +7,7 @@
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <sstream>
 
 #include <engine/api/gl/GL.hpp>
 
@@ -14,7 +15,7 @@
 
 #include <engine/logger/Logger.hpp>
 
-#include <engine/kernel/ObjectOfType.hpp>
+#include <engine/injector/Injectable.hpp>
 #include <engine/event/EventHandler.hpp>
 
 #include <engine/component/IManager.hpp>
@@ -64,17 +65,19 @@ namespace vd::window {
     };
     typedef std::shared_ptr<Window>	WindowPtr;
 
-    class WindowManager : public vd::component::IManager {
+    class WindowManager : public vd::component::IManager, public vd::injector::Injectable {
     public:
         WindowManager();
         ~WindowManager();
+
+        void Link() override;
 
         void Init() override;
         void Update() override;
         void CleanUp() override;
     private:
         WindowPtr m_WindowPtr;
-        event::EventHandlerPtr m_EventHandlerPtr;
+        event::EventHandlerPtr m_pEventHandler;
     };
     typedef std::shared_ptr<WindowManager>  WindowManagerPtr;
 }

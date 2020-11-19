@@ -6,24 +6,36 @@
 
 namespace mod::gui {
 
-    GuiShader::GuiShader() : vd::shader::Shader() {
-        loadAndAddShader("./resources/shaders/gui/gui_VS.glsl", vd::shader::eVertexShader);
-        loadAndAddShader("./resources/shaders/gui/gui_FS.glsl", vd::shader::eFragmentShader);
+    GuiShader::GuiShader()
+        : vd::gl::Shader()
+    {
+        std::string vsSource;
+        vd::loader::ShaderLoader::Load("./resources/shaders/gui/gui_VS.glsl", vsSource);
+        AddShader(vsSource, vd::gl::Shader::eVertexShader);
 
-        compileShader();
+        std::string fsSource;
+        vd::loader::ShaderLoader::Load("./resources/shaders/gui/gui_FS.glsl", fsSource);
+        AddShader(fsSource, vd::gl::Shader::eFragmentShader);
 
-        addUniform("transform");
-
-        addUniform("guiTexture");
+        Compile();
     }
 
     GuiShader::~GuiShader() = default;
 
-    void GuiShader::updateUniforms(vd::object::EntityPtr entityPtr, size_t meshIndex) {
-        setUniform("transform", entityPtr->LocalTransform().Get());
+    void GuiShader::AddUniforms() {
+        AddUniform("transform");
+        AddUniform("guiTexture");
+    }
+
+    void GuiShader::InitUniforms(vd::object::EntityPtr pEntity) {
+        AddUniforms();
+    }
+
+    void GuiShader::UpdateUniforms(vd::object::EntityPtr pEntity, uint32_t meshIndex) {
+        SetUniform("transform", pEntity->LocalTransform().Get());
 
         vd::gl::ActiveTexture(1);
-        entityPtr->Meshes()[0]->materials[0].diffuseMap->Bind();
-        setUniformi("guiTexture", 1);
+        pEntity->Meshes()[meshIndex]->materials[0].diffuseMap->Bind();
+        SetUniform("guiTexture", 1);
     }
 }

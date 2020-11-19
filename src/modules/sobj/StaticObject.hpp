@@ -3,7 +3,7 @@
 
 #include <engine/object/Entity.hpp>
 
-#include <engine/kernel/ObjectOfType.hpp>
+#include <engine/injector/ObjectOfType.hpp>
 #include <engine/loader/ObjectLoader.hpp>
 
 namespace mod::sobj {

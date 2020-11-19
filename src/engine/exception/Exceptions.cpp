@@ -19,8 +19,15 @@ namespace vd {
     {
     }
 
+    RuntimeError::RuntimeError(const std::string& message)
+        : CustomException("RuntimeError", message)
+    {
+
+    }
+
     SyntaxError::SyntaxError(const std::string& message, uint64_t line)
         : CustomException("SyntaxError", "[" + std::to_string(line) + "]" + message)
     {
     }
+
 }

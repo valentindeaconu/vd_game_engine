@@ -8,10 +8,12 @@
 #include <engine/camera/Camera.hpp>
 #include <engine/math/Transform.hpp>
 
+#include <engine/injector/Injectable.hpp>
+
 #include <functional>
 
 namespace vd::camera::impl {
-    class ThirdPersonCamera : public Camera {
+    class ThirdPersonCamera : public Camera, public injector::Injectable {
     public:
         typedef std::function<vd::math::Transform(void)> PlayerTransformGetter;
         typedef std::function<float(float, float)> HeightGetter;
@@ -19,7 +21,7 @@ namespace vd::camera::impl {
         ThirdPersonCamera();
         ~ThirdPersonCamera();
 
-        void Link();
+        void Link() override;
 
         void Reflect(const Axis& axis, float amount) override;
 
@@ -32,10 +34,13 @@ namespace vd::camera::impl {
 
         void Update();
 
-        float HorizontalDistance() const;
-        float VerticalDistance() const;
+        [[nodiscard]] float HorizontalDistance() const;
+        [[nodiscard]] float VerticalDistance() const;
 
-        glm::vec3 CameraPosition(const glm::vec3& playerPosition, float playerAngle, float horizontalDistance, float verticalDistance) const;
+        [[nodiscard]] glm::vec3 CameraPosition(const glm::vec3& playerPosition,
+                                               float playerAngle,
+                                               float horizontalDistance,
+                                               float verticalDistance) const;
 
         float m_Pitch;
         float m_DistanceFromPlayer;

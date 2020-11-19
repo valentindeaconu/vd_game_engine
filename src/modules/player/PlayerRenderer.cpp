@@ -2,22 +2,29 @@
 
 namespace mod::player {
     PlayerRenderer::PlayerRenderer(PlayerPtr playerPtr,
-                                   vd::shader::ShaderPtr shaderPtr,
+                                   vd::gl::ShaderPtr shaderPtr,
                                    vd::Consumer beforeExecution,
                                    vd::Consumer afterExecution)
         : IRenderer(std::move(shaderPtr), std::move(beforeExecution), std::move(afterExecution))
-        , m_PlayerPtr(std::move(playerPtr))
+        , m_pPlayer(std::move(playerPtr))
     {
     }
 
     PlayerRenderer::~PlayerRenderer() = default;
 
+    void PlayerRenderer::Link() {
+        m_pShadowShader = vd::ObjectOfType<mod::shadow::ShadowShader>::Find();
+    }
+
     void PlayerRenderer::Init() {
-        m_PlayerPtr->Init();
+        m_pPlayer->Init();
+
+        m_pShader->Bind();
+        m_pShader->InitUniforms(m_pPlayer);
     }
 
     void PlayerRenderer::Update() {
-        m_PlayerPtr->Update();
+        m_pPlayer->Update();
     }
 
     void PlayerRenderer::Render(const params_t& params) {
@@ -33,16 +40,13 @@ namespace mod::player {
 
         Prepare();
 
-        vd::shader::ShaderPtr shaderPtr = m_ShaderPtr;
-        if (renderingPass == "Shadow") {
-            shaderPtr = vd::ObjectOfType<mod::shadow::ShadowShader>::Find();
-        }
+        const vd::gl::ShaderPtr& shaderPtr = (renderingPass == "Shadow") ? m_pShadowShader : m_pShader;
 
-        shaderPtr->bind();
+        shaderPtr->Bind();
 
-        vd::gl::BufferPtrVec& buffers = m_PlayerPtr->Buffers();
+        vd::gl::BufferPtrVec& buffers = m_pPlayer->Buffers();
         for (size_t meshIndex = 0; meshIndex < buffers.size(); ++meshIndex) {
-            shaderPtr->updateUniforms(m_PlayerPtr, meshIndex);
+            shaderPtr->UpdateUniforms(m_pPlayer, meshIndex);
             buffers[meshIndex]->Render();
         }
 
@@ -50,10 +54,11 @@ namespace mod::player {
     }
 
     void PlayerRenderer::CleanUp() {
-        m_PlayerPtr->CleanUp();
+        m_pPlayer->CleanUp();
     }
 
     bool PlayerRenderer::IsReady() {
-        return IRenderer::IsReady() && m_PlayerPtr != nullptr;
+        return IRenderer::IsReady() && m_pPlayer != nullptr;
     }
+
 }

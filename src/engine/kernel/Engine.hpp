@@ -1,5 +1,9 @@
-#ifndef __ENGINE_BLOCK_HPP_
-#define __ENGINE_BLOCK_HPP_
+//
+// Created by Vali on 11/18/2020.
+//
+
+#ifndef VD_GAME_ENGINE_ENGINE_HPP
+#define VD_GAME_ENGINE_ENGINE_HPP
 
 #include <engine/api/gl/GL.hpp>
 
@@ -10,13 +14,12 @@
 #include <list>
 
 #include <engine/datastruct/Observer.hpp>
+#include <engine/component/RenderingPass.hpp>
 
 #include <engine/misc/Types.hpp>
 
-#include <engine/component/RenderingPass.hpp>
-
-#include <engine/kernel/ObjectOfType.hpp>
 #include <engine/window/Window.hpp>
+#include "Context.hpp"
 
 namespace vd {
     class Engine : public datastruct::Observable {
@@ -25,21 +28,12 @@ namespace vd {
 		~Engine();
 
 		void Link();
+
 		void Init();
 		void Start();
 
 		void Add(const component::RenderingPass& renderingPass);
 		void Remove(const std::string& renderingPassName);
-
-        // Get the number of frames per second of the engine
-        [[nodiscard]] int getFramesPerSecond() const;
-
-        // Get the time necessary by a frame to be completely rendered
-        [[nodiscard]] float getFrameTime() const;
-
-		[[nodiscard]] const glm::vec4& getClipPlane() const;
-		void setClipPlane(const glm::vec4& clipPlane);
-
 	private:
 		void Run();
 		void Stop();
@@ -48,21 +42,15 @@ namespace vd {
 		void Render();
 		void CleanUp();
 
-		int m_FPS; // frames per second
-		float m_FrameTimeInSeconds; // frame time (in seconds)
+		float   m_FrameTime;
+		bool    m_Running;
 
-		float m_FrameTime;
-		bool m_Running;
-
-		glm::vec4 clipPlane;
-
-		std::function<vd::Dimension()> m_DimensionGetter;
-		vd::Predicate m_CloseRequestChecker;
+		window::WindowPtr   m_pWindow;
+        kernel::ContextPtr  m_pContext;
 
 		std::list<component::RenderingPass> m_RenderingPasses;
-
 	};
 	typedef std::shared_ptr<Engine>	EnginePtr;
 }
 
-#endif // !__ENGINE_BLOCK_HPP_
+#endif //VD_GAME_ENGINE_ENGINE_HPP

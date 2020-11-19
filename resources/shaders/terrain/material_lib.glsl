@@ -6,5 +6,5 @@ struct TerrainMaterial
     float horizontalScaling;
     float heightScaling;
 };
-const int MAX_MATERIALS = 5;
+const int MAX_MATERIALS = VDGE_BIOMES_COUNT;
 uniform TerrainMaterial materials[MAX_MATERIALS];

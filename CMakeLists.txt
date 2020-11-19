@@ -45,6 +45,8 @@ add_executable(vd_game_engine
         src/engine/api/gl/PatchBuffer.hpp
         src/engine/api/gl/Texture.cpp
         src/engine/api/gl/Texture.hpp
+        src/engine/api/gl/Shader.cpp
+        src/engine/api/gl/Shader.hpp
         src/engine/camera/first/FirstPersonCamera.cpp
         src/engine/camera/first/FirstPersonCamera.hpp
         src/engine/camera/free/FreeCamera.cpp
@@ -53,12 +55,15 @@ add_executable(vd_game_engine
         src/engine/camera/third/ThirdPersonCamera.hpp
         src/engine/camera/Camera.cpp
         src/engine/camera/Camera.hpp
+        src/engine/camera/CameraWrapper.cpp
+        src/engine/camera/CameraWrapper.hpp
         src/engine/collision/Detector.cpp
         src/engine/collision/Detector.hpp
         src/engine/component/IRenderer.cpp
         src/engine/component/IRenderer.hpp
         src/engine/component/IManager.cpp
         src/engine/component/IManager.hpp
+        src/engine/component/IModuleFactory.hpp
         src/engine/component/RenderingPass.cpp
         src/engine/component/RenderingPass.hpp
         src/engine/core/AsyncWorker.cpp
@@ -73,11 +78,18 @@ add_executable(vd_game_engine
         src/engine/event/EventHandler.hpp
         src/engine/exception/Exceptions.cpp
         src/engine/exception/Exceptions.hpp
+        src/engine/injector/CreateAndStore.hpp
+        src/engine/injector/Injectable.cpp
+        src/engine/injector/Injectable.hpp
+        src/engine/injector/Linker.cpp
+        src/engine/injector/Linker.hpp
+        src/engine/injector/ObjectOfType.hpp
         src/engine/kernel/Engine.cpp
         src/engine/kernel/Engine.hpp
+        src/engine/kernel/Context.cpp
+        src/engine/kernel/Context.hpp
         src/engine/kernel/EngineFactory.cpp
         src/engine/kernel/EngineFactory.hpp
-        src/engine/kernel/ObjectOfType.hpp
         src/engine/light/LightManager.cpp
         src/engine/light/LightManager.hpp
         src/engine/light/Light.cpp
@@ -112,8 +124,6 @@ add_executable(vd_game_engine
         src/engine/math/Plane.cpp
         src/engine/math/Transform.cpp
         src/engine/math/Transform.hpp
-        src/engine/misc/Properties.cpp
-        src/engine/misc/Properties.hpp
         src/engine/misc/Types.hpp
         src/engine/model/Image.cpp
         src/engine/model/Image.hpp
@@ -122,24 +132,43 @@ add_executable(vd_game_engine
         src/engine/model/Vertex.hpp
         src/engine/object/Entity.cpp
         src/engine/object/Entity.hpp
-        src/engine/shader/GLSLWrapper.cpp
-        src/engine/shader/GLSLWrapper.hpp
-        src/engine/shader/Shader.cpp
-        src/engine/shader/Shader.hpp
+        src/engine/property/Properties.cpp
+        src/engine/property/Properties.hpp
+        src/engine/property/GlobalProperties.hpp
         src/engine/window/Window.cpp
         src/engine/window/Window.hpp
+        src/modules/gui/GuiQuad.cpp
+        src/modules/gui/GuiQuad.hpp
+        src/modules/gui/GuiRenderer.cpp
+        src/modules/gui/GuiRenderer.hpp
+        src/modules/gui/GuiShader.cpp
+        src/modules/gui/GuiShader.hpp
+        src/modules/gui/GuiFactory.cpp
+        src/modules/gui/GuiFactory.hpp
         src/modules/player/Player.cpp
         src/modules/player/Player.hpp
         src/modules/player/PlayerShader.cpp
         src/modules/player/PlayerShader.hpp
         src/modules/player/PlayerRenderer.cpp
         src/modules/player/PlayerRenderer.hpp
+        src/modules/player/PlayerFactory.cpp
+        src/modules/player/PlayerFactory.hpp
+        src/modules/shadow/ShadowBox.cpp
+        src/modules/shadow/ShadowBox.hpp
+        src/modules/shadow/ShadowShader.cpp
+        src/modules/shadow/ShadowShader.hpp
+        src/modules/shadow/ShadowManager.cpp
+        src/modules/shadow/ShadowManager.hpp
+        src/modules/shadow/ShadowFactory.cpp
+        src/modules/shadow/ShadowFactory.hpp
         src/modules/sky/Sky.cpp
         src/modules/sky/Sky.hpp
         src/modules/sky/SkyShader.cpp
         src/modules/sky/SkyShader.hpp
         src/modules/sky/SkyRenderer.cpp
         src/modules/sky/SkyRenderer.hpp
+        src/modules/sky/SkyFactory.cpp
+        src/modules/sky/SkyFactory.hpp
         src/modules/sobj/StaticObject.cpp
         src/modules/sobj/StaticObject.hpp
         src/modules/sobj/StaticObjectPlacer.cpp
@@ -148,6 +177,8 @@ add_executable(vd_game_engine
         src/modules/sobj/StaticObjectRenderer.hpp
         src/modules/sobj/StaticObjectShader.cpp
         src/modules/sobj/StaticObjectShader.hpp
+        src/modules/sobj/StaticObjectFactory.cpp
+        src/modules/sobj/StaticObjectFactory.hpp
         src/modules/terrain/TerrainShader.cpp
         src/modules/terrain/TerrainShader.hpp
         src/modules/terrain/Terrain.cpp
@@ -166,24 +197,18 @@ add_executable(vd_game_engine
         src/modules/terrain/splatmap/SplatMapRenderer.hpp
         src/modules/terrain/splatmap/SplatMapShader.cpp
         src/modules/terrain/splatmap/SplatMapShader.hpp
-        src/modules/shadow/ShadowBox.cpp
-        src/modules/shadow/ShadowBox.hpp
-        src/modules/shadow/ShadowShader.cpp
-        src/modules/shadow/ShadowShader.hpp
-        src/modules/shadow/ShadowManager.cpp
-        src/modules/shadow/ShadowManager.hpp
-        src/modules/gui/GuiQuad.cpp
-        src/modules/gui/GuiQuad.hpp
-        src/modules/gui/GuiRenderer.cpp
-        src/modules/gui/GuiRenderer.hpp
-        src/modules/gui/GuiShader.cpp
-        src/modules/gui/GuiShader.hpp
+        src/modules/terrain/TerrainFactory.cpp
+        src/modules/terrain/TerrainFactory.hpp
         src/modules/water/Water.cpp
         src/modules/water/Water.hpp
         src/modules/water/WaterShader.cpp
         src/modules/water/WaterShader.hpp
         src/modules/water/WaterRenderer.cpp
         src/modules/water/WaterRenderer.hpp
+        src/modules/water/WaterFactory.cpp
+        src/modules/water/WaterFactory.hpp
+        src/modules/ModuleFactory.cpp
+        src/modules/ModuleFactory.hpp
         src/main.cpp)
 
 # dependencies

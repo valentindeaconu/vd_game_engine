@@ -19,7 +19,7 @@ uniform vec3 cameraPosition;
 uniform mat4 view;
 
 // light constants
-#include "../lib/light_FS.glsl"
+#include <light_FS.glsl>
 uniform Light lights[MAX_LIGHTS];
 uniform Light sun;
 
@@ -32,7 +32,7 @@ uniform float fogDensity;
 uniform float fogGradient;
 uniform vec3 fogColor;
 
-#include "../lib/fog_VS.glsl"
+#include <fog_VS.glsl>
 
 float computeShadow(vec4 fragPosLightSpace, vec3 normal, vec3 lightDirection, float shadowDistance) {
     const int pcfCount = 2;

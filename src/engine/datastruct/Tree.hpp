@@ -24,24 +24,24 @@ namespace vd::datastruct {
 
         void ResetLevel();
 
-        [[nodiscard]] int GetLevel() const;
-        [[nodiscard]] int GetNodeIndex() const;
-        [[nodiscard]] bool IsLeaf() const;
+        [[nodiscard]] bool Leaf() const;
 
-        [[nodiscard]] const Tree* GetParent() const;
+        [[nodiscard]] int Level() const;
+        [[nodiscard]] int NodeIndex() const;
 
-        ptr_type_t& GetChild(size_t index);
-        const ptr_type_t& GetChild(size_t index) const;
+        [[nodiscard]] const Tree* Parent() const;
 
-        const arr_type_t& GetChildren() const;
+        ptr_type_t& Child(size_t index);
+        [[nodiscard]] const ptr_type_t& Child(size_t index) const;
+
+        const arr_type_t& Children() const;
     protected:
-        int m_Level;
-        const int m_kNodeIndex;
+        bool        m_Leaf;
+        int         m_Level;
+        const int   m_kNodeIndex;
 
-        bool m_Leaf;
-
-        const Tree* m_kParent;
-        arr_type_t m_Children;
+        const Tree* m_kpParent;
+        arr_type_t  m_Children;
     };
 
     typedef Tree<4> Quadtree;

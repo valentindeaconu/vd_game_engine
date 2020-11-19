@@ -13,9 +13,9 @@ namespace mod::sobj
 
     void StaticObjectPlacer::place()
     {
-        const auto scaleXZ = terrainPtr->GetProperties()->Get<float>("ScaleXZ");
+        const auto scaleXZ = terrainPtr->Properties()->Get<float>("ScaleXZ");
 
-        const mod::terrain::BiomePtrVec& biomeAtlas = terrainPtr->GetBiomes();
+        const mod::terrain::BiomePtrVec& biomeAtlas = terrainPtr->Biomes();
         const auto terrainSize = int(scaleXZ / 2.0f);
 
         auto onSurface = [&terrainSize](const float x, const float z) -> bool {
@@ -39,7 +39,7 @@ namespace mod::sobj
                     placementInfo.location.z = d(gen);
                 } while (!onSurface(placementInfo.location.x, placementInfo.location.z));
 
-                auto biomesAtLocation = terrainPtr->GetBiomesAt(placementInfo.location.x, placementInfo.location.z);
+                auto biomesAtLocation = terrainPtr->BiomesAt(placementInfo.location.x, placementInfo.location.z);
                 for (auto& biomeAtLocation : biomesAtLocation) {
                     if (!biomeAtLocation->getObjects().empty()) {
                         foundSomethingToPlace = true;
@@ -48,10 +48,10 @@ namespace mod::sobj
                 }
             } while (!foundSomethingToPlace);
 
-            placementInfo.location.y = terrainPtr->GetHeight(placementInfo.location.x, placementInfo.location.z);
+            placementInfo.location.y = terrainPtr->HeightAt(placementInfo.location.x, placementInfo.location.z);
 
             std::vector<StaticObjectPtr> objectsAtLocation;
-            auto biomesAtLocation = terrainPtr->GetBiomesAt(placementInfo.location.x, placementInfo.location.z);
+            auto biomesAtLocation = terrainPtr->BiomesAt(placementInfo.location.x, placementInfo.location.z);
             for (auto& biomeAtLocation : biomesAtLocation) {
                 auto& objects = biomeAtLocation->getObjects();
                 objectsAtLocation.insert(objectsAtLocation.begin(), objects.begin(), objects.end());

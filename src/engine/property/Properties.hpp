@@ -14,7 +14,7 @@
 
 #include <glm/glm.hpp>
 
-namespace vd::misc {
+namespace vd::property {
     class Properties;
     typedef std::shared_ptr<Properties> PropertiesPtr;
 
@@ -22,6 +22,8 @@ namespace vd::misc {
     public:
         Properties();
         ~Properties();
+
+        Properties& operator=(const Properties& other);
 
         /**
          * Returns whether the properties were empty (only empty lines or comment lines)

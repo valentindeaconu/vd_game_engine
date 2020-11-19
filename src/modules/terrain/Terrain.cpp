@@ -7,29 +7,31 @@
 namespace mod::terrain {
 
     Terrain::Terrain(const std::string& propsFilePath)
-        : m_PropsPtr(vd::loader::PropertiesLoader::Load(propsFilePath))
+        : m_pProps(vd::loader::PropertiesLoader::Load(propsFilePath))
     {
     }
 
     Terrain::~Terrain() = default;
 
-    void Terrain::Init() {
-        m_CameraPtr = vd::ObjectOfType<vd::camera::Camera>::Find();
+    void Terrain::Link() {
+        m_pCamera = vd::ObjectOfType<vd::camera::Camera>::Find();
+    }
 
+    void Terrain::Init() {
         CreateProps();
 
         // Create world transform
-        const auto scaleXZ = m_PropsPtr->Get<float>("ScaleXZ");
-        const auto scaleY = m_PropsPtr->Get<float>("ScaleY");
-        WorldTransform().SetScaling(scaleXZ, scaleY, scaleXZ);
-        WorldTransform().SetTranslation(-scaleXZ / 2.0f, 0.0f, -scaleXZ / 2.0f);
+        const auto scaleXZ = m_pProps->Get<float>("ScaleXZ");
+        const auto scaleY = m_pProps->Get<float>("ScaleY");
+        WorldTransform().Scale() = glm::vec3(scaleXZ, scaleY, scaleXZ);
+        WorldTransform().Translation() = glm::vec3(-scaleXZ / 2.0f, 0.0f, -scaleXZ / 2.0f);
 
         PopulateBiomes();
 
         ComputeMaps();
 
         auto convertToWorldCoords = [&](float x, float y) {
-            const auto h = m_HeightImg->Get<float, vd::math::Interpolation::eBilinear>(glm::vec2(x, y));
+            const auto h = m_pHeightImg->Get<float, vd::math::Interpolation::eBilinear>(glm::vec2(x, y));
             return glm::vec3(WorldTransform() * glm::vec4(x, h, y, 1.0f));
         };
 
@@ -37,7 +39,7 @@ namespace mod::terrain {
                                                    glm::vec2(0.0f, 0.0f),
                                                    glm::vec2(1.0f, 1.0f),
                                                    convertToWorldCoords,
-                                                   m_PropsPtr->Get<int>("MaxLevelOfDetail"),
+                                                   m_pProps->Get<int>("MaxLevelOfDetail"),
                                                    &m_LevelOfDetailRanges,
                                                    0,
                                                    TerrainNode::eRootNode);
@@ -50,10 +52,10 @@ namespace mod::terrain {
     }
 
     void Terrain::Update() {
-        if (m_PropsPtr->Get<bool>("LevelOfDetailEnabled")) {
-            if (m_CameraPtr->CameraMoved() || m_CameraPtr->CameraRotated()) {
+        if (m_pProps->Get<bool>("LevelOfDetailEnabled")) {
+            if (m_pCamera->CameraMoved() || m_pCamera->CameraRotated()) {
                 for (const auto& imaginaryRootNode : m_ImaginaryRootNodes) {
-                    imaginaryRootNode->Update(m_CameraPtr);
+                    imaginaryRootNode->Update(m_pCamera);
                 }
 
                 for (const auto& imaginaryRootNode : m_ImaginaryRootNodes) {
@@ -72,33 +74,33 @@ namespace mod::terrain {
         Entity::CleanUp();
     }
 
-    const vd::misc::PropertiesPtr& Terrain::GetProperties() const {
-        return m_PropsPtr;
+    const vd::property::PropertiesPtr& Terrain::Properties() const {
+        return m_pProps;
     }
 
-    const std::vector<TerrainNode::ptr_type_t>& Terrain::GetRootNodes() const {
+    const std::vector<TerrainNode::ptr_type_t>& Terrain::RootNodes() const {
         return m_ImaginaryRootNodes;
     }
 
-    const BiomePtrVec& Terrain::GetBiomes() const {
+    const BiomePtrVec& Terrain::Biomes() const {
         return m_Biomes;
     }
 
-    const vd::gl::Texture2DPtr& Terrain::GetHeightMap() const {
-        return m_HeightMap;
+    const vd::gl::Texture2DPtr& Terrain::HeightMap() const {
+        return m_pHeightMap;
     }
 
-    const vd::gl::Texture2DPtr& Terrain::GetNormalMap() const {
-        return m_NormalMap;
+    const vd::gl::Texture2DPtr& Terrain::NormalMap() const {
+        return m_pNormalMap;
     }
 
-    const vd::gl::Texture2DPtr& Terrain::GetSplatMap() const {
-        return m_SplatMap;
+    const vd::gl::Texture2DPtr& Terrain::SplatMap() const {
+        return m_pSplatMap;
     }
 
-    float Terrain::GetHeight(float x, float z) const {
-        const auto scaleXZ = m_PropsPtr->Get<float>("ScaleXZ");
-        const auto scaleY = m_PropsPtr->Get<float>("ScaleY");
+    float Terrain::HeightAt(float x, float z) const {
+        const auto scaleXZ = m_pProps->Get<float>("ScaleXZ");
+        const auto scaleY = m_pProps->Get<float>("ScaleY");
 
         float upperBound = scaleXZ / 2.0f;
         float lowerBound = -upperBound;
@@ -110,13 +112,13 @@ namespace mod::terrain {
         float rx = (x + (scaleXZ / 2.0f)) / scaleXZ;
         float rz = (z + (scaleXZ / 2.0f)) / scaleXZ;
 
-        const auto height = m_HeightImg->Get<float, vd::math::Interpolation::eBilinear>(glm::vec2(rz, rx));
+        const auto height = m_pHeightImg->Get<float, vd::math::Interpolation::eBilinear>(glm::vec2(rz, rx));
 
         return height * scaleY;
     }
 
-    BiomePtrVec Terrain::GetBiomesAt(float x, float z) const {
-        const auto scaleXZ = m_PropsPtr->Get<float>("ScaleXZ");
+    BiomePtrVec Terrain::BiomesAt(float x, float z) const {
+        const auto scaleXZ = m_pProps->Get<float>("ScaleXZ");
 
         float upperBound = scaleXZ / 2.0f;
         float lowerBound = -upperBound;
@@ -130,7 +132,7 @@ namespace mod::terrain {
         float rx = (x + (scaleXZ / 2.0f)) / scaleXZ;
         float rz = (z + (scaleXZ / 2.0f)) / scaleXZ;
 
-        const auto mask = m_SplatImg->Get<uint32_t, vd::math::Interpolation::eNearestNeighbour>(glm::vec2(rz, rx));
+        const auto mask = m_pSplatImg->Get<uint32_t, vd::math::Interpolation::eNearestNeighbour>(glm::vec2(rz, rx));
 
         for (size_t k = 0; k < m_Biomes.size(); ++k) {
             if ((mask & (1 << k)) != 0) {
@@ -143,17 +145,17 @@ namespace mod::terrain {
 
     void Terrain::CreateProps() {
         // Level offset (Jump over imaginary root nodes)
-        const auto kRootNodes = m_PropsPtr->Get<int>("RootNodes");
+        const auto kRootNodes = m_pProps->Get<int>("RootNodes");
         const int kLevelOffset = int(std::log(kRootNodes) / std::log(4));
-        if (!m_PropsPtr->Set("LevelOffset", std::to_string(kLevelOffset))) {
+        if (!m_pProps->Set("LevelOffset", std::to_string(kLevelOffset))) {
             vd::Logger::terminate("Could not add level offset to the properties", 1);
         }
         // Max Level of detail
         for (int i = 0; ; ++i) {
             try {
-                m_LevelOfDetailRanges.emplace_back(m_PropsPtr->Get<int>("Lod." + std::to_string(i) + ".Range"));
+                m_LevelOfDetailRanges.emplace_back(m_pProps->Get<int>("Lod." + std::to_string(i) + ".Range"));
             } catch (std::invalid_argument& e) {
-                if (!m_PropsPtr->Set("MaxLevelOfDetail", std::to_string(i))) {
+                if (!m_pProps->Set("MaxLevelOfDetail", std::to_string(i))) {
                     vd::Logger::terminate("Could not add max level of detail to the properties", 1);
                 }
                 break;
@@ -162,36 +164,36 @@ namespace mod::terrain {
     }
 
     void Terrain::PopulateBiomes() {
-        const auto scaleY = m_PropsPtr->Get<float>("ScaleY");
+        const auto scaleY = m_pProps->Get<float>("ScaleY");
         for (int i = 0; ; ++i) {
             try {
                 const std::string prefix = "Biome." + std::to_string(i);
 
                 BiomePtr biomePtr = std::make_shared<Biome>();
 
-                biomePtr->setName(m_PropsPtr->Get<std::string>(prefix + ".Name"));
-                biomePtr->setMinHeight(m_PropsPtr->Get<float>(prefix + ".MinHeight") * scaleY);
-                biomePtr->setMaxHeight(m_PropsPtr->Get<float>(prefix + ".MaxHeight") * scaleY);
+                biomePtr->setName(m_pProps->Get<std::string>(prefix + ".Name"));
+                biomePtr->setMinHeight(m_pProps->Get<float>(prefix + ".MinHeight") * scaleY);
+                biomePtr->setMaxHeight(m_pProps->Get<float>(prefix + ".MaxHeight") * scaleY);
 
                 const std::string materialPrefix = prefix + ".Material";
                 vd::model::Material material;
-                material.diffuseMap = vd::gl::TextureService::Get(m_PropsPtr->Get<std::string>(materialPrefix + ".Diffuse"));
+                material.diffuseMap = vd::gl::TextureService::Get(m_pProps->Get<std::string>(materialPrefix + ".Diffuse"));
                 material.diffuseMap->Bind();
                 material.diffuseMap->TrilinearFilter();
                 material.diffuseMap->Unbind();
 
-                material.normalMap = vd::gl::TextureService::Get(m_PropsPtr->Get<std::string>(materialPrefix + ".Normal"));
+                material.normalMap = vd::gl::TextureService::Get(m_pProps->Get<std::string>(materialPrefix + ".Normal"));
                 material.normalMap->Bind();
                 material.normalMap->BilinearFilter();
                 material.normalMap->Unbind();
 
-                material.displaceMap = vd::gl::TextureService::Get(m_PropsPtr->Get<std::string>(materialPrefix + ".Displace"));
+                material.displaceMap = vd::gl::TextureService::Get(m_pProps->Get<std::string>(materialPrefix + ".Displace"));
                 material.displaceMap->Bind();
                 material.displaceMap->BilinearFilter();
                 material.displaceMap->Unbind();
 
-                material.displaceScale = m_PropsPtr->Get<float>(materialPrefix + ".HeightScaling");
-                material.horizontalScale = m_PropsPtr->Get<float>(materialPrefix + ".HorizontalScaling");
+                material.displaceScale = m_pProps->Get<float>(materialPrefix + ".HeightScaling");
+                material.horizontalScale = m_pProps->Get<float>(materialPrefix + ".HorizontalScaling");
                 biomePtr->setMaterial(material);
 
                 PopulateBiomeWithObjects(biomePtr, prefix);
@@ -204,21 +206,21 @@ namespace mod::terrain {
     }
 
     void Terrain::ComputeMaps() {
-        m_HeightImg = vd::loader::ImageLoader::Load<float, vd::model::ImageFormat::eR>(m_PropsPtr->Get<std::string>("HeightMap"));
+        m_pHeightImg = vd::loader::ImageLoader::Load<float, vd::model::ImageFormat::eR>(m_pProps->Get<std::string>("HeightMap"));
 
         // TODO: Use TextureService
-        m_HeightMap = std::make_shared<vd::gl::Texture2D>(m_HeightImg);
+        m_pHeightMap = std::make_shared<vd::gl::Texture2D>(m_pHeightImg);
 
         normalmap::NormalMapRendererPtr normalMapRendererPtr =
-                std::make_shared<normalmap::NormalMapRenderer>(int(m_HeightMap->Width()));
-        normalMapRendererPtr->render(m_HeightMap, m_PropsPtr->Get<float>("NormalStrength"));
-        m_NormalMap = normalMapRendererPtr->getNormalMap();
+                std::make_shared<normalmap::NormalMapRenderer>(int(m_pHeightMap->Width()));
+        normalMapRendererPtr->render(m_pHeightMap, m_pProps->Get<float>("NormalStrength"));
+        m_pNormalMap = normalMapRendererPtr->getNormalMap();
 
         splatmap::SplatMapRendererPtr splatMapRendererPtr =
-                std::make_shared<splatmap::SplatMapRenderer>(int(m_HeightMap->Width()));
-        splatMapRendererPtr->render(m_HeightMap, m_PropsPtr->Get<float>("ScaleY"), m_Biomes);
-        m_SplatMap = splatMapRendererPtr->getSplatMap();
-        m_SplatImg = splatMapRendererPtr->getSplatData();
+                std::make_shared<splatmap::SplatMapRenderer>(int(m_pHeightMap->Width()));
+        splatMapRendererPtr->render(m_pHeightMap, m_pProps->Get<float>("ScaleY"), m_Biomes);
+        m_pSplatMap = splatMapRendererPtr->getSplatMap();
+        m_pSplatImg = splatMapRendererPtr->getSplatData();
     }
 
     void Terrain::PopulateBiomeWithObjects(BiomePtr& biomePtr, const std::string& biomePrefix) {
@@ -226,12 +228,12 @@ namespace mod::terrain {
             try {
                const std::string objectPrefix = biomePrefix + ".Object." + std::to_string(i);
 
-               const auto kLocation = m_PropsPtr->Get<std::string>(objectPrefix + ".Location");
-               const auto kFile = m_PropsPtr->Get<std::string>(objectPrefix + ".File");
-               const auto kScale = m_PropsPtr->Get<float>(objectPrefix + ".Scale");
+               const auto kLocation = m_pProps->Get<std::string>(objectPrefix + ".Location");
+               const auto kFile = m_pProps->Get<std::string>(objectPrefix + ".File");
+               const auto kScale = m_pProps->Get<float>(objectPrefix + ".Scale");
 
                 sobj::StaticObjectPtr staticObjectPtr = std::make_shared<sobj::StaticObject>(kLocation, kFile);
-                staticObjectPtr->WorldTransform().SetScaling(kScale, kScale, kScale);
+                staticObjectPtr->WorldTransform().Scale() = glm::vec3(kScale, kScale, kScale);
                 staticObjectPtr->Init();
 
                 biomePtr->addObject(staticObjectPtr);
@@ -273,12 +275,12 @@ namespace mod::terrain {
     }
 
     void Terrain::PopulateTree(const TerrainNode::ptr_type_t& root) {
-        const auto kLevelOffset = m_PropsPtr->Get<int>("LevelOffset");
+        const auto kLevelOffset = m_pProps->Get<int>("LevelOffset");
 
-        if (root->GetLevel() < kLevelOffset) {
+        if (root->Level() < kLevelOffset) {
             root->Populate();
 
-            for (auto& child : root->GetChildren()) {
+            for (auto& child : root->Children()) {
                 auto terrainNodeChild = std::dynamic_pointer_cast<TerrainNode>(child);
                 PopulateTree(terrainNodeChild);
             }

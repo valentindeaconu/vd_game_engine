@@ -6,10 +6,7 @@
 #define VD_GAME_ENGINE_VDGEGLSLIMPL_HPP
 
 #include <engine/loader/ShaderLoader.hpp>
-
-#include <engine/kernel/ObjectOfType.hpp>
-#include <engine/misc/Properties.hpp>
-
+#include <engine/loader/PropertiesLoader.hpp>
 
 #include <fstream>
 #include <unordered_map>

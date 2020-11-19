@@ -16,7 +16,7 @@
 #include <engine/misc/Types.hpp>
 #include <engine/component/IManager.hpp>
 
-#include <engine/kernel/ObjectOfType.hpp>
+#include <engine/injector/ObjectOfType.hpp>
 
 namespace vd::event {
     class EventHandlerManager;

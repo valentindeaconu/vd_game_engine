@@ -7,7 +7,7 @@
 
 #include <engine/model/Image.hpp>
 
-#include <engine/kernel/ObjectOfType.hpp>
+#include <engine/injector/ObjectOfType.hpp>
 
 namespace vd::loader {
     namespace impl {

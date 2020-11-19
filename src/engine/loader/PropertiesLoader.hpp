@@ -5,8 +5,8 @@
 #ifndef VD_GAME_ENGINE_PROPERTIESLOADER_HPP
 #define VD_GAME_ENGINE_PROPERTIESLOADER_HPP
 
-#include <engine/misc/Properties.hpp>
-#include <engine/kernel/ObjectOfType.hpp>
+#include <engine/property/Properties.hpp>
+#include <engine/injector/ObjectOfType.hpp>
 #include <engine/exception/Exceptions.hpp>
 
 #include "FileLoader.hpp"
@@ -17,7 +17,8 @@
 namespace vd::loader {
     class PropertiesLoader {
     public:
-        static misc::PropertiesPtr Load(const std::string& path);
+        static void Load(const std::string& path, property::PropertiesPtr& output);
+        static property::PropertiesPtr Load(const std::string& path);
     };
 }
 

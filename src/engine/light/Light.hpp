@@ -22,35 +22,16 @@ namespace vd::light {
                        float shininess = 0.0f);
         ~Light();
 
-        [[nodiscard]] const LightType& GetType() const;
+        [[nodiscard]] const LightType& Type() const;
 
-        glm::vec3& GetPosition();
-        [[nodiscard]] const glm::vec3& GetPosition() const;
-        void SetPosition(const glm::vec3& position);
+        glm::vec3& Position();
+        glm::vec3& Direction();
+        glm::vec3& Color();
+        glm::vec3& Attenuation();
 
-        glm::vec3& GetDirection();
-        [[nodiscard]] const glm::vec3& GetDirection() const;
-        void SetDirection(const glm::vec3& position);
-
-        glm::vec3& GetColor();
-        [[nodiscard]] const glm::vec3& GetColor() const;
-        void SetColor(const glm::vec3& color);
-
-        glm::vec3& GetAttenuation();
-        [[nodiscard]] const glm::vec3& GetAttenuation() const;
-        void SetAttenuation(const glm::vec3& attenuation);
-
-        float& GetAmbientStrength();
-        [[nodiscard]] const float& GetAmbientStrength() const;
-        void SetAmbientStrength(const float& ambientStrength);
-
-        float& GetSpecularStrength();
-        [[nodiscard]] const float& GetSpecularStrength() const;
-        void SetSpecularStrength(const float& specularStrength);
-
-        float& GetShininess();
-        [[nodiscard]] const float& GetShininess() const;
-        void SetShininess(const float& shininess);
+        float& AmbientStrength();
+        float& SpecularStrength();
+        float& Shininess();
 
     private:
         const LightType m_kType;

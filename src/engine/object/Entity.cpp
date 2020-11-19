@@ -58,7 +58,7 @@ namespace vd::object
             m_Buffers.back()->Allocate(mesh);
 
             m_BoundingBoxes.emplace_back();
-            m_BoundingBoxes.back().wrapMesh(mesh);
+            m_BoundingBoxes.back().WrapMesh(mesh);
         }
     }
 }

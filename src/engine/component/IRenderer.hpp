@@ -2,7 +2,7 @@
 #define __RENDERER_HPP_
 
 #include <engine/datastruct/Observer.hpp>
-#include <engine/shader/Shader.hpp>
+#include <engine/api/gl/Shader.hpp>
 
 #include <engine/misc/Types.hpp>
 
@@ -13,7 +13,7 @@ namespace vd::component {
     public:
         static const vd::datastruct::Observable::priority_t kDefaultPriority = 200;
 
-        explicit IRenderer(shader::ShaderPtr shaderPtr,
+        explicit IRenderer(gl::ShaderPtr shaderPtr,
                   Consumer beforeExecution = g_kEmptyConsumer,
                   Consumer afterExecution = g_kEmptyConsumer);
         ~IRenderer();
@@ -21,7 +21,7 @@ namespace vd::component {
         void Prepare();
         void Finish();
 
-        shader::ShaderPtr& Shader();
+        gl::ShaderPtr& Shader();
 
     protected:
         virtual bool IsReady();
@@ -29,7 +29,7 @@ namespace vd::component {
         vd::Consumer m_BeforeExecution;
         vd::Consumer m_AfterExecution;
 
-        shader::ShaderPtr m_ShaderPtr;
+        gl::ShaderPtr m_pShader;
     };
     typedef std::shared_ptr<IRenderer>	RendererPtr;
 }

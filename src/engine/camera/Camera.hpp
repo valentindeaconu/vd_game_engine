@@ -8,6 +8,7 @@
 
 #include <engine/component/IManager.hpp>
 
+#include <engine/injector/Injectable.hpp>
 #include <engine/event/EventHandler.hpp>
 
 namespace vd::camera {
@@ -28,22 +29,22 @@ namespace vd::camera {
 
         virtual void Reflect(const Axis& axis, float amount) = 0;
 
-        glm::mat4 ViewMatrix();
+        virtual glm::mat4 ViewMatrix();
 
-        [[nodiscard]] bool CameraMoved() const;
-        [[nodiscard]] bool CameraRotated() const;
+        [[nodiscard]] virtual bool CameraMoved() const;
+        [[nodiscard]] virtual bool CameraRotated() const;
 
-        glm::vec3& Position();
+        virtual glm::vec3& Position();
 
-        glm::vec3& Target();
+        virtual glm::vec3& Target();
 
-        [[nodiscard]] const glm::vec3& Forward() const;
-        [[nodiscard]] const glm::vec3& Right() const;
-        [[nodiscard]] const glm::vec3& Up() const;
+        [[nodiscard]] virtual const glm::vec3& Forward() const;
+        [[nodiscard]] virtual const glm::vec3& Right() const;
+        [[nodiscard]] virtual const glm::vec3& Up() const;
 
-        [[nodiscard]] float Pitch() const;
-        [[nodiscard]] float Yaw() const;
-        [[nodiscard]] float Roll() const;
+        [[nodiscard]] virtual float Pitch() const;
+        [[nodiscard]] virtual float Yaw() const;
+        [[nodiscard]] virtual float Roll() const;
 
     protected:
         void UpdatePositionVectors();
@@ -63,7 +64,7 @@ namespace vd::camera {
     };
     typedef std::shared_ptr<Camera>	CameraPtr;
 
-    /// Forward declarations for ICamera implementations
+    /// Forward declarations for Camera implementations
     namespace impl {
         class FreeCamera;
         class FirstPersonCamera;
@@ -72,10 +73,15 @@ namespace vd::camera {
         typedef std::shared_ptr<FreeCamera>         FreeCameraPtr;
         typedef std::shared_ptr<FirstPersonCamera>  FirstPersonCameraPtr;
         typedef std::shared_ptr<ThirdPersonCamera>  ThirdPersonCameraPtr;
-
     }
 
-    class CameraManager : public vd::component::IManager {
+    namespace wrapper {
+        class CameraWrapper;
+
+        typedef std::shared_ptr<CameraWrapper>      CameraWrapperPtr;
+    }
+
+    class CameraManager : public component::IManager, public injector::Injectable {
     public:
         enum CameraMode {
             eFree = 0,
@@ -85,6 +91,8 @@ namespace vd::camera {
 
         CameraManager();
         ~CameraManager();
+
+        void Link() override;
 
         void Init() override;
         void Update() override;
@@ -96,11 +104,13 @@ namespace vd::camera {
         void UpdateFirstPersonCamera();
         void UpdateThirdPersonCamera();
 
-        impl::FreeCameraPtr m_FreeCameraPtr;
-        impl::FirstPersonCameraPtr m_FirstPersonCameraPtr;
-        impl::ThirdPersonCameraPtr m_ThirdPersonCameraPtr;
+        impl::FreeCameraPtr m_pFreeCamera;
+        impl::FirstPersonCameraPtr m_pFirstPersonCamera;
+        impl::ThirdPersonCameraPtr m_pThirdPersonCamera;
 
-        event::EventHandlerPtr m_EventHandlerPtr;
+        wrapper::CameraWrapperPtr m_pCameraWrapper;
+
+        event::EventHandlerPtr m_pEventHandler;
 
         CameraMode m_CameraMode;
     };

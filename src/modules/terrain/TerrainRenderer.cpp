@@ -7,22 +7,25 @@
 namespace mod::terrain {
 
     TerrainRenderer::TerrainRenderer(TerrainPtr terrainPtr,
-                                     vd::shader::ShaderPtr shaderPtr,
+                                     vd::gl::ShaderPtr shaderPtr,
                                      vd::Consumer beforeExecution,
                                      vd::Consumer afterExecution)
         : IRenderer(std::move(shaderPtr), std::move(beforeExecution), std::move(afterExecution))
-        , m_TerrainPtr(std::move(terrainPtr))
+        , m_pTerrain(std::move(terrainPtr))
     {
     }
 
     TerrainRenderer::~TerrainRenderer() = default;
 
     void TerrainRenderer::Init() {
-        m_TerrainPtr->Init();
+        m_pTerrain->Init();
+
+        m_pShader->Bind();
+        m_pShader->InitUniforms(m_pTerrain);
     }
 
     void TerrainRenderer::Update() {
-        m_TerrainPtr->Update();
+        m_pTerrain->Update();
     }
 
     void TerrainRenderer::Render(const params_t& params) {
@@ -38,9 +41,9 @@ namespace mod::terrain {
 
         Prepare();
 
-        m_ShaderPtr->bind();
+        m_pShader->Bind();
 
-        const auto& rootNodes = m_TerrainPtr->GetRootNodes();
+        const auto& rootNodes = m_pTerrain->RootNodes();
 
         for (auto& rootNode : rootNodes) {
             RenderNode(rootNode);
@@ -51,18 +54,18 @@ namespace mod::terrain {
 
     void TerrainRenderer::RenderNode(const TerrainNode::ptr_type_t& nodePtr) {
         if (nodePtr != nullptr) {
-            if (nodePtr->IsLeaf()) {
-                m_ShaderPtr->bind();
+            if (nodePtr->Leaf()) {
+                m_pShader->Bind();
 
-                m_ShaderPtr->setUniform("localModel", nodePtr->GetTransform().Get());
-                m_ShaderPtr->setUniform("tessFactor", nodePtr->GetTessFactors());
+                m_pShader->SetUniform("localModel", nodePtr->GetTransform().Get());
+                m_pShader->SetUniform("tessFactor", nodePtr->GetTessFactors());
 
-                m_ShaderPtr->updateUniforms(m_TerrainPtr, 0);
+                m_pShader->UpdateUniforms(m_pTerrain);
 
-                vd::gl::BufferPtrVec& buffers = m_TerrainPtr->Buffers();
-                buffers[0]->Render();
+                vd::gl::BufferPtr& buffer = m_pTerrain->Buffers().front();
+                buffer->Render();
             } else {
-                const auto& children = nodePtr->GetChildren();
+                const auto& children = nodePtr->Children();
                 for (const auto& child : children) {
                     RenderNode(std::dynamic_pointer_cast<TerrainNode>(child));
                 }
@@ -71,10 +74,10 @@ namespace mod::terrain {
     }
 
     void TerrainRenderer::CleanUp() {
-        m_TerrainPtr->CleanUp();
+        m_pTerrain->CleanUp();
     }
 
     bool TerrainRenderer::IsReady() {
-        return IRenderer::IsReady() && m_TerrainPtr != nullptr;
+        return IRenderer::IsReady() && m_pTerrain != nullptr;
     }
 }

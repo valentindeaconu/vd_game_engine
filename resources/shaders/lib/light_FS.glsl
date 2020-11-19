@@ -1,5 +1,5 @@
 
-const int MAX_LIGHTS = 1;
+const int MAX_LIGHTS = VDGE_LIGHTS_COUNT;
 
 struct Light {
 	int type;

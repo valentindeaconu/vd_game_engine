@@ -1,6 +1,5 @@
 #include "ThirdPersonCamera.hpp"
 
-#include <engine/kernel/ObjectOfType.hpp>
 #include <modules/terrain/Terrain.hpp>
 #include <modules/player/Player.hpp>
 
@@ -17,18 +16,14 @@ namespace vd::camera::impl {
     ThirdPersonCamera::~ThirdPersonCamera() = default;
 
     void ThirdPersonCamera::Link() {
-         auto playerPtr = vd::ObjectOfType<mod::player::Player>::Find();
-         auto terrainPtr = vd::ObjectOfType<mod::terrain::Terrain>::Find();
+         auto pPlayer = vd::ObjectOfType<mod::player::Player>::Find();
+         auto pTerrain = vd::ObjectOfType<mod::terrain::Terrain>::Find();
 
-         m_PlayerTransformGetter = [p = std::dynamic_pointer_cast<vd::object::Entity>(playerPtr)] {
-             return p->WorldTransform();
-         };
+         m_PlayerTransformGetter = [p = pPlayer]() { return p->WorldTransform(); };
 
-         m_HeightGetter = [t = terrainPtr](float x, float z) {
-             return t->GetHeight(x, z);
-         };
+         m_HeightGetter = [t = pTerrain](float x, float z) { return t->HeightAt(x, z); };
 
-         m_Offset = glm::vec3(0.0f, playerPtr->ModelYOffset(), 0.0f);
+         m_Offset = glm::vec3(0.0f, pPlayer->ModelYOffset(), 0.0f);
     }
 
     void impl::ThirdPersonCamera::Reflect(const Camera::Axis& axis, float amount) {
@@ -92,8 +87,8 @@ namespace vd::camera::impl {
         float verticalDistance = VerticalDistance();
 
         auto worldTransform = m_PlayerTransformGetter();
-        glm::vec3 entityPosition = worldTransform.GetTranslationVector() + m_Offset;
-        float entityAngle = worldTransform.GetYAxisRotationAngle();
+        glm::vec3 entityPosition = worldTransform.Translation() + m_Offset;
+        float entityAngle = worldTransform.YAxisRotationAngle();
 
         glm::vec3 newPosition = CameraPosition(entityPosition, entityAngle, horizontalDistance, verticalDistance);
 

@@ -1,10 +1,10 @@
 #include "IRenderer.hpp"
 
 namespace vd::component {
-    IRenderer::IRenderer(shader::ShaderPtr shaderPtr,
+    IRenderer::IRenderer(gl::ShaderPtr shaderPtr,
                          vd::Consumer beforeExecution,
                          vd::Consumer afterExecution)
-        : m_ShaderPtr(std::move(shaderPtr))
+        : m_pShader(std::move(shaderPtr))
         , m_BeforeExecution(std::move(beforeExecution))
         , m_AfterExecution(std::move(afterExecution))
     {
@@ -20,11 +20,11 @@ namespace vd::component {
         m_AfterExecution();
     }
 
-    vd::shader::ShaderPtr& IRenderer::Shader() {
-        return m_ShaderPtr;
+    vd::gl::ShaderPtr& IRenderer::Shader() {
+        return m_pShader;
     }
 
     bool IRenderer::IsReady() {
-        return m_ShaderPtr != nullptr;
+        return m_pShader != nullptr;
     }
 }

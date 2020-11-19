@@ -9,8 +9,8 @@
 
 #include <engine/loader/PropertiesLoader.hpp>
 
+#include <engine/injector/Injectable.hpp>
 #include <engine/camera/Camera.hpp>
-#include <engine/kernel/ObjectOfType.hpp>
 
 #include <memory>
 #include <vector>
@@ -22,27 +22,29 @@
 #include "splatmap/SplatMapRenderer.hpp"
 
 namespace mod::terrain {
-    class Terrain : public vd::object::Entity {
+    class Terrain : public vd::object::Entity, public vd::injector::Injectable {
     public:
         explicit Terrain(const std::string& propsFilePath);
         ~Terrain();
+
+        void Link() override;
 
         void Init() override;
         void Update() override;
         void CleanUp() override;
 
-        [[nodiscard]] const vd::misc::PropertiesPtr& GetProperties() const;
+        [[nodiscard]] const vd::property::PropertiesPtr& Properties() const;
 
-        [[nodiscard]] const std::vector<TerrainNode::ptr_type_t>& GetRootNodes() const;
+        [[nodiscard]] const std::vector<TerrainNode::ptr_type_t>& RootNodes() const;
 
-        [[nodiscard]] const BiomePtrVec& GetBiomes() const;
+        [[nodiscard]] const BiomePtrVec& Biomes() const;
 
-        [[nodiscard]] const vd::gl::Texture2DPtr& GetHeightMap() const;
-        [[nodiscard]] const vd::gl::Texture2DPtr& GetNormalMap() const;
-        [[nodiscard]] const vd::gl::Texture2DPtr& GetSplatMap() const;
+        [[nodiscard]] const vd::gl::Texture2DPtr& HeightMap() const;
+        [[nodiscard]] const vd::gl::Texture2DPtr& NormalMap() const;
+        [[nodiscard]] const vd::gl::Texture2DPtr& SplatMap() const;
 
-        [[nodiscard]] float GetHeight(float x, float z) const;
-        [[nodiscard]] BiomePtrVec GetBiomesAt(float x, float z) const;
+        [[nodiscard]] float HeightAt(float x, float z) const;
+        [[nodiscard]] BiomePtrVec BiomesAt(float x, float z) const;
     private:
         void CreateProps();
         void PopulateBiomes();
@@ -52,26 +54,26 @@ namespace mod::terrain {
         void GeneratePatch();
         void PopulateTree(const TerrainNode::ptr_type_t& root);
 
-        vd::misc::PropertiesPtr m_PropsPtr;
+        vd::property::PropertiesPtr m_pProps;
 
         // Camera required for update optimization
-        vd::camera::CameraPtr m_CameraPtr;
+        vd::camera::CameraPtr m_pCamera;
 
         // Level of detail nodes
-        TerrainNode::ptr_type_t m_RootNode;
-        std::vector<TerrainNode::ptr_type_t> m_ImaginaryRootNodes;
+        TerrainNode::ptr_type_t                 m_RootNode;
+        std::vector<TerrainNode::ptr_type_t>    m_ImaginaryRootNodes;
 
         // Biomes
         BiomePtrVec m_Biomes;
 
         // Maps
-        vd::model::ImagePtr<float, vd::model::ImageFormat::eR> m_HeightImg;
-        vd::gl::Texture2DPtr m_HeightMap;
+        vd::model::ImagePtr<float, vd::model::ImageFormat::eR> m_pHeightImg;
+        vd::gl::Texture2DPtr m_pHeightMap;
 
-        vd::gl::Texture2DPtr m_NormalMap;
+        vd::gl::Texture2DPtr m_pNormalMap;
 
-        vd::model::ImagePtr<uint32_t, vd::model::ImageFormat::eR> m_SplatImg;
-        vd::gl::Texture2DPtr m_SplatMap;
+        vd::model::ImagePtr<uint32_t, vd::model::ImageFormat::eR> m_pSplatImg;
+        vd::gl::Texture2DPtr m_pSplatMap;
 
         // Level of detail ranges
         std::vector<int> m_LevelOfDetailRanges;

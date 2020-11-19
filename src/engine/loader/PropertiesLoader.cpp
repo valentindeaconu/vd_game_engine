@@ -6,11 +6,9 @@
 
 namespace vd::loader {
 
-    misc::PropertiesPtr PropertiesLoader::Load(const std::string& path) {
+    void PropertiesLoader::Load(const std::string &path, property::PropertiesPtr& output) {
         std::vector<std::string> lines;
         FileLoader::Load(path, lines);
-
-        misc::PropertiesPtr propertiesPtr = std::make_shared<misc::Properties>();
 
         for (size_t i = 0; i < lines.size(); ++i) {
             std::string& line = lines[i];
@@ -37,10 +35,14 @@ namespace vd::loader {
             std::vector<std::string> values;
             boost::split(values, value, [](char c) { return c == ' '; });
 
-            propertiesPtr->Set(key, values);
+            output->Set(key, values);
         }
+    }
 
-        return propertiesPtr;
+    property::PropertiesPtr PropertiesLoader::Load(const std::string& path) {
+        property::PropertiesPtr pProperties = std::make_shared<property::Properties>();
+        Load(path, pProperties);
+        return pProperties;
     }
 
 }

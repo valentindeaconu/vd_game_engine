@@ -6,15 +6,26 @@
 
 namespace mod::terrain::normalmap {
     NormalMapShader::NormalMapShader()
-        : vd::shader::Shader()
+        : vd::gl::Shader()
     {
-        loadAndAddShader("./resources/shaders/terrain/cs/NormalMap.glsl", vd::shader::eComputeShader);
-        compileShader();
+        std::string csSource;
+        vd::loader::ShaderLoader::Load("./resources/shaders/terrain/cs/NormalMap.glsl", csSource);
+        AddShader(csSource, vd::gl::Shader::eComputeShader);
+
+        Compile();
     }
 
     NormalMapShader::~NormalMapShader() = default;
 
-    void NormalMapShader::updateUniforms(vd::object::EntityPtr entityPtr, size_t meshIndex) {
+    void NormalMapShader::AddUniforms() {
+
+    }
+
+    void NormalMapShader::InitUniforms(vd::object::EntityPtr pEntity) {
+
+    }
+
+    void NormalMapShader::UpdateUniforms(vd::object::EntityPtr pEntity, uint32_t meshIndex) {
 
     }
 }

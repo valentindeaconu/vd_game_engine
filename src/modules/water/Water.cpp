@@ -6,58 +6,60 @@
 
 namespace mod::water {
     Water::Water(const std::string& propsFilePath)
-        : m_PropsPtr(vd::loader::PropertiesLoader::Load(propsFilePath))
+        : m_pProps(vd::loader::PropertiesLoader::Load(propsFilePath))
         , m_MoveFactor(0.0f)
-        , m_ReflectionFBO(std::make_shared<vd::gl::FrameBuffer>())
-        , m_RefractionFBO(std::make_shared<vd::gl::FrameBuffer>())
+        , m_pReflectionFBO(std::make_shared<vd::gl::FrameBuffer>())
+        , m_pRefractionFBO(std::make_shared<vd::gl::FrameBuffer>())
     {
     }
 
     Water::~Water() = default;
 
-    void Water::Init() {
-        m_EnginePtr = vd::ObjectOfType<vd::Engine>::Find();
+    void Water::Link() {
+        m_pContext = vd::ObjectOfType<vd::kernel::Context>::Find();
+    }
 
-        LocalTransform().SetScaling(6000.0f, 0.0f, 6000.0f);
-        LocalTransform().SetTranslation(-3000.0f, 180.0f, -3000.0f);
+    void Water::Init() {
+        LocalTransform().Scale() = glm::vec3(6000.0f, 0.0f, 6000.0f);
+        LocalTransform().Translation() = glm::vec3(-3000.0f, 180.0f, -3000.0f);
 
         PopulatePacks();
 
         GeneratePatch();
 
-        m_ReflectionFBO->Allocate(m_PropsPtr->Get<int>("Reflection.Width"),
-                                  m_PropsPtr->Get<int>("Reflection.Height"),
-                                  true,
-                                  vd::gl::DepthAttachment::eDepthBuffer);
+        m_pReflectionFBO->Allocate(m_pProps->Get<int>("Reflection.Width"),
+                                   m_pProps->Get<int>("Reflection.Height"),
+                                   true,
+                                   vd::gl::DepthAttachment::eDepthBuffer);
 
-        m_RefractionFBO->Allocate(m_PropsPtr->Get<int>("Refraction.Width"),
-                                  m_PropsPtr->Get<int>("Refraction.Height"),
-                                  true,
-                                  vd::gl::DepthAttachment::eDepthTexture);
+        m_pRefractionFBO->Allocate(m_pProps->Get<int>("Refraction.Width"),
+                                   m_pProps->Get<int>("Refraction.Height"),
+                                   true,
+                                   vd::gl::DepthAttachment::eDepthTexture);
 
         Entity::Init();
     }
 
     void Water::Update() {
-        const auto waveSpeed = m_PropsPtr->Get<float>("Wave.Speed");
-        m_MoveFactor += (waveSpeed * m_EnginePtr->getFrameTime());
+        const auto waveSpeed = m_pProps->Get<float>("Wave.Speed");
+        m_MoveFactor += (waveSpeed * m_pContext->FrameTime());
         if (m_MoveFactor >= 1.0f) {
             m_MoveFactor -= 1.0f;
         }
     }
 
     void Water::CleanUp() {
-        m_ReflectionFBO->CleanUp();
-        m_RefractionFBO->CleanUp();
+        m_pReflectionFBO->CleanUp();
+        m_pRefractionFBO->CleanUp();
 
         Entity::CleanUp();
     }
 
-    const vd::misc::PropertiesPtr& Water::GetProperties() const {
-        return m_PropsPtr;
+    const vd::property::PropertiesPtr& Water::Properties() const {
+        return m_pProps;
     }
 
-    const vd::model::Material& Water::GetMaterial() const {
+    const vd::model::Material& Water::Material() const {
         auto it = m_PacksMap.find(m_CurrentPack);
         if (it != m_PacksMap.end()) {
             return it->second;
@@ -66,12 +68,12 @@ namespace mod::water {
         throw std::runtime_error("water current pack '" + m_CurrentPack + "' does not exists");
     }
 
-    const vd::gl::FrameBufferPtr &Water::GetReflectionFramebuffer() const {
-        return m_ReflectionFBO;
+    const vd::gl::FrameBufferPtr &Water::ReflectionFramebuffer() const {
+        return m_pReflectionFBO;
     }
 
-    const vd::gl::FrameBufferPtr &Water::GetRefractionFramebuffer() const {
-        return m_RefractionFBO;
+    const vd::gl::FrameBufferPtr &Water::RefractionFramebuffer() const {
+        return m_pRefractionFBO;
     }
 
     float Water::GetHeight() const {
@@ -90,13 +92,13 @@ namespace mod::water {
 
                 vd::model::Material material;
 
-                material.name = m_PropsPtr->Get<std::string>(prefix + ".Name");
-                material.displaceMap = vd::gl::TextureService::Get(m_PropsPtr->Get<std::string>(prefix + ".DuDv"));
+                material.name = m_pProps->Get<std::string>(prefix + ".Name");
+                material.displaceMap = vd::gl::TextureService::Get(m_pProps->Get<std::string>(prefix + ".DuDv"));
                 material.displaceMap->Bind();
                 material.displaceMap->BilinearFilter();
                 material.displaceMap->Unbind();
 
-                material.normalMap = vd::gl::TextureService::Get(m_PropsPtr->Get<std::string>(prefix + ".Normal"));
+                material.normalMap = vd::gl::TextureService::Get(m_pProps->Get<std::string>(prefix + ".Normal"));
                 material.normalMap->Bind();
                 material.normalMap->BilinearFilter();
                 material.normalMap->Unbind();

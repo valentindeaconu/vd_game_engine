@@ -11,29 +11,31 @@
 
 #include <engine/loader/PropertiesLoader.hpp>
 
-#include <engine/kernel/ObjectOfType.hpp>
-#include <engine/kernel/Engine.hpp>
+#include <engine/injector/Injectable.hpp>
+#include <engine/kernel/Context.hpp>
 
 #include <memory>
 #include <numbers>
 #include <unordered_map>
 
 namespace mod::water {
-    class Water : public vd::object::Entity {
+    class Water : public vd::object::Entity, public vd::injector::Injectable {
     public:
         explicit Water(const std::string& propsFilePath);
         ~Water();
+
+        void Link() override;
 
         void Init() override;
         void Update() override;
         void CleanUp() override;
 
-        [[nodiscard]] const vd::misc::PropertiesPtr& GetProperties() const;
+        [[nodiscard]] const vd::property::PropertiesPtr& Properties() const;
 
-        [[nodiscard]] const vd::model::Material& GetMaterial() const;
+        [[nodiscard]] const vd::model::Material& Material() const;
 
-        [[nodiscard]] const vd::gl::FrameBufferPtr& GetReflectionFramebuffer() const;
-        [[nodiscard]] const vd::gl::FrameBufferPtr& GetRefractionFramebuffer() const;
+        [[nodiscard]] const vd::gl::FrameBufferPtr& ReflectionFramebuffer() const;
+        [[nodiscard]] const vd::gl::FrameBufferPtr& RefractionFramebuffer() const;
 
         [[nodiscard]] float GetHeight() const;
 
@@ -43,7 +45,7 @@ namespace mod::water {
         void GeneratePatch();
 
         // Engine required to get current frame time
-        vd::EnginePtr m_EnginePtr;
+        vd::kernel::ContextPtr m_pContext;
 
         std::string m_CurrentPack;
 
@@ -51,10 +53,10 @@ namespace mod::water {
 
         std::unordered_map<std::string, vd::model::Material> m_PacksMap;
 
-        vd::misc::PropertiesPtr m_PropsPtr;
+        vd::property::PropertiesPtr m_pProps;
 
-        vd::gl::FrameBufferPtr m_ReflectionFBO;
-        vd::gl::FrameBufferPtr m_RefractionFBO;
+        vd::gl::FrameBufferPtr m_pReflectionFBO;
+        vd::gl::FrameBufferPtr m_pRefractionFBO;
     };
     typedef std::shared_ptr<Water>  WaterPtr;
 }

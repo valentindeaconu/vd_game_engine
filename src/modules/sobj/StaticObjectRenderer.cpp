@@ -2,7 +2,7 @@
 
 namespace mod::sobj {
     StaticObjectRenderer::StaticObjectRenderer(StaticObjectPlacerPtr staticObjectPlacerPtr,
-                                               vd::shader::ShaderPtr shaderPtr,
+                                               vd::gl::ShaderPtr shaderPtr,
                                                vd::Consumer beforeExecution,
                                                vd::Consumer afterExecution)
         : IRenderer(std::move(shaderPtr), std::move(beforeExecution), std::move(afterExecution))
@@ -18,6 +18,9 @@ namespace mod::sobj {
         if (IsReady()) {
             m_StaticObjectPlacerPtr->place();
         }
+
+        m_pShader->Bind();
+        m_pShader->InitUniforms(nullptr);
     }
 
     void StaticObjectRenderer::Update() {
@@ -36,26 +39,26 @@ namespace mod::sobj {
 
         Prepare();
 
-        vd::shader::ShaderPtr shaderPtr = m_ShaderPtr;
+        vd::gl::ShaderPtr shaderPtr = m_pShader;
         if (renderingPass == "Shadow") {
             shaderPtr = vd::ObjectOfType<mod::shadow::ShadowShader>::Find();
         }
 
-        shaderPtr->bind();
+        shaderPtr->Bind();
 
         const PlacementInfoVec &placementInfos = m_StaticObjectPlacerPtr->getPlacementInfos();
         for (const auto& placementInfo : placementInfos) {
             StaticObjectPtr staticObjectPtr = placementInfo.objectPtr;
-            staticObjectPtr->WorldTransform().SetTranslation(placementInfo.location);
+            staticObjectPtr->WorldTransform().Translation() = placementInfo.location;
             staticObjectPtr->Update();
 
             if (Detector::IsAnyTransformedBounds3InsideFrustum(staticObjectPtr->BoundingBoxes(),
                                                                staticObjectPtr->WorldTransform(),
-                                                               m_FrustumCullingManagerPtr->GetFrustum())) {
+                                                               m_FrustumCullingManagerPtr->Frustum())) {
                 for (size_t meshIndex = 0;
                      meshIndex < staticObjectPtr->Buffers().size();
                      ++meshIndex) {
-                    shaderPtr->updateUniforms(staticObjectPtr, meshIndex);
+                    shaderPtr->UpdateUniforms(staticObjectPtr, meshIndex);
                     staticObjectPtr->Buffers()[meshIndex]->Render();
                 }
             }
@@ -65,7 +68,7 @@ namespace mod::sobj {
     }
 
     void StaticObjectRenderer::CleanUp() {
-        const auto& biomeAtlas = m_StaticObjectPlacerPtr->getTerrain()->GetBiomes();
+        const auto& biomeAtlas = m_StaticObjectPlacerPtr->getTerrain()->Biomes();
 
         for (const auto& biome : biomeAtlas) {
             if (!biome->getObjects().empty()) {

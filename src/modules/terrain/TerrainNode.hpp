@@ -8,7 +8,7 @@
 #include <engine/camera/Camera.hpp>
 #include <engine/math/Transform.hpp>
 #include <engine/math/Bounds.hpp>
-#include <engine/misc/Properties.hpp>
+#include <engine/property/Properties.hpp>
 
 #include <engine/datastruct/Tree.hpp>
 

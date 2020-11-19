@@ -6,6 +6,6 @@
 
 namespace vd::component {
     void IManager::Render(const vd::datastruct::Observer::params_t& renderingPass) {
-        throw std::runtime_error("Managers cannot be rendered");
+
     }
 }

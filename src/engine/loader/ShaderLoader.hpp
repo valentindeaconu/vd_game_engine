@@ -8,7 +8,7 @@
 #include <memory>
 #include <string>
 
-#include <engine/kernel/ObjectOfType.hpp>
+#include <engine/injector/ObjectOfType.hpp>
 
 namespace vd::loader {
     namespace impl {

@@ -10,9 +10,10 @@ namespace mod::terrain::normalmap {
         : size(size)
     {
         shaderPtr = std::make_shared<NormalMapShader>();
-        shaderPtr->addUniform("heightMap");
-        shaderPtr->addUniform("size");
-        shaderPtr->addUniform("strength");
+        shaderPtr->AddUniform("heightMap");
+        shaderPtr->AddUniform("size");
+        shaderPtr->AddUniform("strength");
+
 
         // TODO: Use TextureService
         normalMap = std::make_shared<vd::gl::Texture2D>(size, size);
@@ -29,13 +30,13 @@ namespace mod::terrain::normalmap {
     NormalMapRenderer::~NormalMapRenderer() = default;
 
     void NormalMapRenderer::render(const vd::gl::Texture2DPtr& heightMap, float strength) {
-        shaderPtr->bind();
+        shaderPtr->Bind();
 
         vd::gl::ActiveTexture(0);
         heightMap->Bind();
-        shaderPtr->setUniformi("heightMap", 0);
-        shaderPtr->setUniformi("size", size);
-        shaderPtr->setUniformf("strength", strength);
+        shaderPtr->SetUniform("heightMap", 0);
+        shaderPtr->SetUniform("size", size);
+        shaderPtr->SetUniform("strength", strength);
 
         glBindImageTexture(0, normalMap->Id(), 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA32F);
         glDispatchCompute(size/16, size/16, 1);

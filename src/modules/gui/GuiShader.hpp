@@ -5,17 +5,22 @@
 #ifndef VD_GAME_ENGINE_GUISHADER_HPP
 #define VD_GAME_ENGINE_GUISHADER_HPP
 
-#include <engine/shader/Shader.hpp>
+#include <engine/api/gl/Shader.hpp>
+
+#include <engine/loader/ShaderLoader.hpp>
 
 #include <memory>
 
 namespace mod::gui {
-    class GuiShader : public vd::shader::Shader {
+    class GuiShader : public vd::gl::Shader {
     public:
         GuiShader();
         ~GuiShader();
 
-        void updateUniforms(vd::object::EntityPtr entityPtr, size_t meshIndex) override;
+        void InitUniforms(vd::object::EntityPtr pEntity) override;
+        void UpdateUniforms(vd::object::EntityPtr pEntity, uint32_t meshIndex) override;
+    private:
+        void AddUniforms() override;
     };
     typedef std::shared_ptr<GuiShader>  GuiShaderPtr;
 }

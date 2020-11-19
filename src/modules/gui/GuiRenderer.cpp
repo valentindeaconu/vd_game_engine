@@ -7,22 +7,28 @@
 namespace mod::gui {
 
     GuiRenderer::GuiRenderer(GuiQuadPtr guiQuadPtr,
-                             vd::shader::ShaderPtr shaderPtr,
+                             vd::gl::ShaderPtr shaderPtr,
                              vd::Consumer beforeExecution,
                              vd::Consumer afterExecution)
         : IRenderer(std::move(shaderPtr), std::move(beforeExecution), std::move(afterExecution))
-        , m_GuiQuadPtr(std::move(guiQuadPtr))
+        , m_pGuiQuad(std::move(guiQuadPtr))
     {
     }
 
     GuiRenderer::~GuiRenderer() = default;
 
     void GuiRenderer::Init() {
-        m_GuiQuadPtr->Init();
+        m_pGuiQuad->Init();
+
+        m_pShader->Bind();
+        m_pShader->InitUniforms(m_pGuiQuad);
     }
 
     void GuiRenderer::Update() {
-
+        // TODO: Try this instead of updating uniforms each frame
+        // m_pShader->Bind();
+        // m_pShader->UpdateUniforms(m_pGuiQuad);
+        // m_pShader->Unbind();
     }
 
     void GuiRenderer::Render(const GuiRenderer::params_t& params) {
@@ -37,17 +43,17 @@ namespace mod::gui {
 
         Prepare();
 
-        m_ShaderPtr->bind();
+        m_pShader->Bind();
 
-        m_ShaderPtr->updateUniforms(m_GuiQuadPtr, 0);
+        m_pShader->UpdateUniforms(m_pGuiQuad);
 
-        m_GuiQuadPtr->Buffers()[0]->Render();
+        m_pGuiQuad->Buffers()[0]->Render();
 
         Finish();
     }
 
     void GuiRenderer::CleanUp() {
-        m_GuiQuadPtr->CleanUp();
+        m_pGuiQuad->CleanUp();
     }
 
     bool GuiRenderer::IsReady() {

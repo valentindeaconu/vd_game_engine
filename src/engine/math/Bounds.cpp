@@ -27,22 +27,22 @@ namespace vd::math {
     Bounds<T>::~Bounds() = default;
 
     template<typename T>
-    bool Bounds<T>::IsEmpty() const {
+    bool Bounds<T>::Empty() const {
         return m_Left == m_Right;
     }
 
     template<typename T>
-    bool Bounds<T>::IsValid() const {
+    bool Bounds<T>::Valid() const {
         return m_Left.x <= m_Right.x;
     }
 
     template<typename T>
-    const T& Bounds<T>::GetLeft() const {
+    const T& Bounds<T>::Left() const {
         return m_Left;
     }
 
     template<typename T>
-    const T& Bounds<T>::GetRight() const {
+    const T& Bounds<T>::Right() const {
         return m_Right;
     }
 
@@ -52,10 +52,10 @@ namespace vd::math {
 
     Bounds3::Bounds3(const model::MeshPtr& meshPtr) : Bounds<glm::vec3>()
     {
-        wrapMesh(meshPtr);
+        WrapMesh(meshPtr);
     }
 
-    void Bounds3::wrapMesh(const model::MeshPtr& meshPtr) {
+    void Bounds3::WrapMesh(const model::MeshPtr& meshPtr) {
         if (meshPtr != nullptr && !meshPtr->vertices.empty()) {
             m_Left.x = m_Right.x = meshPtr->vertices.front().Position.x;
             m_Left.y = m_Right.y = meshPtr->vertices.front().Position.y;
@@ -76,7 +76,7 @@ namespace vd::math {
         }
     }
 
-    Bounds3 Bounds3::withTransform(const Transform& transform) const {
+    Bounds3 Bounds3::WithTransform(const Transform& transform) const {
         return Bounds3(
             glm::vec3(transform.Get() * glm::vec4(m_Left, 1.0f)),
             glm::vec3(transform.Get() * glm::vec4(m_Right, 1.0f))

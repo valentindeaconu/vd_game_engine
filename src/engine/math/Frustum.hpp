@@ -45,13 +45,11 @@ namespace vd::math {
         Frustum();
         ~Frustum();
 
-        [[nodiscard]] PlaneVec& GetPlanes();
-        [[nodiscard]] const PlaneVec& GetPlanes() const;
-        void SetPlanes(const PlaneVec& planes);
+        PlaneVec& Planes();
+        [[nodiscard]] const PlaneVec& Planes() const;
 
-        [[nodiscard]] VertexVec& GetVertices();
-        [[nodiscard]] const VertexVec& GetVertices() const;
-        void SetVertices(const VertexVec& vertices);
+        VertexVec& Vertices();
+        [[nodiscard]] const VertexVec& Vertices() const;
     private:
         PlaneVec m_Planes;
         VertexVec m_Vertices;

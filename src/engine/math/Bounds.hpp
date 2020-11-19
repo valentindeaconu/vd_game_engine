@@ -20,11 +20,11 @@ namespace vd::math {
         ~Bounds();
 
 
-        [[nodiscard]] bool IsEmpty() const;
-        [[nodiscard]] bool IsValid() const;
+        [[nodiscard]] bool Empty() const;
+        [[nodiscard]] bool Valid() const;
 
-        [[nodiscard]] const T& GetLeft() const;
-        [[nodiscard]] const T& GetRight() const;
+        [[nodiscard]] const T& Left() const;
+        [[nodiscard]] const T& Right() const;
 
     protected:
         T m_Left;
@@ -38,9 +38,9 @@ namespace vd::math {
         Bounds3(const glm::vec3& left, const glm::vec3& right);
         explicit Bounds3(const model::MeshPtr& meshPtr);
 
-        void wrapMesh(const model::MeshPtr& meshPtr);
+        void WrapMesh(const model::MeshPtr& meshPtr);
 
-        [[nodiscard]] Bounds3 withTransform(const Transform& transform) const;
+        [[nodiscard]] Bounds3 WithTransform(const Transform& transform) const;
     };
 
     typedef std::vector<Bounds3>    Bounds3Vec;

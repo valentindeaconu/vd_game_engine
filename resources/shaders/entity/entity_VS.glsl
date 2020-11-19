@@ -19,7 +19,7 @@ uniform mat4 projection;
 uniform float fogDensity;
 uniform float fogGradient;
 
-#include "../lib/fog_VS.glsl"
+#include <fog_VS.glsl>
 
 uniform vec4 clipPlane;
 

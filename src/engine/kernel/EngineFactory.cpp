@@ -7,68 +7,76 @@
 namespace vd {
 
     EnginePtr EngineFactory::Create() {
-        // Engine creation
-        EnginePtr enginePtr = std::make_shared<vd::Engine>();
+        /// Engine Creation
+        EnginePtr pEngine = injector::CreateAndStore<vd::Engine>();
 
-        // Default managers: InputHandler, Window, Camera
+        /// Context Holder
+        kernel::ContextPtr pDataStore = injector::CreateAndStore<kernel::Context>();
 
-        // InputHandler creation
-        event::EventHandlerManagerPtr eventHandlerManagerPtr = std::make_shared<event::EventHandlerManager>();
-        enginePtr->Subscribe(eventHandlerManagerPtr, 1);
+        /// Linker creation
+        injector::LinkerPtr pLinker = injector::CreateAndStore<injector::Linker>();
 
-        // Window creation, requirements: InputHandler
-        window::WindowManagerPtr windowManagerPtr = std::make_shared<window::WindowManager>();
-        enginePtr->Subscribe(windowManagerPtr, 2);
+        /// Included Managers
+        CreateManagers(pEngine);
 
-        // Camera creation
-        camera::CameraManagerPtr cameraManagerPtr = std::make_shared<camera::CameraManager>();
-        enginePtr->Subscribe(cameraManagerPtr, 3);
-        ObjectOfType<camera::CameraManager>::Provide(cameraManagerPtr);
+        /// Loaders
+        CreateLoaders();
 
-        // FrustumCullingManager creation
-        culling::FrustumCullingManagerPtr frustumCullingManagerPtr = std::make_shared<culling::FrustumCullingManager>();
-        enginePtr->Subscribe(frustumCullingManagerPtr, vd::component::IManager::kDefaultPriority);
-        ObjectOfType<culling::FrustumCullingManager>::Provide(frustumCullingManagerPtr);
+        /// Modules
+        CreateModules(pEngine);
 
-        // LightManager creation
-        light::LightManagerPtr lightManagerPtr = std::make_shared<light::LightManager>();
-        enginePtr->Subscribe(lightManagerPtr, vd::component::IManager::kDefaultPriority);
-        ObjectOfType<light::LightManager>::Provide(lightManagerPtr);
+        /// Linking Stage
+        pEngine->Link();
+        pLinker->Link();
 
-        // Injector creation & Injection
-        try {
-            Inject();
-        } catch (std::exception& e) {
-            Logger::terminate("Could not inject basic dependencies, error: " + std::string(e.what()), 1);
-        }
-
-        enginePtr->Link();
-
-        // Register engine to singleton manager
-        ObjectOfType<vd::Engine>::Provide(enginePtr);
-
-        return enginePtr;
+        return pEngine;
     }
 
-    void EngineFactory::Inject() {
+    void EngineFactory::CreateLoaders() {
         // File Loader
-        loader::impl::StreamImplPtr streamImplPtr = std::make_shared<loader::impl::StreamImpl>();
-        ObjectOfType<loader::impl::IFileLoader>::Provide(streamImplPtr);
-
-        // Read global properties
-        misc::PropertiesPtr propertiesPtr = loader::PropertiesLoader::Load("./resources/global.properties");
-        vd::ObjectOfType<vd::misc::Properties>::Provide(propertiesPtr);
+        loader::impl::StreamImplPtr pStreamImpl = std::make_shared<loader::impl::StreamImpl>();
+        ObjectOfType<loader::impl::IFileLoader>::Provide(pStreamImpl);
 
         // Object Loader
-        loader::impl::TinyObjLoaderImplPtr tinyObjLoaderImplPtr = std::make_shared<loader::impl::TinyObjLoaderImpl>();
-        ObjectOfType<loader::impl::IObjectLoader>::Provide(tinyObjLoaderImplPtr);
+        loader::impl::TinyObjLoaderImplPtr pTinyObjLoaderImpl = std::make_shared<loader::impl::TinyObjLoaderImpl>();
+        ObjectOfType<loader::impl::IObjectLoader>::Provide(pTinyObjLoaderImpl);
 
         // Image Loader
-        loader::impl::StbiImplPtr stbiImplPtr = std::make_shared<loader::impl::StbiImpl>();
-        ObjectOfType<loader::impl::IImageLoader>::Provide(stbiImplPtr);
+        loader::impl::StbiImplPtr pStbiImpl = std::make_shared<loader::impl::StbiImpl>();
+        ObjectOfType<loader::impl::IImageLoader>::Provide(pStbiImpl);
 
         // Shader Loader
-        loader::impl::VDGEGLSLImplPtr vdge_glsl_implPtr = std::make_shared<loader::impl::VDGEGLSLImpl>();
-        ObjectOfType<loader::impl::IShaderLoader>::Provide(vdge_glsl_implPtr);
+        loader::impl::VDGEGLSLImplPtr pVDGEGLSLImpl = std::make_shared<loader::impl::VDGEGLSLImpl>();
+        ObjectOfType<loader::impl::IShaderLoader>::Provide(pVDGEGLSLImpl);
     }
+
+    void EngineFactory::CreateManagers(EnginePtr& pEngine) {
+        // InputHandler creation
+        pEngine->Subscribe(std::make_shared<event::EventHandlerManager>(), 1);
+
+        // Window creation, requirements: InputHandler
+        pEngine->Subscribe(std::make_shared<window::WindowManager>(), 2);
+
+        // Camera creation
+        pEngine->Subscribe(injector::CreateAndStore<camera::CameraManager>(), 3);
+
+        // FrustumCullingManager creation
+        pEngine->Subscribe(injector::CreateAndStore<culling::FrustumCullingManager>(), component::IManager::kDefaultPriority);
+
+        // LightManager creation
+        pEngine->Subscribe(injector::CreateAndStore<light::LightManager>(), component::IManager::kDefaultPriority);
+    }
+
+    void EngineFactory::CreateModules(EnginePtr& pEngine) {
+        // TODO: Replace global properties to each component properties
+        // Global Properties
+        property::GlobalPropertiesPtr pGlobalProperties = injector::CreateAndStore<property::GlobalProperties>();
+        property::PropertiesPtr pGlobalPropertiesAsProperties =
+                std::dynamic_pointer_cast<property::Properties>(pGlobalProperties);
+        loader::PropertiesLoader::Load("./resources/global.properties", pGlobalPropertiesAsProperties);
+
+        /// Call ModuleFactory
+        std::make_shared<mod::ModuleFactory>()->Create(pEngine);
+    }
+
 }

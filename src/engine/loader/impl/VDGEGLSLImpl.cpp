@@ -7,15 +7,15 @@
 namespace vd::loader::impl {
 
     VDGEGLSLImpl::VDGEGLSLImpl() {
-        misc::PropertiesPtr propsPtr = ObjectOfType<misc::Properties>::Find();
+        auto pProperties = PropertiesLoader::Load("./resources/shader.properties");
 
-        m_IncludeDirectory = propsPtr->Get<std::string>("Shader.IncludeDirectory");
+        m_IncludeDirectory = pProperties->Get<std::string>("Shader.IncludeDirectory");
 
         for (int i = 0; ; ++i) {
             const std::string prefix = "Shader.Constants." + std::to_string(i);
             try {
-                const auto constName = propsPtr->Get<std::string>(prefix + ".Name");
-                const auto constValue = propsPtr->Get<std::string>(prefix + ".Value");
+                const auto constName = pProperties->Get<std::string>(prefix + ".Name");
+                const auto constValue = pProperties->Get<std::string>(prefix + ".Value");
 
                 m_ConstantMap[constName] = constValue;
             } catch (std::invalid_argument& e) {
@@ -49,21 +49,20 @@ namespace vd::loader::impl {
 
                     bool usingIncludeDirectory = true;
 
-                    if (open == std::string::npos && close == std::string::npos) {
+                    if (open == std::string::npos || close == std::string::npos) {
                         open = line.find_first_of('"') + 1;
                         close = line.find_last_of('"');
 
                         if (open == std::string::npos || close == std::string::npos) {
-                            throw SyntaxError("Preprocessor include is not written properly", i);
+                            throw SyntaxError("Preprocessor include expects '<' location '>', or '\"' relative location '\"'", i);
                         } else {
                             usingIncludeDirectory = false;
                         }
-                    } else if (open == std::string::npos || close == std::string::npos) {
-                        throw SyntaxError("Preprocessor include expects '<' location '>', or '\"' relative location '\"'", i);
                     }
 
                     size_t len = close - open;
 
+                    // TODO: Solve for cross-platform
                     /*
                     std::filesystem::path dirname(m_IncludeDirectory);
                     std::filesystem::path basename(line.substr(open, close));
@@ -71,7 +70,17 @@ namespace vd::loader::impl {
                     std::filesystem::path location = dirname / basename;
                     */
 
-                    std::string location = usingIncludeDirectory ? m_IncludeDirectory + '/' + line.substr(open, len) : line.substr(open, len);
+                    std::string location;
+                    if (usingIncludeDirectory) {
+                        location =  m_IncludeDirectory + '/' + line.substr(open, len);
+                    } else {
+                        size_t dirnameLast = path.find_last_of('/');
+                        if (dirnameLast == std::string::npos) {
+                            location = line.substr(open, len);
+                        } else {
+                            location = path.substr(0, dirnameLast) + '/' + line.substr(open, len);
+                        }
+                    }
 
                     std::string include_content;
                     Load(location, include_content);

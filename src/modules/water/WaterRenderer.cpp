@@ -7,22 +7,25 @@
 namespace mod::water {
 
     WaterRenderer::WaterRenderer(WaterPtr waterPtr,
-                                 vd::shader::ShaderPtr shaderPtr,
+                                 vd::gl::ShaderPtr shaderPtr,
                                  vd::Consumer beforeExecution,
                                  vd::Consumer afterExecution)
         : IRenderer(std::move(shaderPtr), std::move(beforeExecution), std::move(afterExecution))
-        , m_WaterPtr(std::move(waterPtr))
+        , m_pWater(std::move(waterPtr))
     {
     }
 
     WaterRenderer::~WaterRenderer() = default;
 
     void WaterRenderer::Init() {
-        m_WaterPtr->Init();
+        m_pWater->Init();
+
+        m_pShader->Bind();
+        m_pShader->InitUniforms(m_pWater);
     }
 
     void WaterRenderer::Update() {
-        m_WaterPtr->Update();
+        m_pWater->Update();
     }
 
     void WaterRenderer::Render(const params_t& params) {
@@ -38,32 +41,24 @@ namespace mod::water {
 
         Prepare();
 
-        m_ShaderPtr->bind();
+        m_pShader->Bind();
 
-        m_ShaderPtr->updateUniforms(m_WaterPtr, 0);
+        m_pShader->UpdateUniforms(m_pWater);
 
-        m_WaterPtr->Buffers()[0]->Render();
+        m_pWater->Buffers()[0]->Render();
 
         Finish();
     }
 
     void WaterRenderer::CleanUp() {
-        m_WaterPtr->CleanUp();
+        m_pWater->CleanUp();
     }
 
-    WaterPtr &WaterRenderer::GetWater() {
-        return m_WaterPtr;
-    }
-
-    const WaterPtr &WaterRenderer::GetWater() const {
-        return m_WaterPtr;
-    }
-
-    void WaterRenderer::SetWater(const WaterPtr &waterPtr) {
-        this->m_WaterPtr = waterPtr;
+    WaterPtr& WaterRenderer::Water() {
+        return m_pWater;
     }
 
     bool WaterRenderer::IsReady() {
-        return IRenderer::IsReady() && m_WaterPtr != nullptr;
+        return IRenderer::IsReady() && m_pWater != nullptr;
     }
 }

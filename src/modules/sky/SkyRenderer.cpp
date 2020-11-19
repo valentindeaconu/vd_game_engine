@@ -1,23 +1,34 @@
+//
+// Created by Vali on 11/11/2020.
+//
+
 #include "SkyRenderer.hpp"
 
 namespace mod::sky {
-    SkyRenderer::SkyRenderer(SkyPtr skyPtr,
-                             vd::shader::ShaderPtr shaderPtr,
+    SkyRenderer::SkyRenderer(SkyPtr pSky,
+                             vd::gl::ShaderPtr pShader,
                              vd::Consumer beforeExecution,
                              vd::Consumer afterExecution)
-        : IRenderer(std::move(shaderPtr), std::move(beforeExecution), std::move(afterExecution))
-        , m_SkyPtr(std::move(skyPtr))
+        : IRenderer(std::move(pShader), std::move(beforeExecution), std::move(afterExecution))
+        , m_pSky(std::move(pSky))
     {
     }
 
     SkyRenderer::~SkyRenderer() = default;
 
+    void SkyRenderer::Link() {
+        m_pShadowShader = vd::ObjectOfType<mod::shadow::ShadowShader>::Find();
+    }
+
     void SkyRenderer::Init() {
-        m_SkyPtr->Init();
+        m_pSky->Init();
+
+        m_pShader->Bind();
+        m_pShader->InitUniforms(m_pSky);
     }
 
     void SkyRenderer::Update() {
-        m_SkyPtr->Update();
+        m_pSky->Update();
     }
 
     void SkyRenderer::Render(const params_t& params) {
@@ -30,16 +41,13 @@ namespace mod::sky {
 
         Prepare();
 
-        vd::shader::ShaderPtr shaderPtr = m_ShaderPtr;
-        if (renderingPass == "Shadow") {
-            shaderPtr = vd::ObjectOfType<mod::shadow::ShadowShader>::Find();
-        }
+        const vd::gl::ShaderPtr& shaderPtr = (renderingPass == "Shadow") ? m_pShadowShader : m_pShader;
 
-        shaderPtr->bind();
+        shaderPtr->Bind();
 
-        vd::gl::BufferPtrVec& buffers = m_SkyPtr->Buffers();
+        vd::gl::BufferPtrVec& buffers = m_pSky->Buffers();
         for (size_t meshIndex = 0; meshIndex < buffers.size(); ++meshIndex) {
-            shaderPtr->updateUniforms(m_SkyPtr, meshIndex);
+            shaderPtr->UpdateUniforms(m_pSky, meshIndex);
             buffers[meshIndex]->Render();
         }
 
@@ -47,10 +55,10 @@ namespace mod::sky {
     }
 
     void SkyRenderer::CleanUp() {
-        m_SkyPtr->CleanUp();
+        m_pSky->CleanUp();
     }
 
     bool SkyRenderer::IsReady() {
-        return IRenderer::IsReady() && m_SkyPtr != nullptr;
+        return IRenderer::IsReady() && m_pSky != nullptr;
     }
 }

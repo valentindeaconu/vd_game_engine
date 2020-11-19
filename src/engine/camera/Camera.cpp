@@ -1,5 +1,7 @@
 #include "Camera.hpp"
 
+#include <engine/camera/CameraWrapper.hpp>
+
 #include <engine/camera/free/FreeCamera.hpp>
 #include <engine/camera/third/ThirdPersonCamera.hpp>
 
@@ -96,39 +98,44 @@ namespace vd::camera {
     CameraManager::CameraManager()
         : m_CameraMode(eThirdPerson)
     {
-        m_FreeCameraPtr = std::make_shared<impl::FreeCamera>(glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(100.0f, 1.0f, 100.0f));
+        m_pFreeCamera = std::make_shared<impl::FreeCamera>(glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(100.0f, 1.0f, 100.0f));
 
-        m_FreeCameraPtr->Speed() = 4.0f;
-        m_FreeCameraPtr->RotationSensitivity() = 0.5f;
+        m_pFreeCamera->Speed() = 4.0f;
+        m_pFreeCamera->RotationSensitivity() = 0.5f;
 
-        m_ThirdPersonCameraPtr = std::make_shared<impl::ThirdPersonCamera>();
+        m_pThirdPersonCamera = std::make_shared<impl::ThirdPersonCamera>();
 
-        m_ThirdPersonCameraPtr->Pitch() = 20.0f;
-        m_ThirdPersonCameraPtr->DistanceFromPlayer() = 8.5f;
-        m_ThirdPersonCameraPtr->AngleAroundPlayer() = 180.0f;
+        m_pThirdPersonCamera->Pitch() = 20.0f;
+        m_pThirdPersonCamera->DistanceFromPlayer() = 8.5f;
+        m_pThirdPersonCamera->AngleAroundPlayer() = 180.0f;
 
-        vd::ObjectOfType<camera::Camera>::Provide(m_ThirdPersonCameraPtr);
+        m_pCameraWrapper = std::make_shared<wrapper::CameraWrapper>();
+
+        m_pCameraWrapper->Camera() = m_pThirdPersonCamera;
+
+        vd::ObjectOfType<camera::Camera>::Provide(m_pCameraWrapper);
     }
 
     CameraManager::~CameraManager() = default;
 
-    void CameraManager::Init() {
-        m_EventHandlerPtr = vd::ObjectOfType<event::EventHandler>::Find();
+    void CameraManager::Link() {
+        m_pEventHandler = vd::ObjectOfType<event::EventHandler>::Find();
+    }
 
-        // Link Camera to Player and Terrain
-        m_ThirdPersonCameraPtr->Link();
+    void CameraManager::Init() {
+
     }
 
     void CameraManager::Update() {
-        if (m_EventHandlerPtr->KeyDown(GLFW_KEY_C)) {
+        if (m_pEventHandler->KeyDown(GLFW_KEY_C)) {
             if (m_CameraMode == eFree) {
                 m_CameraMode = eThirdPerson;
-                ObjectOfType<camera::Camera>::Provide(std::dynamic_pointer_cast<camera::Camera>(m_ThirdPersonCameraPtr));
-                logger::Logger::log("3rd Person Camera Mode");
+                m_pCameraWrapper->Camera() = m_pThirdPersonCamera;
+                Logger::log("3rd Person Camera Mode");
             } else {
                 m_CameraMode = eFree;
-                ObjectOfType<camera::Camera>::Provide(std::dynamic_pointer_cast<camera::Camera>(m_FreeCameraPtr));
-                logger::Logger::log("Free Camera Mode");
+                m_pCameraWrapper->Camera() = m_pFreeCamera;
+                Logger::log("Free Camera Mode");
             }
         }
 
@@ -143,54 +150,54 @@ namespace vd::camera {
 
     }
 
-    const CameraManager::CameraMode &CameraManager::Mode() const {
+    const CameraManager::CameraMode& CameraManager::Mode() const {
         return m_CameraMode;
     }
 
     void CameraManager::UpdateFreeCamera() {
-        m_FreeCameraPtr->m_PrevPosition = m_FreeCameraPtr->m_Position;
-        m_FreeCameraPtr->m_PrevForward = m_FreeCameraPtr->m_Forward;
+        m_pFreeCamera->m_PrevPosition = m_pFreeCamera->m_Position;
+        m_pFreeCamera->m_PrevForward = m_pFreeCamera->m_Forward;
 
-        float movAmt = m_FreeCameraPtr->m_Speed;
-        float rotAmt = m_FreeCameraPtr->m_Speed * m_FreeCameraPtr->m_RotationSensitivity;
+        float movAmt = m_pFreeCamera->m_Speed;
+        float rotAmt = m_pFreeCamera->m_Speed * m_pFreeCamera->m_RotationSensitivity;
 
-        if (m_EventHandlerPtr->KeyHolding(GLFW_KEY_W))
-            m_FreeCameraPtr->Move(m_FreeCameraPtr->m_Forward, movAmt);
+        if (m_pEventHandler->KeyHolding(GLFW_KEY_W))
+            m_pFreeCamera->Move(m_pFreeCamera->m_Forward, movAmt);
 
-        if (m_EventHandlerPtr->KeyHolding(GLFW_KEY_S))
-            m_FreeCameraPtr->Move(m_FreeCameraPtr->m_Forward, -movAmt);
+        if (m_pEventHandler->KeyHolding(GLFW_KEY_S))
+            m_pFreeCamera->Move(m_pFreeCamera->m_Forward, -movAmt);
 
-        if (m_EventHandlerPtr->KeyHolding(GLFW_KEY_A))
-            m_FreeCameraPtr->Move(m_FreeCameraPtr->m_Right, -movAmt);
+        if (m_pEventHandler->KeyHolding(GLFW_KEY_A))
+            m_pFreeCamera->Move(m_pFreeCamera->m_Right, -movAmt);
 
-        if (m_EventHandlerPtr->KeyHolding(GLFW_KEY_D))
-            m_FreeCameraPtr->Move(m_FreeCameraPtr->m_Right, movAmt);
+        if (m_pEventHandler->KeyHolding(GLFW_KEY_D))
+            m_pFreeCamera->Move(m_pFreeCamera->m_Right, movAmt);
 
-        if (m_EventHandlerPtr->KeyHolding(GLFW_KEY_T))
-            m_FreeCameraPtr->Move(m_FreeCameraPtr->m_Up, movAmt);
+        if (m_pEventHandler->KeyHolding(GLFW_KEY_T))
+            m_pFreeCamera->Move(m_pFreeCamera->m_Up, movAmt);
 
-        if (m_EventHandlerPtr->KeyHolding(GLFW_KEY_G))
-            m_FreeCameraPtr->Move(m_FreeCameraPtr->m_Up, -movAmt);
+        if (m_pEventHandler->KeyHolding(GLFW_KEY_G))
+            m_pFreeCamera->Move(m_pFreeCamera->m_Up, -movAmt);
 
-        if (m_EventHandlerPtr->ButtonHolding(GLFW_MOUSE_BUTTON_LEFT)) {
-            if (m_EventHandlerPtr->MouseMoved()) {
-                float yawChange = (float) m_EventHandlerPtr->MouseDX() * rotAmt;
-                m_FreeCameraPtr->Rotate(0.0f, -yawChange);
+        if (m_pEventHandler->ButtonHolding(GLFW_MOUSE_BUTTON_LEFT)) {
+            if (m_pEventHandler->MouseMoved()) {
+                float yawChange = (float) m_pEventHandler->MouseDX() * rotAmt;
+                m_pFreeCamera->Rotate(0.0f, -yawChange);
             }
         }
 
-        if (m_EventHandlerPtr->ButtonHolding(GLFW_MOUSE_BUTTON_LEFT)) {
-            if (m_EventHandlerPtr->MouseMoved()) {
-                float pitchChange = (float) m_EventHandlerPtr->MouseDY() * rotAmt;
-                m_FreeCameraPtr->Rotate(-pitchChange, 0.0f);
+        if (m_pEventHandler->ButtonHolding(GLFW_MOUSE_BUTTON_LEFT)) {
+            if (m_pEventHandler->MouseMoved()) {
+                float pitchChange = (float) m_pEventHandler->MouseDY() * rotAmt;
+                m_pFreeCamera->Rotate(-pitchChange, 0.0f);
             }
         }
 
-        if (m_EventHandlerPtr->KeyHolding(GLFW_KEY_K)) {
+        if (m_pEventHandler->KeyHolding(GLFW_KEY_K)) {
             Logger::log("Position (" +
-                std::to_string(m_FreeCameraPtr->m_Position.x) + ", " +
-                std::to_string(m_FreeCameraPtr->m_Position.y) + ", " +
-                std::to_string(m_FreeCameraPtr->m_Position.z) + ")"
+                        std::to_string(m_pFreeCamera->m_Position.x) + ", " +
+                        std::to_string(m_pFreeCamera->m_Position.y) + ", " +
+                        std::to_string(m_pFreeCamera->m_Position.z) + ")"
             );
         }
     }
@@ -200,32 +207,33 @@ namespace vd::camera {
     }
 
     void CameraManager::UpdateThirdPersonCamera() {
-        m_ThirdPersonCameraPtr->m_PrevPosition = m_ThirdPersonCameraPtr->m_Position;
-        m_ThirdPersonCameraPtr->m_PrevForward = m_ThirdPersonCameraPtr->m_Forward;
+        m_pThirdPersonCamera->m_PrevPosition = m_pThirdPersonCamera->m_Position;
+        m_pThirdPersonCamera->m_PrevForward = m_pThirdPersonCamera->m_Forward;
 
-        if (m_EventHandlerPtr->MouseScrolled()) {
-            auto zoomLevel = (float) m_EventHandlerPtr->MouseDWheel();
-            float distanceFromPlayer = m_ThirdPersonCameraPtr->DistanceFromPlayer() - zoomLevel;
+        if (m_pEventHandler->MouseScrolled()) {
+            auto zoomLevel = (float) m_pEventHandler->MouseDWheel();
+            float distanceFromPlayer = m_pThirdPersonCamera->DistanceFromPlayer() - zoomLevel;
             distanceFromPlayer = glm::clamp(distanceFromPlayer, 2.5f, 35.0f);
-             m_ThirdPersonCameraPtr->DistanceFromPlayer() = distanceFromPlayer;
+            m_pThirdPersonCamera->DistanceFromPlayer() = distanceFromPlayer;
         }
 
-        if (m_EventHandlerPtr->ButtonHolding(GLFW_MOUSE_BUTTON_MIDDLE)) {
-            if (m_EventHandlerPtr->MouseMoved()) {
-                auto pitchChange = (float) m_EventHandlerPtr->MouseDY();
-                float pitch = m_ThirdPersonCameraPtr->Pitch() - pitchChange;
+        if (m_pEventHandler->ButtonHolding(GLFW_MOUSE_BUTTON_MIDDLE)) {
+            if (m_pEventHandler->MouseMoved()) {
+                auto pitchChange = (float) m_pEventHandler->MouseDY();
+                float pitch = m_pThirdPersonCamera->Pitch() - pitchChange;
                 pitch = glm::clamp(pitch, 5.0f, 75.0f);
-                m_ThirdPersonCameraPtr->Pitch() = pitch;
+                m_pThirdPersonCamera->Pitch() = pitch;
             }
         }
 
-        if (m_EventHandlerPtr->ButtonHolding(GLFW_MOUSE_BUTTON_MIDDLE)) {
-            if (m_EventHandlerPtr->MouseMoved()) {
-                auto angleChange = (float) m_EventHandlerPtr->MouseDX();
-                m_ThirdPersonCameraPtr->AngleAroundPlayer() -= angleChange * 2.5f;
+        if (m_pEventHandler->ButtonHolding(GLFW_MOUSE_BUTTON_MIDDLE)) {
+            if (m_pEventHandler->MouseMoved()) {
+                auto angleChange = (float) m_pEventHandler->MouseDX();
+                m_pThirdPersonCamera->AngleAroundPlayer() -= angleChange * 2.5f;
             }
         }
 
-        m_ThirdPersonCameraPtr->Update();
+        m_pThirdPersonCamera->Update();
     }
+
 }

@@ -55,11 +55,7 @@ namespace vd::datastruct {
             }
             case eRender: {
                 for (auto& member : m_Observers) {
-                    try {
-                        member.observer->Render(params);
-                    } catch (std::runtime_error& e) {
-                        continue;
-                    }
+                    member.observer->Render(params);
                 }
                 break;
             }

@@ -5,15 +5,19 @@
 #ifndef VD_GAME_ENGINE_SPLATMAPSHADER_HPP
 #define VD_GAME_ENGINE_SPLATMAPSHADER_HPP
 
-#include <engine/shader/Shader.hpp>
+#include <engine/api/gl/Shader.hpp>
+#include <engine/loader/ShaderLoader.hpp>
 
 namespace mod::terrain::splatmap {
-    class SplatMapShader : public vd::shader::Shader {
+    class SplatMapShader : public vd::gl::Shader {
     public:
         SplatMapShader();
         ~SplatMapShader();
 
-        void updateUniforms(vd::object::EntityPtr entityPtr, size_t meshIndex) override;
+        void InitUniforms(vd::object::EntityPtr pEntity) override;
+        void UpdateUniforms(vd::object::EntityPtr pEntity, uint32_t meshIndex) override;
+    private:
+        void AddUniforms() override;
     };
     typedef std::shared_ptr<SplatMapShader>    SplatMapShaderPtr;
 }

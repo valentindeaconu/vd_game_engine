@@ -6,24 +6,14 @@ namespace vd {
 	Engine::Engine()
 		: m_Running(false)
 		, m_FrameTime(1 / 100.0f)
-		, m_FPS(0)
-		, m_FrameTimeInSeconds(0.0f)
-		, clipPlane(0.0f)
 	{
 	}
 
 	Engine::~Engine() = default;
 
 	void Engine::Link() {
-	    auto& windowPtr = vd::ObjectOfType<window::Window>::Find();
-
-        m_DimensionGetter = [w = windowPtr.get()] {
-            return vd::Dimension(w->Width(), w->Height());
-        };
-
-        m_CloseRequestChecker = [w = windowPtr.get()] {
-            return w->CloseRequested();
-        };
+	    m_pWindow = vd::ObjectOfType<window::Window>::Find();
+	    m_pContext = vd::ObjectOfType<kernel::Context>::Find();
 	}
 
 	void Engine::Init() {
@@ -42,10 +32,7 @@ namespace vd {
             std::numeric_limits<uint64_t>::max(),
             nullptr,
             vd::g_kEmptyPredicate,
-            [&]() {
-                vd::Dimension d = m_DimensionGetter();
-                glViewport(0, 0, d.width, d.height);
-            }
+            [&]() { glViewport(0, 0, m_pWindow->Width(), m_pWindow->Height()); }
         );
 
         this->Add(renderingPass);
@@ -92,22 +79,6 @@ namespace vd {
         }
     }
 
-	int Engine::getFramesPerSecond() const {
-		return m_FPS;
-	}
-
-	float Engine::getFrameTime() const {
-		return m_FrameTimeInSeconds;
-	}
-
-    const glm::vec4& Engine::getClipPlane() const {
-	    return clipPlane;
-	}
-
-    void Engine::setClipPlane(const glm::vec4& clipPlane) {
-	    this->clipPlane = clipPlane;
-	}
-
     void Engine::Run() {
         m_Running = true;
 
@@ -127,20 +98,21 @@ namespace vd {
             unprocessedTime += passedTime / 1000000000.0;
             frameCounter += passedTime;
 
-            m_FrameTimeInSeconds = float(float(passedTime) / 1000000000.0);
+            m_pContext->FrameTime() = float(float(passedTime) / 1000000000.0);
 
             while (unprocessedTime > m_FrameTime) {
                 renderFrame = true;
                 unprocessedTime -= m_FrameTime;
 
-                if (m_CloseRequestChecker())
+                if (m_pWindow->CloseRequested())
                     Stop();
 
                 if (frameCounter >= 1000000000.0) {
-                    m_FPS = frames;
+                    m_pContext->FPS() = frames;
+                    std::cout << m_pContext->FPS() << std::endl;
+
                     frames = 0;
                     frameCounter = 0;
-                    std::cout << m_FPS << std::endl;
                 }
             }
             if (renderFrame) {

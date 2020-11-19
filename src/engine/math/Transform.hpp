@@ -1,5 +1,9 @@
-#ifndef __TRANSFORM_HPP_
-#define __TRANSFORM_HPP_
+//
+// Created by Vali on 11/11/2020.
+//
+
+#ifndef VD_GAME_ENGINE_TRANSFORM_HPP
+#define VD_GAME_ENGINE_TRANSFORM_HPP
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -13,51 +17,38 @@ namespace vd::math {
         [[nodiscard]] glm::mat4 Get() const;
         [[nodiscard]] glm::mat4 Inverse() const;
 
-        [[nodiscard]] glm::mat4 GetTranslation() const;
-        [[nodiscard]] glm::mat4 GetRotation() const;
-        [[nodiscard]] glm::mat4 GetScaling() const;
+        [[nodiscard]] glm::mat4 TranslationMatrix() const;
+        [[nodiscard]] glm::mat4 RotationMatrix() const;
+        [[nodiscard]] glm::mat4 ScaleMatrix() const;
 
-        void SetTranslation(float x, float y, float z);
-        void SetTranslation(const glm::vec3& translation);
-        [[nodiscard]] const glm::vec3& GetTranslationVector() const;
+        glm::vec3& Translation();
+        glm::vec3& Scale();
 
-        void SetScaling(float x, float y, float z);
-        void SetScaling(const glm::vec3& scaling);
-        [[nodiscard]] const glm::vec3& GetScalingVector() const;
-
-        void SetXRotationAngle(float angle);
-        [[nodiscard]] float GetXAxisRotationAngle() const;
-
-        void SetYRotationAngle(float angle);
-        [[nodiscard]] float GetYAxisRotationAngle() const;
-
-        void SetZRotationAngle(float angle);
-        [[nodiscard]] float GetZAxisRotationAngle() const;
-
-        [[nodiscard]] const glm::quat& GetXAxisRotation() const;
-        [[nodiscard]] const glm::quat& GetYAxisRotation() const;
-        [[nodiscard]] const glm::quat& GetZAxisRotation() const;
+        float& XAxisRotationAngle();
+        float& YAxisRotationAngle();
+        float& ZAxisRotationAngle();
 
         [[nodiscard]] glm::vec4 operator*(const glm::vec4& operand) const;
     private:
         void ComputeTransform() const;
 
+        void ComputeXAxisRotationAngle();
+        void ComputeYAxisRotationAngle();
+        void ComputeZAxisRotationAngle();
+
         bool m_TransformComputed;
         glm::mat4 m_Transform;
 
         glm::vec3 m_Translation;
-
         glm::vec3 m_Scaling;
 
-        float m_XAxisRotationAngle;
+        glm::vec3 m_AxisRotationAngle;
+        glm::u8vec3 m_AxisRotationAngleComputed;
+
         glm::quat m_XAxisRotation;
-
-        float m_YAxisRotationAngle;
         glm::quat m_YAxisRotation;
-
-        float m_ZAxisRotationAngle;
         glm::quat m_ZAxisRotation;
     };
 }
 
-#endif // !__TRANSFORM_HPP_
+#endif //VD_GAME_ENGINE_TRANSFORM_HPP

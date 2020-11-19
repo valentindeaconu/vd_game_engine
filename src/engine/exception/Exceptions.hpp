@@ -26,6 +26,10 @@ namespace vd {
         explicit MissingDependency(const std::string& name);
     };
 
+    struct RuntimeError : public CustomException {
+        explicit RuntimeError(const std::string& message);
+    };
+
     struct SyntaxError : public CustomException {
         explicit SyntaxError(const std::string& message, uint64_t line);
     };

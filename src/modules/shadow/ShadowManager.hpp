@@ -11,8 +11,8 @@
 
 #include <engine/api/gl/Texture.hpp>
 
-#include <engine/kernel/ObjectOfType.hpp>
-#include <engine/misc/Properties.hpp>
+#include <engine/injector/Injectable.hpp>
+#include <engine/property/GlobalProperties.hpp>
 #include <engine/light/LightManager.hpp>
 
 #include <engine/api/gl/FrameBuffer.hpp>
@@ -22,10 +22,12 @@
 #include "ShadowBox.hpp"
 
 namespace mod::shadow {
-    class ShadowManager : public vd::component::IManager {
+    class ShadowManager : public vd::component::IManager, public vd::injector::Injectable {
     public:
         ShadowManager();
         ~ShadowManager();
+
+        void Link() override;
 
         void Init() override;
         void Update() override;
@@ -48,15 +50,16 @@ namespace mod::shadow {
 
         float m_Distance;
         float m_TransitionDistance;
+        float m_Offset;
 
-        vd::gl::FrameBufferPtr m_FrameBufferPtr;
+        vd::gl::FrameBufferPtr m_pFrameBuffer;
 
-        ShadowBoxPtr m_ShadowBoxPtr;
+        ShadowBoxPtr m_pShadowBox;
 
-        vd::light::LightPtr m_SunPtr;
+        vd::light::LightPtr m_pSun;
 
-        std::shared_ptr<glm::mat4> m_ViewPtr;
-        std::shared_ptr<glm::mat4> m_ProjectionPtr;
+        std::shared_ptr<glm::mat4> m_pView;
+        std::shared_ptr<glm::mat4> m_pProjection;
     };
     typedef std::shared_ptr<ShadowManager>  ShadowManagerPtr;
 }

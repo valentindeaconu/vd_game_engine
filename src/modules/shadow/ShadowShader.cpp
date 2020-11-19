@@ -5,28 +5,44 @@
 #include "ShadowShader.hpp"
 
 namespace mod::shadow {
-    ShadowShader::ShadowShader() : vd::shader::Shader() {
-        loadAndAddShader("./resources/shaders/shadow/shadow_VS.glsl", vd::shader::eVertexShader);
-        loadAndAddShader("./resources/shaders/shadow/shadow_FS.glsl", vd::shader::eFragmentShader);
-        compileShader();
+    ShadowShader::ShadowShader()
+            : vd::gl::Shader() {
+        std::string vsSource;
+        vd::loader::ShaderLoader::Load("./resources/shaders/shadow/shadow_VS.glsl", vsSource);
+        AddShader(vsSource, vd::gl::Shader::eVertexShader);
 
-        addUniform("model");
-        addUniform("view");
-        addUniform("projection");
+        std::string fsSource;
+        vd::loader::ShaderLoader::Load("./resources/shaders/shadow/shadow_FS.glsl", fsSource);
+        AddShader(fsSource, vd::gl::Shader::eFragmentShader);
 
-        addUniform("diffuseMap");
+        Compile();;
     }
 
     ShadowShader::~ShadowShader() = default;
 
-    void ShadowShader::updateUniforms(vd::object::EntityPtr entityPtr, size_t meshIndex) {
-        setUniform("model", entityPtr->WorldTransform().Get());
+    void ShadowShader::Link() {
+        m_pShadowManager = vd::ObjectOfType<ShadowManager>::Find();
+    }
 
-        auto shadowManagerPtr = vd::ObjectOfType<ShadowManager>::Find();
-        setUniform("view", shadowManagerPtr->ViewMatrix());
-        setUniform("projection", shadowManagerPtr->ProjectionMatrix());
+    void ShadowShader::AddUniforms() {
+        AddUniform("model");
+        AddUniform("view");
+        AddUniform("projection");
 
-        vd::model::MeshPtr& meshPtr = entityPtr->Meshes()[meshIndex];
+        AddUniform("diffuseMap");
+    }
+
+    void ShadowShader::InitUniforms(vd::object::EntityPtr pEntity) {
+        AddUniforms();
+    }
+
+    void ShadowShader::UpdateUniforms(vd::object::EntityPtr pEntity, uint32_t meshIndex) {
+        SetUniform("model", pEntity->WorldTransform().Get());
+
+        SetUniform("view", m_pShadowManager->ViewMatrix());
+        SetUniform("projection", m_pShadowManager->ProjectionMatrix());
+
+        vd::model::MeshPtr& meshPtr = pEntity->Meshes()[meshIndex];
 
         if (!meshPtr->materials.empty()) {
             vd::model::Material& meshMaterial = meshPtr->materials.front();
@@ -34,8 +50,9 @@ namespace mod::shadow {
             if (meshMaterial.diffuseMap != nullptr) {
                 vd::gl::ActiveTexture(0);
                 meshMaterial.diffuseMap->Bind();
-                setUniformi("diffuseMap", 0);
+                SetUniform("diffuseMap", 0);
             }
         }
     }
+
 }

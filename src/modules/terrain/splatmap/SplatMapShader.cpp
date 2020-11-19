@@ -6,14 +6,26 @@
 
 namespace mod::terrain::splatmap {
     SplatMapShader::SplatMapShader()
-            : vd::shader::Shader()
+            : vd::gl::Shader()
     {
-        loadAndAddShader("./resources/shaders/terrain/cs/SplatMap.glsl", vd::shader::eComputeShader);
+        std::string csSource;
+        vd::loader::ShaderLoader::Load("./resources/shaders/terrain/cs/SplatMap.glsl", csSource);
+        AddShader(csSource, vd::gl::Shader::eComputeShader);
 
-        compileShader();
+        Compile();
     }
 
     SplatMapShader::~SplatMapShader() = default;
 
-    void SplatMapShader::updateUniforms(vd::object::EntityPtr entityPtr, size_t meshIndex) { }
+    void SplatMapShader::AddUniforms() {
+
+    }
+
+    void SplatMapShader::InitUniforms(vd::object::EntityPtr pEntity) {
+
+    }
+
+    void SplatMapShader::UpdateUniforms(vd::object::EntityPtr pEntity, uint32_t meshIndex) {
+
+    }
 }

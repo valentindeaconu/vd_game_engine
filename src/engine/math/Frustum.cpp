@@ -5,6 +5,7 @@
 #include "Frustum.hpp"
 
 namespace vd::math {
+
     Frustum::Frustum()
         : m_Planes(kPlaneCount)
         , m_Vertices(kVertexCount)
@@ -13,27 +14,20 @@ namespace vd::math {
 
     Frustum::~Frustum() = default;
 
-    PlaneVec& Frustum::GetPlanes() {
+    PlaneVec& Frustum::Planes() {
         return m_Planes;
     }
 
-    const PlaneVec& Frustum::GetPlanes() const {
+    const PlaneVec& Frustum::Planes() const {
         return m_Planes;
     }
 
-    void Frustum::SetPlanes(const PlaneVec& planes) {
-        m_Planes = planes;
-    }
-
-    Frustum::VertexVec& Frustum::GetVertices() {
+    Frustum::VertexVec& Frustum::Vertices() {
         return m_Vertices;
     }
 
-    const Frustum::VertexVec& Frustum::GetVertices() const {
+    const Frustum::VertexVec& Frustum::Vertices() const {
         return m_Vertices;
     }
 
-    void Frustum::SetVertices(const Frustum::VertexVec& vertices) {
-        m_Vertices = vertices;
-    }
 }

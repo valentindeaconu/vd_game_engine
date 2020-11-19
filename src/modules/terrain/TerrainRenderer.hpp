@@ -16,7 +16,7 @@ namespace mod::terrain {
     class TerrainRenderer : public vd::component::IRenderer {
     public:
         TerrainRenderer(TerrainPtr terrainPtr,
-                        vd::shader::ShaderPtr shaderPtr,
+                        vd::gl::ShaderPtr shaderPtr,
                         vd::Consumer beforeExecution = vd::g_kEmptyConsumer,
                         vd::Consumer afterExecution = vd::g_kEmptyConsumer);
         ~TerrainRenderer();
@@ -30,7 +30,7 @@ namespace mod::terrain {
 
         bool IsReady() override;
 
-        TerrainPtr m_TerrainPtr;
+        TerrainPtr m_pTerrain;
     };
     typedef std::shared_ptr<TerrainRenderer>	TerrainRendererPtr;
 }

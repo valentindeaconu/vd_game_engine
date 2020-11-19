@@ -16,7 +16,7 @@ namespace mod::sobj {
     class StaticObjectRenderer : public vd::component::IRenderer {
     public:
         StaticObjectRenderer(StaticObjectPlacerPtr staticObjectPlacerPtr,
-                             vd::shader::ShaderPtr shaderPtr,
+                             vd::gl::ShaderPtr shaderPtr,
                              vd::Consumer beforeExecution = vd::g_kEmptyConsumer,
                              vd::Consumer afterExecution = vd::g_kEmptyConsumer);
         ~StaticObjectRenderer();

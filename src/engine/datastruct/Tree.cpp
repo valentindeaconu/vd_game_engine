@@ -9,7 +9,7 @@ namespace vd::datastruct {
 
     template<int Dim>
     Tree<Dim>::Tree()
-        : m_kParent(nullptr)
+        : m_kpParent(nullptr)
         , m_Level(0)
         , m_kNodeIndex(-1)
         , m_Leaf(true)
@@ -18,7 +18,7 @@ namespace vd::datastruct {
 
     template<int Dim>
     Tree<Dim>::Tree(const Tree* parent, int level, int nodeIndex)
-        : m_kParent(parent)
+        : m_kpParent(parent)
         , m_Level(level)
         , m_kNodeIndex(nodeIndex)
         , m_Leaf(true)
@@ -62,37 +62,37 @@ namespace vd::datastruct {
 
 
     template<int Dim>
-    int Tree<Dim>::GetLevel() const {
+    int Tree<Dim>::Level() const {
         return m_Level;
     }
 
     template<int Dim>
-    int Tree<Dim>::GetNodeIndex() const {
+    int Tree<Dim>::NodeIndex() const {
         return m_kNodeIndex;
     }
 
     template<int Dim>
-    bool Tree<Dim>::IsLeaf() const {
+    bool Tree<Dim>::Leaf() const {
         return m_Leaf;
     }
 
     template<int Dim>
-    const Tree<Dim>* Tree<Dim>::GetParent() const {
-        return m_kParent;
+    const Tree<Dim>* Tree<Dim>::Parent() const {
+        return m_kpParent;
     }
 
     template<int Dim>
-    typename Tree<Dim>::ptr_type_t& Tree<Dim>::GetChild(size_t index) {
+    typename Tree<Dim>::ptr_type_t& Tree<Dim>::Child(size_t index) {
         return m_Children[index];
     }
 
     template<int Dim>
-    const typename Tree<Dim>::ptr_type_t& Tree<Dim>::GetChild(size_t index) const {
+    const typename Tree<Dim>::ptr_type_t& Tree<Dim>::Child(size_t index) const {
         return m_Children[index];
     }
 
     template<int Dim>
-    const typename Tree<Dim>::arr_type_t &Tree<Dim>::GetChildren() const {
+    const typename Tree<Dim>::arr_type_t& Tree<Dim>::Children() const {
         return m_Children;
     }
 }

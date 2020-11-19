@@ -15,7 +15,7 @@ namespace mod::gui {
         static const int kPriority = kDefaultPriority + 100;
 
         GuiRenderer(GuiQuadPtr guiQuadPtr,
-                    vd::shader::ShaderPtr shaderPtr,
+                    vd::gl::ShaderPtr shaderPtr,
                     vd::Consumer beforeExecution = vd::g_kEmptyConsumer,
                     vd::Consumer afterExecution = vd::g_kEmptyConsumer);
         ~GuiRenderer();
@@ -28,7 +28,7 @@ namespace mod::gui {
     private:
         bool IsReady() override;
 
-        GuiQuadPtr m_GuiQuadPtr;
+        GuiQuadPtr m_pGuiQuad;
     };
     typedef std::shared_ptr<GuiRenderer>	GuiRendererPtr;
 }

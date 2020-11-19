@@ -166,8 +166,11 @@ namespace vd::window {
 
     WindowManager::~WindowManager() = default;
 
+    void WindowManager::Link() {
+        m_pEventHandler = vd::ObjectOfType<event::EventHandler>::Find();
+    }
+
     void WindowManager::Init() {
-        m_EventHandlerPtr = vd::ObjectOfType<event::EventHandler>::Find();
     }
 
     void WindowManager::Update() {
@@ -177,8 +180,8 @@ namespace vd::window {
 
         glfwSwapBuffers(m_WindowPtr->m_Window);
 
-        if (m_EventHandlerPtr->WindowResized()) {
-            auto info = m_EventHandlerPtr->WindowSize();
+        if (m_pEventHandler->WindowResized()) {
+            auto info = m_pEventHandler->WindowSize();
             m_WindowPtr->Resize(info.width, info.height);
         }
     }

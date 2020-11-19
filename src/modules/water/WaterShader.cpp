@@ -7,97 +7,109 @@
 namespace mod::water {
 
     WaterShader::WaterShader()
-        : vd::shader::Shader()
-        , kMaxLights(2)
+        : vd::gl::Shader()
     {
-        loadAndAddShader("./resources/shaders/water/water_VS.glsl", vd::shader::eVertexShader);
-        loadAndAddShader("./resources/shaders/water/water_FS.glsl", vd::shader::eFragmentShader);
+        std::string vsSource;
+        vd::loader::ShaderLoader::Load("./resources/shaders/water/water_VS.glsl", vsSource);
+        AddShader(vsSource, vd::gl::Shader::eVertexShader);
 
-        compileShader();
+        std::string fsSource;
+        vd::loader::ShaderLoader::Load("./resources/shaders/water/water_FS.glsl", fsSource);
+        AddShader(fsSource, vd::gl::Shader::eFragmentShader);
 
-        addUniform("model");
-        addUniform("view");
-        addUniform("projection");
-
-        addUniform("cameraPosition");
-
-        addUniform("tiling");
-        addUniform("waveStrength");
-        addUniform("moveFactor");
-
-        addUniform("reflectionTexture");
-        addUniform("refractionTexture");
-
-        addUniform("dudvMap");
-        addUniform("normalMap");
-        addUniform("depthMap");
-
-        addUniform("sunDirection");
-        addUniform("sunColor");
-        addUniform("shineDamper");
-        addUniform("reflectivity");
-        addUniform("baseColor");
-
-        addUniform("nearPlane");
-        addUniform("farPlane");
+        Compile();
     }
 
     WaterShader::~WaterShader() = default;
 
-    void WaterShader::updateUniforms(vd::object::EntityPtr entityPtr, size_t meshIndex) {
-        WaterPtr waterPtr = std::dynamic_pointer_cast<Water>(entityPtr);
+    void WaterShader::Link() {
+        m_pCamera = vd::ObjectOfType<vd::camera::Camera>::Find();
+        m_pWindow = vd::ObjectOfType<vd::window::Window>::Find();
+        m_pLightManager = vd::ObjectOfType<vd::light::LightManager>::Find();
+    }
 
-        setUniform("model", waterPtr->LocalTransform().Get());
+    void WaterShader::AddUniforms() {
+        AddUniform("model");
+        AddUniform("view");
+        AddUniform("projection");
 
-        setUniform("view", vd::ObjectOfType<vd::camera::Camera>::Find()->ViewMatrix());
-        setUniform("projection", vd::ObjectOfType<vd::window::Window>::Find()->ProjectionMatrix());
+        AddUniform("cameraPosition");
 
-        setUniform("cameraPosition", vd::ObjectOfType<vd::camera::Camera>::Find()->Position());
+        AddUniform("tiling");
+        AddUniform("waveStrength");
+        AddUniform("moveFactor");
 
-        setUniformf("nearPlane", vd::ObjectOfType<vd::window::Window>::Find()->NearPlane());
-        setUniformf("farPlane", vd::ObjectOfType<vd::window::Window>::Find()->FarPlane());
+        AddUniform("reflectionTexture");
+        AddUniform("refractionTexture");
+
+        AddUniform("dudvMap");
+        AddUniform("normalMap");
+        AddUniform("depthMap");
+
+        AddUniform("sunDirection");
+        AddUniform("sunColor");
+        AddUniform("shineDamper");
+        AddUniform("reflectivity");
+        AddUniform("baseColor");
+
+        AddUniform("nearPlane");
+        AddUniform("farPlane");
+    }
+
+    void WaterShader::InitUniforms(vd::object::EntityPtr pEntity) {
+        AddUniforms();
+
+        WaterPtr pWater = std::dynamic_pointer_cast<Water>(pEntity);
+        auto& pProperties = pWater->Properties();
+
+        SetUniform("tiling", pProperties->Get<float>("Tiling"));
+        SetUniform("waveStrength", pProperties->Get<float>("Wave.Strength"));
+        SetUniform("shineDamper", pProperties->Get<float>("ShineDamper"));
+        SetUniform("reflectivity", pProperties->Get<float>("Reflectivity"));
+        SetUniform("baseColor", pProperties->Get<glm::vec3>("BaseColor"));
+    }
+
+    void WaterShader::UpdateUniforms(vd::object::EntityPtr pEntity, uint32_t meshIndex) {
+        WaterPtr pWater = std::dynamic_pointer_cast<Water>(pEntity);
+
+        SetUniform("model", pEntity->LocalTransform().Get());
+
+        SetUniform("view", m_pCamera->ViewMatrix());
+        SetUniform("projection", m_pWindow->ProjectionMatrix());
+
+        SetUniform("cameraPosition", m_pCamera->Position());
+
+        SetUniform("nearPlane", m_pWindow->NearPlane());
+        SetUniform("farPlane", m_pWindow->FarPlane());
 
         vd::gl::ActiveTexture(0);
-        waterPtr->GetReflectionFramebuffer()->GetColorTexture()->Bind();
-        setUniformi("reflectionTexture", 0);
+        pWater->ReflectionFramebuffer()->GetColorTexture()->Bind();
+        SetUniform("reflectionTexture", 0);
 
         vd::gl::ActiveTexture(1);
-        waterPtr->GetRefractionFramebuffer()->GetColorTexture()->Bind();
-        setUniformi("refractionTexture", 1);
+        pWater->RefractionFramebuffer()->GetColorTexture()->Bind();
+        SetUniform("refractionTexture", 1);
 
         vd::gl::ActiveTexture(2);
-        waterPtr->GetRefractionFramebuffer()->GetDepthTexture()->Bind();
-        setUniformi("depthMap", 2);
+        pWater->RefractionFramebuffer()->GetDepthTexture()->Bind();
+        SetUniform("depthMap", 2);
 
-        auto& lightManager = vd::ObjectOfType<vd::light::LightManager>::Find();
-        auto& sunPtr = lightManager->GetSun();
+        auto& pSun = m_pLightManager->Sun();
 
-        setUniform("sunDirection", sunPtr->GetDirection());
-        setUniform("sunColor", sunPtr->GetColor());
+        SetUniform("sunDirection", pSun->Direction());
+        SetUniform("sunColor", pSun->Color());
 
-        setUniformf("moveFactor", waterPtr->GetMoveFactor());
+        SetUniform("moveFactor", pWater->GetMoveFactor());
 
-        auto& waterMaterial = waterPtr->GetMaterial();
+        auto& waterMaterial = pWater->Material();
         vd::gl::ActiveTexture(3);
         waterMaterial.displaceMap->Bind();
-        setUniformi("dudvMap", 3);
+        SetUniform("dudvMap", 3);
 
         vd::gl::ActiveTexture(4);
         waterMaterial.normalMap->Bind();
-        setUniformi("normalMap", 4);
-
-        static bool loadedBasics = false;
-        if (!loadedBasics) {
-            auto& propsPtr = waterPtr->GetProperties();
-
-            setUniformf("tiling", propsPtr->Get<float>("Tiling"));
-            setUniformf("waveStrength", propsPtr->Get<float>("Wave.Strength"));
-            setUniformf("shineDamper", propsPtr->Get<float>("ShineDamper"));
-            setUniformf("reflectivity", propsPtr->Get<float>("Reflectivity"));
-            setUniform("baseColor", propsPtr->Get<glm::vec3>("BaseColor"));
-
-            loadedBasics = true;
-        }
+        SetUniform("normalMap", 4);
     }
+
 
 }

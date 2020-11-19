@@ -1,5 +1,9 @@
-#ifndef __ENTITY_HPP_
-#define __ENTITY_HPP_
+//
+// Created by Vali on 11/18/2020.
+//
+
+#ifndef VD_GAME_ENGINE_ENTITY_HPP
+#define VD_GAME_ENGINE_ENTITY_HPP
 
 #include <engine/math/Transform.hpp>
 #include <engine/math/Bounds.hpp>
@@ -50,4 +54,4 @@ namespace vd::object {
     typedef std::shared_ptr<Entity>	EntityPtr;
 }
 
-#endif // !__ENTITY_HPP_
+#endif //VD_GAME_ENGINE_ENTITY_HPP

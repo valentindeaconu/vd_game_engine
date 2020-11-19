@@ -4,13 +4,15 @@
 
 #include "Properties.hpp"
 
-namespace vd::misc {
+namespace vd::property {
     Properties::Properties()
         : m_Map()
     {
     }
 
     Properties::~Properties() = default;
+
+    Properties& Properties::operator=(const Properties& other) = default;
 
     bool Properties::Empty() const {
         return m_Map.empty();

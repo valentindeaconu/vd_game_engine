@@ -19,7 +19,7 @@ uniform vec3 fogColor;
 
 uniform int transparency = 1;
 
-#include "../lib/light_FS.glsl"
+#include <light_FS.glsl>
 
 uniform Light lights[MAX_LIGHTS];
 uniform Light sun;
@@ -47,14 +47,7 @@ void main()
 	material.diffuse = diffuseColor.xyz;
 	material.specular = specularColor.xyz;
 
-	vec3 lighting = modulateWithLightsAndShadow(sun,
-												lights,
-												normalEye,
-												viewDirN,
-												fLightDirectionMatrix,
-												fPosition.xyz,
-												material,
-												0.0f);
+	vec3 lighting = modulateWithLightsAndShadow(sun, lights, normalEye, viewDirN, fLightDirectionMatrix, fPosition.xyz, material, 0.0f);
 
 	//combine results
 	fColor = vec4(mix(fogColor, lighting, fVisibility), diffuseColor.a);

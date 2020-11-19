@@ -15,7 +15,7 @@ namespace mod::water {
         static const int kPriority = kDefaultPriority + 50;
 
         WaterRenderer(WaterPtr waterPtr,
-                      vd::shader::ShaderPtr shaderPtr,
+                      vd::gl::ShaderPtr shaderPtr,
                       vd::Consumer beforeExecution = vd::g_kEmptyConsumer,
                       vd::Consumer afterExecution = vd::g_kEmptyConsumer);
         ~WaterRenderer();
@@ -25,14 +25,12 @@ namespace mod::water {
         void Render(const params_t& params) override;
         void CleanUp() override;
 
-        WaterPtr& GetWater();
-        [[nodiscard]] const WaterPtr& GetWater() const;
-        void SetWater(const WaterPtr& waterPtr);
+        WaterPtr& Water();
 
     private:
         bool IsReady() override;
 
-        WaterPtr m_WaterPtr;
+        WaterPtr m_pWater;
     };
     typedef std::shared_ptr<WaterRenderer>  WaterRendererPtr;
 }

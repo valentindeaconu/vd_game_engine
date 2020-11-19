@@ -1,21 +1,27 @@
-#ifndef __PLAYER_HPP_
-#define __PLAYER_HPP_
+//
+// Created by Vali on 11/18/2020.
+//
+
+#ifndef VD_GAME_ENGINE_PLAYER_HPP
+#define VD_GAME_ENGINE_PLAYER_HPP
 
 #include <engine/object/Entity.hpp>
 
-#include <engine/kernel/ObjectOfType.hpp>
+#include <engine/injector/Injectable.hpp>
 
-#include <engine/kernel/Engine.hpp>
+#include <engine/kernel/Context.hpp>
 #include <engine/camera/Camera.hpp>
 #include <engine/event/EventHandler.hpp>
 #include <engine/loader/ObjectLoader.hpp>
 #include <modules/terrain/Terrain.hpp>
 
 namespace mod::player {
-    class Player : public vd::object::Entity {
+    class Player : public vd::object::Entity, public vd::injector::Injectable {
     public:
         Player();
         ~Player();
+
+        void Link() override;
 
         void Init() override;
         void Update() override;
@@ -26,17 +32,18 @@ namespace mod::player {
         void Jump();
         void Input();
 
-        const float m_kModelYOffset;
+        bool m_Jumping;
 
         float m_CurrentSpeed;
         float m_CurrentTurnSpeed;
         float m_CurrentUpwardsSpeed;
-        bool m_IsJumping;
 
-        vd::EnginePtr m_EnginePtr;
-        vd::camera::CameraManagerPtr m_CameraManagerPtr;
-        vd::event::EventHandlerPtr m_EventHandlerPtr;
-        mod::terrain::TerrainPtr m_TerrainPtr;
+        const float m_kModelYOffset;
+
+        vd::kernel::ContextPtr          m_pContext;
+        vd::camera::CameraManagerPtr    m_pCameraManager;
+        vd::event::EventHandlerPtr      m_pEventHandler;
+        mod::terrain::TerrainPtr        m_pTerrain;
 
         const float m_kRunSpeed = 20.0f; // units per second
         const float m_kTurnSpeed = 160.f; // degrees per second
@@ -46,4 +53,4 @@ namespace mod::player {
     typedef std::shared_ptr<Player>	PlayerPtr;
 }
 
-#endif // !__PLAYER_HPP_
+#endif //VD_GAME_ENGINE_PLAYER_HPP

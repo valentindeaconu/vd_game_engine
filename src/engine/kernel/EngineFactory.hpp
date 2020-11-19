@@ -7,10 +7,15 @@
 
 #include "Engine.hpp"
 
+// Injector
+#include <engine/injector/CreateAndStore.hpp>
+#include <engine/injector/Linker.hpp>
+
 // Requirements
 #include <engine/event/EventHandler.hpp>
 #include <engine/window/Window.hpp>
 #include <engine/camera/Camera.hpp>
+#include <engine/kernel/Context.hpp>
 
 // Required managers
 #include <engine/culling/FrustumCullingManager.hpp>
@@ -21,13 +26,11 @@
 #include <engine/loader/impl/StbiImpl.hpp>
 #include <engine/loader/impl/StreamImpl.hpp>
 #include <engine/loader/impl/VDGEGLSLImpl.hpp>
-#include <engine/misc/Properties.hpp>
-
-// Properties Loader
 #include <engine/loader/PropertiesLoader.hpp>
 
-// Logger
-#include <engine/logger/Logger.hpp>
+// Modules
+#include <engine/property/GlobalProperties.hpp>
+#include <modules/ModuleFactory.hpp>
 
 #include <string>
 
@@ -36,7 +39,9 @@ namespace vd {
     public:
         static EnginePtr Create();
     private:
-        static void Inject();
+        static void CreateLoaders();
+        static void CreateManagers(vd::EnginePtr& pEngine);
+        static void CreateModules(EnginePtr& pEngine);
     };
 }
 

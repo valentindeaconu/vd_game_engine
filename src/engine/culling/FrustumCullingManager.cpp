@@ -14,10 +14,12 @@ namespace vd::culling {
 
     FrustumCullingManager::~FrustumCullingManager() = default;
 
-    void FrustumCullingManager::Init() {
-        m_CameraPtr = ObjectOfType<camera::Camera>::Find();
-        m_WindowPtr = ObjectOfType<window::Window>::Find();
+    void FrustumCullingManager::Link() {
+        m_pCamera = ObjectOfType<camera::Camera>::Find();
+        m_pWindow = ObjectOfType<window::Window>::Find();
+    }
 
+    void FrustumCullingManager::Init() {
         UpdateVertices();
         UpdatePlanes();
     }
@@ -34,24 +36,24 @@ namespace vd::culling {
 
     }
 
-    const vd::math::Frustum &FrustumCullingManager::GetFrustum() const {
+    const vd::math::Frustum &FrustumCullingManager::Frustum() const {
         return m_Frustum;
     }
 
     void FrustumCullingManager::UpdateVertices() {
-        glm::vec3 cameraPosition = m_CameraPtr->Position();
-        glm::vec3 forward = m_CameraPtr->Forward();
-        glm::vec3 right = m_CameraPtr->Right();
-        glm::vec3 up = m_CameraPtr->Up();
+        glm::vec3 cameraPosition = m_pCamera->Position();
+        glm::vec3 forward = m_pCamera->Forward();
+        glm::vec3 right = m_pCamera->Right();
+        glm::vec3 up = m_pCamera->Up();
 
-        float zNear = m_WindowPtr->NearPlane();
-        float zFar = m_WindowPtr->FarPlane();
+        float zNear = m_pWindow->NearPlane();
+        float zFar = m_pWindow->FarPlane();
 
         // Compute center points
         glm::vec3 fc = cameraPosition + (forward * zFar); // far plane center point
         glm::vec3 nc = cameraPosition + (forward * zNear); // near plane center point
 
-        if (m_WindowPtr->PerspectiveChanged()) {
+        if (m_pWindow->PerspectiveChanged()) {
             UpdateWidthsAndHeights();
         }
 
@@ -67,7 +69,7 @@ namespace vd::culling {
         vertices[Frustum::Vertex::eFarTopLeft] = fc + up * m_Far.height - right * m_Far.width;
         vertices[Frustum::Vertex::eFarTopRight] = fc + up * m_Far.height + right * m_Far.width;
 
-        m_Frustum.SetVertices(vertices);
+        m_Frustum.Vertices() = vertices;
     }
 
     void FrustumCullingManager::UpdatePlanes() {
@@ -75,7 +77,7 @@ namespace vd::culling {
         using vd::math::Plane;
         using vd::math::PlaneVec;
 
-        auto &vertices = m_Frustum.GetVertices();
+        auto &vertices = m_Frustum.Vertices();
 
         PlaneVec planes(Frustum::kPlaneCount);
 
@@ -109,14 +111,14 @@ namespace vd::culling {
                                                 vertices[Frustum::Vertex::eNearBottomLeft],
                                                 vertices[Frustum::Vertex::eNearBottomRight]);
 
-        m_Frustum.SetPlanes(planes);
+        m_Frustum.Planes() = planes;
     }
 
     void FrustumCullingManager::UpdateWidthsAndHeights() {
-        float zNear = m_WindowPtr->NearPlane();
-        float zFar = m_WindowPtr->FarPlane();
-        float fovY = m_WindowPtr->FieldOfView();
-        float aspect = m_WindowPtr->AspectRatio();
+        float zNear = m_pWindow->NearPlane();
+        float zFar = m_pWindow->FarPlane();
+        float fovY = m_pWindow->FieldOfView();
+        float aspect = m_pWindow->AspectRatio();
 
         m_Far.width = zFar * std::tan(glm::radians(fovY));
         m_Near.width = zNear * std::tan(glm::radians(fovY));
