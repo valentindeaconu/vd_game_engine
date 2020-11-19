@@ -15,11 +15,11 @@ int main(int argc, char ** argv) {
         vd::Logger::terminate("Could not create engine, error: " + std::string(e.what()), 1);
     }
 
-	/// Engine Init
-	pEngine->Init();
+    /// Engine Init
+    pEngine->Init();
 
-	/// Starting Main Loop
-	pEngine->Start();
+    /// Starting Main Loop
+    pEngine->Start();
 
-	return 0;
+    return 0;
 }
