@@ -23,34 +23,34 @@
 
 namespace vd {
     class Engine : public datastruct::Observable {
-	public:
-		Engine();
-		~Engine();
+    public:
+        Engine();
+        ~Engine();
 
-		void Link();
+        void Link();
 
-		void Init();
-		void Start();
+        void Init();
+        void Start();
 
-		void Add(const component::RenderingPass& renderingPass);
-		void Remove(const std::string& renderingPassName);
-	private:
-		void Run();
-		void Stop();
+        void Add(const component::RenderingPass& renderingPass);
+        void Remove(const std::string& renderingPassName);
+    private:
+        void Run();
+        void Stop();
 
-		void Update();
-		void Render();
-		void CleanUp();
+        void Update();
+        void Render();
+        void CleanUp();
 
-		float   m_FrameTime;
-		bool    m_Running;
+        float   m_FrameTime;
+        bool    m_Running;
 
-		window::WindowPtr   m_pWindow;
+        window::WindowPtr   m_pWindow;
         kernel::ContextPtr  m_pContext;
 
-		std::list<component::RenderingPass> m_RenderingPasses;
-	};
-	typedef std::shared_ptr<Engine>	EnginePtr;
+        std::list<component::RenderingPass> m_RenderingPasses;
+    };
+    typedef std::shared_ptr<Engine>	EnginePtr;
 }
 
 #endif //VD_GAME_ENGINE_ENGINE_HPP

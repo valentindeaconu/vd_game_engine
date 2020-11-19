@@ -3,20 +3,20 @@
 using namespace std::chrono_literals;
 
 namespace vd {
-	Engine::Engine()
-		: m_Running(false)
-		, m_FrameTime(1 / 100.0f)
-	{
-	}
+    Engine::Engine()
+        : m_Running(false)
+        , m_FrameTime(1 / 100.0f)
+    {
+    }
 
-	Engine::~Engine() = default;
+    Engine::~Engine() = default;
 
-	void Engine::Link() {
-	    m_pWindow = vd::ObjectOfType<window::Window>::Find();
-	    m_pContext = vd::ObjectOfType<kernel::Context>::Find();
-	}
+    void Engine::Link() {
+        m_pWindow = vd::ObjectOfType<window::Window>::Find();
+        m_pContext = vd::ObjectOfType<kernel::Context>::Find();
+    }
 
-	void Engine::Init() {
+    void Engine::Init() {
         // GL Init configs
         glClearColor(0.3f, 0.3f, 0.3f, 1.0f);
         glEnable(GL_FRAMEBUFFER_SRGB);
@@ -28,22 +28,23 @@ namespace vd {
 
         // Create main rendering pass
         component::RenderingPass renderingPass(
-            "Main",
-            std::numeric_limits<uint64_t>::max(),
-            nullptr,
-            vd::g_kEmptyPredicate,
-            [&]() { glViewport(0, 0, m_pWindow->Width(), m_pWindow->Height()); }
+                "Main",
+                std::numeric_limits<uint64_t>::max(),
+                nullptr,
+                vd::g_kEmptyPredicate,
+                [&]() { glViewport(0, 0, m_pWindow->Width(), m_pWindow->Height()); }
         );
 
         this->Add(renderingPass);
 
         // Initialise all subscribed components
         this->Broadcast(BroadcastType::eInit);
-	}
+    }
 
     void Engine::Start() {
         if (m_Running)
             return;
+
         Run();
     }
 
@@ -69,10 +70,9 @@ namespace vd {
     }
 
     void Engine::Remove(const std::string& renderingPassName) {
-        auto it = std::find_if(m_RenderingPasses.begin(), m_RenderingPasses.end(),
-                               [&](const component::RenderingPass &r) {
-                                   return r.Name() == renderingPassName;
-                               });
+        auto it = std::find_if(m_RenderingPasses.begin(), m_RenderingPasses.end(), [&](const component::RenderingPass &r) {
+            return r.Name() == renderingPassName;
+        });
 
         if (it != m_RenderingPasses.end()) {
             m_RenderingPasses.erase(it);
@@ -130,7 +130,6 @@ namespace vd {
     void Engine::Stop() {
         if (!m_Running)
             return;
-
         m_Running = false;
     }
 
@@ -139,16 +138,16 @@ namespace vd {
     }
 
     void Engine::Render() {
-	    vd::datastruct::Observer::params_t params;
+        vd::datastruct::Observer::params_t params;
 
-	    for (auto& renderingPass : m_RenderingPasses) {
-	        if (renderingPass.Precondition()) {
-	            renderingPass.Prepare();
+        for (auto& renderingPass : m_RenderingPasses) {
+            if (renderingPass.Precondition()) {
+                renderingPass.Prepare();
 
                 params["RenderingPass"] = renderingPass.Name();
 
                 if (renderingPass.FrameBuffer() != nullptr)
-	                renderingPass.FrameBuffer()->Bind();
+                    renderingPass.FrameBuffer()->Bind();
 
                 glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -163,13 +162,13 @@ namespace vd {
                 if (renderingPass.FrameBuffer() != nullptr)
                     renderingPass.FrameBuffer()->Unbind();
 
-	            renderingPass.Finish();
-	        }
-	    }
+                renderingPass.Finish();
+            }
+        }
     }
 
     void Engine::CleanUp() {
-	    this->Broadcast(BroadcastType::eCleanUp);
+        this->Broadcast(BroadcastType::eCleanUp);
 
         glfwTerminate();
     }
