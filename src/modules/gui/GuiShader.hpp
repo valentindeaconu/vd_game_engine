@@ -5,14 +5,14 @@
 #ifndef VD_GAME_ENGINE_GUISHADER_HPP
 #define VD_GAME_ENGINE_GUISHADER_HPP
 
-#include <engine/api/gl/Shader.hpp>
+#include <engine/component/IEntityShader.hpp>
 
 #include <engine/loader/ShaderLoader.hpp>
 
 #include <memory>
 
 namespace mod::gui {
-    class GuiShader : public vd::gl::IEntityShader {
+    class GuiShader : public vd::component::IEntityShader {
     public:
         GuiShader();
         ~GuiShader();

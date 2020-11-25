@@ -9,10 +9,13 @@
 
 #include <engine/logger/Logger.hpp>
 
+#include <engine/property/Properties.hpp>
+#include <engine/loader/PropertiesLoader.hpp>
+
 namespace vd::camera::impl {
     class FreeCamera : public camera::Camera {
     public:
-        FreeCamera(const glm::vec3& position, const glm::vec3& target);
+        explicit FreeCamera(const std::string& propsFilePath);
         ~FreeCamera();
 
         void Reflect(const Axis& axis, float amount) override;

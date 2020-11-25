@@ -16,6 +16,7 @@ include_directories(src/engine/culling)
 include_directories(src/engine/datastruct)
 include_directories(src/engine/event)
 include_directories(src/engine/exception)
+include_directories(src/engine/fog)
 include_directories(src/engine/kernel)
 include_directories(src/engine/light)
 include_directories(src/engine/loader)
@@ -25,6 +26,7 @@ include_directories(src/engine/misc)
 include_directories(src/engine/model)
 include_directories(src/engine/object)
 include_directories(src/engine/shader)
+include_directories(src/engine/service)
 include_directories(src/engine/window)
 include_directories(src/modules/gui)
 include_directories(src/modules/player)
@@ -36,6 +38,7 @@ include_directories(src/modules/water)
 
 add_executable(vd_game_engine
         src/engine/api/gl/GL.hpp
+        src/engine/api/gl/GLTypes.hpp
         src/engine/api/gl/Buffer.hpp
         src/engine/api/gl/MeshBuffer.cpp
         src/engine/api/gl/MeshBuffer.hpp
@@ -66,6 +69,8 @@ add_executable(vd_game_engine
         src/engine/component/IModuleFactory.hpp
         src/engine/component/RenderingPass.cpp
         src/engine/component/RenderingPass.hpp
+        src/engine/component/IEntityShader.hpp
+        src/engine/component/IShading.hpp
         src/engine/core/AsyncWorker.cpp
         src/engine/core/AsyncWorker.hpp
         src/engine/culling/FrustumCullingManager.cpp
@@ -78,6 +83,10 @@ add_executable(vd_game_engine
         src/engine/event/EventHandler.hpp
         src/engine/exception/Exceptions.cpp
         src/engine/exception/Exceptions.hpp
+        src/engine/fog/FogManager.cpp
+        src/engine/fog/FogManager.hpp
+        src/engine/fog/Fog.cpp
+        src/engine/fog/Fog.hpp
         src/engine/injector/CreateAndStore.hpp
         src/engine/injector/Injectable.cpp
         src/engine/injector/Injectable.hpp
@@ -134,7 +143,8 @@ add_executable(vd_game_engine
         src/engine/object/Entity.hpp
         src/engine/property/Properties.cpp
         src/engine/property/Properties.hpp
-        src/engine/property/GlobalProperties.hpp
+        src/engine/service/TextureService.cpp
+        src/engine/service/TextureService.hpp
         src/engine/window/Window.cpp
         src/engine/window/Window.hpp
         src/modules/gui/GuiQuad.cpp

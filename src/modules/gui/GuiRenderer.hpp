@@ -15,7 +15,7 @@ namespace mod::gui {
         static const int kPriority = kDefaultPriority + 100;
 
         GuiRenderer(GuiQuadPtr guiQuadPtr,
-                    vd::gl::EntityShaderPtr shaderPtr,
+                    vd::component::EntityShaderPtr shaderPtr,
                     vd::Consumer beforeExecution = vd::g_kEmptyConsumer,
                     vd::Consumer afterExecution = vd::g_kEmptyConsumer);
         ~GuiRenderer();

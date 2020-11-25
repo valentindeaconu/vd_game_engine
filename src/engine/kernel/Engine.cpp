@@ -151,11 +151,7 @@ namespace vd {
 
                 glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-                try {
-                    this->Broadcast(BroadcastType::eRender, params);
-                } catch (std::out_of_range& e) {
-                    vd::Logger::terminate("No rendering pass was provided to renderers", 1);
-                }
+                this->Broadcast(BroadcastType::eRender, params);
 
                 glCheckError();
 

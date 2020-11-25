@@ -23,13 +23,14 @@ namespace mod::terrain::normalmap {
                                   float strength,
                                   vd::gl::Texture2DPtr& outNormalMap) {
         /// Create texture
-        // TODO: Use TextureService
-        outNormalMap = std::make_shared<vd::gl::Texture2D>(size, size);
-        outNormalMap->Generate();
+        outNormalMap = vd::service::TextureService::UncachedCreateStorage(
+                vd::Dimension(size, size),
+                vd::gl::TextureFormat::eRGBA32F,
+                int(std::log(size) / std::log(2))
+        );
 
         outNormalMap->Bind();
         outNormalMap->BilinearFilter();
-        glTexStorage2D(GL_TEXTURE_2D, int(std::log(size) / std::log(2)), GL_RGBA32F, size, size);
         outNormalMap->Unbind();
 
         /// Setup Shader

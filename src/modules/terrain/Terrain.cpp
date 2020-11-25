@@ -176,17 +176,20 @@ namespace mod::terrain {
                 biomePtr->MaximumHeight() = m_pProps->Get<float>(prefix + ".MaxHeight") * scaleY;
 
                 const std::string materialPrefix = prefix + ".Material";
-                biomePtr->Material().diffuseMap = vd::gl::TextureService::Get(m_pProps->Get<std::string>(materialPrefix + ".Diffuse"));
+                biomePtr->Material().diffuseMap =
+                        vd::service::TextureService::CreateFromFile(m_pProps->Get<std::string>(materialPrefix + ".Diffuse"));
                 biomePtr->Material().diffuseMap->Bind();
                 biomePtr->Material().diffuseMap->TrilinearFilter();
                 biomePtr->Material().diffuseMap->Unbind();
 
-                biomePtr->Material().normalMap = vd::gl::TextureService::Get(m_pProps->Get<std::string>(materialPrefix + ".Normal"));
+                biomePtr->Material().normalMap =
+                        vd::service::TextureService::CreateFromFile(m_pProps->Get<std::string>(materialPrefix + ".Normal"));
                 biomePtr->Material().normalMap->Bind();
                 biomePtr->Material().normalMap->BilinearFilter();
                 biomePtr->Material().normalMap->Unbind();
 
-                biomePtr->Material().displaceMap = vd::gl::TextureService::Get(m_pProps->Get<std::string>(materialPrefix + ".Displace"));
+                biomePtr->Material().displaceMap =
+                        vd::service::TextureService::CreateFromFile(m_pProps->Get<std::string>(materialPrefix + ".Displace"));
                 biomePtr->Material().displaceMap->Bind();
                 biomePtr->Material().displaceMap->BilinearFilter();
                 biomePtr->Material().displaceMap->Unbind();
@@ -204,10 +207,21 @@ namespace mod::terrain {
     }
 
     void Terrain::ComputeMaps() {
-        m_pHeightImg = vd::loader::ImageLoader::Load<float, vd::model::ImageFormat::eR>(m_pProps->Get<std::string>("HeightMap"));
+        const auto kHeightMapPath = m_pProps->Get<std::string>("HeightMap");
+        m_pHeightImg = vd::loader::ImageLoader::Load<float, vd::model::ImageFormat::eR>(kHeightMapPath);
 
-        // TODO: Use TextureService
-        m_pHeightMap = std::make_shared<vd::gl::Texture2D>(m_pHeightImg);
+        m_pHeightMap = vd::service::TextureService::Create(
+                kHeightMapPath,
+                m_pHeightImg->Dimension(),
+                vd::gl::TextureFormat::eR16F,
+                vd::gl::TextureFormat::eR,
+                vd::gl::TextureType::eFloat,
+                &m_pHeightImg->Data()[0]
+        );
+
+        m_pHeightMap->Bind();
+        m_pHeightMap->BilinearFilter();
+        m_pHeightMap->Unbind();
 
         const int size = int(m_pHeightMap->Width());
         const auto strength = m_pProps->Get<float>("NormalStrength");

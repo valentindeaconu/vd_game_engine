@@ -9,6 +9,8 @@
 #include <engine/api/gl/Shader.hpp>
 #include <engine/loader/ShaderLoader.hpp>
 
+#include <engine/service/TextureService.hpp>
+
 #include <memory>
 
 #include "../Biome.hpp"

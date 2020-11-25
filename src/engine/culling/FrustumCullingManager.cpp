@@ -25,11 +25,10 @@ namespace vd::culling {
     }
 
     void FrustumCullingManager::Update() {
-        // TODO: As optimization, this function should be called only if camera perspective is
-        //  changed or window is resized
-
-        UpdateVertices();
-        UpdatePlanes();
+        if (m_pCamera->CameraRotated() || m_pCamera->CameraMoved() || m_pWindow->PerspectiveChanged()) {
+            UpdateVertices();
+            UpdatePlanes();
+        }
     }
 
     void FrustumCullingManager::CleanUp() {

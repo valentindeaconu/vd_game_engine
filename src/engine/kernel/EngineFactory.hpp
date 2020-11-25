@@ -20,6 +20,7 @@
 // Required managers
 #include <engine/culling/FrustumCullingManager.hpp>
 #include <engine/light/LightManager.hpp>
+#include <engine/fog/FogManager.hpp>
 
 // Injection
 #include <engine/loader/impl/TinyObjLoaderImpl.hpp>
@@ -29,7 +30,6 @@
 #include <engine/loader/PropertiesLoader.hpp>
 
 // Modules
-#include <engine/property/GlobalProperties.hpp>
 #include <modules/ModuleFactory.hpp>
 
 #include <string>

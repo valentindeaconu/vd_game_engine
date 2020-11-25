@@ -9,23 +9,25 @@
 #include <vector>
 
 #include <engine/component/IManager.hpp>
+#include <engine/component/IShading.hpp>
 
-#include <engine/injector/Injectable.hpp>
-#include <engine/property/GlobalProperties.hpp>
+#include <engine/property/Properties.hpp>
+#include <engine/loader/PropertiesLoader.hpp>
 
 #include "Light.hpp"
 
 namespace vd::light {
-    class LightManager : public vd::component::IManager, public vd::injector::Injectable {
+    class LightManager : public vd::component::IManager, public vd::component::IShading {
     public:
-        LightManager();
+        explicit LightManager(const std::string& propsFilePath);
         ~LightManager();
-
-        void Link() override;
 
         void Init() override;
         void Update() override;
         void CleanUp() override;
+
+        void AddUniforms(const gl::ShaderPtr& pShader) override;
+        void SetUniforms(const gl::ShaderPtr& pShader) override;
 
         [[nodiscard]] const LightPtr& Sun() const;
         [[nodiscard]] const std::vector<LightPtr>& Lights() const;

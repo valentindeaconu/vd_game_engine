@@ -6,9 +6,7 @@
 
 namespace mod::water {
 
-    WaterShader::WaterShader()
-        : vd::gl::IEntityShader()
-    {
+    WaterShader::WaterShader() : vd::component::IEntityShader() {
         std::string vsSource;
         vd::loader::ShaderLoader::Load("./resources/shaders/water/water_VS.glsl", vsSource);
         AddShader(vsSource, vd::gl::Shader::eVertexShader);
@@ -62,6 +60,7 @@ namespace mod::water {
         WaterPtr pWater = std::dynamic_pointer_cast<Water>(pEntity);
         auto& pProperties = pWater->Properties();
 
+        // TODO: Move those to the Water Class
         SetUniform("tiling", pProperties->Get<float>("Tiling"));
         SetUniform("waveStrength", pProperties->Get<float>("Wave.Strength"));
         SetUniform("shineDamper", pProperties->Get<float>("ShineDamper"));

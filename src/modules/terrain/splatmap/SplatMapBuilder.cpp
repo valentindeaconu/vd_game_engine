@@ -24,15 +24,15 @@ namespace mod::terrain::splatmap {
                                  const BiomePtrVec& biomes,
                                  vd::gl::Texture2DPtr& outSplatMap,
                                  SplatMapBuilder::data_t& outData) {
-
         /// Create texture
-        // TODO: Use TextureService
-        outSplatMap = std::make_shared<vd::gl::Texture2D>(size, size);
-        outSplatMap->Generate();
+        outSplatMap = vd::service::TextureService::UncachedCreateStorage(
+                vd::Dimension(size, size),
+                vd::gl::TextureFormat::eR32UI,
+                int(std::log(size) / std::log(2))
+        );
 
         outSplatMap->Bind();
         outSplatMap->NoFilter();
-        glTexStorage2D(GL_TEXTURE_2D, int(std::log(size) / std::log(2)), GL_R32UI, size, size);
         outSplatMap->Unbind();
 
         /// Setup Shader

@@ -40,7 +40,17 @@ namespace vd::gl {
 
         if (withColorTexture) {
             glDrawBuffer(GL_COLOR_ATTACHMENT0);
-            this->m_ColorTexture = TextureService::Get(width, height, Attachment::eColor);
+            this->m_ColorTexture = service::TextureService::UncachedCreate(
+                    vd::Dimension(width, height),
+                    gl::TextureFormat::eRGB,
+                    gl::TextureFormat::eRGB,
+                    gl::TextureType::eUnsignedByte
+            );
+
+            this->m_ColorTexture->Bind();
+            this->m_ColorTexture->BilinearFilter();
+            this->m_ColorTexture->Unbind();
+
             glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, this->m_ColorTexture->Id(), 0);
         } else {
             glDrawBuffer(GL_NONE);
@@ -51,7 +61,17 @@ namespace vd::gl {
             case eNone:
                 break;
             case eDepthTexture:
-                this->m_DepthTexture = TextureService::Get(width, height, Attachment::eDepth);
+                this->m_DepthTexture = service::TextureService::UncachedCreate(
+                        vd::Dimension(width, height),
+                        gl::TextureFormat::eDepthComponent32,
+                        gl::TextureFormat::eDepthComponent,
+                        gl::TextureType::eFloat
+                );
+
+                this->m_DepthTexture->Bind();
+                this->m_DepthTexture->BilinearFilter();
+                this->m_DepthTexture->Unbind();
+
                 glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, this->m_DepthTexture->Id(), 0);
                 break;
             case eDepthBuffer:

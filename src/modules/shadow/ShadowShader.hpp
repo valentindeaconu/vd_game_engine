@@ -5,7 +5,7 @@
 #ifndef VD_GAME_ENGINE_SHADOWSHADER_HPP
 #define VD_GAME_ENGINE_SHADOWSHADER_HPP
 
-#include <engine/api/gl/Shader.hpp>
+#include <engine/component/IEntityShader.hpp>
 #include <engine/loader/ShaderLoader.hpp>
 
 #include <engine/injector/Injectable.hpp>
@@ -14,7 +14,7 @@
 #include <memory>
 
 namespace mod::shadow {
-    class ShadowShader : public vd::gl::IEntityShader, public vd::injector::Injectable {
+    class ShadowShader : public vd::component::IEntityShader, public vd::injector::Injectable {
     public:
         ShadowShader();
         ~ShadowShader();

@@ -5,15 +5,17 @@
 #include "FreeCamera.hpp"
 
 namespace vd::camera::impl {
-    FreeCamera::FreeCamera(const glm::vec3& position, const glm::vec3& target)
+    FreeCamera::FreeCamera(const std::string& propsFilePath)
         : Camera()
-        , m_Speed(4.0f)
         , m_RotationSensitivity(0.5f)
         , m_Pitch(0.0f)
         , m_Yaw(0.0f)
     {
-        m_Position = position;
-        m_Target = target;
+        auto pProps = vd::loader::PropertiesLoader::Load(propsFilePath);
+
+        m_Position = pProps->Get<glm::vec3>("Camera.Position");
+        m_Target = pProps->Get<glm::vec3>("Camera.Target");
+        m_Speed = pProps->Get<float>("Camera.Speed");
 
         m_Forward = glm::normalize(m_Target - m_Position);
         UpdatePositionVectors();

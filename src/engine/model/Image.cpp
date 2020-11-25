@@ -477,6 +477,11 @@ namespace vd::model {
     }
 
     template<typename T, ImageFormat F>
+    std::string& Image<T, F>::Name() {
+        return m_Name;
+    }
+
+    template<typename T, ImageFormat F>
     vd::Dimension& Image<T, F>::Dimension() {
         return m_Dimension;
     }

@@ -6,9 +6,7 @@
 
 namespace mod::gui {
 
-    GuiShader::GuiShader()
-        : vd::gl::IEntityShader()
-    {
+    GuiShader::GuiShader() : vd::component::IEntityShader() {
         std::string vsSource;
         vd::loader::ShaderLoader::Load("./resources/shaders/gui/gui_VS.glsl", vsSource);
         AddShader(vsSource, vd::gl::Shader::eVertexShader);

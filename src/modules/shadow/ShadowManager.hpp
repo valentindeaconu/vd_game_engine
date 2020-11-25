@@ -12,10 +12,12 @@
 #include <engine/api/gl/Texture.hpp>
 
 #include <engine/injector/Injectable.hpp>
-#include <engine/property/GlobalProperties.hpp>
 #include <engine/light/LightManager.hpp>
 
 #include <engine/api/gl/FrameBuffer.hpp>
+
+#include <engine/property/Properties.hpp>
+#include <engine/loader/PropertiesLoader.hpp>
 
 #include <memory>
 
@@ -24,7 +26,7 @@
 namespace mod::shadow {
     class ShadowManager : public vd::component::IManager, public vd::injector::Injectable {
     public:
-        ShadowManager();
+        explicit ShadowManager(const std::string& propsFilePath);
         ~ShadowManager();
 
         void Link() override;

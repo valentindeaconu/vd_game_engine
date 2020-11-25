@@ -16,10 +16,7 @@ uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
 
-uniform float fogDensity;
-uniform float fogGradient;
-
-#include <fog_VS.glsl>
+#include <fog.glsl>
 
 uniform vec4 clipPlane;
 
@@ -46,7 +43,7 @@ void main()
 	fLightDirectionMatrix = transpose(inverse(mat3(view)));
 	
 	// compute vertex visibility
-	fVisibility = getObjectVisibilityThruFog(cameraPosition.xyz, fogDensity, fogGradient);
+	fVisibility = GetVisibilityThruFog(cameraPosition.xyz, fog.Density, fog.Gradient);
 	
 	// compute vertex position
 	gl_Position = projection * cameraPosition;

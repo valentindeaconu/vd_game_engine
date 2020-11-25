@@ -8,6 +8,7 @@
 #include <engine/object/Entity.hpp>
 
 #include <engine/loader/PropertiesLoader.hpp>
+#include <engine/service/TextureService.hpp>
 
 #include <engine/injector/Injectable.hpp>
 #include <engine/camera/Camera.hpp>

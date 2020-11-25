@@ -7,7 +7,7 @@
 namespace mod::water {
 
     void WaterFactory::Create(const vd::EnginePtr &pEngine) {
-        WaterPtr pWater = vd::injector::CreateAndStore<Water>("./resources/water.properties");
+        WaterPtr pWater = vd::injector::CreateAndStore<Water>("./resources/properties/water.properties");
         WaterShaderPtr pWaterShader = std::make_shared<WaterShader>();
 
         vd::Consumer before = []() {

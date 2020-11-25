@@ -16,11 +16,11 @@ namespace vd {
         /// Linker creation
         injector::LinkerPtr pLinker = injector::CreateAndStore<injector::Linker>();
 
-        /// Included Managers
-        CreateManagers(pEngine);
-
         /// Loaders
         CreateLoaders();
+
+        /// Included Managers
+        CreateManagers(pEngine);
 
         /// Modules
         CreateModules(pEngine);
@@ -64,17 +64,13 @@ namespace vd {
         pEngine->Subscribe(injector::CreateAndStore<culling::FrustumCullingManager>(), component::IManager::kDefaultPriority);
 
         // LightManager creation
-        pEngine->Subscribe(injector::CreateAndStore<light::LightManager>(), component::IManager::kDefaultPriority);
+        pEngine->Subscribe(injector::CreateAndStore<light::LightManager>("./resources/properties/light.properties"), component::IManager::kDefaultPriority);
+
+        // FogManager creation
+        pEngine->Subscribe(injector::CreateAndStore<fog::FogManager>("./resources/properties/fog.properties"), component::IManager::kDefaultPriority);
     }
 
     void EngineFactory::CreateModules(EnginePtr& pEngine) {
-        // TODO: Replace global properties to each component properties
-        // Global Properties
-        property::GlobalPropertiesPtr pGlobalProperties = injector::CreateAndStore<property::GlobalProperties>();
-        property::PropertiesPtr pGlobalPropertiesAsProperties =
-                std::dynamic_pointer_cast<property::Properties>(pGlobalProperties);
-        loader::PropertiesLoader::Load("./resources/global.properties", pGlobalPropertiesAsProperties);
-
         /// Call ModuleFactory
         std::make_shared<mod::ModuleFactory>()->Create(pEngine);
     }

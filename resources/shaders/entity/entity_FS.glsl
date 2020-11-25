@@ -15,14 +15,10 @@ uniform mat4 view;
 uniform sampler2D diffuseMap;
 uniform sampler2D specularMap;
 
-uniform vec3 fogColor;
-
 uniform int transparency = 1;
 
-#include <light_FS.glsl>
-
-uniform Light lights[MAX_LIGHTS];
-uniform Light sun;
+#include <light.glsl>
+#include <fog.glsl>
 
 void main() 
 {	
@@ -43,12 +39,12 @@ void main()
 
 	//modulate with lights
 	Material material;
-	material.ambient = diffuseColor.xyz;
-	material.diffuse = diffuseColor.xyz;
-	material.specular = specularColor.xyz;
+	material.Ambient = diffuseColor.xyz;
+	material.Diffuse = diffuseColor.xyz;
+	material.Specular = specularColor.xyz;
 
 	vec3 lighting = modulateWithLightsAndShadow(sun, lights, normalEye, viewDirN, fLightDirectionMatrix, fPosition.xyz, material, 0.0f);
 
 	//combine results
-	fColor = vec4(mix(fogColor, lighting, fVisibility), diffuseColor.a);
+	fColor = vec4(mix(fog.Color, lighting, fVisibility), diffuseColor.a);
 }

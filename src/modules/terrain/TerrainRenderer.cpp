@@ -7,7 +7,7 @@
 namespace mod::terrain {
 
     TerrainRenderer::TerrainRenderer(TerrainPtr terrainPtr,
-                                     vd::gl::EntityShaderPtr shaderPtr,
+                                     vd::component::EntityShaderPtr shaderPtr,
                                      vd::Consumer beforeExecution,
                                      vd::Consumer afterExecution)
         : IRenderer(std::move(shaderPtr), std::move(beforeExecution), std::move(afterExecution))

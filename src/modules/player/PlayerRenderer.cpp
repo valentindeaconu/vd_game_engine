@@ -2,7 +2,7 @@
 
 namespace mod::player {
     PlayerRenderer::PlayerRenderer(PlayerPtr playerPtr,
-                                   vd::gl::EntityShaderPtr shaderPtr,
+                                   vd::component::EntityShaderPtr shaderPtr,
                                    vd::Consumer beforeExecution,
                                    vd::Consumer afterExecution)
         : IRenderer(std::move(shaderPtr), std::move(beforeExecution), std::move(afterExecution))
@@ -40,7 +40,7 @@ namespace mod::player {
 
         Prepare();
 
-        const vd::gl::EntityShaderPtr& shaderPtr = (renderingPass == "Shadow") ? m_pShadowShader : m_pShader;
+        const vd::component::EntityShaderPtr& shaderPtr = (renderingPass == "Shadow") ? m_pShadowShader : m_pShader;
 
         shaderPtr->Bind();
 

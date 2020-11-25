@@ -7,7 +7,7 @@
 namespace vd::loader::impl {
 
     VDGEGLSLImpl::VDGEGLSLImpl() {
-        auto pProperties = PropertiesLoader::Load("./resources/shader.properties");
+        auto pProperties = PropertiesLoader::Load("./resources/properties/shader.properties");
 
         m_IncludeDirectory = pProperties->Get<std::string>("Shader.IncludeDirectory");
 

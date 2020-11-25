@@ -7,7 +7,7 @@
 namespace mod::gui {
 
     GuiRenderer::GuiRenderer(GuiQuadPtr guiQuadPtr,
-                             vd::gl::EntityShaderPtr shaderPtr,
+                             vd::component::EntityShaderPtr shaderPtr,
                              vd::Consumer beforeExecution,
                              vd::Consumer afterExecution)
         : IRenderer(std::move(shaderPtr), std::move(beforeExecution), std::move(afterExecution))
@@ -24,12 +24,7 @@ namespace mod::gui {
         m_pShader->InitUniforms(m_pGuiQuad);
     }
 
-    void GuiRenderer::Update() {
-        // TODO: Try this instead of updating uniforms each frame
-        // m_pShader->Bind();
-        // m_pShader->UpdateUniforms(m_pGuiQuad);
-        // m_pShader->Unbind();
-    }
+    void GuiRenderer::Update() { }
 
     void GuiRenderer::Render(const GuiRenderer::params_t& params) {
         if (!IsReady()) {

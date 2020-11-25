@@ -5,8 +5,7 @@
 #include "ShadowShader.hpp"
 
 namespace mod::shadow {
-    ShadowShader::ShadowShader()
-            : vd::gl::IEntityShader() {
+    ShadowShader::ShadowShader() : vd::component::IEntityShader() {
         std::string vsSource;
         vd::loader::ShaderLoader::Load("./resources/shaders/shadow/shadow_VS.glsl", vsSource);
         AddShader(vsSource, vd::gl::Shader::eVertexShader);

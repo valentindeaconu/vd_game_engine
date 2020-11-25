@@ -5,9 +5,7 @@
 #include "SkyShader.hpp"
 
 namespace mod::sky {
-    SkyShader::SkyShader()
-        : vd::gl::IEntityShader()
-    {
+    SkyShader::SkyShader() : vd::component::IEntityShader() {
         std::string vsSource;
         vd::loader::ShaderLoader::Load("./resources/shaders/sky/sky_VS.glsl", vsSource);
         AddShader(vsSource, vd::gl::Shader::eVertexShader);
@@ -24,22 +22,20 @@ namespace mod::sky {
     void SkyShader::Link() {
         m_pCamera = vd::ObjectOfType<vd::camera::Camera>::Find();
         m_pWindow = vd::ObjectOfType<vd::window::Window>::Find();
-        m_pProperties = vd::ObjectOfType<vd::property::GlobalProperties>::Find();
+        m_pFogManager = vd::ObjectOfType<vd::fog::FogManager>::Find();
     }
 
     void SkyShader::AddUniforms() {
         AddUniform("view");
         AddUniform("projection");
 
-        AddUniform("fogDensity");
-        AddUniform("fogColor");
+        m_pFogManager->AddUniforms(shared_from_this());
     }
 
     void SkyShader::InitUniforms(vd::object::EntityPtr pEntity) {
         AddUniforms();
 
-        SetUniform("fogDensity", m_pProperties->Get<float>("Fog.SkyDensity"));
-        SetUniform("fogColor", m_pProperties->Get<glm::vec3>("Fog.Color"));
+        m_pFogManager->SetUniforms(shared_from_this());
     }
 
     void SkyShader::UpdateUniforms(vd::object::EntityPtr pEntity, uint32_t meshIndex) {

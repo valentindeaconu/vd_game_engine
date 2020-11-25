@@ -2,7 +2,7 @@
 
 namespace mod::sobj {
     StaticObjectRenderer::StaticObjectRenderer(StaticObjectPlacerPtr staticObjectPlacerPtr,
-                                               vd::gl::EntityShaderPtr shaderPtr,
+                                               vd::component::EntityShaderPtr shaderPtr,
                                                vd::Consumer beforeExecution,
                                                vd::Consumer afterExecution)
         : IRenderer(std::move(shaderPtr), std::move(beforeExecution), std::move(afterExecution))
@@ -39,7 +39,7 @@ namespace mod::sobj {
 
         Prepare();
 
-        vd::gl::EntityShaderPtr shaderPtr = m_pShader;
+        vd::component::EntityShaderPtr shaderPtr = m_pShader;
         if (renderingPass == "Shadow") {
             shaderPtr = vd::ObjectOfType<mod::shadow::ShadowShader>::Find();
         }

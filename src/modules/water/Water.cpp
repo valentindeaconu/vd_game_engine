@@ -93,12 +93,14 @@ namespace mod::water {
                 vd::model::Material material;
 
                 material.name = m_pProps->Get<std::string>(prefix + ".Name");
-                material.displaceMap = vd::gl::TextureService::Get(m_pProps->Get<std::string>(prefix + ".DuDv"));
+                material.displaceMap =
+                        vd::service::TextureService::CreateFromFile(m_pProps->Get<std::string>(prefix + ".DuDv"));
                 material.displaceMap->Bind();
                 material.displaceMap->BilinearFilter();
                 material.displaceMap->Unbind();
 
-                material.normalMap = vd::gl::TextureService::Get(m_pProps->Get<std::string>(prefix + ".Normal"));
+                material.normalMap =
+                        vd::service::TextureService::CreateFromFile(m_pProps->Get<std::string>(prefix + ".Normal"));
                 material.normalMap->Bind();
                 material.normalMap->BilinearFilter();
                 material.normalMap->Unbind();

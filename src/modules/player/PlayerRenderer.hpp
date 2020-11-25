@@ -18,7 +18,7 @@ namespace mod::player {
     class PlayerRenderer : public vd::component::IRenderer, public vd::injector::Injectable {
     public:
         PlayerRenderer(PlayerPtr playerPtr,
-                       vd::gl::EntityShaderPtr shaderPtr,
+                       vd::component::EntityShaderPtr shaderPtr,
                        vd::Consumer beforeExecution = vd::g_kEmptyConsumer,
                        vd::Consumer afterExecution = vd::g_kEmptyConsumer);
         ~PlayerRenderer();

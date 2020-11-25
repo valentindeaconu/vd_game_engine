@@ -7,11 +7,11 @@
 
 #include "GL.hpp"
 
+#include <unordered_map>
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
 #include <engine/exception/Exceptions.hpp>
-#include <engine/object/Entity.hpp>
 
 namespace vd::gl {
     namespace exception {
@@ -84,16 +84,6 @@ namespace vd::gl {
         std::unordered_map<std::string, uint32_t> m_UniformMap;
     };
     typedef std::shared_ptr<Shader> ShaderPtr;
-
-    class IEntityShader : public Shader {
-    protected:
-        virtual void AddUniforms() = 0;
-
-    public:
-        virtual void InitUniforms(object::EntityPtr pEntity) = 0;
-        virtual void UpdateUniforms(object::EntityPtr pEntity, uint32_t meshIndex) = 0;
-    };
-    typedef std::shared_ptr<IEntityShader> EntityShaderPtr;
 }
 
 

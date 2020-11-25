@@ -7,7 +7,9 @@
 namespace mod::shadow {
 
     void ShadowFactory::Create(const vd::EnginePtr& pEngine) {
-        ShadowManagerPtr pShadowManager = vd::injector::CreateAndStore<mod::shadow::ShadowManager>();
+        ShadowManagerPtr pShadowManager =
+                vd::injector::CreateAndStore<mod::shadow::ShadowManager>("./resources/properties/shadow.properties");
+
         pEngine->Subscribe(pShadowManager, ShadowManager::kDefaultPriority);
 
         vd::component::RenderingPass shadowRenderingPass(

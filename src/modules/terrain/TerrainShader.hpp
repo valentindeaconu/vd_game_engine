@@ -5,7 +5,7 @@
 #ifndef VD_GAME_ENGINE_TERRAINSHADER_HPP
 #define VD_GAME_ENGINE_TERRAINSHADER_HPP
 
-#include <engine/api/gl/Shader.hpp>
+#include <engine/component/IEntityShader.hpp>
 #include <engine/loader/ShaderLoader.hpp>
 
 #include <engine/injector/Injectable.hpp>
@@ -14,7 +14,7 @@
 #include <engine/window/Window.hpp>
 #include <engine/camera/Camera.hpp>
 #include <engine/light/LightManager.hpp>
-#include <engine/property/GlobalProperties.hpp>
+#include <engine/fog/FogManager.hpp>
 #include <modules/shadow/ShadowManager.hpp>
 
 #include <memory>
@@ -22,7 +22,10 @@
 #include "Terrain.hpp"
 
 namespace mod::terrain {
-    class TerrainShader : public vd::gl::IEntityShader, public vd::injector::Injectable {
+    class TerrainShader
+            : public vd::component::IEntityShader
+            , public vd::injector::Injectable
+            , public std::enable_shared_from_this<TerrainShader> {
     public:
         TerrainShader();
         ~TerrainShader();
@@ -36,8 +39,8 @@ namespace mod::terrain {
 
         uint32_t m_BiomeCount;
 
-        vd::property::GlobalPropertiesPtr m_pProperties;
         vd::light::LightManagerPtr m_pLightManager;
+        vd::fog::FogManagerPtr m_pFogManager;
 
         vd::window::WindowPtr m_pWindow;
         vd::camera::CameraPtr m_pCamera;

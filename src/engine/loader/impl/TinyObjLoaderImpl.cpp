@@ -106,7 +106,8 @@ namespace vd::loader::impl {
                     //ambient texture
                     std::string ambientTexturePath = materials[materialId].ambient_texname;
                     if (!ambientTexturePath.empty()) {
-                        vd::gl::Texture2DPtr currentTexture = vd::gl::TextureService::Get(dirname + ambientTexturePath);
+                        vd::gl::Texture2DPtr currentTexture =
+                                vd::service::TextureService::CreateFromFile(dirname + ambientTexturePath);
                         currentTexture->Bind();
                         currentTexture->WrapRepeat();
                         currentTexture->TrilinearFilter();
@@ -116,7 +117,8 @@ namespace vd::loader::impl {
                     //diffuse texture
                     std::string diffuseTexturePath = materials[materialId].diffuse_texname;
                     if (!diffuseTexturePath.empty()) {
-                        vd::gl::Texture2DPtr currentTexture = vd::gl::TextureService::Get(dirname + diffuseTexturePath);
+                        vd::gl::Texture2DPtr currentTexture =
+                                vd::service::TextureService::CreateFromFile(dirname + diffuseTexturePath);
                         currentTexture->Bind();
                         currentTexture->WrapRepeat();
                         currentTexture->TrilinearFilter();
@@ -126,7 +128,8 @@ namespace vd::loader::impl {
                     //specular texture
                     std::string specularTexturePath = materials[materialId].specular_texname;
                     if (!specularTexturePath.empty()) {
-                        vd::gl::Texture2DPtr currentTexture = vd::gl::TextureService::Get(dirname + specularTexturePath);
+                        vd::gl::Texture2DPtr currentTexture =
+                                vd::service::TextureService::CreateFromFile(dirname + specularTexturePath);
                         currentTexture->Bind();
                         currentTexture->WrapRepeat();
                         currentTexture->TrilinearFilter();
@@ -136,7 +139,8 @@ namespace vd::loader::impl {
                     //normal texture
                     std::string normalTexturePath = materials[materialId].normal_texname;
                     if (!normalTexturePath.empty()) {
-                        vd::gl::Texture2DPtr currentTexture = vd::gl::TextureService::Get(dirname + normalTexturePath);
+                        vd::gl::Texture2DPtr currentTexture =
+                                vd::service::TextureService::CreateFromFile(dirname + normalTexturePath);
                         currentTexture->Bind();
                         currentTexture->WrapRepeat();
                         currentTexture->TrilinearFilter();
@@ -146,7 +150,8 @@ namespace vd::loader::impl {
                     //displacement texture
                     std::string displaceTexturePath = materials[materialId].displacement_texname;
                     if (!displaceTexturePath.empty()) {
-                        vd::gl::Texture2DPtr currentTexture = vd::gl::TextureService::Get(dirname + displaceTexturePath);
+                        vd::gl::Texture2DPtr currentTexture =
+                                vd::service::TextureService::CreateFromFile(dirname + displaceTexturePath);
                         currentTexture->Bind();
                         currentTexture->WrapRepeat();
                         currentTexture->TrilinearFilter();
@@ -156,7 +161,8 @@ namespace vd::loader::impl {
                     //alpha texture
                     std::string alphaTexturePath = materials[materialId].alpha_texname;
                     if (!alphaTexturePath.empty()) {
-                        vd::gl::Texture2DPtr currentTexture = vd::gl::TextureService::Get(dirname + alphaTexturePath);
+                        vd::gl::Texture2DPtr currentTexture =
+                                vd::service::TextureService::CreateFromFile(dirname + alphaTexturePath);
                         currentTexture->Bind();
                         currentTexture->WrapRepeat();
                         currentTexture->TrilinearFilter();
@@ -166,7 +172,8 @@ namespace vd::loader::impl {
                     //bump texture
                     std::string bumpTexturePath = materials[materialId].bump_texname;
                     if (!bumpTexturePath.empty()) {
-                        vd::gl::Texture2DPtr currentTexture = vd::gl::TextureService::Get(dirname + bumpTexturePath);
+                        vd::gl::Texture2DPtr currentTexture =
+                                vd::service::TextureService::CreateFromFile(dirname + bumpTexturePath);
                         currentTexture->Bind();
                         currentTexture->WrapRepeat();
                         currentTexture->TrilinearFilter();

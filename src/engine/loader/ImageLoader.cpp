@@ -16,6 +16,8 @@ namespace vd::loader {
         model::ImagePtr<float, model::ImageFormat::eRGBA> imagePtr =
                 std::make_shared<model::Image<float, model::ImageFormat::eRGBA>>(loadedImage.width, loadedImage.height);
 
+        imagePtr->Name() = path;
+
         uint64_t len = loadedImage.width * loadedImage.height * 4;
         imagePtr->Data().reserve(len);
 
@@ -44,6 +46,8 @@ namespace vd::loader {
         model::ImagePtr<float, model::ImageFormat::eBGRA> imagePtr =
                 std::make_shared<model::Image<float, model::ImageFormat::eBGRA>>(loadedImage.width, loadedImage.height);
 
+        imagePtr->Name() = path;
+
         uint64_t len = loadedImage.width * loadedImage.height * 4;
         imagePtr->Data().reserve(len);
 
@@ -71,6 +75,8 @@ namespace vd::loader {
         model::ImagePtr<float, model::ImageFormat::eRGB> imagePtr =
                 std::make_shared<model::Image<float, model::ImageFormat::eRGB>>(loadedImage.width, loadedImage.height);
 
+        imagePtr->Name() = path;
+
         uint64_t len = loadedImage.width * loadedImage.height * 4;
         imagePtr->Data().reserve(loadedImage.width * loadedImage.height * 3);
 
@@ -96,6 +102,8 @@ namespace vd::loader {
 
         model::ImagePtr<float, model::ImageFormat::eBGR> imagePtr =
                 std::make_shared<model::Image<float, model::ImageFormat::eBGR>>(loadedImage.width, loadedImage.height);
+
+        imagePtr->Name() = path;
 
         uint64_t len = loadedImage.width * loadedImage.height * 4;
         imagePtr->Data().reserve(loadedImage.width * loadedImage.height * 3);
@@ -123,6 +131,8 @@ namespace vd::loader {
         model::ImagePtr<float, model::ImageFormat::eR> imagePtr =
                 std::make_shared<model::Image<float, model::ImageFormat::eR>>(loadedImage.width, loadedImage.height);
 
+        imagePtr->Name() = path;
+
         uint64_t len = loadedImage.width * loadedImage.height * 4;
         imagePtr->Data().reserve(loadedImage.width * loadedImage.height);
 
@@ -146,6 +156,8 @@ namespace vd::loader {
 
         model::ImagePtr<uint8_t, model::ImageFormat::eRGBA> imagePtr =
                 std::make_shared<model::Image<uint8_t, model::ImageFormat::eRGBA>>(loadedImage.width, loadedImage.height);
+
+        imagePtr->Name() = path;
 
         uint64_t len = loadedImage.width * loadedImage.height * 4;
         imagePtr->Data().reserve(len);
@@ -174,6 +186,8 @@ namespace vd::loader {
         model::ImagePtr<uint8_t, model::ImageFormat::eBGRA> imagePtr =
                 std::make_shared<model::Image<uint8_t, model::ImageFormat::eBGRA>>(loadedImage.width, loadedImage.height);
 
+        imagePtr->Name() = path;
+
         uint64_t len = loadedImage.width * loadedImage.height * 4;
         imagePtr->Data().reserve(len);
 
@@ -201,6 +215,8 @@ namespace vd::loader {
         model::ImagePtr<uint8_t, model::ImageFormat::eRGB> imagePtr =
                 std::make_shared<model::Image<uint8_t, model::ImageFormat::eRGB>>(loadedImage.width, loadedImage.height);
 
+        imagePtr->Name() = path;
+
         uint64_t len = loadedImage.width * loadedImage.height * 4;
         imagePtr->Data().reserve(loadedImage.width * loadedImage.height * 3);
 
@@ -227,6 +243,8 @@ namespace vd::loader {
         model::ImagePtr<uint8_t, model::ImageFormat::eBGR> imagePtr =
                 std::make_shared<model::Image<uint8_t, model::ImageFormat::eBGR>>(loadedImage.width, loadedImage.height);
 
+        imagePtr->Name() = path;
+
         uint64_t len = loadedImage.width * loadedImage.height * 4;
         imagePtr->Data().reserve(loadedImage.width * loadedImage.height * 3);
 
@@ -252,6 +270,8 @@ namespace vd::loader {
 
         model::ImagePtr<uint8_t, model::ImageFormat::eR> imagePtr =
                 std::make_shared<model::Image<uint8_t, model::ImageFormat::eR>>(loadedImage.width, loadedImage.height);
+
+        imagePtr->Name() = path;
 
         uint64_t len = loadedImage.width * loadedImage.height * 4;
         imagePtr->Data().reserve(loadedImage.width * loadedImage.height);

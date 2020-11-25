@@ -5,17 +5,20 @@
 #ifndef VD_GAME_ENGINE_SKYSHADER_HPP
 #define VD_GAME_ENGINE_SKYSHADER_HPP
 
-#include <engine/api/gl/Shader.hpp>
+#include <engine/component/IEntityShader.hpp>
 #include <engine/loader/ShaderLoader.hpp>
 
 #include <engine/injector/Injectable.hpp>
 
-#include <engine/property/GlobalProperties.hpp>
 #include <engine/camera/Camera.hpp>
 #include <engine/window/Window.hpp>
+#include <engine/fog/FogManager.hpp>
 
 namespace mod::sky {
-    class SkyShader : public vd::gl::IEntityShader, public vd::injector::Injectable {
+    class SkyShader
+            : public vd::component::IEntityShader
+            , public vd::injector::Injectable
+            , public std::enable_shared_from_this<SkyShader> {
     public:
         SkyShader();
         ~SkyShader();
@@ -27,9 +30,9 @@ namespace mod::sky {
     private:
         void AddUniforms() override;
 
-        vd::camera::CameraPtr m_pCamera;
-        vd::window::WindowPtr m_pWindow;
-        vd::property::GlobalPropertiesPtr m_pProperties;
+        vd::camera::CameraPtr   m_pCamera;
+        vd::window::WindowPtr   m_pWindow;
+        vd::fog::FogManagerPtr  m_pFogManager;
     };
     typedef std::shared_ptr<SkyShader>	SkyShaderPtr;
 }

@@ -5,12 +5,16 @@
 #include "ShadowManager.hpp"
 
 namespace mod::shadow {
-    ShadowManager::ShadowManager()
-        : m_MapSize(0)
-        , m_Distance(0.0f)
-        , m_TransitionDistance(0.0f)
-        , m_pFrameBuffer(nullptr)
+    ShadowManager::ShadowManager(const std::string& propsFilePath)
+        : m_pFrameBuffer(nullptr)
     {
+        auto pProps = vd::loader::PropertiesLoader::Load(propsFilePath);
+
+        m_MapSize = pProps->Get<int>("Shadow.MapSize");
+        m_Distance = pProps->Get<int>("Shadow.Distance");
+        m_TransitionDistance = pProps->Get<int>("Shadow.TransitionDistance");
+        m_Offset = pProps->Get<float>("Shadow.Offset");
+
         m_pView = std::make_shared<glm::mat4>(1.0f);
         m_pProjection = std::make_shared<glm::mat4>(1.0f);
         m_pFrameBuffer = std::make_shared<vd::gl::FrameBuffer>();
@@ -19,13 +23,6 @@ namespace mod::shadow {
     ShadowManager::~ShadowManager() = default;
 
     void ShadowManager::Link() {
-        auto& propertiesPtr = vd::ObjectOfType<vd::property::GlobalProperties>::Find();
-
-        m_MapSize = propertiesPtr->Get<int>("Shadow.MapSize");
-        m_Distance = propertiesPtr->Get<int>("Shadow.Distance");
-        m_TransitionDistance = propertiesPtr->Get<int>("Shadow.TransitionDistance");
-        m_Offset = propertiesPtr->Get<float>("Shadow.Offset");
-
         auto& lightManagerPtr = vd::ObjectOfType<vd::light::LightManager>::Find();
         m_pSun = lightManagerPtr->Sun();
     }
@@ -39,7 +36,7 @@ namespace mod::shadow {
         m_pFrameBuffer->GetDepthTexture()->WrapClampToBorder();
 
         float border[] = {1.0f, 1.0f, 1.0f, 1.0f};
-        glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, border);
+        m_pFrameBuffer->GetDepthTexture()->Parameter(vd::gl::TextureParameter::eTextureBorderColor, border);
 
         m_pFrameBuffer->GetDepthTexture()->Unbind();
 

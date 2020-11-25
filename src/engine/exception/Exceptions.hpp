@@ -8,6 +8,8 @@
 #include <stdexcept>
 #include <string>
 
+#define SKIP_IF_EXCEPTION(instr)    { try { instr; } catch(std::exception& e) { } }
+
 namespace vd {
     class CustomException : public std::exception {
     public:

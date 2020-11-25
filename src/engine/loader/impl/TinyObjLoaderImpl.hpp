@@ -6,6 +6,7 @@
 #define VD_GAME_ENGINE_TINYOBJLOADERIMPL_HPP
 
 #include <engine/loader/ObjectLoader.hpp>
+#include <engine/service/TextureService.hpp>
 
 #include <memory>
 

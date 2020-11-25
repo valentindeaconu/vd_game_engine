@@ -5,7 +5,7 @@
 #ifndef VD_GAME_ENGINE_WATERSHADER_HPP
 #define VD_GAME_ENGINE_WATERSHADER_HPP
 
-#include <engine/api/gl/Shader.hpp>
+#include <engine/component/IEntityShader.hpp>
 #include <engine/loader/ShaderLoader.hpp>
 
 #include <engine/injector/Injectable.hpp>
@@ -18,7 +18,10 @@
 #include <memory>
 
 namespace mod::water {
-    class WaterShader : public vd::gl::IEntityShader, public vd::injector::Injectable {
+    class WaterShader
+            : public vd::component::IEntityShader
+            , public vd::injector::Injectable
+            , protected std::enable_shared_from_this<WaterShader> {
     public:
         WaterShader();
         ~WaterShader();

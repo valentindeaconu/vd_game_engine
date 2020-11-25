@@ -5,7 +5,7 @@
 #ifndef VD_GAME_ENGINE_PLAYERSHADER_HPP
 #define VD_GAME_ENGINE_PLAYERSHADER_HPP
 
-#include <engine/api/gl/Shader.hpp>
+#include <engine/component/IEntityShader.hpp>
 #include <engine/loader/ShaderLoader.hpp>
 
 #include <engine/injector/ObjectOfType.hpp>
@@ -13,12 +13,15 @@
 
 #include <engine/window/Window.hpp>
 #include <engine/camera/Camera.hpp>
-#include <engine/property/GlobalProperties.hpp>
 #include <engine/light/LightManager.hpp>
+#include <engine/fog/FogManager.hpp>
 #include <engine/kernel/Context.hpp>
 
 namespace mod::player {
-    class PlayerShader : public vd::gl::IEntityShader, public vd::injector::Injectable {
+    class PlayerShader
+            : public vd::component::IEntityShader
+            , public vd::injector::Injectable
+            , public std::enable_shared_from_this<PlayerShader> {
     public:
         PlayerShader();
         ~PlayerShader();
@@ -30,8 +33,8 @@ namespace mod::player {
     private:
         void AddUniforms() override;
 
-        vd::property::GlobalPropertiesPtr m_pProperties;
-        vd::light::LightManagerPtr m_pLightManager;
+        vd::light::LightManagerPtr  m_pLightManager;
+        vd::fog::FogManagerPtr      m_pFogManager;
 
         vd::window::WindowPtr m_pWindow;
         vd::camera::CameraPtr m_pCamera;

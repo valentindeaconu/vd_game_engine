@@ -98,7 +98,7 @@ namespace vd::camera {
     CameraManager::CameraManager()
         : m_CameraMode(eThirdPerson)
     {
-        m_pFreeCamera = std::make_shared<impl::FreeCamera>(glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(100.0f, 1.0f, 100.0f));
+        m_pFreeCamera = std::make_shared<impl::FreeCamera>("./resources/properties/camera.properties");
 
         m_pFreeCamera->Speed() = 4.0f;
         m_pFreeCamera->RotationSensitivity() = 0.5f;

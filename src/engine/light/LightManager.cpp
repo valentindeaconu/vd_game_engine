@@ -5,16 +5,8 @@
 #include "LightManager.hpp"
 
 namespace vd::light {
-    LightManager::LightManager()
-        : m_pSun(nullptr)
-        , m_Lights()
-    {
-    }
-
-    LightManager::~LightManager() = default;
-
-    void LightManager::Link() {
-        auto& pProps = ObjectOfType<property::GlobalProperties>::Find();
+    LightManager::LightManager(const std::string& propsFilePath) {
+        auto pProps = vd::loader::PropertiesLoader::Load(propsFilePath);
 
         m_pSun = std::make_shared<Light>(
                 LightType::eDirectional,
@@ -51,6 +43,8 @@ namespace vd::light {
         }
     }
 
+    LightManager::~LightManager() = default;
+
     void LightManager::Init() {
 
     }
@@ -63,11 +57,71 @@ namespace vd::light {
 
     }
 
-    const LightPtr &LightManager::Sun() const {
+    void LightManager::AddUniforms(const gl::ShaderPtr& pShader) {
+        pShader->AddUniform("sun.Direction");
+        pShader->AddUniform("sun.Color");
+        pShader->AddUniform("sun.AmbientStrength");
+        pShader->AddUniform("sun.SpecularStrength");
+        pShader->AddUniform("sun.Shininess");
+
+        for (size_t i = 0; i < m_Lights.size(); ++i) {
+            std::string currentLightUniformNameBase = "lights[" + std::to_string(i) + "]";
+
+            pShader->AddUniform(currentLightUniformNameBase + ".Type");
+            pShader->AddUniform(currentLightUniformNameBase + ".Position");
+            pShader->AddUniform(currentLightUniformNameBase + ".Direction");
+            pShader->AddUniform(currentLightUniformNameBase + ".Color");
+            pShader->AddUniform(currentLightUniformNameBase + ".Attenuation");
+            pShader->AddUniform(currentLightUniformNameBase + ".AmbientStrength");
+            pShader->AddUniform(currentLightUniformNameBase + ".SpecularStrength");
+            pShader->AddUniform(currentLightUniformNameBase + ".Shininess");
+        }
+    }
+
+    void LightManager::SetUniforms(const gl::ShaderPtr& pShader) {
+        pShader->SetUniform("sun.Direction", m_pSun->Direction());
+        pShader->SetUniform("sun.Color", m_pSun->Color());
+        pShader->SetUniform("sun.AmbientStrength", m_pSun->AmbientStrength());
+        pShader->SetUniform("sun.SpecularStrength", m_pSun->SpecularStrength());
+        pShader->SetUniform("sun.Shininess", m_pSun->Shininess());
+
+        for (size_t i = 0; i < m_Lights.size(); ++i) {
+            auto& pLight = m_Lights[i];
+
+            std::string currentLightUniformNameBase = "lights[" + std::to_string(i) + "]";
+
+            switch (pLight->Type()) {
+                case vd::light::eDirectional: {
+                    pShader->SetUniform(currentLightUniformNameBase + ".Type", 0);
+                    pShader->SetUniform(currentLightUniformNameBase + ".Direction", pLight->Direction());
+                    break;
+                }
+                case vd::light::ePoint: {
+                    pShader->SetUniform(currentLightUniformNameBase + ".Type", 1);
+                    pShader->SetUniform(currentLightUniformNameBase + ".Position", pLight->Position());
+                    break;
+                }
+                case vd::light::eSpot:
+                default: {
+                    pShader->SetUniform(currentLightUniformNameBase + ".Type", 2);
+                    pShader->SetUniform(currentLightUniformNameBase + ".Position", pLight->Position());
+                    break;
+                }
+            }
+            pShader->SetUniform(currentLightUniformNameBase + ".Color", pLight->Color());
+            pShader->SetUniform(currentLightUniformNameBase + ".Attenuation", pLight->Attenuation());
+            pShader->SetUniform(currentLightUniformNameBase + ".AmbientStrength", pLight->AmbientStrength());
+            pShader->SetUniform(currentLightUniformNameBase + ".SpecularStrength", pLight->SpecularStrength());
+            pShader->SetUniform(currentLightUniformNameBase + ".Shininess", pLight->Shininess());
+        }
+    }
+
+    const LightPtr& LightManager::Sun() const {
         return m_pSun;
     }
 
     const std::vector<LightPtr>& LightManager::Lights() const {
         return m_Lights;
     }
+
 }

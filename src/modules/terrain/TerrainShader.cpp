@@ -6,9 +6,7 @@
 
 namespace mod::terrain {
 
-    TerrainShader::TerrainShader()
-        : vd::gl::IEntityShader()
-    {
+    TerrainShader::TerrainShader() : vd::component::IEntityShader() {
         std::string vsSource;
         vd::loader::ShaderLoader::Load("./resources/shaders/terrain/terrain_VS.glsl", vsSource);
         AddShader(vsSource, vd::gl::Shader::eVertexShader);
@@ -35,9 +33,9 @@ namespace mod::terrain {
     TerrainShader::~TerrainShader() = default;
 
     void TerrainShader::Link() {
-        m_pProperties = vd::ObjectOfType<vd::property::GlobalProperties>::Find();
         m_pContext = vd::ObjectOfType<vd::kernel::Context>::Find();
         m_pLightManager = vd::ObjectOfType<vd::light::LightManager>::Find();
+        m_pFogManager = vd::ObjectOfType<vd::fog::FogManager>::Find();
         m_pCamera = vd::ObjectOfType<vd::camera::Camera>::Find();
         m_pWindow = vd::ObjectOfType<vd::window::Window>::Find();
         m_pShadowManager = vd::ObjectOfType<mod::shadow::ShadowManager>::Find();
@@ -77,30 +75,11 @@ namespace mod::terrain {
             AddUniform("materials[" + std::to_string(i) + "].heightScaling");
         }
 
-        AddUniform("fogDensity");
-        AddUniform("fogGradient");
-        AddUniform("fogColor");
-
-        AddUniform("sun.direction");
-        AddUniform("sun.color");
-        AddUniform("sun.ambientStrength");
-        AddUniform("sun.specularStrength");
-        AddUniform("sun.shininess");
-
-        for (size_t i = 0; i < m_pLightManager->Lights().size(); ++i) {
-            std::string currentLightUniformNameBase = "lights[" + std::to_string(i) + "]";
-
-            AddUniform(currentLightUniformNameBase + ".type");
-            AddUniform(currentLightUniformNameBase + ".position");
-            AddUniform(currentLightUniformNameBase + ".direction");
-            AddUniform(currentLightUniformNameBase + ".color");
-            AddUniform(currentLightUniformNameBase + ".attenuation");
-            AddUniform(currentLightUniformNameBase + ".ambientStrength");
-            AddUniform(currentLightUniformNameBase + ".specularStrength");
-            AddUniform(currentLightUniformNameBase + ".shininess");
-        }
-
         AddUniform("clipPlane");
+
+        m_pFogManager->AddUniforms(shared_from_this());
+        m_pLightManager->AddUniforms(shared_from_this());
+
     }
 
     void TerrainShader::InitUniforms(vd::object::EntityPtr pEntity) {
@@ -108,49 +87,8 @@ namespace mod::terrain {
 
         AddUniforms();
 
-        SetUniform("fogDensity", m_pProperties->Get<float>("Fog.Density"));
-        SetUniform("fogGradient", m_pProperties->Get<float>("Fog.Gradient"));
-        SetUniform("fogColor", m_pProperties->Get<glm::vec3>("Fog.Color"));
-
-        auto& pSun = m_pLightManager->Sun();
-        SetUniform("sun.direction", pSun->Direction());
-        SetUniform("sun.color", pSun->Color());
-        SetUniform("sun.ambientStrength", pSun->AmbientStrength());
-        SetUniform("sun.specularStrength", pSun->SpecularStrength());
-        SetUniform("sun.shininess", pSun->Shininess());
-
-        auto& lights = m_pLightManager->Lights();
-        for (size_t i = 0; i < lights.size(); ++i) {
-            if (i < lights.size()) {
-                auto& pLight = lights[i];
-
-                std::string currentLightUniformNameBase = "lights[" + std::to_string(i) + "]";
-
-                switch (pLight->Type()) {
-                    case vd::light::eDirectional: {
-                        SetUniform(currentLightUniformNameBase + ".type", 0);
-                        SetUniform(currentLightUniformNameBase + ".direction", pLight->Direction());
-                        break;
-                    }
-                    case vd::light::ePoint: {
-                        SetUniform(currentLightUniformNameBase + ".type", 1);
-                        SetUniform(currentLightUniformNameBase + ".position", pLight->Position());
-                        break;
-                    }
-                    case vd::light::eSpot:
-                    default: {
-                        SetUniform(currentLightUniformNameBase + ".type", 2);
-                        SetUniform(currentLightUniformNameBase + ".position", pLight->Position());
-                        break;
-                    }
-                }
-                SetUniform(currentLightUniformNameBase + ".color", pLight->Color());
-                SetUniform(currentLightUniformNameBase + ".attenuation", pLight->Attenuation());
-                SetUniform(currentLightUniformNameBase + ".ambientStrength", pLight->AmbientStrength());
-                SetUniform(currentLightUniformNameBase + ".specularStrength", pLight->SpecularStrength());
-                SetUniform(currentLightUniformNameBase + ".shininess", pLight->Shininess());
-            }
-        }
+        m_pFogManager->SetUniforms(shared_from_this());
+        m_pLightManager->SetUniforms(shared_from_this());
     }
 
     void TerrainShader::UpdateUniforms(vd::object::EntityPtr pEntity, uint32_t meshIndex) {

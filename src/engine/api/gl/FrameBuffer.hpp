@@ -10,6 +10,8 @@
 #include "GL.hpp"
 #include "Texture.hpp"
 
+#include <engine/service/TextureService.hpp>
+
 namespace vd::gl {
     enum DepthAttachment {
         eNone = 0,

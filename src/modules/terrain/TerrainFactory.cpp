@@ -7,7 +7,7 @@
 namespace mod::terrain {
 
     void TerrainFactory::Create(const vd::EnginePtr& pEngine) {
-        TerrainPtr pTerrain = vd::injector::CreateAndStore<Terrain>("./resources/terrain.properties");
+        TerrainPtr pTerrain = vd::injector::CreateAndStore<Terrain>("./resources/properties/terrain.properties");
         TerrainShaderPtr pTerrainShader = std::make_shared<TerrainShader>();
 
         TerrainRendererPtr pTerrainRenderer = std::make_shared<TerrainRenderer>(pTerrain,

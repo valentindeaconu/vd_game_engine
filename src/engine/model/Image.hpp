@@ -40,6 +40,7 @@ namespace vd::model {
         template <typename R> R Get(size_t i, size_t j) const;
         template <typename R, math::Interpolation I = math::Interpolation::eBilinear> R Get(const glm::vec2& uv) const;
 
+        std::string& Name();
         vd::Dimension& Dimension();
         std::vector<T>& Data();
 
@@ -48,6 +49,7 @@ namespace vd::model {
     private:
         [[nodiscard]] bool Inside(int i, int j) const;
 
+        std::string m_Name;
         vd::Dimension m_Dimension;
         std::vector<T> m_Data;
     };
