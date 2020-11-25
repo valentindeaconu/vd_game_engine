@@ -6,7 +6,7 @@
 
 namespace mod::sky {
     SkyShader::SkyShader()
-        : vd::gl::Shader()
+        : vd::gl::IEntityShader()
     {
         std::string vsSource;
         vd::loader::ShaderLoader::Load("./resources/shaders/sky/sky_VS.glsl", vsSource);

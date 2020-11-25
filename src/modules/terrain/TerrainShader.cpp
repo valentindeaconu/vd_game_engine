@@ -7,7 +7,7 @@
 namespace mod::terrain {
 
     TerrainShader::TerrainShader()
-        : vd::gl::Shader()
+        : vd::gl::IEntityShader()
     {
         std::string vsSource;
         vd::loader::ShaderLoader::Load("./resources/shaders/terrain/terrain_VS.glsl", vsSource);
@@ -193,7 +193,7 @@ namespace mod::terrain {
 
         int textureUnit = 4;
         for (int i = 0; i < m_BiomeCount; ++i) {
-            vd::model::Material& material = terrainPtr->Biomes()[i]->getMaterial();
+            vd::model::Material& material = terrainPtr->Biomes()[i]->Material();
 
             vd::gl::ActiveTexture(textureUnit);
             material.diffuseMap->Bind();

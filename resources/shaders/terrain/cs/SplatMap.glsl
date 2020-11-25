@@ -12,7 +12,7 @@ struct Biome {
     float minHeight;
     float maxHeight;
 };
-const int BIOME_COUNT = 5;
+const int BIOME_COUNT = VDGE_BIOMES_COUNT;
 
 uniform Biome biomes[BIOME_COUNT];
 
@@ -29,8 +29,6 @@ void main() {
             mask |= uint(1 << k);
         }
     }
-
-    while (mask == 0) break;
 
     imageStore(splatMap, x, ivec4(mask, 0, 0, 0));
 }

@@ -6,7 +6,7 @@
 
 namespace mod::sky {
     SkyRenderer::SkyRenderer(SkyPtr pSky,
-                             vd::gl::ShaderPtr pShader,
+                             vd::gl::EntityShaderPtr pShader,
                              vd::Consumer beforeExecution,
                              vd::Consumer afterExecution)
         : IRenderer(std::move(pShader), std::move(beforeExecution), std::move(afterExecution))
@@ -41,7 +41,7 @@ namespace mod::sky {
 
         Prepare();
 
-        const vd::gl::ShaderPtr& shaderPtr = (renderingPass == "Shadow") ? m_pShadowShader : m_pShader;
+        const vd::gl::EntityShaderPtr& shaderPtr = (renderingPass == "Shadow") ? m_pShadowShader : m_pShader;
 
         shaderPtr->Bind();
 

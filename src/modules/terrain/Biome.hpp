@@ -16,34 +16,27 @@ namespace mod::terrain {
     class Biome {
     public:
         Biome();
-        explicit Biome(const std::string& name);
+        explicit Biome(std::string name);
         ~Biome();
 
-        [[nodiscard]] const std::string& getName() const;
-        void setName(const std::string& name);
+        std::string& Name();
 
-        [[nodiscard]] float getMinHeight() const;
-        void setMinHeight(float minHeight);
+        float& MinimumHeight();
+        float& MaximumHeight();
 
-        [[nodiscard]] float getMaxHeight() const;
-        void setMaxHeight(float maxHeight);
+        vd::model::Material& Material();
 
-        [[nodiscard]] std::vector<sobj::StaticObjectPtr>& getObjects();
-        void addObject(const sobj::StaticObjectPtr& object);
-
-        [[nodiscard]] vd::model::Material& getMaterial();
-        [[nodiscard]] const vd::model::Material& getMaterial() const;
-        void setMaterial(const vd::model::Material& material);
+        std::vector<sobj::StaticObjectPtr>& Objects();
     private:
-        float minHeight;
-        float maxHeight;
+        float m_MinimumHeight;
+        float m_MaximumHeight;
 
-        std::string name;
+        std::string m_Name;
 
-        vd::model::Material material;
+        vd::model::Material m_Material;
 
         // TODO: Not like this
-        std::vector<sobj::StaticObjectPtr> objects;
+        std::vector<sobj::StaticObjectPtr> m_Objects;
     };
     typedef std::shared_ptr<Biome>  BiomePtr;
     typedef std::vector<BiomePtr>   BiomePtrVec;

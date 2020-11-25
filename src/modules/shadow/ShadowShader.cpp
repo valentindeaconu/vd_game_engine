@@ -6,7 +6,7 @@
 
 namespace mod::shadow {
     ShadowShader::ShadowShader()
-            : vd::gl::Shader() {
+            : vd::gl::IEntityShader() {
         std::string vsSource;
         vd::loader::ShaderLoader::Load("./resources/shaders/shadow/shadow_VS.glsl", vsSource);
         AddShader(vsSource, vd::gl::Shader::eVertexShader);

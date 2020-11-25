@@ -18,7 +18,7 @@
 #include <engine/kernel/Context.hpp>
 
 namespace mod::player {
-    class PlayerShader : public vd::gl::Shader, public vd::injector::Injectable {
+    class PlayerShader : public vd::gl::IEntityShader, public vd::injector::Injectable {
     public:
         PlayerShader();
         ~PlayerShader();

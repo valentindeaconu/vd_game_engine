@@ -7,7 +7,7 @@
 namespace mod::gui {
 
     GuiRenderer::GuiRenderer(GuiQuadPtr guiQuadPtr,
-                             vd::gl::ShaderPtr shaderPtr,
+                             vd::gl::EntityShaderPtr shaderPtr,
                              vd::Consumer beforeExecution,
                              vd::Consumer afterExecution)
         : IRenderer(std::move(shaderPtr), std::move(beforeExecution), std::move(afterExecution))
@@ -45,7 +45,7 @@ namespace mod::gui {
 
         m_pShader->Bind();
 
-        m_pShader->UpdateUniforms(m_pGuiQuad);
+        m_pShader->UpdateUniforms(m_pGuiQuad, 0);
 
         m_pGuiQuad->Buffers()[0]->Render();
 

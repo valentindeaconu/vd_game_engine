@@ -4,67 +4,46 @@
 
 #include "Biome.hpp"
 
+#include <utility>
+
 namespace mod::terrain {
 
     Biome::Biome()
-        : minHeight(0.0f)
-        , maxHeight(0.0f)
-        , name()
-        , material()
+        : m_MinimumHeight(0.0f)
+        , m_MaximumHeight(0.0f)
+        , m_Name()
+        , m_Material()
     {
     }
 
-    Biome::Biome(const std::string& name)
-        : minHeight(0.0f)
-        , maxHeight(0.0f)
-        , name(name)
-        , material()
+    Biome::Biome(std::string name)
+        : m_MinimumHeight(0.0f)
+        , m_MaximumHeight(0.0f)
+        , m_Name(std::move(name))
+        , m_Material()
     {
     }
 
     Biome::~Biome() = default;
 
-    const std::string &Biome::getName() const {
-        return name;
+    std::string& Biome::Name() {
+        return m_Name;
     }
 
-    void Biome::setName(const std::string& name) {
-        this->name = name;
+    float& Biome::MinimumHeight() {
+        return m_MinimumHeight;
     }
 
-    float Biome::getMinHeight() const {
-        return minHeight;
+    float& Biome::MaximumHeight() {
+        return m_MaximumHeight;
     }
 
-    void Biome::setMinHeight(float minHeight) {
-        this->minHeight = minHeight;
+    vd::model::Material& Biome::Material() {
+        return m_Material;
     }
 
-    float Biome::getMaxHeight() const {
-        return maxHeight;
+    std::vector<sobj::StaticObjectPtr>& Biome::Objects() {
+        return m_Objects;
     }
 
-    void Biome::setMaxHeight(float maxHeight) {
-        this->maxHeight = maxHeight;
-    }
-
-    vd::model::Material& Biome::getMaterial() {
-        return material;
-    }
-
-    const vd::model::Material& Biome::getMaterial() const {
-        return material;
-    }
-
-    void Biome::setMaterial(const vd::model::Material& material) {
-        this->material = material;
-    }
-
-    std::vector<sobj::StaticObjectPtr> &Biome::getObjects() {
-        return objects;
-    }
-
-    void Biome::addObject(const sobj::StaticObjectPtr &object) {
-        objects.emplace_back(object);
-    }
 }

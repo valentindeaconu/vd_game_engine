@@ -12,7 +12,7 @@
 #include <memory>
 
 namespace mod::gui {
-    class GuiShader : public vd::gl::Shader {
+    class GuiShader : public vd::gl::IEntityShader {
     public:
         GuiShader();
         ~GuiShader();

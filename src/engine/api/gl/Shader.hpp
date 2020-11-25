@@ -48,13 +48,6 @@ namespace vd::gl {
         Shader();
         ~Shader();
 
-    protected:
-        virtual void AddUniforms() = 0;
-
-    public:
-        virtual void InitUniforms(object::EntityPtr pEntity) = 0;
-        virtual void UpdateUniforms(object::EntityPtr pEntity, uint32_t meshIndex = 0) = 0;
-
         void Bind() const;
         static void Unbind();
 
@@ -75,6 +68,15 @@ namespace vd::gl {
         void SetUniform(const std::string& uniformName, const glm::mat3& value) const;
         void SetUniform(const std::string& uniformName, const glm::mat4& value) const;
 
+        void PushUniform(const std::string& uniformName, int value);
+        void PushUniform(const std::string& uniformName, float value);
+        void PushUniform(const std::string& uniformName, const glm::vec2& value);
+        void PushUniform(const std::string& uniformName, const glm::vec3& value);
+        void PushUniform(const std::string& uniformName, const glm::vec4& value);
+        void PushUniform(const std::string& uniformName, const glm::quat& value);
+        void PushUniform(const std::string& uniformName, const glm::mat3& value);
+        void PushUniform(const std::string& uniformName, const glm::mat4& value);
+
         void BindUniformBlock(const std::string& uniformBlockName, uint32_t uniformBlockBinding) const;
         void BindFragDataLocation(const std::string& name, uint32_t index) const;
     private:
@@ -82,6 +84,16 @@ namespace vd::gl {
         std::unordered_map<std::string, uint32_t> m_UniformMap;
     };
     typedef std::shared_ptr<Shader> ShaderPtr;
+
+    class IEntityShader : public Shader {
+    protected:
+        virtual void AddUniforms() = 0;
+
+    public:
+        virtual void InitUniforms(object::EntityPtr pEntity) = 0;
+        virtual void UpdateUniforms(object::EntityPtr pEntity, uint32_t meshIndex) = 0;
+    };
+    typedef std::shared_ptr<IEntityShader> EntityShaderPtr;
 }
 
 

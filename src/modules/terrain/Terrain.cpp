@@ -171,30 +171,28 @@ namespace mod::terrain {
 
                 BiomePtr biomePtr = std::make_shared<Biome>();
 
-                biomePtr->setName(m_pProps->Get<std::string>(prefix + ".Name"));
-                biomePtr->setMinHeight(m_pProps->Get<float>(prefix + ".MinHeight") * scaleY);
-                biomePtr->setMaxHeight(m_pProps->Get<float>(prefix + ".MaxHeight") * scaleY);
+                biomePtr->Name() = m_pProps->Get<std::string>(prefix + ".Name");
+                biomePtr->MinimumHeight() = m_pProps->Get<float>(prefix + ".MinHeight") * scaleY;
+                biomePtr->MaximumHeight() = m_pProps->Get<float>(prefix + ".MaxHeight") * scaleY;
 
                 const std::string materialPrefix = prefix + ".Material";
-                vd::model::Material material;
-                material.diffuseMap = vd::gl::TextureService::Get(m_pProps->Get<std::string>(materialPrefix + ".Diffuse"));
-                material.diffuseMap->Bind();
-                material.diffuseMap->TrilinearFilter();
-                material.diffuseMap->Unbind();
+                biomePtr->Material().diffuseMap = vd::gl::TextureService::Get(m_pProps->Get<std::string>(materialPrefix + ".Diffuse"));
+                biomePtr->Material().diffuseMap->Bind();
+                biomePtr->Material().diffuseMap->TrilinearFilter();
+                biomePtr->Material().diffuseMap->Unbind();
 
-                material.normalMap = vd::gl::TextureService::Get(m_pProps->Get<std::string>(materialPrefix + ".Normal"));
-                material.normalMap->Bind();
-                material.normalMap->BilinearFilter();
-                material.normalMap->Unbind();
+                biomePtr->Material().normalMap = vd::gl::TextureService::Get(m_pProps->Get<std::string>(materialPrefix + ".Normal"));
+                biomePtr->Material().normalMap->Bind();
+                biomePtr->Material().normalMap->BilinearFilter();
+                biomePtr->Material().normalMap->Unbind();
 
-                material.displaceMap = vd::gl::TextureService::Get(m_pProps->Get<std::string>(materialPrefix + ".Displace"));
-                material.displaceMap->Bind();
-                material.displaceMap->BilinearFilter();
-                material.displaceMap->Unbind();
+                biomePtr->Material().displaceMap = vd::gl::TextureService::Get(m_pProps->Get<std::string>(materialPrefix + ".Displace"));
+                biomePtr->Material().displaceMap->Bind();
+                biomePtr->Material().displaceMap->BilinearFilter();
+                biomePtr->Material().displaceMap->Unbind();
 
-                material.displaceScale = m_pProps->Get<float>(materialPrefix + ".HeightScaling");
-                material.horizontalScale = m_pProps->Get<float>(materialPrefix + ".HorizontalScaling");
-                biomePtr->setMaterial(material);
+                biomePtr->Material().displaceScale = m_pProps->Get<float>(materialPrefix + ".HeightScaling");
+                biomePtr->Material().horizontalScale = m_pProps->Get<float>(materialPrefix + ".HorizontalScaling");
 
                 PopulateBiomeWithObjects(biomePtr, prefix);
 
@@ -211,16 +209,15 @@ namespace mod::terrain {
         // TODO: Use TextureService
         m_pHeightMap = std::make_shared<vd::gl::Texture2D>(m_pHeightImg);
 
-        normalmap::NormalMapRendererPtr normalMapRendererPtr =
-                std::make_shared<normalmap::NormalMapRenderer>(int(m_pHeightMap->Width()));
-        normalMapRendererPtr->render(m_pHeightMap, m_pProps->Get<float>("NormalStrength"));
-        m_pNormalMap = normalMapRendererPtr->getNormalMap();
+        const int size = int(m_pHeightMap->Width());
+        const auto strength = m_pProps->Get<float>("NormalStrength");
+        const auto scaleY = m_pProps->Get<float>("ScaleY");
 
-        splatmap::SplatMapRendererPtr splatMapRendererPtr =
-                std::make_shared<splatmap::SplatMapRenderer>(int(m_pHeightMap->Width()));
-        splatMapRendererPtr->render(m_pHeightMap, m_pProps->Get<float>("ScaleY"), m_Biomes);
-        m_pSplatMap = splatMapRendererPtr->getSplatMap();
-        m_pSplatImg = splatMapRendererPtr->getSplatData();
+        normalmap::NormalMapBuilder NMBuilder;
+        NMBuilder.Create(m_pHeightMap, size, strength, m_pNormalMap);
+
+        splatmap::SplatMapBuilder SMBuilder;
+        SMBuilder.Create(m_pHeightMap, size, scaleY, m_Biomes, m_pSplatMap, m_pSplatImg);
     }
 
     void Terrain::PopulateBiomeWithObjects(BiomePtr& biomePtr, const std::string& biomePrefix) {
@@ -236,7 +233,7 @@ namespace mod::terrain {
                 staticObjectPtr->WorldTransform().Scale() = glm::vec3(kScale, kScale, kScale);
                 staticObjectPtr->Init();
 
-                biomePtr->addObject(staticObjectPtr);
+                biomePtr->Objects().emplace_back(std::move(staticObjectPtr));
             } catch (std::invalid_argument& e) {
                 break;
             }

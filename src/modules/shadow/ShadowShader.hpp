@@ -14,7 +14,7 @@
 #include <memory>
 
 namespace mod::shadow {
-    class ShadowShader : public vd::gl::Shader, public vd::injector::Injectable {
+    class ShadowShader : public vd::gl::IEntityShader, public vd::injector::Injectable {
     public:
         ShadowShader();
         ~ShadowShader();

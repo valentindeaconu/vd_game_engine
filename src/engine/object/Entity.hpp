@@ -28,13 +28,10 @@ namespace vd::object {
         virtual void CleanUp();
 
         math::Transform& LocalTransform();
-
         math::Transform& WorldTransform();
 
         model::MeshPtrVec& Meshes();
-
         gl::BufferPtrVec& Buffers();
-
         math::Bounds3Vec& BoundingBoxes();
     protected:
         void SetBufferGenerationStrategy(const BufferGenerationStrategy& strategy);

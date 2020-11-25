@@ -16,7 +16,7 @@ namespace mod::terrain {
     class TerrainRenderer : public vd::component::IRenderer {
     public:
         TerrainRenderer(TerrainPtr terrainPtr,
-                        vd::gl::ShaderPtr shaderPtr,
+                        vd::gl::EntityShaderPtr shaderPtr,
                         vd::Consumer beforeExecution = vd::g_kEmptyConsumer,
                         vd::Consumer afterExecution = vd::g_kEmptyConsumer);
         ~TerrainRenderer();

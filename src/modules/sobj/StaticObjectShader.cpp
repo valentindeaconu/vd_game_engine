@@ -3,7 +3,7 @@
 namespace mod::sobj {
 
     StaticObjectShader::StaticObjectShader()
-        : vd::gl::Shader()
+        : vd::gl::IEntityShader()
     {
         std::string vsSource;
         vd::loader::ShaderLoader::Load("./resources/shaders/entity/entity_VS.glsl", vsSource);

@@ -189,14 +189,10 @@ add_executable(vd_game_engine
         src/modules/terrain/Biome.hpp
         src/modules/terrain/TerrainRenderer.cpp
         src/modules/terrain/TerrainRenderer.hpp
-        src/modules/terrain/normalmap/NormalMapShader.cpp
-        src/modules/terrain/normalmap/NormalMapShader.hpp
-        src/modules/terrain/normalmap/NormalMapRenderer.cpp
-        src/modules/terrain/normalmap/NormalMapRenderer.hpp
-        src/modules/terrain/splatmap/SplatMapRenderer.cpp
-        src/modules/terrain/splatmap/SplatMapRenderer.hpp
-        src/modules/terrain/splatmap/SplatMapShader.cpp
-        src/modules/terrain/splatmap/SplatMapShader.hpp
+        src/modules/terrain/normalmap/NormalMapBuilder.cpp
+        src/modules/terrain/normalmap/NormalMapBuilder.hpp
+        src/modules/terrain/splatmap/SplatMapBuilder.cpp
+        src/modules/terrain/splatmap/SplatMapBuilder.hpp
         src/modules/terrain/TerrainFactory.cpp
         src/modules/terrain/TerrainFactory.hpp
         src/modules/water/Water.cpp

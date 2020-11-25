@@ -18,7 +18,7 @@ namespace mod::sky {
     class SkyRenderer : public vd::component::IRenderer, public vd::injector::Injectable {
     public:
         SkyRenderer(SkyPtr pSky,
-                    vd::gl::ShaderPtr pShader,
+                    vd::gl::EntityShaderPtr pShader,
                     vd::Consumer beforeExecution = vd::g_kEmptyConsumer,
                     vd::Consumer afterExecution = vd::g_kEmptyConsumer);
         ~SkyRenderer();

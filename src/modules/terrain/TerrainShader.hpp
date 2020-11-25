@@ -22,7 +22,7 @@
 #include "Terrain.hpp"
 
 namespace mod::terrain {
-    class TerrainShader : public vd::gl::Shader, public vd::injector::Injectable {
+    class TerrainShader : public vd::gl::IEntityShader, public vd::injector::Injectable {
     public:
         TerrainShader();
         ~TerrainShader();

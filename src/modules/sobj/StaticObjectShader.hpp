@@ -16,7 +16,7 @@
 #include <engine/light/LightManager.hpp>
 
 namespace mod::sobj {
-    class StaticObjectShader : public vd::gl::Shader, public vd::injector::Injectable {
+    class StaticObjectShader : public vd::gl::IEntityShader, public vd::injector::Injectable {
     public:
         StaticObjectShader();
         ~StaticObjectShader();

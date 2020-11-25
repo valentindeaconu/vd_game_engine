@@ -7,7 +7,7 @@
 namespace mod::water {
 
     WaterShader::WaterShader()
-        : vd::gl::Shader()
+        : vd::gl::IEntityShader()
     {
         std::string vsSource;
         vd::loader::ShaderLoader::Load("./resources/shaders/water/water_VS.glsl", vsSource);

@@ -2,7 +2,7 @@
 
 namespace mod::sobj {
     StaticObjectRenderer::StaticObjectRenderer(StaticObjectPlacerPtr staticObjectPlacerPtr,
-                                               vd::gl::ShaderPtr shaderPtr,
+                                               vd::gl::EntityShaderPtr shaderPtr,
                                                vd::Consumer beforeExecution,
                                                vd::Consumer afterExecution)
         : IRenderer(std::move(shaderPtr), std::move(beforeExecution), std::move(afterExecution))
@@ -39,7 +39,7 @@ namespace mod::sobj {
 
         Prepare();
 
-        vd::gl::ShaderPtr shaderPtr = m_pShader;
+        vd::gl::EntityShaderPtr shaderPtr = m_pShader;
         if (renderingPass == "Shadow") {
             shaderPtr = vd::ObjectOfType<mod::shadow::ShadowShader>::Find();
         }
@@ -71,8 +71,8 @@ namespace mod::sobj {
         const auto& biomeAtlas = m_StaticObjectPlacerPtr->getTerrain()->Biomes();
 
         for (const auto& biome : biomeAtlas) {
-            if (!biome->getObjects().empty()) {
-                for (const auto& object : biome->getObjects()) {
+            if (!biome->Objects().empty()) {
+                for (const auto& object : biome->Objects()) {
                     object->CleanUp();
                 }
             }

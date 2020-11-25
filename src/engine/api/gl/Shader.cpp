@@ -216,6 +216,78 @@ namespace vd::gl {
         }
     }
 
+    void Shader::PushUniform(const std::string& uniformName, int value) {
+        auto it = m_UniformMap.find(uniformName);
+        if (it == m_UniformMap.end()) {
+            AddUniform(uniformName);
+        }
+
+        glUniform1i(m_UniformMap[uniformName], value);
+    }
+
+    void Shader::PushUniform(const std::string& uniformName, float value) {
+        auto it = m_UniformMap.find(uniformName);
+        if (it == m_UniformMap.end()) {
+            AddUniform(uniformName);
+        }
+
+        glUniform1f(m_UniformMap[uniformName], value);
+    }
+
+    void Shader::PushUniform(const std::string& uniformName, const glm::vec2& value) {
+        auto it = m_UniformMap.find(uniformName);
+        if (it == m_UniformMap.end()) {
+            AddUniform(uniformName);
+        }
+
+        glUniform2f(m_UniformMap[uniformName], value.x, value.y);
+    }
+
+    void Shader::PushUniform(const std::string& uniformName, const glm::vec3& value) {
+        auto it = m_UniformMap.find(uniformName);
+        if (it == m_UniformMap.end()) {
+            AddUniform(uniformName);
+        }
+
+        glUniform3f(m_UniformMap[uniformName], value.x, value.y, value.z);
+    }
+
+    void Shader::PushUniform(const std::string& uniformName, const glm::vec4& value) {
+        auto it = m_UniformMap.find(uniformName);
+        if (it == m_UniformMap.end()) {
+            AddUniform(uniformName);
+        }
+
+        glUniform4f(m_UniformMap[uniformName], value.x, value.y, value.z, value.w);
+    }
+
+    void Shader::PushUniform(const std::string& uniformName, const glm::quat& value) {
+        auto it = m_UniformMap.find(uniformName);
+        if (it == m_UniformMap.end()) {
+            AddUniform(uniformName);
+        }
+
+        glUniform4f(m_UniformMap[uniformName], value.x, value.y, value.z, value.w);
+    }
+
+    void Shader::PushUniform(const std::string& uniformName, const glm::mat3& value) {
+        auto it = m_UniformMap.find(uniformName);
+        if (it == m_UniformMap.end()) {
+            AddUniform(uniformName);
+        }
+
+        glUniformMatrix3fv(m_UniformMap[uniformName], 1, false, glm::value_ptr(value));
+    }
+
+    void Shader::PushUniform(const std::string& uniformName, const glm::mat4& value) {
+        auto it = m_UniformMap.find(uniformName);
+        if (it == m_UniformMap.end()) {
+            AddUniform(uniformName);
+        }
+
+        glUniformMatrix4fv(m_UniformMap[uniformName], 1, false, glm::value_ptr(value));
+    }
+
     void Shader::BindUniformBlock(const std::string& uniformBlockName, uint32_t uniformBlockBinding) const {
         auto it = m_UniformMap.find(uniformBlockName);
         if (it != m_UniformMap.end()) {

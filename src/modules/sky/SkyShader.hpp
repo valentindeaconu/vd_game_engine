@@ -15,7 +15,7 @@
 #include <engine/window/Window.hpp>
 
 namespace mod::sky {
-    class SkyShader : public vd::gl::Shader, public vd::injector::Injectable {
+    class SkyShader : public vd::gl::IEntityShader, public vd::injector::Injectable {
     public:
         SkyShader();
         ~SkyShader();

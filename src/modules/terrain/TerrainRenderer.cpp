@@ -7,7 +7,7 @@
 namespace mod::terrain {
 
     TerrainRenderer::TerrainRenderer(TerrainPtr terrainPtr,
-                                     vd::gl::ShaderPtr shaderPtr,
+                                     vd::gl::EntityShaderPtr shaderPtr,
                                      vd::Consumer beforeExecution,
                                      vd::Consumer afterExecution)
         : IRenderer(std::move(shaderPtr), std::move(beforeExecution), std::move(afterExecution))
@@ -60,7 +60,7 @@ namespace mod::terrain {
                 m_pShader->SetUniform("localModel", nodePtr->GetTransform().Get());
                 m_pShader->SetUniform("tessFactor", nodePtr->GetTessFactors());
 
-                m_pShader->UpdateUniforms(m_pTerrain);
+                m_pShader->UpdateUniforms(m_pTerrain, 0);
 
                 vd::gl::BufferPtr& buffer = m_pTerrain->Buffers().front();
                 buffer->Render();

@@ -18,8 +18,8 @@
 
 #include "Biome.hpp"
 #include "TerrainNode.hpp"
-#include "normalmap/NormalMapRenderer.hpp"
-#include "splatmap/SplatMapRenderer.hpp"
+#include "normalmap/NormalMapBuilder.hpp"
+#include "splatmap/SplatMapBuilder.hpp"
 
 namespace mod::terrain {
     class Terrain : public vd::object::Entity, public vd::injector::Injectable {

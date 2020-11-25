@@ -27,13 +27,21 @@ namespace mod::gui {
                   glm::vec2(-0.75f, -0.75f),
                   glm::vec2(0.250f, 0.250f)); */
 
+        /* /// Terrain Height Map
+        CreateGui(pEngine,
+                  [t = vd::ObjectOfType<mod::terrain::Terrain>::Find()]() {
+                      return t->HeightMap();
+                  },
+                  glm::vec2(0.75f, 0.75f),
+                  glm::vec2(0.250f, 0.250f)); */
+
         /// Terrain Normal Map
-        /* CreateGui(pEngine,
+        CreateGui(pEngine,
                   [t = vd::ObjectOfType<mod::terrain::Terrain>::Find()]() {
                       return t->NormalMap();
                   },
                   glm::vec2(0.75f, -0.75f),
-                  glm::vec2(0.250f, 0.250f)); */
+                  glm::vec2(0.250f, 0.250f));
     }
 
     void GuiFactory::CreateGui(const vd::EnginePtr& pEngine,

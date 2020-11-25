@@ -6,7 +6,7 @@
 
 namespace mod::player {
     PlayerShader::PlayerShader()
-        : vd::gl::Shader()
+        : vd::gl::IEntityShader()
     {
         std::string vsSource;
         vd::loader::ShaderLoader::Load("./resources/shaders/entity/entity_VS.glsl", vsSource);

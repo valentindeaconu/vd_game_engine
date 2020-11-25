@@ -13,7 +13,7 @@ namespace vd::component {
     public:
         static const vd::datastruct::Observable::priority_t kDefaultPriority = 200;
 
-        explicit IRenderer(gl::ShaderPtr shaderPtr,
+        explicit IRenderer(gl::EntityShaderPtr shaderPtr,
                   Consumer beforeExecution = g_kEmptyConsumer,
                   Consumer afterExecution = g_kEmptyConsumer);
         ~IRenderer();
@@ -21,7 +21,7 @@ namespace vd::component {
         void Prepare();
         void Finish();
 
-        gl::ShaderPtr& Shader();
+        gl::EntityShaderPtr& Shader();
 
     protected:
         virtual bool IsReady();
@@ -29,7 +29,7 @@ namespace vd::component {
         vd::Consumer m_BeforeExecution;
         vd::Consumer m_AfterExecution;
 
-        gl::ShaderPtr m_pShader;
+        gl::EntityShaderPtr m_pShader;
     };
     typedef std::shared_ptr<IRenderer>	RendererPtr;
 }

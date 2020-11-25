@@ -41,7 +41,7 @@ namespace mod::sobj
 
                 auto biomesAtLocation = terrainPtr->BiomesAt(placementInfo.location.x, placementInfo.location.z);
                 for (auto& biomeAtLocation : biomesAtLocation) {
-                    if (!biomeAtLocation->getObjects().empty()) {
+                    if (!biomeAtLocation->Objects().empty()) {
                         foundSomethingToPlace = true;
                         break;
                     }
@@ -53,7 +53,7 @@ namespace mod::sobj
             std::vector<StaticObjectPtr> objectsAtLocation;
             auto biomesAtLocation = terrainPtr->BiomesAt(placementInfo.location.x, placementInfo.location.z);
             for (auto& biomeAtLocation : biomesAtLocation) {
-                auto& objects = biomeAtLocation->getObjects();
+                auto& objects = biomeAtLocation->Objects();
                 objectsAtLocation.insert(objectsAtLocation.begin(), objects.begin(), objects.end());
             }
 

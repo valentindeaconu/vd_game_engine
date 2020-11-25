@@ -18,7 +18,7 @@
 #include <memory>
 
 namespace mod::water {
-    class WaterShader : public vd::gl::Shader, public vd::injector::Injectable {
+    class WaterShader : public vd::gl::IEntityShader, public vd::injector::Injectable {
     public:
         WaterShader();
         ~WaterShader();
