@@ -17,6 +17,8 @@
 #include <vector>
 #include <cmath>
 
+#include <modules/props/Prop.hpp>
+
 #include "Biome.hpp"
 #include "TerrainNode.hpp"
 #include "normalmap/NormalMapBuilder.hpp"
@@ -50,12 +52,12 @@ namespace mod::terrain {
         void CreateProps();
         void PopulateBiomes();
         void ComputeMaps();
-        void PopulateBiomeWithObjects(BiomePtr& biomePtr, const std::string& biomePrefix);
+        void PopulateBiomeWithProps(BiomePtr& pBiome, const std::string& biomePrefix);
 
         void GeneratePatch();
         void PopulateTree(const TerrainNode::ptr_type_t& root);
 
-        vd::property::PropertiesPtr m_pProps;
+        vd::property::PropertiesPtr m_pProperties;
 
         // Camera required for update optimization
         vd::camera::CameraPtr m_pCamera;

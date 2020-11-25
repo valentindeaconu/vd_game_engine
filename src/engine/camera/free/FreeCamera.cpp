@@ -11,11 +11,11 @@ namespace vd::camera::impl {
         , m_Pitch(0.0f)
         , m_Yaw(0.0f)
     {
-        auto pProps = vd::loader::PropertiesLoader::Load(propsFilePath);
+        auto pProperties = vd::loader::PropertiesLoader::Load(propsFilePath);
 
-        m_Position = pProps->Get<glm::vec3>("Camera.Position");
-        m_Target = pProps->Get<glm::vec3>("Camera.Target");
-        m_Speed = pProps->Get<float>("Camera.Speed");
+        m_Position = pProperties->Get<glm::vec3>("Camera.Position");
+        m_Target = pProperties->Get<glm::vec3>("Camera.Target");
+        m_Speed = pProperties->Get<float>("Camera.Speed");
 
         m_Forward = glm::normalize(m_Target - m_Position);
         UpdatePositionVectors();

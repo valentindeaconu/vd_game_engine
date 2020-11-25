@@ -10,7 +10,7 @@
 #include <memory>
 #include <string>
 
-#include <modules/sobj/StaticObject.hpp>
+#include <modules/props/Prop.hpp>
 
 namespace mod::terrain {
     class Biome {
@@ -26,7 +26,7 @@ namespace mod::terrain {
 
         vd::model::Material& Material();
 
-        std::vector<sobj::StaticObjectPtr>& Objects();
+        std::vector<props::PropPtr>& Props();
     private:
         float m_MinimumHeight;
         float m_MaximumHeight;
@@ -35,8 +35,7 @@ namespace mod::terrain {
 
         vd::model::Material m_Material;
 
-        // TODO: Not like this
-        std::vector<sobj::StaticObjectPtr> m_Objects;
+        std::vector<props::PropPtr> m_Props;
     };
     typedef std::shared_ptr<Biome>  BiomePtr;
     typedef std::vector<BiomePtr>   BiomePtrVec;

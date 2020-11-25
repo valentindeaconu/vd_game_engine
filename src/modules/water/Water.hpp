@@ -53,7 +53,7 @@ namespace mod::water {
 
         std::unordered_map<std::string, vd::model::Material> m_PacksMap;
 
-        vd::property::PropertiesPtr m_pProps;
+        vd::property::PropertiesPtr m_pProperties;
 
         vd::gl::FrameBufferPtr m_pReflectionFBO;
         vd::gl::FrameBufferPtr m_pRefractionFBO;

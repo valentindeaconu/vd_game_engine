@@ -32,7 +32,7 @@ include_directories(src/modules/gui)
 include_directories(src/modules/player)
 include_directories(src/modules/shadow)
 include_directories(src/modules/sky)
-include_directories(src/modules/sobj)
+include_directories(src/modules/props)
 include_directories(src/modules/terrain)
 include_directories(src/modules/water)
 
@@ -179,16 +179,16 @@ add_executable(vd_game_engine
         src/modules/sky/SkyRenderer.hpp
         src/modules/sky/SkyFactory.cpp
         src/modules/sky/SkyFactory.hpp
-        src/modules/sobj/StaticObject.cpp
-        src/modules/sobj/StaticObject.hpp
-        src/modules/sobj/StaticObjectPlacer.cpp
-        src/modules/sobj/StaticObjectPlacer.hpp
-        src/modules/sobj/StaticObjectRenderer.cpp
-        src/modules/sobj/StaticObjectRenderer.hpp
-        src/modules/sobj/StaticObjectShader.cpp
-        src/modules/sobj/StaticObjectShader.hpp
-        src/modules/sobj/StaticObjectFactory.cpp
-        src/modules/sobj/StaticObjectFactory.hpp
+        src/modules/props/Prop.cpp
+        src/modules/props/Prop.hpp
+        src/modules/props/PropsRenderer.cpp
+        src/modules/props/PropsRenderer.hpp
+        src/modules/props/PropShader.cpp
+        src/modules/props/PropShader.hpp
+        src/modules/props/PropGenerator.cpp
+        src/modules/props/PropGenerator.hpp
+        src/modules/props/PropsFactory.cpp
+        src/modules/props/PropsFactory.hpp
         src/modules/terrain/TerrainShader.cpp
         src/modules/terrain/TerrainShader.hpp
         src/modules/terrain/Terrain.cpp

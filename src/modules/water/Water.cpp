@@ -6,7 +6,7 @@
 
 namespace mod::water {
     Water::Water(const std::string& propsFilePath)
-        : m_pProps(vd::loader::PropertiesLoader::Load(propsFilePath))
+        : m_pProperties(vd::loader::PropertiesLoader::Load(propsFilePath))
         , m_MoveFactor(0.0f)
         , m_pReflectionFBO(std::make_shared<vd::gl::FrameBuffer>())
         , m_pRefractionFBO(std::make_shared<vd::gl::FrameBuffer>())
@@ -27,13 +27,13 @@ namespace mod::water {
 
         GeneratePatch();
 
-        m_pReflectionFBO->Allocate(m_pProps->Get<int>("Reflection.Width"),
-                                   m_pProps->Get<int>("Reflection.Height"),
+        m_pReflectionFBO->Allocate(m_pProperties->Get<int>("Reflection.Width"),
+                                   m_pProperties->Get<int>("Reflection.Height"),
                                    true,
                                    vd::gl::DepthAttachment::eDepthBuffer);
 
-        m_pRefractionFBO->Allocate(m_pProps->Get<int>("Refraction.Width"),
-                                   m_pProps->Get<int>("Refraction.Height"),
+        m_pRefractionFBO->Allocate(m_pProperties->Get<int>("Refraction.Width"),
+                                   m_pProperties->Get<int>("Refraction.Height"),
                                    true,
                                    vd::gl::DepthAttachment::eDepthTexture);
 
@@ -41,7 +41,7 @@ namespace mod::water {
     }
 
     void Water::Update() {
-        const auto waveSpeed = m_pProps->Get<float>("Wave.Speed");
+        const auto waveSpeed = m_pProperties->Get<float>("Wave.Speed");
         m_MoveFactor += (waveSpeed * m_pContext->FrameTime());
         if (m_MoveFactor >= 1.0f) {
             m_MoveFactor -= 1.0f;
@@ -56,7 +56,7 @@ namespace mod::water {
     }
 
     const vd::property::PropertiesPtr& Water::Properties() const {
-        return m_pProps;
+        return m_pProperties;
     }
 
     const vd::model::Material& Water::Material() const {
@@ -92,15 +92,15 @@ namespace mod::water {
 
                 vd::model::Material material;
 
-                material.name = m_pProps->Get<std::string>(prefix + ".Name");
+                material.name = m_pProperties->Get<std::string>(prefix + ".Name");
                 material.displaceMap =
-                        vd::service::TextureService::CreateFromFile(m_pProps->Get<std::string>(prefix + ".DuDv"));
+                        vd::service::TextureService::CreateFromFile(m_pProperties->Get<std::string>(prefix + ".DuDv"));
                 material.displaceMap->Bind();
                 material.displaceMap->BilinearFilter();
                 material.displaceMap->Unbind();
 
                 material.normalMap =
-                        vd::service::TextureService::CreateFromFile(m_pProps->Get<std::string>(prefix + ".Normal"));
+                        vd::service::TextureService::CreateFromFile(m_pProperties->Get<std::string>(prefix + ".Normal"));
                 material.normalMap->Bind();
                 material.normalMap->BilinearFilter();
                 material.normalMap->Unbind();

@@ -6,23 +6,23 @@
 
 namespace vd::light {
     LightManager::LightManager(const std::string& propsFilePath) {
-        auto pProps = vd::loader::PropertiesLoader::Load(propsFilePath);
+        auto pProperties = vd::loader::PropertiesLoader::Load(propsFilePath);
 
         m_pSun = std::make_shared<Light>(
                 LightType::eDirectional,
-                pProps->Get<glm::vec3>("Sun.Position"),
-                pProps->Get<glm::vec3>("Sun.Color"),
+                pProperties->Get<glm::vec3>("Sun.Position"),
+                pProperties->Get<glm::vec3>("Sun.Color"),
                 glm::vec3(0.0f),
-                pProps->Get<float>("Sun.AmbientStrength"),
-                pProps->Get<float>("Sun.SpecularStrength"),
-                pProps->Get<float>("Sun.Shininess")
+                pProperties->Get<float>("Sun.AmbientStrength"),
+                pProperties->Get<float>("Sun.SpecularStrength"),
+                pProperties->Get<float>("Sun.Shininess")
         );
 
         for (int i = 0; ; ++i) {
             const std::string prefix = "Light." + std::to_string(i);
             try {
                 LightType type = eDirectional;
-                auto type_str = pProps->Get<std::string>(prefix + ".Type");
+                auto type_str = pProperties->Get<std::string>(prefix + ".Type");
                 if (type_str == "point") {
                     type = ePoint;
                 } else if (type_str == "spot") {
@@ -30,12 +30,12 @@ namespace vd::light {
                 }
 
                 m_Lights.emplace_back(std::make_shared<Light>(type,
-                                                              pProps->Get<glm::vec3>(prefix + ".Position"),
-                                                              pProps->Get<glm::vec3>(prefix + ".Color"),
-                                                              pProps->Get<glm::vec3>(prefix + ".Attenuation"),
-                                                              pProps->Get<float>(prefix + ".AmbientStrength"),
-                                                              pProps->Get<float>(prefix + ".SpecularStrength"),
-                                                              pProps->Get<float>(prefix + ".Shininess")
+                                                              pProperties->Get<glm::vec3>(prefix + ".Position"),
+                                                              pProperties->Get<glm::vec3>(prefix + ".Color"),
+                                                              pProperties->Get<glm::vec3>(prefix + ".Attenuation"),
+                                                              pProperties->Get<float>(prefix + ".AmbientStrength"),
+                                                              pProperties->Get<float>(prefix + ".SpecularStrength"),
+                                                              pProperties->Get<float>(prefix + ".Shininess")
                 ));
             } catch (std::invalid_argument& e) {
                 break;

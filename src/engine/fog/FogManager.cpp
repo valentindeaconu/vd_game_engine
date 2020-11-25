@@ -7,13 +7,13 @@
 namespace vd::fog {
 
     FogManager::FogManager(const std::string& propsFilePath) {
-        auto pProps = vd::loader::PropertiesLoader::Load(propsFilePath);
+        auto pProperties = vd::loader::PropertiesLoader::Load(propsFilePath);
 
         m_pFog = std::make_shared<fog::Fog>(
-                pProps->Get<float>("Fog.Density"),
-                pProps->Get<float>("Fog.SkyDensity"),
-                pProps->Get<float>("Fog.Gradient"),
-                pProps->Get<glm::vec3>("Fog.Color")
+                pProperties->Get<float>("Fog.Density"),
+                pProperties->Get<float>("Fog.SkyDensity"),
+                pProperties->Get<float>("Fog.Gradient"),
+                pProperties->Get<glm::vec3>("Fog.Color")
         );
     }
 

@@ -1,8 +1,8 @@
-#include "StaticObjectShader.hpp"
+#include "PropShader.hpp"
 
-namespace mod::sobj {
+namespace mod::props {
 
-    StaticObjectShader::StaticObjectShader() : vd::component::IEntityShader() {
+    PropShader::PropShader() : vd::component::IEntityShader() {
         std::string vsSource;
         vd::loader::ShaderLoader::Load("./resources/shaders/entity/entity_VS.glsl", vsSource);
         AddShader(vsSource, vd::gl::Shader::eVertexShader);
@@ -14,9 +14,9 @@ namespace mod::sobj {
         Compile();
     }
 
-    StaticObjectShader::~StaticObjectShader() = default;
+    PropShader::~PropShader() = default;
 
-    void StaticObjectShader::Link() {
+    void PropShader::Link() {
         m_pContext = vd::ObjectOfType<vd::kernel::Context>::Find();
         m_pCamera = vd::ObjectOfType<vd::camera::Camera>::Find();
         m_pWindow = vd::ObjectOfType<vd::window::Window>::Find();
@@ -25,7 +25,7 @@ namespace mod::sobj {
         m_pFogManager = vd::ObjectOfType<vd::fog::FogManager>::Find();
     }
 
-    void StaticObjectShader::AddUniforms() {
+    void PropShader::AddUniforms() {
         AddUniform("model");
         AddUniform("view");
         AddUniform("projection");
@@ -34,22 +34,20 @@ namespace mod::sobj {
         AddUniform("specularMap");
 
         m_pFogManager->AddUniforms(shared_from_this());
-
         m_pLightManager->AddUniforms(shared_from_this());
 
         AddUniform("clipPlane");
     }
 
-    void StaticObjectShader::InitUniforms(vd::object::EntityPtr pEntity) {
+    void PropShader::InitUniforms(vd::object::EntityPtr pEntity) {
         AddUniforms();
 
         m_pFogManager->SetUniforms(shared_from_this());
-
         m_pLightManager->SetUniforms(shared_from_this());
     }
 
 
-    void StaticObjectShader::UpdateUniforms(vd::object::EntityPtr pEntity, uint32_t meshIndex) {
+    void PropShader::UpdateUniforms(vd::object::EntityPtr pEntity, uint32_t meshIndex) {
         SetUniform("model", pEntity->WorldTransform().Get());
 
         SetUniform("view", m_pCamera->ViewMatrix());

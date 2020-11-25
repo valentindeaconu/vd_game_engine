@@ -21,6 +21,7 @@ namespace mod::gui {
         m_pGuiQuad->Init();
 
         m_pShader->Bind();
+
         m_pShader->InitUniforms(m_pGuiQuad);
     }
 

@@ -8,12 +8,12 @@ namespace mod::shadow {
     ShadowManager::ShadowManager(const std::string& propsFilePath)
         : m_pFrameBuffer(nullptr)
     {
-        auto pProps = vd::loader::PropertiesLoader::Load(propsFilePath);
+        auto pProperties = vd::loader::PropertiesLoader::Load(propsFilePath);
 
-        m_MapSize = pProps->Get<int>("Shadow.MapSize");
-        m_Distance = pProps->Get<int>("Shadow.Distance");
-        m_TransitionDistance = pProps->Get<int>("Shadow.TransitionDistance");
-        m_Offset = pProps->Get<float>("Shadow.Offset");
+        m_MapSize = pProperties->Get<int>("Shadow.MapSize");
+        m_Distance = pProperties->Get<int>("Shadow.Distance");
+        m_TransitionDistance = pProperties->Get<int>("Shadow.TransitionDistance");
+        m_Offset = pProperties->Get<float>("Shadow.Offset");
 
         m_pView = std::make_shared<glm::mat4>(1.0f);
         m_pProjection = std::make_shared<glm::mat4>(1.0f);

@@ -42,8 +42,8 @@ namespace mod::terrain {
         return m_Material;
     }
 
-    std::vector<sobj::StaticObjectPtr>& Biome::Objects() {
-        return m_Objects;
+    std::vector<props::PropPtr>& Biome::Props() {
+        return m_Props;
     }
 
 }
