@@ -45,7 +45,7 @@ namespace mod::terrain {
         TerrainNode(const TerrainNode* parent,
                     const glm::vec2& topLeft,
                     const glm::vec2& bottomRight,
-                    const WorldCoordinatesConvertor& worldCoordinatesConvertor,
+                    WorldCoordinatesConvertor worldCoordinatesConvertor,
                     int maxLevel,
                     const std::vector<int>* lodRangesPtr,
                     int level,
@@ -55,17 +55,21 @@ namespace mod::terrain {
         void UpdateNeighbours();
 
         void Populate() override;
-        
-        [[nodiscard]] const glm::vec2& GetTopLeft() const;
 
-        [[nodiscard]] const vd::math::Transform& GetTransform() const;
+        // [[nodiscard]] const vd::math::Bounds2& Bounds() const;
+        [[nodiscard]] const vd::math::Bounds3& Bounds() const;
 
-        [[nodiscard]] const PointVec& GetEdgeMiddles() const;
+        [[nodiscard]] const glm::vec2& TopLeft() const;
 
-        [[nodiscard]] const glm::vec4& GetTessFactors() const;
+        [[nodiscard]] const vd::math::Transform& Transform() const;
+
+        [[nodiscard]] const PointVec& EdgeMiddles() const;
+
+        [[nodiscard]] const glm::vec4& TessFactors() const;
     private:
 
         void ComputeEdgeMiddles();
+        void ComputeBounds();
         void ComputeNeighbours();
 
         enum MatchingResult {
@@ -88,6 +92,9 @@ namespace mod::terrain {
         const glm::vec2 m_kTopLeft;
         const glm::vec2 m_kBottomRight;
         const glm::vec2 m_kCenter;
+
+        //vd::math::Bounds2 m_Bounds;
+        vd::math::Bounds3 m_Bounds;
 
         PointVec m_EdgeMid;
 

@@ -51,8 +51,8 @@ namespace vd::math {
         VertexVec& Vertices();
         [[nodiscard]] const VertexVec& Vertices() const;
     private:
-        PlaneVec m_Planes;
-        VertexVec m_Vertices;
+        PlaneVec    m_Planes;
+        VertexVec   m_Vertices;
     };
     typedef std::shared_ptr<Frustum>    FrustumPtr;
 }

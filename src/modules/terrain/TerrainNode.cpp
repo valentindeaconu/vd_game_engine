@@ -4,11 +4,13 @@
 
 #include "TerrainNode.hpp"
 
+#include <utility>
+
 namespace mod::terrain {
     TerrainNode::TerrainNode(const TerrainNode* parent,
                              const glm::vec2& topLeft,
                              const glm::vec2& bottomRight,
-                             const WorldCoordinatesConvertor& worldCoordinatesConvertor,
+                             WorldCoordinatesConvertor worldCoordinatesConvertor,
                              int maxLevel,
                              const std::vector<int>* lodRangesPtr,
                              int level,
@@ -16,7 +18,7 @@ namespace mod::terrain {
             : vd::datastruct::Quadtree(parent, level, nodeIndex)
             , m_kTopLeft(topLeft)
             , m_kBottomRight(bottomRight)
-            , m_WorldCoordinatesConvertor(worldCoordinatesConvertor)
+            , m_WorldCoordinatesConvertor(std::move(worldCoordinatesConvertor))
             , m_kMaxLevelOfDetail(maxLevel)
             , m_kLevelOfDetailRangesPtr(lodRangesPtr)
             , m_kCenter((topLeft.x + bottomRight.x) / 2.0f, (topLeft.y + bottomRight.y) / 2.0f)
@@ -28,6 +30,7 @@ namespace mod::terrain {
         m_Transform.Scale() = glm::vec3(bottomRight.x - topLeft.x, 1.0f, bottomRight.x - topLeft.x);
 
         ComputeEdgeMiddles();
+        ComputeBounds();
     }
 
     void TerrainNode::Update(const vd::camera::CameraPtr& cameraPtr) {
@@ -92,19 +95,23 @@ namespace mod::terrain {
         }
     }
 
-    const glm::vec2& TerrainNode::GetTopLeft() const {
+    const vd::math::Bounds3& TerrainNode::Bounds() const {
+        return m_Bounds;
+    }
+
+    const glm::vec2& TerrainNode::TopLeft() const {
         return m_kTopLeft;
     }
 
-    const vd::math::Transform& TerrainNode::GetTransform() const {
+    const vd::math::Transform& TerrainNode::Transform() const {
         return m_Transform;
     }
 
-    const TerrainNode::PointVec& TerrainNode::GetEdgeMiddles() const {
+    const TerrainNode::PointVec& TerrainNode::EdgeMiddles() const {
         return m_EdgeMid;
     }
 
-    const glm::vec4& TerrainNode::GetTessFactors() const {
+    const glm::vec4& TerrainNode::TessFactors() const {
         return m_TessFactor;
     }
 
@@ -115,6 +122,44 @@ namespace mod::terrain {
         m_EdgeMid[eLeft] = m_WorldCoordinatesConvertor(m_kTopLeft.x, m_kCenter.y);
     }
 
+    void TerrainNode::ComputeBounds() {
+        glm::mat4 localTransform = m_Transform.Get();
+
+        glm::vec4 localTL = glm::vec4(m_kTopLeft.x, 0.0f, m_kTopLeft.y, 1.0f);
+        glm::vec4 localBR = glm::vec4(m_kBottomRight.x, 0.0f, m_kBottomRight.y, 1.0f);
+
+        glm::vec3 worldTL = m_WorldCoordinatesConvertor(localTL.x, localTL.z);
+        glm::vec3 worldBR = m_WorldCoordinatesConvertor(localBR.x, localBR.z);
+
+        // glm::vec2 mn(std::min(worldTL.x, worldBR.x), std::min(worldTL.y, worldBR.y));
+        // glm::vec2 mx(std::max(worldTL.x, worldBR.x), std::max(worldTL.y, worldBR.y));
+
+        // m_Bounds = vd::math::Bounds2(mn, mx);
+
+        glm::vec3 mn, mx;
+
+        if (worldTL.x >= worldBR.x) {
+            mn.x = worldBR.x;
+            mx.x = worldTL.x;
+        } else {
+            mn.x = worldTL.x;
+            mx.x = worldBR.x;
+        }
+
+        if (worldTL.z >= worldBR.z) {
+            mn.z = worldBR.z;
+            mx.z = worldTL.z;
+        } else {
+            mn.z = worldTL.z;
+            mx.z = worldBR.z;
+        }
+
+        // TODO: Optimization: Implement 2D RMQ to query in O(1) min & max height for this patch
+        mn.y = 0.0f;
+        mx.y = 600.0f;
+
+        m_Bounds = vd::math::Bounds3(mn, mx);
+    }
 
     void TerrainNode::Populate() {
         if (!m_Leaf) {

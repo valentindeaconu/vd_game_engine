@@ -31,9 +31,14 @@ namespace vd::math {
         return m_Left == m_Right;
     }
 
-    template<typename T>
-    bool Bounds<T>::Valid() const {
-        return m_Left.x <= m_Right.x;
+    template<>
+    bool Bounds<glm::vec2>::Valid() const {
+        return m_Left.x <= m_Right.x && m_Left.y <= m_Right.y;
+    }
+
+    template<>
+    bool Bounds<glm::vec3>::Valid() const {
+        return m_Left.x <= m_Right.x && m_Left.y <= m_Right.y && m_Left.z <= m_Right.z;
     }
 
     template<typename T>
@@ -50,8 +55,7 @@ namespace vd::math {
 
     Bounds3::Bounds3(const glm::vec3& left, const glm::vec3&right) : Bounds(left, right) { }
 
-    Bounds3::Bounds3(const model::MeshPtr& meshPtr) : Bounds<glm::vec3>()
-    {
+    Bounds3::Bounds3(const model::MeshPtr& meshPtr) : Bounds<glm::vec3>() {
         WrapMesh(meshPtr);
     }
 

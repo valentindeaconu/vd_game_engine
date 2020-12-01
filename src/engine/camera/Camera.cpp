@@ -139,6 +139,14 @@ namespace vd::camera {
             }
         }
 
+        if (m_pEventHandler->KeyDown(GLFW_KEY_K)) {
+            const auto& p = m_pCameraWrapper->Position();
+
+            const auto str = "(" + std::to_string(p.x) + ", " + std::to_string(p.y) + ", " + std::to_string(p.z) + ")";
+
+            Logger::log("Camera Position: " + str);
+        }
+
         switch (m_CameraMode) {
             case eFree: UpdateFreeCamera(); break;
             case eFirstPerson: UpdateFirstPersonCamera(); break;

@@ -30,9 +30,9 @@ namespace mod::terrain {
 
         ComputeMaps();
 
-        auto convertToWorldCoords = [&](float x, float y) {
-            const auto h = m_pHeightImg->Get<float, vd::math::Interpolation::eBilinear>(glm::vec2(x, y));
-            return glm::vec3(WorldTransform() * glm::vec4(x, h, y, 1.0f));
+        auto convertToWorldCoords = [i = m_pHeightImg, t = WorldTransform().Get()](float x, float y) {
+            const auto h = i->Get<float, vd::math::Interpolation::eBilinear>(glm::vec2(x, y));
+            return glm::vec3(t * glm::vec4(x, h, y, 1.0f));
         };
 
         m_RootNode = std::make_shared<TerrainNode>(nullptr,
@@ -71,6 +71,7 @@ namespace mod::terrain {
 
         m_RootNode = nullptr;
 
+        // TODO: Remove this comments
         //for (auto& pBiome : m_Biomes) {
         //    for (auto& pProp : pBiome->Props()) {
         //        pProp->CleanUp();

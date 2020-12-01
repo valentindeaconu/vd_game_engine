@@ -35,7 +35,7 @@ namespace vd::culling {
 
     }
 
-    const vd::math::Frustum &FrustumCullingManager::Frustum() const {
+    const vd::math::Frustum& FrustumCullingManager::Frustum() const {
         return m_Frustum;
     }
 
@@ -124,4 +124,5 @@ namespace vd::culling {
         m_Far.height = m_Far.width / aspect;
         m_Near.height = m_Near.width / aspect;
     }
+
 }

@@ -157,7 +157,7 @@ namespace vd::window {
             vd::Logger::terminate(e.what(), 1);
         }
 
-        m_WindowPtr->NearPlane() = 0.1f;
+        m_WindowPtr->NearPlane() = 0.01f;
         m_WindowPtr->FarPlane() = 10000.0f;
         m_WindowPtr->FieldOfView() = 45.0f;
 

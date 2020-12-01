@@ -17,6 +17,10 @@ namespace mod::terrain {
 
     TerrainRenderer::~TerrainRenderer() = default;
 
+    void TerrainRenderer::Link() {
+        m_pFrustumCullingManager = vd::ObjectOfType<vd::culling::FrustumCullingManager>::Find();
+    }
+
     void TerrainRenderer::Init() {
         m_pTerrain->Init();
 
@@ -50,24 +54,28 @@ namespace mod::terrain {
         }
 
         Finish();
-    }
+     }
 
-    void TerrainRenderer::RenderNode(const TerrainNode::ptr_type_t& nodePtr) {
-        if (nodePtr != nullptr) {
-            if (nodePtr->Leaf()) {
-                m_pShader->Bind();
+    void TerrainRenderer::RenderNode(const TerrainNode::ptr_type_t& pNode) {
+        if (pNode != nullptr) {
+            using namespace vd::collision;
 
-                m_pShader->SetUniform("localModel", nodePtr->GetTransform().Get());
-                m_pShader->SetUniform("tessFactor", nodePtr->GetTessFactors());
+            if (Detector::Bounds3AgainstFrustum(pNode->Bounds(), m_pFrustumCullingManager->Frustum()) != eOutside) {
+                if (pNode->Leaf()) {
+                    m_pShader->Bind();
 
-                m_pShader->UpdateUniforms(m_pTerrain, 0);
+                    m_pShader->SetUniform("localModel", pNode->Transform().Get());
+                    m_pShader->SetUniform("tessFactor", pNode->TessFactors());
 
-                vd::gl::BufferPtr& buffer = m_pTerrain->Buffers().front();
-                buffer->Render();
-            } else {
-                const auto& children = nodePtr->Children();
-                for (const auto& child : children) {
-                    RenderNode(std::dynamic_pointer_cast<TerrainNode>(child));
+                    m_pShader->UpdateUniforms(m_pTerrain, 0);
+
+                    vd::gl::BufferPtr& buffer = m_pTerrain->Buffers().front();
+                    buffer->Render();
+                } else {
+                    const auto& children = pNode->Children();
+                    for (const auto& child : children) {
+                        RenderNode(std::dynamic_pointer_cast<TerrainNode>(child));
+                    }
                 }
             }
         }
