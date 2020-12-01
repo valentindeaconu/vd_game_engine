@@ -60,13 +60,13 @@ namespace vd::math {
     }
 
     void Bounds3::WrapMesh(const model::MeshPtr& meshPtr) {
-        if (meshPtr != nullptr && !meshPtr->vertices.empty()) {
-            m_Left.x = m_Right.x = meshPtr->vertices.front().Position.x;
-            m_Left.y = m_Right.y = meshPtr->vertices.front().Position.y;
-            m_Left.z = m_Right.z = meshPtr->vertices.front().Position.z;
+        if (meshPtr != nullptr && !meshPtr->Vertices().empty()) {
+            m_Left.x = m_Right.x = meshPtr->Vertices().front().Position.x;
+            m_Left.y = m_Right.y = meshPtr->Vertices().front().Position.y;
+            m_Left.z = m_Right.z = meshPtr->Vertices().front().Position.z;
 
-            for (size_t i = 1; i < meshPtr->vertices.size(); ++i) {
-                model::Vertex &v = meshPtr->vertices[i];
+            for (size_t i = 1; i < meshPtr->Vertices().size(); ++i) {
+                model::Vertex& v = meshPtr->Vertices()[i];
 
                 m_Right.x = std::max(m_Right.x, v.Position.x);
                 m_Left.x = std::min(m_Left.x, v.Position.x);

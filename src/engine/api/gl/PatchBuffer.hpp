@@ -16,7 +16,7 @@ namespace vd::gl {
         PatchBuffer();
         ~PatchBuffer();
 
-        void Allocate(const vd::model::MeshPtr& meshPtr) override;
+        void Allocate(const vd::model::MeshPtr& pMesh) override;
         void Render() override;
         void CleanUp() override;
     private:

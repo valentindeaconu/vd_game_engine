@@ -14,14 +14,14 @@ namespace vd::gl {
 
     PatchBuffer::~PatchBuffer() = default;
 
-    void PatchBuffer::Allocate(const vd::model::MeshPtr& meshPtr) {
-        m_Size = meshPtr->vertices.size();
+    void PatchBuffer::Allocate(const vd::model::MeshPtr& pMesh) {
+        m_Size = pMesh->Vertices().size();
 
         std::vector<glm::vec2> patchVertices;
-        patchVertices.reserve(meshPtr->vertices.size());
+        patchVertices.reserve(pMesh->Vertices().size());
 
-        for (auto& v : meshPtr->vertices) {
-            patchVertices.emplace_back(v.Position.x, v.Position.z);
+        for (auto& v : pMesh->Vertices()) {
+            patchVertices.emplace_back(v.xz());
         }
 
         glGenVertexArrays(1, &m_VaoId);

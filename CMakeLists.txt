@@ -136,8 +136,11 @@ add_executable(vd_game_engine
         src/engine/misc/Types.hpp
         src/engine/model/Image.cpp
         src/engine/model/Image.hpp
+        src/engine/model/Material.cpp
         src/engine/model/Material.hpp
+        src/engine/model/Mesh.cpp
         src/engine/model/Mesh.hpp
+        src/engine/model/Vertex.cpp
         src/engine/model/Vertex.hpp
         src/engine/object/Entity.cpp
         src/engine/object/Entity.hpp

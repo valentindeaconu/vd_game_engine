@@ -33,7 +33,7 @@ namespace mod::gui {
         SetUniform("transform", pEntity->LocalTransform().Get());
 
         vd::gl::ActiveTexture(1);
-        pEntity->Meshes()[meshIndex]->materials[0].diffuseMap->Bind();
+        pEntity->Meshes()[meshIndex]->Materials()[0].DiffuseMap()->Bind();
         SetUniform("guiTexture", 1);
     }
 }

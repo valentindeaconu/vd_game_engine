@@ -102,11 +102,11 @@ namespace mod::water {
 
         auto& waterMaterial = pWater->Material();
         vd::gl::ActiveTexture(3);
-        waterMaterial.displaceMap->Bind();
+        waterMaterial.DisplaceMap()->Bind();
         SetUniform("dudvMap", 3);
 
         vd::gl::ActiveTexture(4);
-        waterMaterial.normalMap->Bind();
+        waterMaterial.NormalMap()->Bind();
         SetUniform("normalMap", 4);
     }
 

@@ -30,4 +30,8 @@ namespace vd {
     {
     }
 
+    UnallocatedResourceError::UnallocatedResourceError(const std::string& message)
+        : CustomException("UnallocatedResourceError", message)
+    {
+    }
 }

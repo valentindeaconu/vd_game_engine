@@ -35,6 +35,10 @@ namespace vd {
     struct SyntaxError : public CustomException {
         explicit SyntaxError(const std::string& message, uint64_t line);
     };
+
+    struct UnallocatedResourceError : public CustomException {
+        explicit UnallocatedResourceError(const std::string& message);
+    };
 }
 
 

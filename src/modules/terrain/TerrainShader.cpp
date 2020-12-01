@@ -134,23 +134,23 @@ namespace mod::terrain {
             vd::model::Material& material = terrainPtr->Biomes()[i]->Material();
 
             vd::gl::ActiveTexture(textureUnit);
-            material.diffuseMap->Bind();
+            material.DiffuseMap()->Bind();
             SetUniform("materials[" + std::to_string(i) + "].diffuseMap", textureUnit);
             ++textureUnit;
 
             vd::gl::ActiveTexture(textureUnit);
-            material.normalMap->Bind();
+            material.NormalMap()->Bind();
             SetUniform("materials[" + std::to_string(i) + "].normalMap", textureUnit);
             ++textureUnit;
 
             vd::gl::ActiveTexture(textureUnit);
-            material.displaceMap->Bind();
+            material.DisplaceMap()->Bind();
             SetUniform("materials[" + std::to_string(i) + "].displaceMap", textureUnit);
             ++textureUnit;
 
-            SetUniform("materials[" + std::to_string(i) + "].horizontalScaling", material.horizontalScale);
+            SetUniform("materials[" + std::to_string(i) + "].horizontalScaling", material.HorizontalScale());
 
-            SetUniform("materials[" + std::to_string(i) + "].heightScaling", material.displaceScale);
+            SetUniform("materials[" + std::to_string(i) + "].heightScaling", material.DisplaceScale());
         }
 
         SetUniform("clipPlane", m_pContext->ClipPlane());

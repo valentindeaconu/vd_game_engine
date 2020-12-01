@@ -56,22 +56,22 @@ namespace mod::player {
         SetUniform("view", m_pCamera->ViewMatrix());
         SetUniform("projection", m_pWindow->ProjectionMatrix());
 
-        vd::model::MeshPtr& meshPtr = pEntity->Meshes()[meshIndex];
+        vd::model::MeshPtr& pMesh = pEntity->Meshes()[meshIndex];
 
         SetUniform("transparency", 0);
 
-        if (!meshPtr->materials.empty()) {
-            vd::model::Material& meshMaterial = meshPtr->materials.front();
+        if (!pMesh->Materials().empty()) {
+            vd::model::Material& meshMaterial = pMesh->Materials().front();
 
-            if (meshMaterial.diffuseMap != nullptr) {
+            if (meshMaterial.DiffuseMap() != nullptr) {
                 vd::gl::ActiveTexture(0);
-                meshMaterial.diffuseMap->Bind();
+                meshMaterial.DiffuseMap()->Bind();
                 SetUniform("diffuseMap", 0);
             }
 
-            if (meshMaterial.specularMap != nullptr) {
+            if (meshMaterial.SpecularMap() != nullptr) {
                 vd::gl::ActiveTexture(1);
-                meshMaterial.specularMap->Bind();
+                meshMaterial.SpecularMap()->Bind();
                 SetUniform("specularMap", 1);
             }
         }

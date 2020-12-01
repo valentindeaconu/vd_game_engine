@@ -90,25 +90,24 @@ namespace mod::water {
             try {
                 const std::string prefix = "Pack." + std::to_string(i);
 
-                vd::model::Material material;
+                vd::model::Material material(m_pProperties->Get<std::string>(prefix + ".Name"));
 
-                material.name = m_pProperties->Get<std::string>(prefix + ".Name");
-                material.displaceMap =
+                material.DisplaceMap() =
                         vd::service::TextureService::CreateFromFile(m_pProperties->Get<std::string>(prefix + ".DuDv"));
-                material.displaceMap->Bind();
-                material.displaceMap->BilinearFilter();
-                material.displaceMap->Unbind();
+                material.DisplaceMap()->Bind();
+                material.DisplaceMap()->BilinearFilter();
+                material.DisplaceMap()->Unbind();
 
-                material.normalMap =
+                material.NormalMap() =
                         vd::service::TextureService::CreateFromFile(m_pProperties->Get<std::string>(prefix + ".Normal"));
-                material.normalMap->Bind();
-                material.normalMap->BilinearFilter();
-                material.normalMap->Unbind();
+                material.NormalMap()->Bind();
+                material.NormalMap()->BilinearFilter();
+                material.NormalMap()->Unbind();
 
-                m_PacksMap[material.name] = material;
+                m_PacksMap[material.Name()] = material;
 
                 if (i == 0) {
-                    m_CurrentPack = material.name;
+                    m_CurrentPack = material.Name();
                 }
             } catch (std::invalid_argument& e) {
                 if (i == 0) {
@@ -122,14 +121,14 @@ namespace mod::water {
     void Water::GeneratePatch() {
         vd::model::MeshPtr meshPtr = std::make_shared<vd::model::Mesh>();
 
-        meshPtr->vertices = {
-                vd::model::Vertex(glm::vec3(0.0f, 0.0f, 1.0f)),
-                vd::model::Vertex(glm::vec3(0.0f, 0.0f, 0.0f)),
-                vd::model::Vertex(glm::vec3(1.0f, 0.0f, 1.0f)),
-                vd::model::Vertex(glm::vec3(1.0f, 0.0f, 0.0f))
+        meshPtr->Vertices() = {
+            vd::model::Vertex(0.0f, 1.0f),
+            vd::model::Vertex(0.0f, 0.0f),
+            vd::model::Vertex(1.0f, 1.0f),
+            vd::model::Vertex(1.0f, 0.0f)
         };
 
-        meshPtr->indices = { 0, 2, 1, 1, 2, 3 };
+        meshPtr->Indices() = {0, 2, 1, 1, 2, 3 };
 
         Meshes().push_back(meshPtr);
     }

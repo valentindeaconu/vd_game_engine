@@ -10,10 +10,10 @@ namespace vd::gl {
 
     MeshBuffer::~MeshBuffer() = default;
 
-    void MeshBuffer::Allocate(const vd::model::MeshPtr& meshPtr) {
+    void MeshBuffer::Allocate(const vd::model::MeshPtr& pMesh) {
         using namespace vd::model;
 
-        this->m_MeshPtr = meshPtr;
+        this->m_pMesh = pMesh;
 
         // Create buffers/arrays
         glGenVertexArrays(1, &m_VaoId);
@@ -24,10 +24,10 @@ namespace vd::gl {
 
         // Load data into vertex buffers
         glBindBuffer(GL_ARRAY_BUFFER, m_VboId);
-        glBufferData(GL_ARRAY_BUFFER, meshPtr->vertices.size() * sizeof(Vertex), &meshPtr->vertices[0], GL_STATIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, pMesh->Vertices().size() * sizeof(Vertex), &pMesh->Vertices()[0], GL_STATIC_DRAW);
 
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_EboId);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, meshPtr->indices.size() * sizeof(GLuint), &meshPtr->indices[0], GL_STATIC_DRAW);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, pMesh->Indices().size() * sizeof(GLuint), &pMesh->Indices()[0], GL_STATIC_DRAW);
 
         // Set the vertex attribute pointers
         // Vertex Positions
@@ -47,7 +47,7 @@ namespace vd::gl {
 
     void MeshBuffer::Render()
     {
-        std::vector<GLuint>& indices = m_MeshPtr->indices;
+        std::vector<GLuint>& indices = m_pMesh->Indices();
 
         glBindVertexArray(m_VaoId);
         glDrawElements(GL_TRIANGLES, (GLsizei)indices.size(), GL_UNSIGNED_INT, 0);

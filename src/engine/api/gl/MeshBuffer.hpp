@@ -12,7 +12,7 @@ namespace vd::gl {
         MeshBuffer();
         ~MeshBuffer();
 
-        void Allocate(const vd::model::MeshPtr& meshPtr) override;
+        void Allocate(const vd::model::MeshPtr& pMesh) override;
         void Render() override;
         void CleanUp() override;
     private:
@@ -20,7 +20,7 @@ namespace vd::gl {
         GLuint m_VboId;
         GLuint m_EboId;
 
-        vd::model::MeshPtr m_MeshPtr;
+        vd::model::MeshPtr m_pMesh;
     };
     typedef std::shared_ptr<MeshBuffer>	MeshBufferPtr;
 }

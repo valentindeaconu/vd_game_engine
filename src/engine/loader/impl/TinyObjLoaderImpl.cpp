@@ -49,7 +49,7 @@ namespace vd::loader::impl {
 
         // Loop over shapes
         for (auto & shape : shapes) {
-            vd::model::MeshPtr meshPtr = std::make_shared<vd::model::Mesh>();
+            vd::model::MeshPtr pMesh = std::make_shared<vd::model::Mesh>();
 
             // Loop over faces
             size_t index_offset = 0;
@@ -81,9 +81,9 @@ namespace vd::loader::impl {
                     glm::vec3 vertexNormal(nx, ny, nz);
                     glm::vec2 vertexTexCoords(tx, ty);
 
-                    meshPtr->vertices.emplace_back(vertexPosition, vertexNormal, vertexTexCoords);
+                    pMesh->Vertices().emplace_back(vertexPosition, vertexNormal, vertexTexCoords);
 
-                    meshPtr->indices.push_back((GLuint)index_offset + v);
+                    pMesh->Indices().push_back((GLuint)index_offset + v);
                 }
 
                 index_offset += fv;
@@ -93,15 +93,15 @@ namespace vd::loader::impl {
             if (!shape.mesh.material_ids.empty() && !materials.empty()) {
                 materialId = shape.mesh.material_ids[0];
                 if (materialId != -1) {
-                    meshPtr->materials.emplace_back();
+                    pMesh->Materials().emplace_back(materials[materialId].name);
 
-                    meshPtr->materials.back().name = materials[materialId].name;
+                    auto& material = pMesh->Materials().back();
 
-                    meshPtr->materials.back().emission = glm::vec3(materials[materialId].emission[0],
-                                                                   materials[materialId].emission[1],
-                                                                   materials[materialId].emission[2]);
+                    material.Emission() = glm::vec3(materials[materialId].emission[0],
+                                                    materials[materialId].emission[1],
+                                                    materials[materialId].emission[2]);
 
-                    meshPtr->materials.back().shininess = materials[materialId].shininess;
+                    material.Shininess() = materials[materialId].shininess;
 
                     //ambient texture
                     std::string ambientTexturePath = materials[materialId].ambient_texname;
@@ -111,7 +111,7 @@ namespace vd::loader::impl {
                         currentTexture->Bind();
                         currentTexture->WrapRepeat();
                         currentTexture->TrilinearFilter();
-                        meshPtr->materials.back().ambientMap = currentTexture;
+                        material.AmbientMap() = currentTexture;
                     }
 
                     //diffuse texture
@@ -122,7 +122,7 @@ namespace vd::loader::impl {
                         currentTexture->Bind();
                         currentTexture->WrapRepeat();
                         currentTexture->TrilinearFilter();
-                        meshPtr->materials.back().diffuseMap = currentTexture;
+                        material.DiffuseMap() = currentTexture;
                     }
 
                     //specular texture
@@ -133,7 +133,7 @@ namespace vd::loader::impl {
                         currentTexture->Bind();
                         currentTexture->WrapRepeat();
                         currentTexture->TrilinearFilter();
-                        meshPtr->materials.back().specularMap = currentTexture;
+                        material.SpecularMap() = currentTexture;
                     }
 
                     //normal texture
@@ -144,7 +144,7 @@ namespace vd::loader::impl {
                         currentTexture->Bind();
                         currentTexture->WrapRepeat();
                         currentTexture->TrilinearFilter();
-                        meshPtr->materials.back().normalMap = currentTexture;
+                        material.NormalMap() = currentTexture;
                     }
 
                     //displacement texture
@@ -155,7 +155,7 @@ namespace vd::loader::impl {
                         currentTexture->Bind();
                         currentTexture->WrapRepeat();
                         currentTexture->TrilinearFilter();
-                        meshPtr->materials.back().displaceMap = currentTexture;
+                        material.DisplaceMap() = currentTexture;
                     }
 
                     //alpha texture
@@ -166,7 +166,7 @@ namespace vd::loader::impl {
                         currentTexture->Bind();
                         currentTexture->WrapRepeat();
                         currentTexture->TrilinearFilter();
-                        meshPtr->materials.back().alphaMap = currentTexture;
+                        material.AlphaMap() = currentTexture;
                     }
 
                     //bump texture
@@ -177,12 +177,12 @@ namespace vd::loader::impl {
                         currentTexture->Bind();
                         currentTexture->WrapRepeat();
                         currentTexture->TrilinearFilter();
-                        meshPtr->materials.back().bumpMap = currentTexture;
+                        material.BumpMap() = currentTexture;
                     }
                 }
             }
 
-            meshes.push_back(meshPtr);
+            meshes.push_back(pMesh);
         }
 
         return meshes;

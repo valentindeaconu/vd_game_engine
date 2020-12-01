@@ -183,26 +183,26 @@ namespace mod::terrain {
                 biomePtr->MaximumHeight() = m_pProperties->Get<float>(prefix + ".MaxHeight") * scaleY;
 
                 const std::string materialPrefix = prefix + ".Material";
-                biomePtr->Material().diffuseMap =
+                biomePtr->Material().DiffuseMap() =
                         vd::service::TextureService::CreateFromFile(m_pProperties->Get<std::string>(materialPrefix + ".Diffuse"));
-                biomePtr->Material().diffuseMap->Bind();
-                biomePtr->Material().diffuseMap->TrilinearFilter();
-                biomePtr->Material().diffuseMap->Unbind();
+                biomePtr->Material().DiffuseMap()->Bind();
+                biomePtr->Material().DiffuseMap()->TrilinearFilter();
+                biomePtr->Material().DiffuseMap()->Unbind();
 
-                biomePtr->Material().normalMap =
+                biomePtr->Material().NormalMap() =
                         vd::service::TextureService::CreateFromFile(m_pProperties->Get<std::string>(materialPrefix + ".Normal"));
-                biomePtr->Material().normalMap->Bind();
-                biomePtr->Material().normalMap->BilinearFilter();
-                biomePtr->Material().normalMap->Unbind();
+                biomePtr->Material().NormalMap()->Bind();
+                biomePtr->Material().NormalMap()->BilinearFilter();
+                biomePtr->Material().NormalMap()->Unbind();
 
-                biomePtr->Material().displaceMap =
+                biomePtr->Material().DisplaceMap() =
                         vd::service::TextureService::CreateFromFile(m_pProperties->Get<std::string>(materialPrefix + ".Displace"));
-                biomePtr->Material().displaceMap->Bind();
-                biomePtr->Material().displaceMap->BilinearFilter();
-                biomePtr->Material().displaceMap->Unbind();
+                biomePtr->Material().DisplaceMap()->Bind();
+                biomePtr->Material().DisplaceMap()->BilinearFilter();
+                biomePtr->Material().DisplaceMap()->Unbind();
 
-                biomePtr->Material().displaceScale = m_pProperties->Get<float>(materialPrefix + ".HeightScaling");
-                biomePtr->Material().horizontalScale = m_pProperties->Get<float>(materialPrefix + ".HorizontalScaling");
+                biomePtr->Material().DisplaceScale() = m_pProperties->Get<float>(materialPrefix + ".HeightScaling");
+                biomePtr->Material().HorizontalScale() = m_pProperties->Get<float>(materialPrefix + ".HorizontalScaling");
 
                 PopulateBiomeWithProps(biomePtr, prefix);
 
@@ -264,28 +264,28 @@ namespace mod::terrain {
     void Terrain::GeneratePatch() {
         vd::model::MeshPtr meshPtr = std::make_shared<vd::model::Mesh>();
 
-        auto& vertices = meshPtr->vertices;
+        auto& vertices = meshPtr->Vertices();
         vertices.resize(16);
 
-        vertices[0] = vd::model::Vertex(glm::vec3(0.0f, 0.0f, 0.0f));
-        vertices[1] = vd::model::Vertex(glm::vec3(0.333f, 0.0f, 0.0f));
-        vertices[2] = vd::model::Vertex(glm::vec3(0.666f, 0.0f, 0.0f) );
-        vertices[3] = vd::model::Vertex(glm::vec3(1.0f, 0.0f, 0.0f) );
+        vertices[0] = vd::model::Vertex(0.0f, 0.0f);
+        vertices[1] = vd::model::Vertex(0.333f, 0.0f);
+        vertices[2] = vd::model::Vertex(0.666f, 0.0f);
+        vertices[3] = vd::model::Vertex(1.0f, 0.0f);
 
-        vertices[4] = vd::model::Vertex(glm::vec3(0.0f, 0.0f, 0.333f));
-        vertices[5] = vd::model::Vertex(glm::vec3(0.333f, 0.0f, 0.333f));
-        vertices[6] = vd::model::Vertex(glm::vec3(0.666f, 0.0f, 0.333f));
-        vertices[7] = vd::model::Vertex(glm::vec3(1.0f, 0.0f, 0.333f));
+        vertices[4] = vd::model::Vertex(0.0f, 0.333f);
+        vertices[5] = vd::model::Vertex(0.333f,  0.333f);
+        vertices[6] = vd::model::Vertex(0.666f, 0.333f);
+        vertices[7] = vd::model::Vertex(1.0f, 0.333f);
 
-        vertices[8] = vd::model::Vertex(glm::vec3(0.0f, 0.0f, 0.666f));
-        vertices[9] = vd::model::Vertex(glm::vec3(0.333f, 0.0f, 0.666f));
-        vertices[10] = vd::model::Vertex(glm::vec3(0.666f, 0.0f, 0.666f));
-        vertices[11] = vd::model::Vertex(glm::vec3(1.0f, 0.0f, 0.666f));
+        vertices[8] = vd::model::Vertex(0.0f, 0.666f);
+        vertices[9] = vd::model::Vertex(0.333f, 0.666f);
+        vertices[10] = vd::model::Vertex(0.666f, 0.666f);
+        vertices[11] = vd::model::Vertex(1.0f, 0.666f);
 
-        vertices[12] = vd::model::Vertex(glm::vec3(0.0f, 0.0f, 1.0f));
-        vertices[13] = vd::model::Vertex(glm::vec3(0.333f, 0.0f, 1.0f));
-        vertices[14] = vd::model::Vertex(glm::vec3(0.666f, 0.0f, 1.0f));
-        vertices[15] = vd::model::Vertex(glm::vec3(1.0f, 0.0f, 1.0f));
+        vertices[12] = vd::model::Vertex(0.0f, 1.0f);
+        vertices[13] = vd::model::Vertex(0.333f, 1.0f);
+        vertices[14] = vd::model::Vertex(0.666f, 1.0f);
+        vertices[15] = vd::model::Vertex(1.0f, 1.0f);
 
         SetBufferGenerationStrategy(ePatch);
 

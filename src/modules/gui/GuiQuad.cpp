@@ -28,20 +28,21 @@ namespace mod::gui {
 
         vd::model::MeshPtrVec& meshPtrVec = Meshes();
 
-        vd::model::MeshPtr meshPtr = std::make_shared<vd::model::Mesh>();
+        vd::model::MeshPtr pMesh = std::make_shared<vd::model::Mesh>();
 
-        meshPtr->vertices = {
-                vd::model::Vertex(glm::vec3(-1.0f, 1.0f, 0.0f)),
-                vd::model::Vertex(glm::vec3(-1.0f, -1.0f, 0.0f)),
-                vd::model::Vertex(glm::vec3(1.0f, 1.0f, 0.0f)),
-                vd::model::Vertex(glm::vec3(1.0f, -1.0f, 0.0f))
+        pMesh->Vertices() = {
+            vd::model::Vertex(-1.0f, 1.0f, 0.0f),
+            vd::model::Vertex(-1.0f, -1.0f, 0.0f),
+            vd::model::Vertex(1.0f, 1.0f, 0.0f),
+            vd::model::Vertex(1.0f, -1.0f, 0.0f)
         };
 
-        meshPtr->indices = { 0, 1, 2, 2, 1, 3 };
+        pMesh->Indices() = {0, 1, 2, 2, 1, 3 };
 
-        meshPtr->materials.push_back({ .diffuseMap = m_Texture });
+        pMesh->Materials().emplace_back();
+        pMesh->Materials().back().DiffuseMap() = m_Texture;
 
-        meshPtrVec.push_back(meshPtr);
+        meshPtrVec.push_back(pMesh);
 
         Entity::Init();
     }

@@ -14,18 +14,24 @@
 #include "Material.hpp"
 
 namespace vd::model {
-    struct Mesh {
-        std::vector<Vertex>	vertices;
-        std::vector<GLuint>	indices;
-        std::vector<Material> materials;
+    class Mesh {
+    public:
+        typedef std::vector<Vertex>     VertexVec;
+        typedef std::vector<GLuint>     IndexVec;
+        typedef std::vector<Material>   MaterialVec;
 
-        Mesh()
-            : vertices()
-            , indices()
-            , materials()
-        {
-        }
+        Mesh();
+        ~Mesh();
+
+        VertexVec&      Vertices();
+        IndexVec&       Indices();
+        MaterialVec&    Materials();
+    private:
+        VertexVec	    m_Vertices;
+        IndexVec	    m_Indices;
+        MaterialVec     m_Materials;
     };
+
     typedef std::shared_ptr<Mesh>	MeshPtr;
     typedef std::vector<MeshPtr>	MeshPtrVec;
 }
