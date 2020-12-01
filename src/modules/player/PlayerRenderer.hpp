@@ -1,33 +1,43 @@
-#ifndef __PLAYER_RENDERER_HPP_
-#define __PLAYER_RENDERER_HPP_
+//
+// Created by Vali on 11/18/2020.
+//
 
-#include <engine/component/Renderer.hpp>
+#ifndef VD_GAME_ENGINE_PLAYERRENDERER_HPP
+#define VD_GAME_ENGINE_PLAYERRENDERER_HPP
+
+#include <engine/component/IRenderer.hpp>
+
+#include <engine/injector/Injectable.hpp>
+#include <modules/shadow/ShadowShader.hpp>
 
 #include <string>
 
 #include "Player.hpp"
 
 namespace mod::player {
-    class PlayerRenderer : public vd::component::Renderer {
+    class PlayerRenderer : public vd::component::IRenderer, public vd::injector::Injectable {
     public:
-        PlayerRenderer();
+        PlayerRenderer(PlayerPtr playerPtr,
+                       vd::component::EntityShaderPtr shaderPtr,
+                       vd::Consumer beforeExecution = vd::g_kEmptyConsumer,
+                       vd::Consumer afterExecution = vd::g_kEmptyConsumer);
         ~PlayerRenderer();
 
-        void init() override;
-        void update() override;
-        void render(const vd::kernel::RenderingPass& renderingPass) override;
-        void cleanUp() override;
+        void Link() override;
 
-        PlayerPtr& getPlayer();
-        [[nodiscard]] const PlayerPtr& getPlayer() const;
-        void setPlayer(const PlayerPtr& playerPtr);
+        void Init() override;
+        void Update() override;
+        void Render(const params_t& params) override;
+        void CleanUp() override;
 
     private:
-        bool isReady() override;
+        bool IsReady() override;
 
-        PlayerPtr playerPtr;
+        PlayerPtr m_pPlayer;
+
+        mod::shadow::ShadowShaderPtr m_pShadowShader;
     };
     typedef std::shared_ptr<PlayerRenderer>	PlayerRendererPtr;
 }
 
-#endif // !__PLAYER_RENDERER_HPP_
+#endif //VD_GAME_ENGINE_PLAYERRENDERER_HPP

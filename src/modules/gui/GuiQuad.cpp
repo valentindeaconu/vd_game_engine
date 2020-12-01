@@ -5,46 +5,53 @@
 #include "GuiQuad.hpp"
 
 namespace mod::gui {
+    GuiQuad::GuiQuad(vd::gl::Texture2DPtr texture, const glm::vec2& position, const glm::vec2& scale)
+       : m_Texture(std::move(texture))
+    {
+       this->LocalTransform().Translation() = glm::vec3(position.x, position.y, 0.0f);
+       this->LocalTransform().Scale() = glm::vec3(scale.x, scale.y, 1.0f);
+    }
 
-    GuiQuad::GuiQuad(const vd::EnginePtr &enginePtr,
-                     const vd::model::Texture2DPtr& texture,
-                     const glm::vec2& position,
-                     const glm::vec2& scale)
-       : Entity(enginePtr)
-       , texture(texture)
-   {
-        this->getLocalTransform().setTranslation(position.x, position.y, 0.0f);
-        this->getLocalTransform().setScaling(scale.x, scale.y, 1.0f);
+    GuiQuad::GuiQuad(GuiQuad::TextureGetter textureGetter, const glm::vec2& position, const glm::vec2& scale)
+            : m_TextureGetter(std::move(textureGetter))
+    {
+        this->LocalTransform().Translation() = glm::vec3(position.x, position.y, 0.0f);
+        this->LocalTransform().Scale() = glm::vec3(scale.x, scale.y, 1.0f);
     }
 
     GuiQuad::~GuiQuad() = default;
 
-    void GuiQuad::init() {
-        vd::model::MeshPtrVec& meshPtrVec = getMeshes();
+    void GuiQuad::Init() {
+        if (m_Texture == nullptr) {
+            m_Texture = m_TextureGetter();
+        }
 
-        vd::model::MeshPtr meshPtr = std::make_shared<vd::model::Mesh>();
+        vd::model::MeshPtrVec& meshPtrVec = Meshes();
 
-        meshPtr->vertices = {
-                { .Position = glm::vec3(-1.0f, 1.0f, 0.0f) },
-                { .Position = glm::vec3(-1.0f, -1.0f, 0.0f) },
-                { .Position = glm::vec3(1.0f, 1.0f, 0.0f) },
-                { .Position = glm::vec3(1.0f, -1.0f, 0.0f) }
+        vd::model::MeshPtr pMesh = std::make_shared<vd::model::Mesh>();
+
+        pMesh->Vertices() = {
+            vd::model::Vertex(-1.0f, 1.0f, 0.0f),
+            vd::model::Vertex(-1.0f, -1.0f, 0.0f),
+            vd::model::Vertex(1.0f, 1.0f, 0.0f),
+            vd::model::Vertex(1.0f, -1.0f, 0.0f)
         };
 
-        meshPtr->indices = { 0, 1, 2, 2, 1, 3 };
+        pMesh->Indices() = {0, 1, 2, 2, 1, 3 };
 
-        meshPtr->materials.push_back({ .diffuseMap = texture });
+        pMesh->Materials().emplace_back();
+        pMesh->Materials().back().DiffuseMap() = m_Texture;
 
-        meshPtrVec.push_back(meshPtr);
+        meshPtrVec.push_back(pMesh);
 
-        Entity::init();
+        Entity::Init();
     }
 
-    void GuiQuad::update() {
+    void GuiQuad::Update() {
 
     }
 
-    void GuiQuad::cleanUp() {
-        Entity::cleanUp();
+    void GuiQuad::CleanUp() {
+        Entity::CleanUp();
     }
 }

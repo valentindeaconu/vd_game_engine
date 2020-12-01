@@ -7,43 +7,58 @@
 
 #include <engine/object/Entity.hpp>
 
-#include <engine/glmodel/buffer/FrameBuffer.hpp>
+#include <engine/api/gl/FrameBuffer.hpp>
 
-#include "WaterConfig.hpp"
+#include <engine/loader/PropertiesLoader.hpp>
+
+#include <engine/injector/Injectable.hpp>
+#include <engine/kernel/Context.hpp>
 
 #include <memory>
 #include <numbers>
+#include <unordered_map>
 
 namespace mod::water {
-    class Water : public vd::object::Entity {
+    class Water : public vd::object::Entity, public vd::injector::Injectable {
     public:
-        Water(const vd::EnginePtr& enginePtr, const std::string& configFilePath);
+        explicit Water(const std::string& propsFilePath);
         ~Water();
 
-        void init() override;
-        void update() override;
-        void cleanUp() override;
+        void Link() override;
 
-        [[nodiscard]] const WaterConfigPtr& getWaterConfig() const;
+        void Init() override;
+        void Update() override;
+        void CleanUp() override;
 
-        [[nodiscard]] const vd::buffer::FrameBufferPtr& getReflectionFramebuffer() const;
-        [[nodiscard]] const vd::buffer::FrameBufferPtr& getRefractionFramebuffer() const;
+        [[nodiscard]] const vd::property::PropertiesPtr& Properties() const;
 
-        [[nodiscard]] float getHeight() const;
-        [[nodiscard]] float getMoveFactor() const;
+        [[nodiscard]] const vd::model::Material& Material() const;
+
+        [[nodiscard]] const vd::gl::FrameBufferPtr& ReflectionFramebuffer() const;
+        [[nodiscard]] const vd::gl::FrameBufferPtr& RefractionFramebuffer() const;
+
+        [[nodiscard]] float GetHeight() const;
+
+        [[nodiscard]] float GetMoveFactor() const;
     private:
-        void generatePatch();
+        void PopulatePacks();
+        void GeneratePatch();
 
-        WaterConfigPtr	configPtr;
+        // Engine required to get current frame time
+        vd::kernel::ContextPtr m_pContext;
 
-        float moveFactor;
+        std::string m_CurrentPack;
 
-        vd::buffer::FrameBufferPtr reflectionFBO;
-        vd::buffer::FrameBufferPtr refractionFBO;
+        float m_MoveFactor;
+
+        std::unordered_map<std::string, vd::model::Material> m_PacksMap;
+
+        vd::property::PropertiesPtr m_pProperties;
+
+        vd::gl::FrameBufferPtr m_pReflectionFBO;
+        vd::gl::FrameBufferPtr m_pRefractionFBO;
     };
     typedef std::shared_ptr<Water>  WaterPtr;
 }
-
-
 
 #endif //VD_GAME_ENGINE_WATER_HPP

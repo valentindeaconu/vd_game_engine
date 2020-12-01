@@ -1,60 +1,64 @@
 #include "PlayerRenderer.hpp"
 
 namespace mod::player {
-    PlayerRenderer::PlayerRenderer()
-        : Renderer()
-        , playerPtr(nullptr)
+    PlayerRenderer::PlayerRenderer(PlayerPtr playerPtr,
+                                   vd::component::EntityShaderPtr shaderPtr,
+                                   vd::Consumer beforeExecution,
+                                   vd::Consumer afterExecution)
+        : IRenderer(std::move(shaderPtr), std::move(beforeExecution), std::move(afterExecution))
+        , m_pPlayer(std::move(playerPtr))
     {
     }
 
     PlayerRenderer::~PlayerRenderer() = default;
 
-    void PlayerRenderer::init() {
-        playerPtr->init();
+    void PlayerRenderer::Link() {
+        m_pShadowShader = vd::ObjectOfType<mod::shadow::ShadowShader>::Find();
     }
 
-    void PlayerRenderer::update() {
-        playerPtr->update();
+    void PlayerRenderer::Init() {
+        m_pPlayer->Init();
+
+        m_pShader->Bind();
+        m_pShader->InitUniforms(m_pPlayer);
     }
 
-    void PlayerRenderer::render(const vd::kernel::RenderingPass& renderingPass) {
-        if (isReady() && renderingPass != vd::kernel::eReflection && renderingPass != vd::kernel::eRefraction) {
-            if (renderConfigPtr != nullptr) {
-                renderConfigPtr->enable();
-            }
+    void PlayerRenderer::Update() {
+        m_pPlayer->Update();
+    }
 
-            auto _shaderPtr = renderingPass == vd::kernel::RenderingPass::eShadow ? this->getShadowShader() : shaderPtr;
-
-            _shaderPtr->bind();
-            vd::buffer::BufferPtrVec& buffers = playerPtr->getBuffers();
-            for (size_t meshIndex = 0; meshIndex < buffers.size(); ++meshIndex) {
-                _shaderPtr->updateUniforms(playerPtr, meshIndex);
-                buffers[meshIndex]->render();
-            }
-
-            if (renderConfigPtr != nullptr) {
-                renderConfigPtr->disable();
-            }
+    void PlayerRenderer::Render(const params_t& params) {
+        if (!IsReady()) {
+            vd::Logger::warn("PlayerRenderer was not ready to render");
+            return;
         }
+
+        const auto& renderingPass = params.at("RenderingPass");
+        if (renderingPass == "Reflection" || renderingPass == "Refraction") {
+            return;
+        }
+
+        Prepare();
+
+        const vd::component::EntityShaderPtr& shaderPtr = (renderingPass == "Shadow") ? m_pShadowShader : m_pShader;
+
+        shaderPtr->Bind();
+
+        vd::gl::BufferPtrVec& buffers = m_pPlayer->Buffers();
+        for (size_t meshIndex = 0; meshIndex < buffers.size(); ++meshIndex) {
+            shaderPtr->UpdateUniforms(m_pPlayer, meshIndex);
+            buffers[meshIndex]->Render();
+        }
+
+        Finish();
     }
 
-    void PlayerRenderer::cleanUp() {
-        playerPtr->cleanUp();
+    void PlayerRenderer::CleanUp() {
+        m_pPlayer->CleanUp();
     }
 
-    PlayerPtr& PlayerRenderer::getPlayer() {
-        return playerPtr;
+    bool PlayerRenderer::IsReady() {
+        return IRenderer::IsReady() && m_pPlayer != nullptr;
     }
 
-    const PlayerPtr& PlayerRenderer::getPlayer() const {
-        return playerPtr;
-    }
-
-    void PlayerRenderer::setPlayer(const PlayerPtr& playerPtr) {
-        this->playerPtr = playerPtr;
-    }
-
-    bool PlayerRenderer::isReady() {
-        return Renderer::isReady() && playerPtr != nullptr;
-    }
 }

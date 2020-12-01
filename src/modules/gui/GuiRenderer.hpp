@@ -5,31 +5,30 @@
 #ifndef VD_GAME_ENGINE_GUIRENDERER_HPP
 #define VD_GAME_ENGINE_GUIRENDERER_HPP
 
-#include <engine/component/Renderer.hpp>
+#include <engine/component/IRenderer.hpp>
 
 #include "GuiQuad.hpp"
 
 namespace mod::gui {
-    class GuiRenderer : public vd::component::Renderer {
+    class GuiRenderer : public vd::component::IRenderer {
     public:
-        GuiRenderer();
+        static const int kPriority = kDefaultPriority + 100;
+
+        GuiRenderer(GuiQuadPtr guiQuadPtr,
+                    vd::component::EntityShaderPtr shaderPtr,
+                    vd::Consumer beforeExecution = vd::g_kEmptyConsumer,
+                    vd::Consumer afterExecution = vd::g_kEmptyConsumer);
         ~GuiRenderer();
 
-        void init() override;
-        void update() override;
-        void render(const vd::kernel::RenderingPass& renderingPass) override;
-        void cleanUp() override;
-
-        GuiQuadPtr& getGuiQuad();
-        [[nodiscard]] const GuiQuadPtr& getGuiQuad() const;
-        void setGuiQuad(const GuiQuadPtr& guiQuadPtr);
+        void Init() override;
+        void Update() override;
+        void Render(const params_t& params) override;
+        void CleanUp() override;
 
     private:
-        bool isReady() override;
+        bool IsReady() override;
 
-        bool initialised;
-
-        GuiQuadPtr guiQuadPtr;
+        GuiQuadPtr m_pGuiQuad;
     };
     typedef std::shared_ptr<GuiRenderer>	GuiRendererPtr;
 }

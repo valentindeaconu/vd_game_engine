@@ -1,34 +1,44 @@
-#ifndef __SKY_RENDERER_HPP_
-#define __SKY_RENDERER_HPP_
+//
+// Created by Vali on 11/12/2020.
+//
 
-#include <engine/component/Renderer.hpp>
+#ifndef VD_GAME_ENGINE_SKYRENDERER_HPP
+#define VD_GAME_ENGINE_SKYRENDERER_HPP
+
+#include <engine/component/IRenderer.hpp>
+
+#include <engine/injector/Injectable.hpp>
+#include <modules/shadow/ShadowShader.hpp>
 
 #include <string>
 
 #include "Sky.hpp"
 
 namespace mod::sky {
-    class SkyRenderer : public vd::component::Renderer {
+    class SkyRenderer : public vd::component::IRenderer, public vd::injector::Injectable {
     public:
-        SkyRenderer();
+        SkyRenderer(SkyPtr pSky,
+                    vd::component::EntityShaderPtr pShader,
+                    vd::Consumer beforeExecution = vd::g_kEmptyConsumer,
+                    vd::Consumer afterExecution = vd::g_kEmptyConsumer);
         ~SkyRenderer();
 
-        void init() override;
-        void update() override;
-        void render(const vd::kernel::RenderingPass& renderingPass) override;
-        void cleanUp() override;
+        void Link() override;
 
-        SkyPtr& getSky();
-        [[nodiscard]] const SkyPtr& getSky() const;
-        void setSky(const SkyPtr& skyPtr);
+        void Init() override;
+        void Update() override;
+        void Render(const params_t& params) override;
+        void CleanUp() override;
 
     private:
-        bool isReady() override;
+        bool IsReady() override;
 
-        SkyPtr skyPtr;
+        SkyPtr m_pSky;
+
+        mod::shadow::ShadowShaderPtr m_pShadowShader;
     };
 
     typedef std::shared_ptr<SkyRenderer>	SkyRendererPtr;
 }
 
-#endif // !__SKY_RENDERER_HPP_
+#endif //VD_GAME_ENGINE_SKYRENDERER_HPP

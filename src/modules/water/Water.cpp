@@ -5,89 +5,132 @@
 #include "Water.hpp"
 
 namespace mod::water {
-    Water::Water(const vd::EnginePtr &enginePtr, const std::string &configFilePath)
-        : vd::object::Entity(enginePtr)
+    Water::Water(const std::string& propsFilePath)
+        : m_pProperties(vd::loader::PropertiesLoader::Load(propsFilePath))
+        , m_MoveFactor(0.0f)
+        , m_pReflectionFBO(std::make_shared<vd::gl::FrameBuffer>())
+        , m_pRefractionFBO(std::make_shared<vd::gl::FrameBuffer>())
     {
-        configPtr = std::make_shared<WaterConfig>(configFilePath);
-
-        reflectionFBO = std::make_shared<vd::buffer::FrameBuffer>();
-        refractionFBO = std::make_shared<vd::buffer::FrameBuffer>();
     }
 
     Water::~Water() = default;
 
-    void Water::init() {
-        getLocalTransform().setScaling(6000.0f, 0.0f, 6000.0f);
-        getLocalTransform().setTranslation(-3000.0f, 180.0f, -3000.0f);
-
-        // asta merge also
-        //getLocalTransform().setScaling(250.0f, 0.0f, 260.0f);
-        //getLocalTransform().setTranslation(400.0f, -33.0f, 300.0f);
-
-        configPtr->parse();
-
-        generatePatch();
-
-        reflectionFBO->allocate(configPtr->getReflectionWidth(),
-                                configPtr->getReflectionHeight(),
-                                true,
-                                vd::buffer::DepthAttachment::eDepthBuffer);
-
-        refractionFBO->allocate(configPtr->getRefractionWidth(),
-                                configPtr->getRefractionHeight(),
-                                true,
-                                vd::buffer::DepthAttachment::eDepthTexture);
-
-        Entity::init();
+    void Water::Link() {
+        m_pContext = vd::ObjectOfType<vd::kernel::Context>::Find();
     }
 
-    void Water::update() {
-        moveFactor += (configPtr->getWaveSpeed() * getParentEngine()->getFrameTime());
-        if (moveFactor >= 1.0f) {
-            moveFactor -= 1.0f;
+    void Water::Init() {
+        LocalTransform().Scale() = glm::vec3(6000.0f, 0.0f, 6000.0f);
+        LocalTransform().Translation() = glm::vec3(-3000.0f, 180.0f, -3000.0f);
+
+        PopulatePacks();
+
+        GeneratePatch();
+
+        m_pReflectionFBO->Allocate(m_pProperties->Get<int>("Reflection.Width"),
+                                   m_pProperties->Get<int>("Reflection.Height"),
+                                   true,
+                                   vd::gl::DepthAttachment::eDepthBuffer);
+
+        m_pRefractionFBO->Allocate(m_pProperties->Get<int>("Refraction.Width"),
+                                   m_pProperties->Get<int>("Refraction.Height"),
+                                   true,
+                                   vd::gl::DepthAttachment::eDepthTexture);
+
+        Entity::Init();
+    }
+
+    void Water::Update() {
+        const auto waveSpeed = m_pProperties->Get<float>("Wave.Speed");
+        m_MoveFactor += (waveSpeed * m_pContext->FrameTime());
+        if (m_MoveFactor >= 1.0f) {
+            m_MoveFactor -= 1.0f;
         }
     }
 
-    void Water::cleanUp() {
-        reflectionFBO->cleanUp();
-        refractionFBO->cleanUp();
+    void Water::CleanUp() {
+        m_pReflectionFBO->CleanUp();
+        m_pRefractionFBO->CleanUp();
 
-        Entity::cleanUp();
+        Entity::CleanUp();
     }
 
-    const WaterConfigPtr &Water::getWaterConfig() const {
-        return configPtr;
+    const vd::property::PropertiesPtr& Water::Properties() const {
+        return m_pProperties;
     }
 
-    const vd::buffer::FrameBufferPtr &Water::getReflectionFramebuffer() const {
-        return reflectionFBO;
+    const vd::model::Material& Water::Material() const {
+        auto it = m_PacksMap.find(m_CurrentPack);
+        if (it != m_PacksMap.end()) {
+            return it->second;
+        }
+
+        throw std::runtime_error("water current pack '" + m_CurrentPack + "' does not exists");
     }
 
-    const vd::buffer::FrameBufferPtr &Water::getRefractionFramebuffer() const {
-        return refractionFBO;
+    const vd::gl::FrameBufferPtr &Water::ReflectionFramebuffer() const {
+        return m_pReflectionFBO;
     }
 
-    float Water::getHeight() const {
+    const vd::gl::FrameBufferPtr &Water::RefractionFramebuffer() const {
+        return m_pRefractionFBO;
+    }
+
+    float Water::GetHeight() const {
         return 180.0f;
     }
 
-    float Water::getMoveFactor() const {
-       return moveFactor; //return (float) std::sin(moveFactor * 2 * std::numbers::pi) / 2.0f + 0.5f;
+    float Water::GetMoveFactor() const {
+        //return (float) std::sin(moveFactor * 2 * std::numbers::pi) / 2.0f + 0.5f;
+        return m_MoveFactor;
     }
 
-    void Water::generatePatch() {
+    void Water::PopulatePacks() {
+        for (int i = 0; ; ++i) {
+            try {
+                const std::string prefix = "Pack." + std::to_string(i);
+
+                vd::model::Material material(m_pProperties->Get<std::string>(prefix + ".Name"));
+
+                material.DisplaceMap() =
+                        vd::service::TextureService::CreateFromFile(m_pProperties->Get<std::string>(prefix + ".DuDv"));
+                material.DisplaceMap()->Bind();
+                material.DisplaceMap()->BilinearFilter();
+                material.DisplaceMap()->Unbind();
+
+                material.NormalMap() =
+                        vd::service::TextureService::CreateFromFile(m_pProperties->Get<std::string>(prefix + ".Normal"));
+                material.NormalMap()->Bind();
+                material.NormalMap()->BilinearFilter();
+                material.NormalMap()->Unbind();
+
+                m_PacksMap[material.Name()] = material;
+
+                if (i == 0) {
+                    m_CurrentPack = material.Name();
+                }
+            } catch (std::invalid_argument& e) {
+                if (i == 0) {
+                    throw std::logic_error("water should have at least 1 material");
+                }
+                break;
+            }
+        }
+    }
+
+    void Water::GeneratePatch() {
         vd::model::MeshPtr meshPtr = std::make_shared<vd::model::Mesh>();
 
-        meshPtr->vertices = {
-                { .Position = glm::vec3(0.0f, 0.0f, 1.0f) },
-                { .Position = glm::vec3(0.0f, 0.0f, 0.0f) },
-                { .Position = glm::vec3(1.0f, 0.0f, 1.0f) },
-                { .Position = glm::vec3(1.0f, 0.0f, 0.0f) }
+        meshPtr->Vertices() = {
+            vd::model::Vertex(0.0f, 1.0f),
+            vd::model::Vertex(0.0f, 0.0f),
+            vd::model::Vertex(1.0f, 1.0f),
+            vd::model::Vertex(1.0f, 0.0f)
         };
 
-        meshPtr->indices = { 0, 2, 1, 1, 2, 3 };
+        meshPtr->Indices() = {0, 2, 1, 1, 2, 3 };
 
-        getMeshes().push_back(meshPtr);
+        Meshes().push_back(meshPtr);
     }
 }
 

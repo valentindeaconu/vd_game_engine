@@ -1,43 +1,34 @@
 #include "Sky.hpp"
 
-namespace mod::sky
-{
-    Sky::Sky(const vd::EnginePtr& enginePtr)
-        : Entity(enginePtr)
-    {
-    }
+namespace mod::sky {
 
+    Sky::Sky() = default;
     Sky::~Sky() = default;
 
-    void Sky::init()
-    {
-        vd::model::MeshPtrVec& meshPtrVec = getMeshes();
+    void Sky::Init() {
+        vd::model::MeshPtrVec& meshPtrVec = Meshes();
 
-        vd::model::MeshPtr meshPtr = std::make_shared<vd::model::Mesh>();
+        vd::model::MeshPtr pMesh = std::make_shared<vd::model::Mesh>();
 
         for (int i = 0; i < 24; i += 3) {
-            meshPtr->vertices.emplace_back();
-            vd::model::Vertex& vertex = meshPtr->vertices.back();
-
-            vertex.Position = glm::vec3(kSkyboxVertices[i], kSkyboxVertices[i + 1], kSkyboxVertices[i + 2]);
-            vertex.Normal = glm::vec3(0.0f, 1.0f, 0.0f);
-            vertex.TexCoords = glm::vec2(kSkyboxVertices[i], kSkyboxVertices[i + 1]);
+            pMesh->Vertices().emplace_back(
+                glm::vec3(kSkyboxVertices[i], kSkyboxVertices[i + 1], kSkyboxVertices[i + 2]),
+                glm::vec3(0.0f, 1.0f, 0.0f),
+                glm::vec2(kSkyboxVertices[i], kSkyboxVertices[i + 1])
+            );
         }
 
-        meshPtr->indices = kSkyboxIndices;
+        pMesh->Indices() = kSkyboxIndices;
 
-        meshPtrVec.push_back(meshPtr);
+        meshPtrVec.push_back(pMesh);
 
-        Entity::init(); // call super.init() to initialize meshBuffers;
+        Entity::Init(); // call super.Init() to initialize meshBuffers;
     }
 
-    void Sky::update()
-    {
-        // here should be the input handler for player movement
+    void Sky::Update() {
     }
 
-    void Sky::cleanUp()
-    {
-        Entity::cleanUp(); // call super.cleanUp() to clear meshBuffers;
+    void Sky::CleanUp() {
+        Entity::CleanUp(); // call super.CleanUp() to clear meshBuffers;
     }
 }

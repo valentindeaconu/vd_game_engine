@@ -1,26 +1,21 @@
-#ifndef __LOGGER_HPP_
-#define __LOGGER_HPP_
+//
+// Created by Vali on 11/10/2020.
+//
+
+#ifndef VD_GAME_ENGINE_LOGGER_HPP
+#define VD_GAME_ENGINE_LOGGER_HPP
 
 #include <iostream>
 #include <string>
-#include <sstream>
 
-namespace vd::logger
-{
-    class Logger
-    {
+namespace vd {
+    class Logger {
     public:
-        static void log(const std::string &message);
-
-        static void warn(const std::string &message);
-
-        static void terminate(const std::string &message, uint8_t code);
+        static void log(const std::string& message);
+        static void warn(const std::string& message);
+        static void terminate(const std::string& message, uint8_t code);
     };
+
 }
 
-namespace vd
-{
-	typedef logger::Logger Logger;
-}
-
-#endif // !__LOGGER_HPP_
+#endif //VD_GAME_ENGINE_LOGGER_HPP

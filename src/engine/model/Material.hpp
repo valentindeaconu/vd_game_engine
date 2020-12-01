@@ -1,31 +1,73 @@
-#ifndef __MATERIAL_HPP_
-#define __MATERIAL_HPP_
+//
+// Created by Vali on 11/11/2020.
+//
+
+#ifndef VD_GAME_ENGINE_MATERIAL_HPP
+#define VD_GAME_ENGINE_MATERIAL_HPP
 
 #include <glm/glm.hpp>
-
 #include <string>
+#include <memory>
 
-#include "Texture.hpp"
+#include <engine/api/gl/Texture.hpp>
 
-namespace vd::model
-{
-    struct Material
-    {
-        std::string name;
-        Texture2DPtr diffuseMap;
-        Texture2DPtr normalMap;
-        Texture2DPtr displaceMap;
-        Texture2DPtr ambientMap;
-        Texture2DPtr specularMap;
-        Texture2DPtr alphaMap;
-        Texture2DPtr bumpMap;
-        glm::vec4 color;
-        glm::vec3 emission;
-        float shininess;
-        float displaceScale;
-        float horizontalScale;
+namespace vd::model {
+    class Material {
+    public:
+        Material();
+        explicit Material(std::string name);
+        ~Material();
+
+        float& Shininess();
+        float& DisplaceScale();
+        float& HorizontalScale();
+
+        glm::vec3& Emission();
+        glm::vec4& Color();
+
+        std::string& Name();
+
+        gl::Texture2DPtr& DiffuseMap();
+        [[nodiscard]] const gl::Texture2DPtr& DiffuseMap() const;
+
+        gl::Texture2DPtr& NormalMap();
+        [[nodiscard]] const gl::Texture2DPtr& NormalMap() const;
+
+        gl::Texture2DPtr& DisplaceMap();
+        [[nodiscard]] const gl::Texture2DPtr& DisplaceMap() const;
+
+        gl::Texture2DPtr& AmbientMap();
+        [[nodiscard]] const gl::Texture2DPtr& AmbientMap() const;
+
+        gl::Texture2DPtr& SpecularMap();
+        [[nodiscard]] const gl::Texture2DPtr& SpecularMap() const;
+
+        gl::Texture2DPtr& AlphaMap();
+        [[nodiscard]] const gl::Texture2DPtr& AlphaMap() const;
+
+        gl::Texture2DPtr& BumpMap();
+        [[nodiscard]] const gl::Texture2DPtr& BumpMap() const;
+
+    private:
+        float m_Shininess;
+        float m_DisplaceScale;
+        float m_HorizontalScale;
+
+        glm::vec3 m_Emission;
+        glm::vec4 m_Color;
+
+        std::string m_Name;
+
+        gl::Texture2DPtr m_pDiffuseMap;
+        gl::Texture2DPtr m_pNormalMap;
+        gl::Texture2DPtr m_pDisplaceMap;
+        gl::Texture2DPtr m_pAmbientMap;
+        gl::Texture2DPtr m_pSpecularMap;
+        gl::Texture2DPtr m_pAlphaMap;
+        gl::Texture2DPtr m_pBumpMap;
     };
-    typedef std::vector<Material>   MaterialVec;
+    typedef std::shared_ptr<Material>   MaterialPtr;
+    typedef std::vector<MaterialPtr>    MaterialPtrVec;
 }
 
-#endif // !__MATERIAL_HPP_
+#endif // !VD_GAME_ENGINE_MATERIAL_HPP

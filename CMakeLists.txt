@@ -4,119 +4,194 @@ project(vd_game_engine)
 set(CMAKE_CXX_STANDARD 20)
 
 include_directories(src/)
+include_directories(src/engine/api/gl)
+include_directories(src/engine/camera)
+include_directories(src/engine/camera/first)
+include_directories(src/engine/camera/free)
+include_directories(src/engine/camera/third)
+include_directories(src/engine/collision)
 include_directories(src/engine/component)
-include_directories(src/engine/component/impl)
-include_directories(src/engine/config)
 include_directories(src/engine/core)
-include_directories(src/engine/core/impl)
-include_directories(src/engine/foundation)
-include_directories(src/engine/foundation/img/imgloader)
-include_directories(src/engine/foundation/img/model)
-include_directories(src/engine/foundation/math)
-include_directories(src/engine/foundation/objloader)
-include_directories(src/engine/glmodel/buffer)
+include_directories(src/engine/culling)
+include_directories(src/engine/datastruct)
+include_directories(src/engine/event)
+include_directories(src/engine/exception)
+include_directories(src/engine/fog)
 include_directories(src/engine/kernel)
+include_directories(src/engine/light)
+include_directories(src/engine/loader)
 include_directories(src/engine/logger)
+include_directories(src/engine/math)
+include_directories(src/engine/misc)
 include_directories(src/engine/model)
 include_directories(src/engine/object)
 include_directories(src/engine/shader)
+include_directories(src/engine/service)
+include_directories(src/engine/window)
+include_directories(src/modules/gui)
 include_directories(src/modules/player)
+include_directories(src/modules/shadow)
 include_directories(src/modules/sky)
-include_directories(src/modules/sobj)
+include_directories(src/modules/props)
 include_directories(src/modules/terrain)
+include_directories(src/modules/water)
 
 add_executable(vd_game_engine
-        src/engine/component/Renderer.cpp
-        src/engine/component/Renderer.hpp
-        src/engine/config/ConfigurationFile.cpp
-        src/engine/config/ConfigurationFile.hpp
-        src/engine/config/EngineConfig.cpp
-        src/engine/config/EngineConfig.hpp
-        src/engine/config/MetaConfig.hpp
-        src/engine/config/MetaConfig.cpp
-        src/engine/core/impl/EntityCamera.cpp
-        src/engine/core/impl/EntityCamera.hpp
-        src/engine/core/impl/FreeCamera.cpp
-        src/engine/core/impl/FreeCamera.hpp
-        src/engine/core/Camera.cpp
-        src/engine/core/Camera.hpp
-        src/engine/core/InputHandler.cpp
-        src/engine/core/InputHandler.hpp
-        src/engine/core/Window.cpp
-        src/engine/core/Window.hpp
+        src/engine/api/gl/GL.hpp
+        src/engine/api/gl/GLTypes.hpp
+        src/engine/api/gl/Buffer.hpp
+        src/engine/api/gl/MeshBuffer.cpp
+        src/engine/api/gl/MeshBuffer.hpp
+        src/engine/api/gl/FrameBuffer.cpp
+        src/engine/api/gl/FrameBuffer.hpp
+        src/engine/api/gl/PatchBuffer.cpp
+        src/engine/api/gl/PatchBuffer.hpp
+        src/engine/api/gl/Texture.cpp
+        src/engine/api/gl/Texture.hpp
+        src/engine/api/gl/Shader.cpp
+        src/engine/api/gl/Shader.hpp
+        src/engine/camera/first/FirstPersonCamera.cpp
+        src/engine/camera/first/FirstPersonCamera.hpp
+        src/engine/camera/free/FreeCamera.cpp
+        src/engine/camera/free/FreeCamera.hpp
+        src/engine/camera/third/ThirdPersonCamera.cpp
+        src/engine/camera/third/ThirdPersonCamera.hpp
+        src/engine/camera/Camera.cpp
+        src/engine/camera/Camera.hpp
+        src/engine/camera/CameraWrapper.cpp
+        src/engine/camera/CameraWrapper.hpp
+        src/engine/collision/Detector.cpp
+        src/engine/collision/Detector.hpp
+        src/engine/component/IRenderer.cpp
+        src/engine/component/IRenderer.hpp
+        src/engine/component/IManager.cpp
+        src/engine/component/IManager.hpp
+        src/engine/component/IModuleFactory.hpp
+        src/engine/component/RenderingPass.cpp
+        src/engine/component/RenderingPass.hpp
+        src/engine/component/IEntityShader.hpp
+        src/engine/component/IShading.hpp
         src/engine/core/AsyncWorker.cpp
         src/engine/core/AsyncWorker.hpp
-        src/engine/core/ObjectManager.hpp
-        src/engine/core/ObjectManager.cpp
-        src/engine/foundation/img/Image.cpp
-        src/engine/foundation/img/Image.hpp
-        src/engine/foundation/img/imgloader/IIMGLoader.cpp
-        src/engine/foundation/img/imgloader/IIMGLoader.hpp
-        src/engine/foundation/img/imgloader/IMGLoader.cpp
-        src/engine/foundation/img/imgloader/IMGLoader.hpp
-        src/engine/foundation/img/imghelper/ImageHelper.cpp
-        src/engine/foundation/img/imghelper/ImageHelper.hpp
-        src/engine/foundation/math/Transform.cpp
-        src/engine/foundation/math/Transform.hpp
-        src/engine/foundation/objloader/OBJLoader.cpp
-        src/engine/foundation/objloader/OBJLoader.hpp
-        src/engine/foundation/GL.hpp
-        src/engine/foundation/math/Frustum.cpp
-        src/engine/foundation/math/Frustum.hpp
-        src/engine/foundation/math/Bounds.cpp
-        src/engine/foundation/math/Bounds.hpp
-        src/engine/foundation/math/Util.cpp
-        src/engine/foundation/math/Util.hpp
-        src/engine/foundation/datastruct/Tree.cpp
-        src/engine/foundation/datastruct/Tree.hpp
-        src/engine/foundation/algorithm/TreeHelper.cpp
-        src/engine/foundation/algorithm/TreeHelper.hpp
-        src/engine/glmodel/buffer/Buffer.hpp
-        src/engine/glmodel/buffer/MeshBuffer.cpp
-        src/engine/glmodel/buffer/MeshBuffer.hpp
-        src/engine/glmodel/buffer/FrameBuffer.cpp
-        src/engine/glmodel/buffer/FrameBuffer.hpp
-        src/engine/glmodel/buffer/PatchBuffer.cpp
-        src/engine/glmodel/buffer/PatchBuffer.hpp
-        src/engine/kernel/EngineBlock.cpp
-        src/engine/kernel/EngineBlock.hpp
-        src/engine/kernel/EngineWorker.cpp
-        src/engine/kernel/EngineWorker.hpp
+        src/engine/culling/FrustumCullingManager.cpp
+        src/engine/culling/FrustumCullingManager.hpp
+        src/engine/datastruct/Tree.cpp
+        src/engine/datastruct/Tree.hpp
+        src/engine/datastruct/Observer.cpp
+        src/engine/datastruct/Observer.hpp
+        src/engine/event/EventHandler.cpp
+        src/engine/event/EventHandler.hpp
+        src/engine/exception/Exceptions.cpp
+        src/engine/exception/Exceptions.hpp
+        src/engine/fog/FogManager.cpp
+        src/engine/fog/FogManager.hpp
+        src/engine/fog/Fog.cpp
+        src/engine/fog/Fog.hpp
+        src/engine/injector/CreateAndStore.hpp
+        src/engine/injector/Injectable.cpp
+        src/engine/injector/Injectable.hpp
+        src/engine/injector/Linker.cpp
+        src/engine/injector/Linker.hpp
+        src/engine/injector/ObjectOfType.hpp
+        src/engine/kernel/Engine.cpp
+        src/engine/kernel/Engine.hpp
+        src/engine/kernel/Context.cpp
+        src/engine/kernel/Context.hpp
+        src/engine/kernel/EngineFactory.cpp
+        src/engine/kernel/EngineFactory.hpp
+        src/engine/light/LightManager.cpp
+        src/engine/light/LightManager.hpp
+        src/engine/light/Light.cpp
+        src/engine/light/Light.hpp
+        src/engine/loader/FileLoader.cpp
+        src/engine/loader/FileLoader.hpp
+        src/engine/loader/ImageLoader.cpp
+        src/engine/loader/ImageLoader.hpp
+        src/engine/loader/ObjectLoader.cpp
+        src/engine/loader/ObjectLoader.hpp
+        src/engine/loader/ShaderLoader.cpp
+        src/engine/loader/ShaderLoader.hpp
+        src/engine/loader/PropertiesLoader.cpp
+        src/engine/loader/PropertiesLoader.hpp
+        src/engine/loader/impl/StreamImpl.cpp
+        src/engine/loader/impl/StreamImpl.hpp
+        src/engine/loader/impl/StbiImpl.cpp
+        src/engine/loader/impl/StbiImpl.hpp
+        src/engine/loader/impl/TinyObjLoaderImpl.cpp
+        src/engine/loader/impl/TinyObjLoaderImpl.hpp
+        src/engine/loader/impl/VDGEGLSLImpl.cpp
+        src/engine/loader/impl/VDGEGLSLImpl.hpp
         src/engine/logger/Logger.cpp
         src/engine/logger/Logger.hpp
-        src/engine/model/Light.cpp
-        src/engine/model/Light.hpp
+        src/engine/math/Frustum.cpp
+        src/engine/math/Frustum.hpp
+        src/engine/math/Interpolator.cpp
+        src/engine/math/Interpolator.hpp
+        src/engine/math/Bounds.cpp
+        src/engine/math/Bounds.hpp
+        src/engine/math/Plane.hpp
+        src/engine/math/Plane.cpp
+        src/engine/math/Transform.cpp
+        src/engine/math/Transform.hpp
+        src/engine/misc/Types.hpp
+        src/engine/model/Image.cpp
+        src/engine/model/Image.hpp
+        src/engine/model/Material.cpp
         src/engine/model/Material.hpp
+        src/engine/model/Mesh.cpp
         src/engine/model/Mesh.hpp
-        src/engine/model/Texture.cpp
-        src/engine/model/Texture.hpp
+        src/engine/model/Vertex.cpp
         src/engine/model/Vertex.hpp
         src/engine/object/Entity.cpp
         src/engine/object/Entity.hpp
-        src/engine/shader/GLSLWrapper.cpp
-        src/engine/shader/GLSLWrapper.hpp
-        src/engine/shader/Shader.cpp
-        src/engine/shader/Shader.hpp
+        src/engine/property/Properties.cpp
+        src/engine/property/Properties.hpp
+        src/engine/service/TextureService.cpp
+        src/engine/service/TextureService.hpp
+        src/engine/window/Window.cpp
+        src/engine/window/Window.hpp
+        src/modules/gui/GuiQuad.cpp
+        src/modules/gui/GuiQuad.hpp
+        src/modules/gui/GuiRenderer.cpp
+        src/modules/gui/GuiRenderer.hpp
+        src/modules/gui/GuiShader.cpp
+        src/modules/gui/GuiShader.hpp
+        src/modules/gui/GuiFactory.cpp
+        src/modules/gui/GuiFactory.hpp
         src/modules/player/Player.cpp
         src/modules/player/Player.hpp
         src/modules/player/PlayerShader.cpp
         src/modules/player/PlayerShader.hpp
         src/modules/player/PlayerRenderer.cpp
         src/modules/player/PlayerRenderer.hpp
+        src/modules/player/PlayerFactory.cpp
+        src/modules/player/PlayerFactory.hpp
+        src/modules/shadow/ShadowBox.cpp
+        src/modules/shadow/ShadowBox.hpp
+        src/modules/shadow/ShadowShader.cpp
+        src/modules/shadow/ShadowShader.hpp
+        src/modules/shadow/ShadowManager.cpp
+        src/modules/shadow/ShadowManager.hpp
+        src/modules/shadow/ShadowFactory.cpp
+        src/modules/shadow/ShadowFactory.hpp
         src/modules/sky/Sky.cpp
         src/modules/sky/Sky.hpp
         src/modules/sky/SkyShader.cpp
         src/modules/sky/SkyShader.hpp
         src/modules/sky/SkyRenderer.cpp
         src/modules/sky/SkyRenderer.hpp
-        src/modules/sobj/StaticObject.cpp
-        src/modules/sobj/StaticObject.hpp
-        src/modules/sobj/StaticObjectPlacer.cpp
-        src/modules/sobj/StaticObjectPlacer.hpp
-        src/modules/sobj/StaticObjectRenderer.cpp
-        src/modules/sobj/StaticObjectRenderer.hpp
-        src/modules/sobj/StaticObjectShader.cpp
-        src/modules/sobj/StaticObjectShader.hpp
+        src/modules/sky/SkyFactory.cpp
+        src/modules/sky/SkyFactory.hpp
+        src/modules/props/Prop.cpp
+        src/modules/props/Prop.hpp
+        src/modules/props/PropsRenderer.cpp
+        src/modules/props/PropsRenderer.hpp
+        src/modules/props/PropShader.cpp
+        src/modules/props/PropShader.hpp
+        src/modules/props/PropGenerator.cpp
+        src/modules/props/PropGenerator.hpp
+        src/modules/props/PropsFactory.cpp
+        src/modules/props/PropsFactory.hpp
         src/modules/terrain/TerrainShader.cpp
         src/modules/terrain/TerrainShader.hpp
         src/modules/terrain/Terrain.cpp
@@ -125,38 +200,24 @@ add_executable(vd_game_engine
         src/modules/terrain/TerrainNode.hpp
         src/modules/terrain/Biome.cpp
         src/modules/terrain/Biome.hpp
-        src/modules/terrain/TerrainConfig.cpp
-        src/modules/terrain/TerrainConfig.hpp
         src/modules/terrain/TerrainRenderer.cpp
         src/modules/terrain/TerrainRenderer.hpp
-        src/modules/terrain/normalmap/NormalMapShader.cpp
-        src/modules/terrain/normalmap/NormalMapShader.hpp
-        src/modules/terrain/normalmap/NormalMapRenderer.cpp
-        src/modules/terrain/normalmap/NormalMapRenderer.hpp
-        src/modules/terrain/splatmap/SplatMapRenderer.cpp
-        src/modules/terrain/splatmap/SplatMapRenderer.hpp
-        src/modules/terrain/splatmap/SplatMapShader.cpp
-        src/modules/terrain/splatmap/SplatMapShader.hpp
-        src/engine/shadow/ShadowBox.cpp
-        src/engine/shadow/ShadowBox.hpp
-        src/engine/shadow/ShadowShader.cpp
-        src/engine/shadow/ShadowShader.hpp
-        src/engine/shadow/ShadowManager.cpp
-        src/engine/shadow/ShadowManager.hpp
-        src/modules/gui/GuiQuad.cpp
-        src/modules/gui/GuiQuad.hpp
-        src/modules/gui/GuiRenderer.cpp
-        src/modules/gui/GuiRenderer.hpp
-        src/modules/gui/GuiShader.cpp
-        src/modules/gui/GuiShader.hpp
+        src/modules/terrain/normalmap/NormalMapBuilder.cpp
+        src/modules/terrain/normalmap/NormalMapBuilder.hpp
+        src/modules/terrain/splatmap/SplatMapBuilder.cpp
+        src/modules/terrain/splatmap/SplatMapBuilder.hpp
+        src/modules/terrain/TerrainFactory.cpp
+        src/modules/terrain/TerrainFactory.hpp
         src/modules/water/Water.cpp
         src/modules/water/Water.hpp
         src/modules/water/WaterShader.cpp
         src/modules/water/WaterShader.hpp
         src/modules/water/WaterRenderer.cpp
         src/modules/water/WaterRenderer.hpp
-        src/modules/water/WaterConfig.cpp
-        src/modules/water/WaterConfig.hpp
+        src/modules/water/WaterFactory.cpp
+        src/modules/water/WaterFactory.hpp
+        src/modules/ModuleFactory.cpp
+        src/modules/ModuleFactory.hpp
         src/main.cpp)
 
 # dependencies

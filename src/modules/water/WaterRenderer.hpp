@@ -5,29 +5,32 @@
 #ifndef VD_GAME_ENGINE_WATERRENDERER_HPP
 #define VD_GAME_ENGINE_WATERRENDERER_HPP
 
-#include <engine/component/Renderer.hpp>
+#include <engine/component/IRenderer.hpp>
 
 #include "Water.hpp"
 
 namespace mod::water {
-    class WaterRenderer : public vd::component::Renderer {
+    class WaterRenderer : public vd::component::IRenderer {
     public:
-        WaterRenderer();
+        static const int kPriority = kDefaultPriority + 50;
+
+        WaterRenderer(WaterPtr waterPtr,
+                      vd::component::EntityShaderPtr shaderPtr,
+                      vd::Consumer beforeExecution = vd::g_kEmptyConsumer,
+                      vd::Consumer afterExecution = vd::g_kEmptyConsumer);
         ~WaterRenderer();
 
-        void init() override;
-        void update() override;
-        void render(const vd::kernel::RenderingPass& renderingPass) override;
-        void cleanUp() override;
+        void Init() override;
+        void Update() override;
+        void Render(const params_t& params) override;
+        void CleanUp() override;
 
-        WaterPtr& getWater();
-        [[nodiscard]] const WaterPtr& getWater() const;
-        void setWater(const WaterPtr& waterPtr);
+        WaterPtr& Water();
 
     private:
-        bool isReady() override;
+        bool IsReady() override;
 
-        WaterPtr waterPtr;
+        WaterPtr m_pWater;
     };
     typedef std::shared_ptr<WaterRenderer>  WaterRendererPtr;
 }

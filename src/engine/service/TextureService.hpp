@@ -1,0 +1,61 @@
+//
+// Created by Vali on 11/25/2020.
+//
+
+#ifndef VD_GAME_ENGINE_TEXTURESERVICE_HPP
+#define VD_GAME_ENGINE_TEXTURESERVICE_HPP
+
+#include <engine/api/gl/Texture.hpp>
+#include <engine/api/gl/GLTypes.hpp>
+#include <engine/exception/Exceptions.hpp>
+
+#include <algorithm>
+
+namespace vd::service {
+    namespace exception {
+        struct TextureNameUsedException : public CustomException {
+            explicit TextureNameUsedException(const std::string& name);
+        };
+    }
+
+    class TextureService {
+    public:
+        enum Attachment {
+            eDepth = 0,
+            eColor
+        };
+
+        ~TextureService();
+
+        static gl::Texture2DPtr UncachedCreateStorage(const vd::Dimension& dimension,
+                                                      const gl::TextureFormat& internalFormat,
+                                                      int level);
+
+        static gl::Texture2DPtr UncachedCreate(const vd::Dimension& dimension,
+                                               const gl::TextureFormat& internalFormat,
+                                               const gl::TextureFormat& format,
+                                               const gl::TextureType& type,
+                                               const void* data = nullptr);
+
+        static gl::Texture2DPtr Create(const std::string& name,
+                                       const vd::Dimension& dimension,
+                                       const gl::TextureFormat& internalFormat,
+                                       const gl::TextureFormat& format,
+                                       const gl::TextureType& type,
+                                       const void* data = nullptr);
+
+        static gl::Texture2DPtr CreateFromFile(const std::string& path);
+
+        static void Remove(gl::Texture2DPtr& texture);
+
+    private:
+        TextureService();
+
+        static TextureService& getInstance();
+
+        std::unordered_map<std::string, gl::Texture2DPtr> m_Cache;
+    };
+}
+
+
+#endif //VD_GAME_ENGINE_TEXTURESERVICE_HPP

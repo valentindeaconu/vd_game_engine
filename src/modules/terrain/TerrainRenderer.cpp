@@ -6,81 +6,86 @@
 
 namespace mod::terrain {
 
-    TerrainRenderer::TerrainRenderer()
-        : vd::component::Renderer()
-        , terrainPtr(nullptr)
+    TerrainRenderer::TerrainRenderer(TerrainPtr terrainPtr,
+                                     vd::component::EntityShaderPtr shaderPtr,
+                                     vd::Consumer beforeExecution,
+                                     vd::Consumer afterExecution)
+        : IRenderer(std::move(shaderPtr), std::move(beforeExecution), std::move(afterExecution))
+        , m_pTerrain(std::move(terrainPtr))
     {
     }
 
     TerrainRenderer::~TerrainRenderer() = default;
 
-    void TerrainRenderer::init() {
-        terrainPtr->init();
+    void TerrainRenderer::Link() {
+        m_pFrustumCullingManager = vd::ObjectOfType<vd::culling::FrustumCullingManager>::Find();
     }
 
-    void TerrainRenderer::update() {
-        terrainPtr->update();
+    void TerrainRenderer::Init() {
+        m_pTerrain->Init();
+
+        m_pShader->Bind();
+        m_pShader->InitUniforms(m_pTerrain);
     }
 
-    void TerrainRenderer::render(const vd::kernel::RenderingPass& renderingPass) {
-        if (isReady() && renderingPass != vd::kernel::eShadow) {
-            if (renderConfigPtr != nullptr) {
-                renderConfigPtr->enable();
-            }
+    void TerrainRenderer::Update() {
+        m_pTerrain->Update();
+    }
 
-            const auto& rootNodes = terrainPtr->GetRootNodes();
-            const auto& terrainConfigPtr = terrainPtr->GetTerrainConfig();
-
-            for (auto& rootNode : rootNodes) {
-                renderNode(rootNode, terrainConfigPtr);
-            }
-
-            if (renderConfigPtr != nullptr) {
-                renderConfigPtr->disable();
-            }
+    void TerrainRenderer::Render(const params_t& params) {
+        if (!IsReady()) {
+            vd::Logger::warn("TerrainRenderer was not ready to render");
+            return;
         }
-    }
 
-    void TerrainRenderer::renderNode(const TerrainNode::ptr_type_t& nodePtr, const TerrainConfigPtr& terrainConfigPtr) {
-        if (nodePtr != nullptr) {
-            if (nodePtr->IsLeaf()) {
-                shaderPtr->bind();
+        const auto& renderingPass = params.at("RenderingPass");
+        if (renderingPass == "Shadow") {
+            return;
+        }
 
-                shaderPtr->setUniform("localModel", nodePtr->GetTransform().get());
-                shaderPtr->setUniform("worldModel", terrainConfigPtr->getTransform());
+        Prepare();
 
-                shaderPtr->setUniform("tessFactor", nodePtr->GetTessFactors());
+        m_pShader->Bind();
 
-                shaderPtr->updateUniforms(terrainPtr, 0);
+        const auto& rootNodes = m_pTerrain->RootNodes();
 
-                vd::buffer::BufferPtrVec& buffers = terrainPtr->getBuffers();
-                buffers[0]->render();
-            } else {
-                const auto& children = nodePtr->GetChildren();
-                for (const auto& child : children) {
-                    renderNode(std::dynamic_pointer_cast<TerrainNode>(child), terrainConfigPtr);
+        for (auto& rootNode : rootNodes) {
+            RenderNode(rootNode);
+        }
+
+        Finish();
+     }
+
+    void TerrainRenderer::RenderNode(const TerrainNode::ptr_type_t& pNode) {
+        if (pNode != nullptr) {
+            using namespace vd::collision;
+
+            if (Detector::Bounds3AgainstFrustum(pNode->Bounds(), m_pFrustumCullingManager->Frustum()) != eOutside) {
+                if (pNode->Leaf()) {
+                    m_pShader->Bind();
+
+                    m_pShader->SetUniform("localModel", pNode->Transform().Get());
+                    m_pShader->SetUniform("tessFactor", pNode->TessFactors());
+
+                    m_pShader->UpdateUniforms(m_pTerrain, 0);
+
+                    vd::gl::BufferPtr& buffer = m_pTerrain->Buffers().front();
+                    buffer->Render();
+                } else {
+                    const auto& children = pNode->Children();
+                    for (const auto& child : children) {
+                        RenderNode(std::dynamic_pointer_cast<TerrainNode>(child));
+                    }
                 }
             }
         }
     }
 
-    void TerrainRenderer::cleanUp() {
-        terrainPtr->cleanUp();
+    void TerrainRenderer::CleanUp() {
+        m_pTerrain->CleanUp();
     }
 
-    TerrainPtr& TerrainRenderer::getTerrain() {
-        return terrainPtr;
-    }
-
-    const TerrainPtr& TerrainRenderer::getTerrain() const {
-        return terrainPtr;
-    }
-
-    void TerrainRenderer::setTerrain(const TerrainPtr& terrainPtr) {
-        this->terrainPtr = terrainPtr;
-    }
-
-    bool TerrainRenderer::isReady() {
-        return Renderer::isReady() && terrainPtr != nullptr;
+    bool TerrainRenderer::IsReady() {
+        return IRenderer::IsReady() && m_pTerrain != nullptr;
     }
 }

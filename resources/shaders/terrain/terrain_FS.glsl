@@ -19,19 +19,13 @@ uniform vec3 cameraPosition;
 uniform mat4 view;
 
 // light constants
-#include "../lib/light_FS.glsl"
-uniform Light lights[MAX_LIGHTS];
+#include <light.glsl>
 
 // shadow constants
 uniform float shadowDistance;
 uniform float shadowTransitionDistance;
 
-// fog constants
-uniform float fogDensity;
-uniform float fogGradient;
-uniform vec3 fogColor;
-
-#include "../lib/fog_VS.glsl"
+#include <fog.glsl>
 
 float computeShadow(vec4 fragPosLightSpace, vec3 normal, vec3 lightDirection, float shadowDistance) {
     const int pcfCount = 2;
@@ -74,11 +68,11 @@ float computeShadow(vec4 fragPosLightSpace, vec3 normal, vec3 lightDirection, fl
 
 void main() {
     // compute visibility factor
-    float visibility = getObjectVisibilityThruFog(fPosition, fogDensity, fogGradient);
+    float visibility = GetVisibilityThruFog(fPosition, fog.Density, fog.Gradient);
 
     // if the fragment is completely inside fog, set its color to fog color without other computations
     if (visibility <= 0.025f) {
-        fColor = vec4(fogColor, 1.0f);
+        fColor = vec4(fog.Color, 1.0f);
     } else {
         vec3 normal = normalize(2.0f * texture(normalMap, fTexCoords).rbg - 1.0f);
 
@@ -128,23 +122,19 @@ void main() {
         // compute light direction matrix
         mat3 lightDirectionMatrix = mat3(transpose(inverse(view)));
 
-        Material totalMat = intersectAllLights(lights, normalEye, viewDirN, lightDirectionMatrix);
-
-        // modulate with material
-        totalMat.ambient *= materialColor.xyz;
-        totalMat.diffuse *= materialColor.xyz;
-
-        // compute the distance for shadow transition
+        // compute shadow
         float distance = (length(fPosition) - (shadowDistance - shadowTransitionDistance)) / shadowTransitionDistance;
         float shadowDistanceFactor = clamp(1.0f - distance, 0.0f, 1.0f);
+        float shadow = computeShadow(fPosition_ls, normal, sun.Direction, shadowDistanceFactor);
 
-        // modulate with shadow
-        float shadow = computeShadow(fPosition_ls, normal, lights[0].position, shadowDistanceFactor);
+        // modulate with lights
+        Material material;
+        material.Ambient = materialColor.xyz;
+        material.Diffuse = materialColor.xyz;
 
-        // modulate with light
-        vec4 lighting = vec4(min(totalMat.ambient + (1.0f - shadow) * (totalMat.diffuse + totalMat.specular), 1.0f), 1.0f);
+        vec3 lighting = modulateWithLightsAndShadow(sun, lights, normalEye, viewDirN, lightDirectionMatrix, fPosition.xyz, material, shadow);
 
         // modulate with fog
-        fColor = mix(vec4(fogColor, 1.0f), lighting, visibility);
+        fColor = mix(vec4(fog.Color, 1.0f), vec4(lighting, 1.0f), visibility);
     }
 }

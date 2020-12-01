@@ -1,20 +1,16 @@
-#ifndef __ENTITY_HPP_
-#define __ENTITY_HPP_
+//
+// Created by Vali on 11/18/2020.
+//
 
-#include <glm/glm.hpp>
+#ifndef VD_GAME_ENGINE_ENTITY_HPP
+#define VD_GAME_ENGINE_ENTITY_HPP
 
-#include <engine/foundation/math/Transform.hpp>
-#include <engine/foundation/math/Bounds.hpp>
+#include <engine/math/Transform.hpp>
+#include <engine/math/Bounds.hpp>
 #include <engine/model/Mesh.hpp>
 
-#include <engine/glmodel/buffer/MeshBuffer.hpp>
-#include <engine/glmodel/buffer/PatchBuffer.hpp>
-
-#include <unordered_map>
-#include <algorithm>
-
-#include <engine/kernel/EngineWorker.hpp>
-#include <engine/kernel/EngineBlock.hpp>
+#include <engine/api/gl/MeshBuffer.hpp>
+#include <engine/api/gl/PatchBuffer.hpp>
 
 namespace vd::object {
     class Entity {
@@ -24,56 +20,35 @@ namespace vd::object {
             ePatch
         };
 
-        explicit Entity(const vd::EnginePtr& enginePtr);
+        Entity();
         ~Entity();
 
-        virtual void init();
-        virtual void update() = 0;
-        virtual void cleanUp();
+        virtual void Init();
+        virtual void Update() = 0;
+        virtual void CleanUp();
 
-        [[nodiscard]] bool shouldBeRendered() const;
+        math::Transform& LocalTransform();
+        math::Transform& WorldTransform();
 
-        vd::math::Transform& getLocalTransform();
-        [[nodiscard]] const vd::math::Transform& getLocalTransform() const;
-        void getLocalTransform(const vd::math::Transform& transform);
-
-        vd::math::Transform& getWorldTransform();
-        [[nodiscard]] const vd::math::Transform& getWorldTransform() const;
-        void getWorldTransform(const vd::math::Transform& transform);
-
-        vd::model::MeshPtrVec& getMeshes();
-        [[nodiscard]] const vd::model::MeshPtrVec& getMeshes() const;
-        void setMeshes(const vd::model::MeshPtrVec& meshes);
-
-        vd::buffer::BufferPtrVec& getBuffers();
-        [[nodiscard]] const vd::buffer::BufferPtrVec& getBuffers() const;
-
-        vd::math::Bounds3Vec& getBoundingBoxes();
-        [[nodiscard]] const vd::math::Bounds3Vec& getBoundingBoxes() const;
-        void setBoundingBoxes(const vd::math::Bounds3Vec& boundingBoxes);
-
-        vd::EnginePtr& getParentEngine();
-        [[nodiscard]] const vd::EnginePtr& getParentEngine() const;
-        void setParentEngine(const vd::EnginePtr& enginePtr);
-
+        model::MeshPtrVec& Meshes();
+        gl::BufferPtrVec& Buffers();
+        math::Bounds3Vec& BoundingBoxes();
     protected:
-        void setBufferGenerationStrategy(const BufferGenerationStrategy& strategy);
+        void SetBufferGenerationStrategy(const BufferGenerationStrategy& strategy);
 
     private:
-        void generateBuffers();
+        void GenerateBuffers();
 
-        vd::math::Transform localTransform;
-        vd::math::Transform worldTransform;
+        math::Transform m_LocalTransform;
+        math::Transform m_WorldTransform;
 
-        BufferGenerationStrategy strategy;
+        BufferGenerationStrategy m_Strategy;
 
-        vd::model::MeshPtrVec meshes;
-        vd::buffer::BufferPtrVec buffers;
-        vd::math::Bounds3Vec boundingBoxes;
-
-        vd::EnginePtr parentEnginePtr;
+        model::MeshPtrVec m_Meshes;
+        gl::BufferPtrVec m_Buffers;
+        math::Bounds3Vec m_BoundingBoxes;
     };
     typedef std::shared_ptr<Entity>	EntityPtr;
 }
 
-#endif // !__ENTITY_HPP_
+#endif //VD_GAME_ENGINE_ENTITY_HPP

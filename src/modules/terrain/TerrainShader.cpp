@@ -6,164 +6,154 @@
 
 namespace mod::terrain {
 
-    TerrainShader::TerrainShader()
-        : vd::shader::Shader()
-        , kBiomeCount(5)
-        , kMaxLights(2)
-    {
-        loadAndAddShader("./resources/shaders/terrain/terrain_VS.glsl", vd::shader::eVertexShader);
-        loadAndAddShader("./resources/shaders/terrain/terrain_TC.glsl", vd::shader::eTessellationControlShader);
-        loadAndAddShader("./resources/shaders/terrain/terrain_TE.glsl", vd::shader::eTessellationEvaluationShader);
-        loadAndAddShader("./resources/shaders/terrain/terrain_GS.glsl", vd::shader::eGeometryShader);
-        loadAndAddShader("./resources/shaders/terrain/terrain_FS.glsl", vd::shader::eFragmentShader);
+    TerrainShader::TerrainShader() : vd::component::IEntityShader() {
+        std::string vsSource;
+        vd::loader::ShaderLoader::Load("./resources/shaders/terrain/terrain_VS.glsl", vsSource);
+        AddShader(vsSource, vd::gl::Shader::eVertexShader);
 
-        compileShader();
+        std::string tcSource;
+        vd::loader::ShaderLoader::Load("./resources/shaders/terrain/terrain_TC.glsl", tcSource);
+        AddShader(tcSource, vd::gl::Shader::eTessellationControlShader);
 
-        addUniform("localModel");
-        addUniform("worldModel");
-        addUniform("view");
-        addUniform("projection");
+        std::string teSource;
+        vd::loader::ShaderLoader::Load("./resources/shaders/terrain/terrain_TE.glsl", teSource);
+        AddShader(teSource, vd::gl::Shader::eTessellationEvaluationShader);
 
-        addUniform("lightView");
-        addUniform("lightProjection");
+        std::string gsSource;
+        vd::loader::ShaderLoader::Load("./resources/shaders/terrain/terrain_GS.glsl", gsSource);
+        AddShader(gsSource, vd::gl::Shader::eGeometryShader);
 
-        addUniform("shadowDistance");
-        addUniform("shadowTransitionDistance");
+        std::string fsSource;
+        vd::loader::ShaderLoader::Load("./resources/shaders/terrain/terrain_FS.glsl", fsSource);
+        AddShader(fsSource, vd::gl::Shader::eFragmentShader);
 
-        addUniform("cameraPosition");
-
-        addUniform("scaleY");
-        addUniform("highDetailRange");
-
-        addUniform("tessellationLevel");
-
-        addUniform("heightMap");
-        addUniform("normalMap");
-        addUniform("splatMap");
-        addUniform("shadowMap");
-
-        addUniform("tessFactor");
-
-        for (int i = 0; i < kBiomeCount; ++i) {
-            addUniform("materials[" + std::to_string(i) + "].diffuseMap");
-            addUniform("materials[" + std::to_string(i) + "].normalMap");
-            addUniform("materials[" + std::to_string(i) + "].displaceMap");
-            addUniform("materials[" + std::to_string(i) + "].horizontalScaling");
-            addUniform("materials[" + std::to_string(i) + "].heightScaling");
-        }
-
-        addUniform("fogDensity");
-        addUniform("fogGradient");
-        addUniform("fogColor");
-
-        for (size_t i = 0; i < kMaxLights; ++i) {
-            std::string currentLightUniformNameBase = "lights[" + std::to_string(i) + "]";
-
-            addUniform(currentLightUniformNameBase + ".position");
-            addUniform(currentLightUniformNameBase + ".color");
-            addUniform(currentLightUniformNameBase + ".attenuation");
-            addUniform(currentLightUniformNameBase + ".ambientStrength");
-            addUniform(currentLightUniformNameBase + ".specularStrength");
-            addUniform(currentLightUniformNameBase + ".shininess");
-        }
-
-        addUniform("clipPlane");
+        Compile();
     }
 
     TerrainShader::~TerrainShader() = default;
 
-    void TerrainShader::updateUniforms(vd::object::EntityPtr entityPtr, size_t meshIndex) {
-        auto& enginePtr = entityPtr->getParentEngine();
-        setUniform("view", enginePtr->getCamera()->getViewMatrix());
-        setUniform("projection", enginePtr->getWindow()->getProjectionMatrix());
+    void TerrainShader::Link() {
+        m_pContext = vd::ObjectOfType<vd::kernel::Context>::Find();
+        m_pLightManager = vd::ObjectOfType<vd::light::LightManager>::Find();
+        m_pFogManager = vd::ObjectOfType<vd::fog::FogManager>::Find();
+        m_pCamera = vd::ObjectOfType<vd::camera::Camera>::Find();
+        m_pWindow = vd::ObjectOfType<vd::window::Window>::Find();
+        m_pShadowManager = vd::ObjectOfType<mod::shadow::ShadowManager>::Find();
+    }
 
-        setUniform("cameraPosition", enginePtr->getCamera()->getPosition());
+    void TerrainShader::AddUniforms() {
+        AddUniform("localModel");
+        AddUniform("worldModel");
+        AddUniform("view");
+        AddUniform("projection");
 
-        auto shadowManagerPtr = entityPtr->getParentEngine()->getShadowManager();
-        setUniformf("shadowDistance", shadowManagerPtr->getDistance());
-        setUniformf("shadowTransitionDistance", shadowManagerPtr->getTransitionDistance());
+        AddUniform("lightView");
+        AddUniform("lightProjection");
 
-        setUniform("lightView", shadowManagerPtr->getViewMatrix());
-        setUniform("lightProjection", shadowManagerPtr->getProjectionMatrix());
+        AddUniform("shadowDistance");
+        AddUniform("shadowTransitionDistance");
 
-        vd::model::activeTexture(0);
-        shadowManagerPtr->getShadowTexture()->bind();
-        setUniformi("shadowMap", 0);
+        AddUniform("cameraPosition");
 
-        const auto& terrainPtr = std::dynamic_pointer_cast<Terrain>(entityPtr);
-        const auto& configPtr = terrainPtr->GetTerrainConfig();
+        AddUniform("scaleY");
+        AddUniform("highDetailRange");
 
-        setUniformf("scaleY", configPtr->getScaleY());
-        setUniformi("highDetailRange", configPtr->getHighDetailRange());
+        AddUniform("tessellationLevel");
 
-        setUniformf("tessellationLevel", configPtr->getTessellationOuterLevel());
+        AddUniform("heightMap");
+        AddUniform("normalMap");
+        AddUniform("splatMap");
+        AddUniform("shadowMap");
 
-        vd::model::activeTexture(1);
-        configPtr->getHeightMap()->bind();
-        setUniformi("heightMap", 1);
+        AddUniform("tessFactor");
 
-        vd::model::activeTexture(2);
-        configPtr->getNormalMap()->bind();
-        setUniformi("normalMap", 2);
+        for (int i = 0; i < m_BiomeCount; ++i) {
+            AddUniform("materials[" + std::to_string(i) + "].diffuseMap");
+            AddUniform("materials[" + std::to_string(i) + "].normalMap");
+            AddUniform("materials[" + std::to_string(i) + "].displaceMap");
+            AddUniform("materials[" + std::to_string(i) + "].horizontalScaling");
+            AddUniform("materials[" + std::to_string(i) + "].heightScaling");
+        }
 
-        vd::model::activeTexture(3);
-        configPtr->getSplatMap()->bind();
-        setUniformi("splatMap", 3);
+        AddUniform("clipPlane");
+
+        m_pFogManager->AddUniforms(shared_from_this());
+        m_pLightManager->AddUniforms(shared_from_this());
+
+    }
+
+    void TerrainShader::InitUniforms(vd::object::EntityPtr pEntity) {
+        m_BiomeCount = std::dynamic_pointer_cast<Terrain>(pEntity)->Biomes().size();
+
+        AddUniforms();
+
+        m_pFogManager->SetUniforms(shared_from_this());
+        m_pLightManager->SetUniforms(shared_from_this());
+    }
+
+    void TerrainShader::UpdateUniforms(vd::object::EntityPtr pEntity, uint32_t meshIndex) {
+        SetUniform("worldModel", pEntity->WorldTransform().Get());
+
+        SetUniform("view", m_pCamera->ViewMatrix());
+        SetUniform("projection", m_pWindow->ProjectionMatrix());
+
+        SetUniform("cameraPosition", m_pCamera->Position());
+
+        SetUniform("shadowDistance", m_pShadowManager->Distance());
+        SetUniform("shadowTransitionDistance", m_pShadowManager->TransitionDistance());
+
+        SetUniform("lightView", m_pShadowManager->ViewMatrix());
+        SetUniform("lightProjection", m_pShadowManager->ProjectionMatrix());
+
+        vd::gl::ActiveTexture(0);
+        m_pShadowManager->ShadowTexture()->Bind();
+        SetUniform("shadowMap", 0);
+
+        const auto& terrainPtr = std::dynamic_pointer_cast<Terrain>(pEntity);
+        const auto& propsPtr = terrainPtr->Properties();
+
+        SetUniform("scaleY", propsPtr->Get<float>("ScaleY"));
+        SetUniform("highDetailRange", propsPtr->Get<int>("HighDetailRange"));
+
+        SetUniform("tessellationLevel", propsPtr->Get<float>("TessellationLevel"));
+
+        vd::gl::ActiveTexture(1);
+        terrainPtr->HeightMap()->Bind();
+        SetUniform("heightMap", 1);
+
+        vd::gl::ActiveTexture(2);
+        terrainPtr->NormalMap()->Bind();
+        SetUniform("normalMap", 2);
+
+        vd::gl::ActiveTexture(3);
+        terrainPtr->SplatMap()->Bind();
+        SetUniform("splatMap", 3);
 
         int textureUnit = 4;
-        for (int i = 0; i < kBiomeCount; ++i) {
-            vd::model::Material& material = configPtr->getBiomes()[i]->getMaterial();
+        for (int i = 0; i < m_BiomeCount; ++i) {
+            vd::model::Material& material = terrainPtr->Biomes()[i]->Material();
 
-            vd::model::activeTexture(textureUnit);
-            material.diffuseMap->bind();
-            setUniformi("materials[" + std::to_string(i) + "].diffuseMap", textureUnit);
+            vd::gl::ActiveTexture(textureUnit);
+            material.DiffuseMap()->Bind();
+            SetUniform("materials[" + std::to_string(i) + "].diffuseMap", textureUnit);
             ++textureUnit;
 
-            vd::model::activeTexture(textureUnit);
-            material.normalMap->bind();
-            setUniformi("materials[" + std::to_string(i) + "].normalMap", textureUnit);
+            vd::gl::ActiveTexture(textureUnit);
+            material.NormalMap()->Bind();
+            SetUniform("materials[" + std::to_string(i) + "].normalMap", textureUnit);
             ++textureUnit;
 
-            vd::model::activeTexture(textureUnit);
-            material.displaceMap->bind();
-            setUniformi("materials[" + std::to_string(i) + "].displaceMap", textureUnit);
+            vd::gl::ActiveTexture(textureUnit);
+            material.DisplaceMap()->Bind();
+            SetUniform("materials[" + std::to_string(i) + "].displaceMap", textureUnit);
             ++textureUnit;
 
-            setUniformf("materials[" + std::to_string(i) + "].horizontalScaling", material.horizontalScale);
+            SetUniform("materials[" + std::to_string(i) + "].horizontalScaling", material.HorizontalScale());
 
-            setUniformf("materials[" + std::to_string(i) + "].heightScaling", material.displaceScale);
+            SetUniform("materials[" + std::to_string(i) + "].heightScaling", material.DisplaceScale());
         }
 
-        setUniform("clipPlane", enginePtr->getClipPlane());
-
-        static bool loadedBasics = false;
-        if (!loadedBasics)
-        {
-            auto& engineConfigPtr = enginePtr->getEngineConfig();
-            setUniformf("fogDensity", engineConfigPtr->getFogDensity());
-            setUniformf("fogGradient", engineConfigPtr->getFogGradient());
-            setUniform("fogColor", engineConfigPtr->getFogColor());
-
-            auto& lights = engineConfigPtr->getLights();
-            for (size_t i = 0; i < kMaxLights; ++i)
-            {
-                if (i < lights.size())
-                {
-                    auto& lightPtr = lights[i];
-
-                    std::string currentLightUniformNameBase = "lights[" + std::to_string(i) + "]";
-
-                    setUniform(currentLightUniformNameBase + ".position", lightPtr->getPosition());
-                    setUniform(currentLightUniformNameBase + ".color", lightPtr->getColor());
-                    setUniform(currentLightUniformNameBase + ".attenuation", lightPtr->getAttenuation());
-                    setUniformf(currentLightUniformNameBase + ".ambientStrength", lightPtr->getAmbientStrength());
-                    setUniformf(currentLightUniformNameBase + ".specularStrength", lightPtr->getSpecularStrength());
-                    setUniformf(currentLightUniformNameBase + ".shininess", lightPtr->getShininess());
-                }
-            }
-
-            loadedBasics = true;
-        }
+        SetUniform("clipPlane", m_pContext->ClipPlane());
     }
 
 }

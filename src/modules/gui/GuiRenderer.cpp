@@ -6,61 +6,54 @@
 
 namespace mod::gui {
 
-    GuiRenderer::GuiRenderer()
-        : Renderer()
-        , guiQuadPtr(nullptr)
-        , initialised(false)
+    GuiRenderer::GuiRenderer(GuiQuadPtr guiQuadPtr,
+                             vd::component::EntityShaderPtr shaderPtr,
+                             vd::Consumer beforeExecution,
+                             vd::Consumer afterExecution)
+        : IRenderer(std::move(shaderPtr), std::move(beforeExecution), std::move(afterExecution))
+        , m_pGuiQuad(std::move(guiQuadPtr))
     {
     }
 
     GuiRenderer::~GuiRenderer() = default;
 
-    void GuiRenderer::init() {
-        if (!initialised) {
-            guiQuadPtr->init();
-            initialised = false;
-        }
+    void GuiRenderer::Init() {
+        m_pGuiQuad->Init();
+
+        m_pShader->Bind();
+
+        m_pShader->InitUniforms(m_pGuiQuad);
     }
 
-    void GuiRenderer::update() {
+    void GuiRenderer::Update() { }
 
-    }
-
-    void GuiRenderer::render(const vd::kernel::RenderingPass& renderingPass) {
-        init();
-
-        if (!isReady() || renderingPass != vd::kernel::RenderingPass::eMain)
+    void GuiRenderer::Render(const GuiRenderer::params_t& params) {
+        if (!IsReady()) {
+            vd::Logger::warn("GuiRenderer was not ready to render");
             return;
+        }
 
-        if (renderConfigPtr != nullptr)
-            renderConfigPtr->enable();
+        if (params.at("RenderingPass") != "Main") {
+            return;
+        }
 
-        shaderPtr->bind();
-        shaderPtr->updateUniforms(guiQuadPtr, 0);
-        guiQuadPtr->getBuffers()[0]->render();
+        Prepare();
 
-        if (renderConfigPtr != nullptr)
-            renderConfigPtr->disable();
+        m_pShader->Bind();
+
+        m_pShader->UpdateUniforms(m_pGuiQuad, 0);
+
+        m_pGuiQuad->Buffers()[0]->Render();
+
+        Finish();
     }
 
-    void GuiRenderer::cleanUp() {
-        guiQuadPtr->cleanUp();
+    void GuiRenderer::CleanUp() {
+        m_pGuiQuad->CleanUp();
     }
 
-    GuiQuadPtr &GuiRenderer::getGuiQuad() {
-        return guiQuadPtr;
-    }
-
-    const GuiQuadPtr &GuiRenderer::getGuiQuad() const {
-        return guiQuadPtr;
-    }
-
-    void GuiRenderer::setGuiQuad(const GuiQuadPtr& guiQuadPtr) {
-        this->guiQuadPtr = guiQuadPtr;
-    }
-
-    bool GuiRenderer::isReady() {
-        return Renderer::isReady();
+    bool GuiRenderer::IsReady() {
+        return IRenderer::IsReady();
     }
 
 }

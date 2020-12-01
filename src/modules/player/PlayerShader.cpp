@@ -1,101 +1,81 @@
+//
+// Created by Vali on 11/18/2020.
+//
+
 #include "PlayerShader.hpp"
 
-namespace mod::player
-{
-    PlayerShader::PlayerShader()
-        : vd::shader::Shader()
-        , kMaxLights(2)
-    {
-        loadAndAddShader("./resources/shaders/entity/entity_VS.glsl", vd::shader::eVertexShader);
-        loadAndAddShader("./resources/shaders/entity/entity_FS.glsl", vd::shader::eFragmentShader);
-        compileShader();
+namespace mod::player {
+    PlayerShader::PlayerShader() : vd::component::IEntityShader() {
+        std::string vsSource;
+        vd::loader::ShaderLoader::Load("./resources/shaders/entity/entity_VS.glsl", vsSource);
+        AddShader(vsSource, vd::gl::Shader::eVertexShader);
 
-        addUniform("model");
-        addUniform("view");
-        addUniform("projection");
+        std::string fsSource;
+        vd::loader::ShaderLoader::Load("./resources/shaders/entity/entity_FS.glsl", fsSource);
+        AddShader(fsSource, vd::gl::Shader::eFragmentShader);
 
-        addUniform("diffuseMap");
-        addUniform("specularMap");
-
-        addUniform("fogDensity");
-        addUniform("fogGradient");
-        addUniform("fogColor");
-
-        for (size_t i = 0; i < kMaxLights; ++i)
-        {
-            std::string currentLightUniformNameBase = "lights[" + std::to_string(i) + "]";
-
-            addUniform(currentLightUniformNameBase + ".position");
-            addUniform(currentLightUniformNameBase + ".color");
-            addUniform(currentLightUniformNameBase + ".attenuation");
-            addUniform(currentLightUniformNameBase + ".ambientStrength");
-            addUniform(currentLightUniformNameBase + ".specularStrength");
-            addUniform(currentLightUniformNameBase + ".shininess");
-        }
-
-        addUniform("clipPlane");
+        Compile();
     }
 
     PlayerShader::~PlayerShader() = default;
 
-    void PlayerShader::updateUniforms(vd::object::EntityPtr entityPtr, size_t meshIndex)
-    {
-        setUniform("model", entityPtr->getWorldTransform().get());
+    void PlayerShader::Link() {
+        m_pCamera = vd::ObjectOfType<vd::camera::Camera>::Find();
+        m_pWindow = vd::ObjectOfType<vd::window::Window>::Find();
+        m_pLightManager = vd::ObjectOfType<vd::light::LightManager>::Find();
+        m_pFogManager = vd::ObjectOfType<vd::fog::FogManager>::Find();
+        m_pContext = vd::ObjectOfType<vd::kernel::Context>::Find();
+    }
 
-        auto enginePtr = entityPtr->getParentEngine();
-        setUniform("view", enginePtr->getCamera()->getViewMatrix());
-        setUniform("projection", enginePtr->getWindow()->getProjectionMatrix());
+    void PlayerShader::AddUniforms() {
+        AddUniform("model");
+        AddUniform("view");
+        AddUniform("projection");
 
-        vd::model::MeshPtr& meshPtr = entityPtr->getMeshes()[meshIndex];
+        AddUniform("diffuseMap");
+        AddUniform("specularMap");
 
-        if (!meshPtr->materials.empty())
-        {
-            vd::model::Material& meshMaterial = meshPtr->materials.front();
+        AddUniform("transparency");
 
-            if (meshMaterial.diffuseMap != nullptr)
-            {
-                vd::model::activeTexture(0);
-                meshMaterial.diffuseMap->bind();
-                setUniformi("diffuseMap", 0);
+        m_pFogManager->AddUniforms(shared_from_this());
+
+        m_pLightManager->AddUniforms(shared_from_this());
+
+        AddUniform("clipPlane");
+    }
+
+    void PlayerShader::InitUniforms(vd::object::EntityPtr pEntity) {
+        AddUniforms();
+
+        m_pFogManager->SetUniforms(shared_from_this());
+        m_pLightManager->SetUniforms(shared_from_this());
+    }
+
+    void PlayerShader::UpdateUniforms(vd::object::EntityPtr pEntity, uint32_t meshIndex) {
+        SetUniform("model", pEntity->WorldTransform().Get());
+        SetUniform("view", m_pCamera->ViewMatrix());
+        SetUniform("projection", m_pWindow->ProjectionMatrix());
+
+        vd::model::MeshPtr& pMesh = pEntity->Meshes()[meshIndex];
+
+        SetUniform("transparency", 0);
+
+        if (!pMesh->Materials().empty()) {
+            vd::model::Material& meshMaterial = pMesh->Materials().front();
+
+            if (meshMaterial.DiffuseMap() != nullptr) {
+                vd::gl::ActiveTexture(0);
+                meshMaterial.DiffuseMap()->Bind();
+                SetUniform("diffuseMap", 0);
             }
 
-            if (meshMaterial.specularMap != nullptr)
-            {
-                vd::model::activeTexture(1);
-                meshMaterial.specularMap->bind();
-                setUniformi("specularMap", 1);
+            if (meshMaterial.SpecularMap() != nullptr) {
+                vd::gl::ActiveTexture(1);
+                meshMaterial.SpecularMap()->Bind();
+                SetUniform("specularMap", 1);
             }
         }
 
-        setUniform("clipPlane", enginePtr->getClipPlane());
-
-        static bool loadedBasics = false;
-        if (!loadedBasics)
-        {
-            auto& engineConfigPtr = enginePtr->getEngineConfig();
-            setUniformf("fogDensity", engineConfigPtr->getFogDensity());
-            setUniformf("fogGradient", engineConfigPtr->getFogGradient());
-            setUniform("fogColor", engineConfigPtr->getFogColor());
-
-            auto& lights = engineConfigPtr->getLights();
-            for (size_t i = 0; i < kMaxLights; ++i)
-            {
-                if (i < lights.size())
-                {
-                    auto& lightPtr = lights[i];
-
-                    std::string currentLightUniformNameBase = "lights[" + std::to_string(i) + "]";
-
-                    setUniform(currentLightUniformNameBase + ".position", lightPtr->getPosition());
-                    setUniform(currentLightUniformNameBase + ".color", lightPtr->getColor());
-                    setUniform(currentLightUniformNameBase + ".attenuation", lightPtr->getAttenuation());
-                    setUniformf(currentLightUniformNameBase + ".ambientStrength", lightPtr->getAmbientStrength());
-                    setUniformf(currentLightUniformNameBase + ".specularStrength", lightPtr->getSpecularStrength());
-                    setUniformf(currentLightUniformNameBase + ".shininess", lightPtr->getShininess());
-                }
-            }
-
-            loadedBasics = true;
-        }
+        SetUniform("clipPlane", m_pContext->ClipPlane());
     }
 }

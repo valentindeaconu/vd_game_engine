@@ -7,36 +7,80 @@
 
 #include <engine/object/Entity.hpp>
 
-#include <engine/foundation/algorithm//TreeHelper.hpp>
+#include <engine/loader/PropertiesLoader.hpp>
+#include <engine/service/TextureService.hpp>
+
+#include <engine/injector/Injectable.hpp>
+#include <engine/camera/Camera.hpp>
 
 #include <memory>
 #include <vector>
+#include <cmath>
 
-#include "TerrainConfig.hpp"
+#include <modules/props/Prop.hpp>
+
+#include "Biome.hpp"
 #include "TerrainNode.hpp"
+#include "normalmap/NormalMapBuilder.hpp"
+#include "splatmap/SplatMapBuilder.hpp"
 
 namespace mod::terrain {
-    class Terrain : public vd::object::Entity {
+    class Terrain : public vd::object::Entity, public vd::injector::Injectable {
     public:
-        Terrain(const vd::EnginePtr& enginePtr, const std::string& configFilePath);
+        explicit Terrain(const std::string& propsFilePath);
         ~Terrain();
 
-        void init() override;
-        void update() override;
-        void cleanUp() override;
+        void Link() override;
 
-        [[nodiscard]] const TerrainConfigPtr& GetTerrainConfig() const;
+        void Init() override;
+        void Update() override;
+        void CleanUp() override;
 
-        [[nodiscard]] const std::vector<TerrainNode::ptr_type_t>& GetRootNodes() const;
+        [[nodiscard]] const vd::property::PropertiesPtr& Properties() const;
 
+        [[nodiscard]] const std::vector<TerrainNode::ptr_type_t>& RootNodes() const;
+
+        [[nodiscard]] const BiomePtrVec& Biomes() const;
+
+        [[nodiscard]] const vd::gl::Texture2DPtr& HeightMap() const;
+        [[nodiscard]] const vd::gl::Texture2DPtr& NormalMap() const;
+        [[nodiscard]] const vd::gl::Texture2DPtr& SplatMap() const;
+
+        [[nodiscard]] float HeightAt(float x, float z) const;
+        [[nodiscard]] BiomePtrVec BiomesAt(float x, float z) const;
     private:
-        void generatePatch();
-        void populateTree(const TerrainNode::ptr_type_t& root);
+        void CreateProps();
+        void PopulateBiomes();
+        void ComputeMaps();
+        void PopulateBiomeWithProps(BiomePtr& pBiome, const std::string& biomePrefix);
 
-        TerrainConfigPtr m_ConfigPtr;
+        void GeneratePatch();
+        void PopulateTree(const TerrainNode::ptr_type_t& root);
 
-        TerrainNode::ptr_type_t m_RootNode;
-        std::vector<TerrainNode::ptr_type_t> m_ImaginaryRootNodes;
+        vd::property::PropertiesPtr m_pProperties;
+
+        // Camera required for update optimization
+        vd::camera::CameraPtr m_pCamera;
+
+        // Level of detail nodes
+        TerrainNode::ptr_type_t                 m_RootNode;
+        std::vector<TerrainNode::ptr_type_t>    m_ImaginaryRootNodes;
+
+        // Biomes
+        BiomePtrVec m_Biomes;
+
+        // Maps
+        vd::model::ImagePtr<float, vd::model::ImageFormat::eR> m_pHeightImg;
+        vd::gl::Texture2DPtr m_pHeightMap;
+
+        vd::gl::Texture2DPtr m_pNormalMap;
+
+        vd::model::ImagePtr<uint32_t, vd::model::ImageFormat::eR> m_pSplatImg;
+        vd::gl::Texture2DPtr m_pSplatMap;
+
+        // Level of detail ranges
+        std::vector<int> m_LevelOfDetailRanges;
+
     };
     typedef std::shared_ptr<Terrain>    TerrainPtr;
 }

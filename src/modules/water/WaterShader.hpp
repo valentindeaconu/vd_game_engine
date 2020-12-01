@@ -5,21 +5,37 @@
 #ifndef VD_GAME_ENGINE_WATERSHADER_HPP
 #define VD_GAME_ENGINE_WATERSHADER_HPP
 
-#include <engine/shader/Shader.hpp>
+#include <engine/component/IEntityShader.hpp>
+#include <engine/loader/ShaderLoader.hpp>
+
+#include <engine/injector/Injectable.hpp>
+#include <engine/camera/Camera.hpp>
+#include <engine/window/Window.hpp>
+#include <engine/light/LightManager.hpp>
 
 #include "Water.hpp"
 
 #include <memory>
 
 namespace mod::water {
-    class WaterShader : public vd::shader::Shader {
+    class WaterShader
+            : public vd::component::IEntityShader
+            , public vd::injector::Injectable
+            , protected std::enable_shared_from_this<WaterShader> {
     public:
         WaterShader();
         ~WaterShader();
 
-        void updateUniforms(vd::object::EntityPtr entityPtr, size_t meshIndex) override;
+        void Link() override;
+
+        void InitUniforms(vd::object::EntityPtr pEntity) override;
+        void UpdateUniforms(vd::object::EntityPtr pEntity, uint32_t meshIndex) override;
     private:
-        const int kMaxLights;
+        void AddUniforms() override;
+
+        vd::camera::CameraPtr m_pCamera;
+        vd::window::WindowPtr m_pWindow;
+        vd::light::LightManagerPtr m_pLightManager;
     };
     typedef std::shared_ptr<WaterShader>    WaterShaderPtr;
 }

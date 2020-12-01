@@ -5,33 +5,41 @@
 #ifndef VD_GAME_ENGINE_TERRAINRENDERER_HPP
 #define VD_GAME_ENGINE_TERRAINRENDERER_HPP
 
-#include <engine/component/Renderer.hpp>
+#include <engine/component/IRenderer.hpp>
+
+#include <engine/collision/Detector.hpp>
+
+#include <engine/injector/Injectable.hpp>
+#include <engine/culling/FrustumCullingManager.hpp>
 
 #include "Terrain.hpp"
-#include "TerrainConfig.hpp"
 #include "TerrainNode.hpp"
 
 namespace mod::terrain {
-    class TerrainRenderer : public vd::component::Renderer {
+    class TerrainRenderer
+            : public vd::component::IRenderer
+            , public vd::injector::Injectable {
     public:
-        TerrainRenderer();
+        TerrainRenderer(TerrainPtr terrainPtr,
+                        vd::component::EntityShaderPtr shaderPtr,
+                        vd::Consumer beforeExecution = vd::g_kEmptyConsumer,
+                        vd::Consumer afterExecution = vd::g_kEmptyConsumer);
         ~TerrainRenderer();
 
-        void init() override;
-        void update() override;
-        void render(const vd::kernel::RenderingPass& renderingPass) override;
-        void cleanUp() override;
+        void Link() override;
 
-        TerrainPtr& getTerrain();
-        [[nodiscard]] const TerrainPtr& getTerrain() const;
-        void setTerrain(const TerrainPtr& terrainPtr);
-
+        void Init() override;
+        void Update() override;
+        void Render(const params_t& params) override;
+        void CleanUp() override;
     private:
-        void renderNode(const TerrainNode::ptr_type_t& nodePtr, const TerrainConfigPtr& terrainConfigPtr);
+        void RenderNode(const TerrainNode::ptr_type_t& pNode);
 
-        bool isReady() override;
+        bool IsReady() override;
 
-        TerrainPtr terrainPtr;
+        TerrainPtr m_pTerrain;
+
+        vd::culling::FrustumCullingManagerPtr m_pFrustumCullingManager;
     };
     typedef std::shared_ptr<TerrainRenderer>	TerrainRendererPtr;
 }

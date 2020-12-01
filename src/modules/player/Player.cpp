@@ -1,119 +1,106 @@
 #include "Player.hpp"
 
-namespace mod::player
-{
-    Player::Player(const vd::EnginePtr& enginePtr, const mod::terrain::TerrainPtr& terrainPtr)
-        : Entity(enginePtr)
-        , terrainPtr(terrainPtr)
+namespace mod::player {
+    Player::Player()
+        : m_kModelYOffset(1.0f)
+        , m_CurrentSpeed(0.0f)
+        , m_CurrentTurnSpeed(0.0f)
+        , m_CurrentUpwardsSpeed(0.0f)
+        , m_Jumping(false)
     {
     }
 
     Player::~Player() = default;
 
-    void Player::init()
-    {
-        //getWorldTransform().setTranslation(256.0f, 0.0f, 256.0f);
-        //getWorldTransform().setTranslation(0.0f, 0.0f, 0.0f);
-
-        float h = terrainPtr->GetTerrainConfig()->getHeight(0.0f, 0.0f);
-
-        getWorldTransform().setTranslation(0.0f, h + modelYOffset, 0.0f);
-        //getWorldTransform().setScaling(0.5f, 0.5f, 0.5f);
-        vd::objloader::OBJLoaderPtr objLoaderPtr = std::make_shared<vd::objloader::OBJLoader>();
-
-        vd::model::MeshPtrVec& meshPtrVec = getMeshes();
-        objLoaderPtr->load("./resources/objects/myriam", "myriam.obj", meshPtrVec);
-
-        Entity::init(); // call super.init() to initialize meshBuffers;
+    void Player::Link() {
+        m_pContext = vd::ObjectOfType<vd::kernel::Context>::Find();
+        m_pCameraManager = vd::ObjectOfType<vd::camera::CameraManager>::Find();
+        m_pTerrain = vd::ObjectOfType<mod::terrain::Terrain>::Find();
+        m_pEventHandler = vd::ObjectOfType<vd::event::EventHandler>::Find();
     }
 
-    void Player::update() {
-        if (this->getParentEngine()->getCameraMode() == vd::Engine::e3rdPersonCamera)
-            input();
+    void Player::Init() {
+        float h = m_pTerrain->HeightAt(0.0f, 0.0f);
 
-        float currentAngle = getWorldTransform().getYAxisRotationAngle();
-        currentAngle += currentTurnSpeed * getParentEngine()->getFrameTime();
+        WorldTransform().Translation() = glm::vec3(0.0f, h + m_kModelYOffset, 0.0f);
 
-        if (currentAngle >= 360.0f)
-        {
+        this->Meshes() = vd::loader::ObjectLoader::Load("./resources/objects/nanosuit/nanosuit.obj");
+
+        Entity::Init(); // call super.Init() to initialize meshBuffers;
+    }
+
+    void Player::Update() {
+        if (m_pCameraManager->Mode() == vd::camera::CameraManager::eThirdPerson)
+            Input();
+
+        float currentAngle = WorldTransform().YAxisRotationAngle();
+        currentAngle += m_CurrentTurnSpeed * m_pContext->FrameTime();
+
+        if (currentAngle >= 360.0f) {
             currentAngle -= 360.0f;
-        }
-        else if (currentAngle < 0.0f)
-        {
+        } else if (currentAngle < 0.0f) {
             currentAngle = 360.0f - currentAngle;
         }
 
-        getWorldTransform().setYRotationAngle(currentAngle);
+        WorldTransform().YAxisRotationAngle() = currentAngle;
 
-        float distance = currentSpeed * getParentEngine()->getFrameTime();
+        float distance = m_CurrentSpeed * m_pContext->FrameTime();
         float dx = distance * glm::sin(glm::radians(currentAngle));
         float dz = distance * glm::cos(glm::radians(currentAngle));
 
-        glm::vec3 currentPosition = getWorldTransform().getTranslationVector();
+        glm::vec3 currentPosition = WorldTransform().Translation();
         currentPosition.x += dx;
         currentPosition.z += dz;
 
-        currentUpwardsSpeed += kGravity * getParentEngine()->getFrameTime();
-        currentPosition.y += currentUpwardsSpeed * getParentEngine()->getFrameTime();
+        m_CurrentUpwardsSpeed += m_kGravity * m_pContext->FrameTime();
+        currentPosition.y += m_CurrentUpwardsSpeed * m_pContext->FrameTime();
 
-        float height = terrainPtr->GetTerrainConfig()->getHeight(currentPosition.x, currentPosition.z);
+        float height = m_pTerrain->HeightAt(currentPosition.x, currentPosition.z);
 
-        if (currentPosition.y < height + modelYOffset) {
-            currentUpwardsSpeed = 0.0f;
-            currentPosition.y = height + modelYOffset;
-            isJumping = false;
+        if (currentPosition.y < height + m_kModelYOffset) {
+            m_CurrentUpwardsSpeed = 0.0f;
+            currentPosition.y = height + m_kModelYOffset;
+            m_Jumping = false;
         }
 
-        getWorldTransform().setTranslation(currentPosition);
+        WorldTransform().Translation() = currentPosition;
     }
 
-    void Player::cleanUp()
-    {
-        Entity::cleanUp(); // call super.cleanUp() to clear meshBuffers;
+    void Player::CleanUp() {
+        Entity::CleanUp(); // call super.CleanUp() to clear meshBuffers;
     }
 
-    void Player::jump()
-    {
-        if (!isJumping)
+    float Player::ModelYOffset() const {
+        return m_kModelYOffset;
+    }
+
+    void Player::Jump() {
+        if (!m_Jumping)
         {
-            currentUpwardsSpeed = kJumpPower;
-            isJumping = true;
+            m_CurrentUpwardsSpeed = m_kJumpPower;
+            m_Jumping = true;
         }
     }
 
-    void Player::input()
-    {
-        auto& handler = getParentEngine()->getInputHandler();
-
-        if (handler->getKeyHolding(GLFW_KEY_W))
-        {
-            this->currentSpeed = kRunSpeed;
-        }
-        else if (handler->getKeyHolding(GLFW_KEY_S))
-        {
-            this->currentSpeed = -kRunSpeed;
-        }
-        else
-        {
-            this->currentSpeed = 0.0f;
+    void Player::Input() {
+        if (m_pEventHandler->KeyHolding(GLFW_KEY_W)) {
+            this->m_CurrentSpeed = m_kRunSpeed;
+        } else if (m_pEventHandler->KeyHolding(GLFW_KEY_S)) {
+            this->m_CurrentSpeed = -m_kRunSpeed;
+        } else {
+            this->m_CurrentSpeed = 0.0f;
         }
 
-        if (handler->getKeyHolding(GLFW_KEY_D))
-        {
-            this->currentTurnSpeed = -kTurnSpeed;
-        }
-        else if (handler->getKeyHolding(GLFW_KEY_A))
-        {
-            this->currentTurnSpeed = kTurnSpeed;
-        }
-        else
-        {
-            this->currentTurnSpeed = 0.0f;
+        if (m_pEventHandler->KeyHolding(GLFW_KEY_D)) {
+            this->m_CurrentTurnSpeed = -m_kTurnSpeed;
+        } else if (m_pEventHandler->KeyHolding(GLFW_KEY_A)) {
+            this->m_CurrentTurnSpeed = m_kTurnSpeed;
+        } else {
+            this->m_CurrentTurnSpeed = 0.0f;
         }
 
-        if (handler->getKeyDown(GLFW_KEY_SPACE))
-        {
-            jump();
+        if (m_pEventHandler->KeyDown(GLFW_KEY_SPACE)) {
+            Jump();
         }
     }
 }

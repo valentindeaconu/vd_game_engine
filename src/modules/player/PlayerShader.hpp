@@ -1,21 +1,47 @@
-#ifndef __PLAYER_SHADER_HPP_
-#define __PLAYER_SHADER_HPP_
+//
+// Created by Vali on 11/18/2020.
+//
 
-#include <engine/shader/Shader.hpp>
+#ifndef VD_GAME_ENGINE_PLAYERSHADER_HPP
+#define VD_GAME_ENGINE_PLAYERSHADER_HPP
 
-namespace mod::player
-{
-    class PlayerShader : public vd::shader::Shader
-    {
+#include <engine/component/IEntityShader.hpp>
+#include <engine/loader/ShaderLoader.hpp>
+
+#include <engine/injector/ObjectOfType.hpp>
+#include <engine/injector/Injectable.hpp>
+
+#include <engine/window/Window.hpp>
+#include <engine/camera/Camera.hpp>
+#include <engine/light/LightManager.hpp>
+#include <engine/fog/FogManager.hpp>
+#include <engine/kernel/Context.hpp>
+
+namespace mod::player {
+    class PlayerShader
+            : public vd::component::IEntityShader
+            , public vd::injector::Injectable
+            , public std::enable_shared_from_this<PlayerShader> {
     public:
         PlayerShader();
         ~PlayerShader();
 
-        void updateUniforms(vd::object::EntityPtr entityPtr, size_t meshIndex) override;
+        void Link() override;
+
+        void InitUniforms(vd::object::EntityPtr pEntity) override;
+        void UpdateUniforms(vd::object::EntityPtr pEntity, uint32_t meshIndex) override;
     private:
-        const size_t kMaxLights;
+        void AddUniforms() override;
+
+        vd::light::LightManagerPtr  m_pLightManager;
+        vd::fog::FogManagerPtr      m_pFogManager;
+
+        vd::window::WindowPtr m_pWindow;
+        vd::camera::CameraPtr m_pCamera;
+
+        vd::kernel::ContextPtr m_pContext;
     };
     typedef std::shared_ptr<PlayerShader>	PlayerShaderPtr;
 }
 
-#endif // !__PLAYER_SHADER_HPP_
+#endif //VD_GAME_ENGINE_PLAYERSHADER_HPP

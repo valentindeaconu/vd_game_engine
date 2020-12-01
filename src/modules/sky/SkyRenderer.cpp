@@ -1,61 +1,64 @@
+//
+// Created by Vali on 11/11/2020.
+//
+
 #include "SkyRenderer.hpp"
 
 namespace mod::sky {
-    SkyRenderer::SkyRenderer()
-        : Renderer()
-        , skyPtr(nullptr)
+    SkyRenderer::SkyRenderer(SkyPtr pSky,
+                             vd::component::EntityShaderPtr pShader,
+                             vd::Consumer beforeExecution,
+                             vd::Consumer afterExecution)
+        : IRenderer(std::move(pShader), std::move(beforeExecution), std::move(afterExecution))
+        , m_pSky(std::move(pSky))
     {
     }
 
     SkyRenderer::~SkyRenderer() = default;
 
-    void SkyRenderer::init() {
-        skyPtr->init();
+    void SkyRenderer::Link() {
+        m_pShadowShader = vd::ObjectOfType<mod::shadow::ShadowShader>::Find();
     }
 
-    void SkyRenderer::update() {
-        skyPtr->update();
+    void SkyRenderer::Init() {
+        m_pSky->Init();
+
+        m_pShader->Bind();
+        m_pShader->InitUniforms(m_pSky);
     }
 
-    void SkyRenderer::render(const vd::kernel::RenderingPass& renderingPass) {
-        if (isReady()) {
-            if (renderConfigPtr != nullptr) {
-                renderConfigPtr->enable();
-            }
+    void SkyRenderer::Update() {
+        m_pSky->Update();
+    }
 
-            auto _shaderPtr = renderingPass == vd::kernel::RenderingPass::eShadow ? this->getShadowShader() : shaderPtr;
-
-            _shaderPtr->bind();
-            vd::buffer::BufferPtrVec& buffers = skyPtr->getBuffers();
-            for (size_t meshIndex = 0; meshIndex < buffers.size(); ++meshIndex) {
-                _shaderPtr->updateUniforms(skyPtr, meshIndex);
-                buffers[meshIndex]->render();
-            }
-
-            if (renderConfigPtr != nullptr) {
-                renderConfigPtr->disable();
-            }
+    void SkyRenderer::Render(const params_t& params) {
+        if (!IsReady()) {
+            vd::Logger::warn("SkyRenderer was not ready to render");
+            return;
         }
+
+        const auto& renderingPass = params.at("RenderingPass");
+
+        Prepare();
+
+        const vd::component::EntityShaderPtr& shaderPtr = (renderingPass == "Shadow") ? m_pShadowShader : m_pShader;
+
+        shaderPtr->Bind();
+
+        vd::gl::BufferPtrVec& buffers = m_pSky->Buffers();
+        for (size_t meshIndex = 0; meshIndex < buffers.size(); ++meshIndex) {
+            shaderPtr->UpdateUniforms(m_pSky, meshIndex);
+            buffers[meshIndex]->Render();
+        }
+
+        Finish();
     }
 
-    void SkyRenderer::cleanUp() {
-        skyPtr->cleanUp();
+    void SkyRenderer::CleanUp() {
+        m_pSky->CleanUp();
     }
 
-    SkyPtr& SkyRenderer::getSky() {
-        return skyPtr;
-    }
-
-    const SkyPtr& SkyRenderer::getSky() const {
-        return skyPtr;
-    }
-
-    void SkyRenderer::setSky(const SkyPtr& skyPtr) {
-        this->skyPtr = skyPtr;
-    }
-
-    bool SkyRenderer::isReady()
-    {
-        return Renderer::isReady() && skyPtr != nullptr;
+    bool SkyRenderer::IsReady() {
+        return IRenderer::IsReady() && m_pSky != nullptr;
     }
 }

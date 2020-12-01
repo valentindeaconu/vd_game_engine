@@ -10,40 +10,32 @@
 #include <memory>
 #include <string>
 
-#include <modules/sobj/StaticObject.hpp>
+#include <modules/props/Prop.hpp>
 
 namespace mod::terrain {
     class Biome {
     public:
         Biome();
-        explicit Biome(const std::string& name);
+        explicit Biome(std::string name);
         ~Biome();
 
-        [[nodiscard]] const std::string& getName() const;
-        void setName(const std::string& name);
+        std::string& Name();
 
-        [[nodiscard]] float getMinHeight() const;
-        void setMinHeight(float minHeight);
+        float& MinimumHeight();
+        float& MaximumHeight();
 
-        [[nodiscard]] float getMaxHeight() const;
-        void setMaxHeight(float maxHeight);
+        vd::model::Material& Material();
 
-        [[nodiscard]] std::vector<sobj::StaticObjectPtr>& getObjects();
-        void addObject(const sobj::StaticObjectPtr& object);
-
-        [[nodiscard]] vd::model::Material& getMaterial();
-        [[nodiscard]] const vd::model::Material& getMaterial() const;
-        void setMaterial(const vd::model::Material& material);
+        std::vector<props::PropPtr>& Props();
     private:
-        float minHeight;
-        float maxHeight;
+        float m_MinimumHeight;
+        float m_MaximumHeight;
 
-        std::string name;
+        std::string m_Name;
 
-        vd::model::Material material;
+        vd::model::Material m_Material;
 
-        // TODO: Not like this
-        std::vector<sobj::StaticObjectPtr> objects;
+        std::vector<props::PropPtr> m_Props;
     };
     typedef std::shared_ptr<Biome>  BiomePtr;
     typedef std::vector<BiomePtr>   BiomePtrVec;

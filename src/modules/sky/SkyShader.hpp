@@ -1,19 +1,40 @@
-#ifndef __SKY_SHADER_HPP_
-#define __SKY_SHADER_HPP_
+//
+// Created by Vali on 11/18/2020.
+//
 
-#include <engine/shader/Shader.hpp>
+#ifndef VD_GAME_ENGINE_SKYSHADER_HPP
+#define VD_GAME_ENGINE_SKYSHADER_HPP
 
-namespace mod::sky
-{
-    class SkyShader : public vd::shader::Shader
-    {
+#include <engine/component/IEntityShader.hpp>
+#include <engine/loader/ShaderLoader.hpp>
+
+#include <engine/injector/Injectable.hpp>
+
+#include <engine/camera/Camera.hpp>
+#include <engine/window/Window.hpp>
+#include <engine/fog/FogManager.hpp>
+
+namespace mod::sky {
+    class SkyShader
+            : public vd::component::IEntityShader
+            , public vd::injector::Injectable
+            , public std::enable_shared_from_this<SkyShader> {
     public:
         SkyShader();
         ~SkyShader();
 
-        void updateUniforms(vd::object::EntityPtr entityPtr, size_t meshIndex) override;
+        void Link() override;
+
+        void InitUniforms(vd::object::EntityPtr pEntity) override;
+        void UpdateUniforms(vd::object::EntityPtr pEntity, uint32_t meshIndex) override;
+    private:
+        void AddUniforms() override;
+
+        vd::camera::CameraPtr   m_pCamera;
+        vd::window::WindowPtr   m_pWindow;
+        vd::fog::FogManagerPtr  m_pFogManager;
     };
     typedef std::shared_ptr<SkyShader>	SkyShaderPtr;
 }
 
-#endif // !__SKY_SHADER_HPP_
+#endif //VD_GAME_ENGINE_SKYSHADER_HPP

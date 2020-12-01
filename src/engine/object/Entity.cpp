@@ -2,124 +2,63 @@
 
 namespace vd::object
 {
-    Entity::Entity(const vd::EnginePtr& enginePtr)
-        : parentEnginePtr(enginePtr)
-        , strategy(eMesh)
+    Entity::Entity()
+        : m_Strategy(eMesh)
     {
     }
 
     Entity::~Entity() = default;
 
-    void Entity::init() {
-        if (buffers.empty()) {
-            generateBuffers();
+    void Entity::Init() {
+        if (m_Buffers.empty()) {
+            GenerateBuffers();
         }
     }
 
-    void Entity::cleanUp() {
-        for (auto& buffer : buffers) {
-            buffer->cleanUp();
+    void Entity::CleanUp() {
+        for (auto& buffer : m_Buffers) {
+            buffer->CleanUp();
         }
-        buffers.clear();
+        m_Buffers.clear();
     }
 
-    bool Entity::shouldBeRendered() const {
-        return std::ranges::any_of(boundingBoxes.cbegin(),
-                                   boundingBoxes.cend(),
-                                   [&](const math::Bounds3& boundingBox) {
-            return parentEnginePtr
-                ->getFrustum()
-                ->checkAgainst(boundingBox.withTransform(worldTransform)) != math::Frustum::eOutside;
-        });
+    math::Transform& Entity::LocalTransform() {
+        return m_LocalTransform;
     }
 
-    vd::math::Transform& Entity::getLocalTransform() {
-        return localTransform;
+    math::Transform& Entity::WorldTransform() {
+        return m_WorldTransform;
     }
 
-    const vd::math::Transform& Entity::getLocalTransform() const {
-        return localTransform;
+    model::MeshPtrVec& Entity::Meshes() {
+        return m_Meshes;
     }
 
-    void Entity::getLocalTransform(const vd::math::Transform& transform) {
-        localTransform = transform;
+    gl::BufferPtrVec& Entity::Buffers() {
+        return m_Buffers;
     }
 
-    vd::math::Transform& Entity::getWorldTransform() {
-        return worldTransform;
+    math::Bounds3Vec& Entity::BoundingBoxes() {
+        return m_BoundingBoxes;
     }
 
-    const vd::math::Transform& Entity::getWorldTransform() const {
-        return worldTransform;
+    void Entity::SetBufferGenerationStrategy(const BufferGenerationStrategy& strategy) {
+        this->m_Strategy = strategy;
     }
 
-    void Entity::getWorldTransform(const vd::math::Transform& transform) {
-        worldTransform = transform;
-    }
+    void Entity::GenerateBuffers() {
+        Entity::CleanUp();
 
-    vd::model::MeshPtrVec& Entity::getMeshes() {
-        return meshes;
-    }
-
-    const vd::model::MeshPtrVec& Entity::getMeshes() const {
-        return meshes;
-    }
-
-    void Entity::setMeshes(const vd::model::MeshPtrVec& meshes) {
-        this->meshes = meshes;
-
-        generateBuffers();
-    }
-
-    vd::buffer::BufferPtrVec& Entity::getBuffers() {
-        return buffers;
-    }
-
-    const vd::buffer::BufferPtrVec& Entity::getBuffers() const {
-        return buffers;
-    }
-
-    vd::math::Bounds3Vec& Entity::getBoundingBoxes() {
-        return boundingBoxes;
-    }
-
-    const vd::math::Bounds3Vec& Entity::getBoundingBoxes() const {
-        return boundingBoxes;
-    }
-
-    void Entity::setBoundingBoxes(const vd::math::Bounds3Vec& boundingBoxes) {
-        this->boundingBoxes = boundingBoxes;
-    }
-
-    vd::EnginePtr& Entity::getParentEngine() {
-        return parentEnginePtr;
-    }
-
-    const vd::EnginePtr& Entity::getParentEngine() const {
-        return parentEnginePtr;
-    }
-
-    void Entity::setParentEngine(const vd::EnginePtr& enginePtr) {
-        this->parentEnginePtr = enginePtr;
-    }
-
-    void Entity::setBufferGenerationStrategy(const BufferGenerationStrategy& strategy) {
-        this->strategy = strategy;
-    }
-
-    void Entity::generateBuffers() {
-        Entity::cleanUp();
-
-        for (auto& mesh : meshes) {
-            if (strategy == eMesh) {
-                buffers.push_back(std::make_shared<vd::buffer::MeshBuffer>());
+        for (auto& mesh : m_Meshes) {
+            if (m_Strategy == eMesh) {
+                m_Buffers.push_back(std::make_shared<gl::MeshBuffer>());
             } else {
-                buffers.push_back(std::make_shared<vd::buffer::PatchBuffer>());
+                m_Buffers.push_back(std::make_shared<gl::PatchBuffer>());
             }
-            buffers.back()->allocate(mesh);
+            m_Buffers.back()->Allocate(mesh);
 
-            boundingBoxes.emplace_back();
-            boundingBoxes.back().wrapMesh(mesh);
+            m_BoundingBoxes.emplace_back();
+            m_BoundingBoxes.back().WrapMesh(mesh);
         }
     }
 }
