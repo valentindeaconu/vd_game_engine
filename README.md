@@ -33,18 +33,17 @@ Optional* Use any IDE which supports CMake (CLion, Visual Studio, Qt Creator etc
 
 ## Features
 
-* SOLID architecture
+* [SOLID](https://en.wikipedia.org/wiki/SOLID) architecture written with [PascalCase](https://wiki.c2.com/?PascalCase) and [Hungarian notation](https://en.wikipedia.org/wiki/Hungarian_notation).
 * Quad-tree terrain with dynamic tessellation, multi-texturing, heights, normals, displacement and bump normals. 
 * Biome System (up to 32 biomes, with possibility to combine multiple biome)
-* Static Objects
-* Random Object Generator with possibility to spawn a certain object in a certain biome
+* Props and Prop generator with possibility to spawn a certain object in a certain biome
 * Skybox
-* Free Camera and 3rd Person Camera
+* Free Camera and 3rd Person Camera (switchable at run-time)
 * Player object with following basic movement: forward, backward, left, right, jumping with gravity and collision with the terrain
 * Multiple lights (point lights and directional lights)
-* Shadows
+* Shadows (Shadow Mapping)
 * Support for GUI Textures
-* Water
+* Water with DuDv and Normal maps and Fresnel effect
 * Frustum Culling
 
 ## Available soon
