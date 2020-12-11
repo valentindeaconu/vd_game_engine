@@ -1,11 +1,12 @@
-/.idea/
+.idea
 
-/cmake-build-debug/
-/cmake-build-release/
+CMakeLists.txt.user
+bin
+include
+lib
 
-/include/
-/lib/
-
-/refresh_resources.cmd
-/refresh_resources.py
+refresh_resources.cmd
+refresh_resources.py
 resources/terrain/hm2.png
+
+**/__pycache__
