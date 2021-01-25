@@ -1,0 +1,70 @@
+{ "data": [
+{
+    "LIB": "STB_IMAGE",
+    "PLATFORM": {
+        "ANY": {
+            "LINK": "https://raw.githubusercontent.com/nothings/stb/master/stb_image.h",
+            "METHODS": ["DOWNLOAD stb_image.h", "HEADER"]
+        }
+    }
+},
+{
+    "LIB": "TINY_OBJ_LOADER",
+    "PLATFORM": {
+        "ANY": {
+            "LINK": "https://raw.githubusercontent.com/tinyobjloader/tinyobjloader/master/tiny_obj_loader.h",
+            "METHODS": ["DOWNLOAD tiny_obj_loader.h", "HEADER"]
+        }
+    }
+},
+{
+    "LIB": "GLFW",
+    "PLATFORM": {
+        "WIN": {
+            "LINK": "https://github.com/glfw/glfw/releases/download/3.3.2/glfw-3.3.2.bin.WIN64.zip",
+            "METHODS": ["DOWNLOAD glfw.zip", "UNZIP glfw", "LIBRARY glfw/*/lib-vc2019/* win", "HEADER glfw/*/include/* /"],
+            "LOCATION": ""
+        },
+        "UNIX": {
+            "LINK": "https://github.com/glfw/glfw/releases/download/3.3.2/glfw-3.3.2.zip",
+            "METHODS": ["DOWNLOAD glfw.zip", "UNZIP glfw", "MAKE"],
+            "LOCATION": "/"
+        }
+    }
+},
+{
+    "LIB": "GLEW",
+    "PLATFORM": {
+        "WIN": {
+            "LINK": "https://sourceforge.net/projects/glew/files/glew/2.2.0/glew-2.2.0-win32.zip/download",
+            "METHODS": ["DOWNLOAD glew.zip", "UNZIP glew", "LIBRARY glew/*/lib/Release/x64/* win", "HEADER glew/*/include/* /"]
+        },
+        "UNIX": {
+            "LINK": "https://sourceforge.net/projects/glew/files/glew/2.1.0/glew-2.1.0.zip/download",
+            "METHODS": ["DOWNLOAD glew.zip", "UNZIP glew", "MAKE"]
+        }
+    }
+},
+{
+    "LIB": "GLM",
+    "PLATFORM": {
+        "ANY": {
+            "LINK": "https://github.com/g-truc/glm/releases/download/0.9.9.8/glm-0.9.9.8.zip",
+            "METHODS": ["DOWNLOAD glm.zip", "UNZIP glm", "HEADER glm/glm/glm glm"]
+        }
+    }
+},
+{
+    "LIB": "BOOST",
+    "PLATFORM": {
+        "WIN": {
+            "LINK": "https://dl.bintray.com/boostorg/release/1.75.0/source/boost_1_75_0.zip",
+            "METHODS": ["DOWNLOAD boost.zip", "UNZIP boost", "HEADER boost/*/boost boost"]
+        },
+        "UNIX": {
+            "LINK": "https://dl.bintray.com/boostorg/release/1.75.0/source/boost_1_75_0.tar.gz",
+            "METHODS": ["DOWNLOAD boost.tar.gz", "UNZIP boost", "HEADER boost/*/boost boost"]
+        }
+    }
+}
+]}

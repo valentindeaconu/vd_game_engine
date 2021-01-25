@@ -5,18 +5,15 @@ C++ 3D Open World Game Engine using OpenGL.
 ## Installation
 Note*: Project is developed (respectively tested) under Windows 10 and Ubuntu 20.04.
 
-Dependency Manager requirements:
-1. Python
+Requirements:
+1. Python 3
 2. cmake >= 3.13
-3. (UNIX only) Super user privileges.
 
 Steps for the installation:
-1. Download the repository.
+1. Clone the repository.
 2. Open a command line and navigate to the repository root folder.
-3. (Windows Only) Select VC++ version on `dpdmgr.py`.
-4. Run `python dpdmgr.py`.
-
-Optional* Use any IDE which supports CMake (CLion, Visual Studio, Qt Creator etc.) and import the root folder.
+3. Run `python3 update.py`
+    * Updater script works as 'plug-and-play' only with VC++2019 on Windows. If you use another compiler, you have to replace `lib-vc2019` from `LIBRARY glfw/*/lib-vc2019/* win` instruction in `package.json` with one of the following supported by GLFW library: `lib-mingw-w64 lib-vc2012 lib-vc2013 lib-vc2015 lib-vc2017 lib-vc2019`.
 
 ## Libraries used
 
@@ -26,6 +23,7 @@ Optional* Use any IDE which supports CMake (CLion, Visual Studio, Qt Creator etc
 * [glm](https://glm.g-truc.net/0.9.9/index.html)
 * [tinyobjloader](https://github.com/tinyobjloader/tinyobjloader)
 * [stb_image](https://github.com/nothings/stb/blob/master/stb_image.h)
+* [boost](https://www.boost.org/)
 
 ## Plan-to-use libraries
 
@@ -61,6 +59,7 @@ Optional* Use any IDE which supports CMake (CLion, Visual Studio, Qt Creator etc
 
 ## Meta-project related TODOs
 * Successfully built on UNIX systems
+* Add support for updater on UNIX
 
 ## Goals
 
@@ -69,7 +68,7 @@ Optional* Use any IDE which supports CMake (CLion, Visual Studio, Qt Creator etc
 
 ## Known bugs
 
-* Working only using VisualC++ compiler
+* Working only using Visual C++ compiler
 
 ## Authors
 
