@@ -1,5 +1,12 @@
 #!/usr/bin/env python3
 
+"""
+    VDGE Updater is a cross-platform script used to automatically download and move in place all 
+    the libraries and headers used by the engine.
+    Keep in mind that the download links may become unavailable after a while.
+    Last archive revision: 25.01.2021
+"""
+
 import os
 import shutil
 from sys import platform
