@@ -9,35 +9,27 @@ import zipfile
 import time
 
 # Configs
-PACKAGE_FILE    = 'package.json'
-CACHE_DIR       = 'cache-vdge'
+PACKAGE_FILE    = 'archive.json'
+CACHE_DIR       = '.cache_vdge'
 INCLUDE_DIR     = 'include'
 LIB_DIR         = 'lib'
+WIN_LIB_SUBDIR  = 'win'
+UNIX_LIB_SUBDIR = 'unix'
 
 # Tools
 def join_with_any(base, rel, create_if_not_exists=False):
     path = base
-
-    if rel == '/' or rel == '.':
+    if rel == '/':
         return path
-
     for d in rel.split('/'):
         if d == '*':
             any = os.listdir(path)[0]
             path = os.path.join(path, any)
         else:
             path = os.path.join(path, d)
-
         if not os.path.isdir(path):
             os.mkdir(path)
-
     return path
-
-def clean():
-    print ('[>] Cleaning workspace...', flush=True, end=' ')
-    shutil.rmtree(INCLUDE_DIR)
-    shutil.rmtree(LIB_DIR)
-    print ('Done!')
 
 # Executable
 if __name__ == '__main__':
@@ -57,7 +49,9 @@ if __name__ == '__main__':
         os.mkdir(cache_dir_path)
 
         # Compute local lib dir path & create dir
-        local_lib_dir_path = os.path.join(cache_dir_path, LIB_DIR)
+        local_lib_dir_base_path = os.path.join(cache_dir_path, LIB_DIR)
+        os.mkdir(local_lib_dir_base_path)
+        local_lib_dir_path = os.path.join(local_lib_dir_base_path, WIN_LIB_SUBDIR if platform == 'win32' else UNIX_LIB_SUBDIR)
         os.mkdir(local_lib_dir_path)
 
         # Compute local include dir path & create dir
@@ -125,6 +119,8 @@ if __name__ == '__main__':
                         tokens = method.split(' ')
                         src = tokens[1]
                         dst = tokens[2]
+                        
+                        print ('\t[>] Moving {} files from {}:'.format('HEADER' if is_header else 'LIBRARY', package['LIB']), flush=True, end=' ')
 
                         try:
                             dst = join_with_any(local_include_dir_path if is_header else local_lib_dir_path, tokens[2])
@@ -137,7 +133,7 @@ if __name__ == '__main__':
                             src = src[0:len(src) - 2]
                             wd = None
                             try:
-                                wd = join_with_any(cache_dir_path, src)
+                                wd = join_with_any(ctx, src)
                             except:
                                 print('\t[#] Could not locate SOURCE in {} instruction!'.format('HEADER' if is_header else 'LIBRARY'))
                                 error = True
@@ -151,14 +147,12 @@ if __name__ == '__main__':
                             for el in os.listdir(wd):
                                 current = os.path.join(wd, el)
                                 future = os.path.join(dst, el)
+                                shutil.move(current, future)
 
-                                if os.path.isdir(current):
-                                    shutil.copytree(current, future)
-                                else:
-                                    shutil.copy(current, future)
+                        print ('Done!')
                 else:
                     print ('[#] Unknown method {}'.format(method))
-                    exit (1)
+                    error = True
 
             if error:
                 print ('[\033[91mFAIL\033[0m] {} was not installed.'.format(package['LIB']))
@@ -176,15 +170,15 @@ if __name__ == '__main__':
         # Library Directory
         if os.path.isdir(LIB_DIR):
             shutil.rmtree(LIB_DIR)
-        shutil.copytree(local_lib_dir_path, LIB_DIR)
+        shutil.move(local_lib_dir_base_path, LIB_DIR)
 
         # Include Directory
         if os.path.isdir(INCLUDE_DIR):
             shutil.rmtree(INCLUDE_DIR)
-        shutil.copytree(local_include_dir_path, INCLUDE_DIR)
+        shutil.move(local_include_dir_path, INCLUDE_DIR)
 
         # Cleaning up cache
-        print ('[>] Cleaning up...', flush='True', end=' ')
+        print ('[>] Cleaning up...', flush=True, end=' ')
         time.sleep(3)       
         shutil.rmtree(CACHE_DIR)
         print ('Done!')

@@ -13,7 +13,7 @@ Steps for the installation:
 1. Clone the repository.
 2. Open a command line and navigate to the repository root folder.
 3. Run `python3 update.py`
-    * Updater script works as 'plug-and-play' only with VC++2019 on Windows. If you use another compiler, you have to replace `lib-vc2019` from `LIBRARY glfw/*/lib-vc2019/* win` instruction in `package.json` with one of the following supported by GLFW library: `lib-mingw-w64 lib-vc2012 lib-vc2013 lib-vc2015 lib-vc2017 lib-vc2019`.
+    * Updater script works as 'plug-and-play' only with VC++2019 on Windows. If you use another compiler, you have to replace `lib-vc2019` from `LIBRARY glfw/*/lib-vc2019/* win` instruction in `archive.json` with one of the following supported by GLFW library: `lib-mingw-w64 lib-vc2012 lib-vc2013 lib-vc2015 lib-vc2017 lib-vc2019`.
 
 ## Libraries used
 

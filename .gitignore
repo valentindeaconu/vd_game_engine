@@ -1,6 +1,6 @@
 /.idea
 /.vscode
-/cache-vdge
+/.cache-vdge
 
 CMakeLists.txt.user
 bin
