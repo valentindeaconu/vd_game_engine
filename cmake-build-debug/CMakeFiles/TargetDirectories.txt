@@ -1,3 +1,0 @@
-C:/Users/valii/Workshop/vd_game_engine/cmake-build-debug/CMakeFiles/VDGE.dir
-C:/Users/valii/Workshop/vd_game_engine/cmake-build-debug/CMakeFiles/edit_cache.dir
-C:/Users/valii/Workshop/vd_game_engine/cmake-build-debug/CMakeFiles/rebuild_cache.dir
