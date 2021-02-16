@@ -8,12 +8,13 @@ Note*: Project is developed (respectively tested) under Windows 10 and Ubuntu 20
 Requirements:
 1. python >= 3
 2. cmake >= 3.13
+3. C++20 (VC++ >= 2012 or GCC >= 9)
 
 Steps for the installation:
 1. Clone the repository.
 2. Open a command line and navigate to the repository root folder.
 3. Run `python3 update.py` (this process may take a while)
-    * Updater script works as 'plug-and-play' only with VC++2019 on Windows. If you use another compiler, you have to replace `lib-vc2019` from `LIBRARY glfw/*/lib-vc2019/* /` instruction in `archive.json` with one of the following supported by GLFW library: `lib-mingw-w64 lib-vc2012 lib-vc2013 lib-vc2015 lib-vc2017 lib-vc2019`.
+    * On Windows you have to select proper library for your compiler from `LIBRARY glfw/*/<compiler library>/* /` instruction in `archive.json`. Choose one of the following supported by GLFW library: `lib-mingw-w64 lib-vc2012 lib-vc2013 lib-vc2015 lib-vc2017 lib-vc2019`.
 
 ## Libraries used
 
@@ -24,10 +25,6 @@ Steps for the installation:
 * [tinyobjloader](https://github.com/tinyobjloader/tinyobjloader)
 * [stb_image](https://github.com/nothings/stb/blob/master/stb_image.h)
 * [boost](https://www.boost.org/)
-
-## Plan-to-use libraries
-
-* [freetype](https://www.freetype.org/)
 
 ## Features
 
@@ -44,31 +41,14 @@ Steps for the installation:
 * Water with DuDv and Normal maps and Fresnel effect
 * Frustum Culling
 
-## Available soon
+## Project Board
 
-* Spot lighting
-* Day-night time
-* Animations
-* Animated Objects (such as mobs)
-* Particle System
-* Weather effects (raining, snowing using particle system)
-* Post-rendering effects
-* Lens flare effect
-* Support for GUI Text
-* Frustum Culling for Terrain
-
-## Meta-project related TODOs
-* Successfully built on UNIX systems
-* Add support for updater on UNIX
+Available on [Trello](https://trello.com/b/lx9Ny7u6/vdge)
 
 ## Goals
 
 * Average of 50-60 fps
 * No frame drops
-
-## Known bugs
-
-* Working only using Visual C++ compiler
 
 ## Authors
 

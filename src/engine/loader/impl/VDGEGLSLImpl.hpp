@@ -10,9 +10,8 @@
 
 #include <fstream>
 #include <unordered_map>
-#include <filesystem>
 
-#include "FileLoader.hpp"
+#include <engine/loader/FileLoader.hpp>
 
 namespace vd::loader::impl {
     class VDGEGLSLImpl : public IShaderLoader {

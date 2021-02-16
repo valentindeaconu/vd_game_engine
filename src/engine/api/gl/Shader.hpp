@@ -8,6 +8,7 @@
 #include "GL.hpp"
 
 #include <unordered_map>
+#include <memory>
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 

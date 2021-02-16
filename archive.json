@@ -22,7 +22,7 @@
     "PLATFORM": {
         "WIN": {
             "LINK": "https://github.com/glfw/glfw/releases/download/3.3.2/glfw-3.3.2.bin.WIN64.zip",
-            "METHODS": ["DOWNLOAD glfw.zip", "UNZIP glfw", "LIBRARY */lib-vc2019/* /", "HEADER */include/* /"]
+            "METHODS": ["DOWNLOAD glfw.zip", "UNZIP glfw", "LIBRARY */lib-mingw-w64/* /", "HEADER */include/* /"]
         },
         "UNIX": {
             "LINK": "https://github.com/glfw/glfw/releases/download/3.3.2/glfw-3.3.2.zip",

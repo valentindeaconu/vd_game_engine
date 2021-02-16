@@ -63,12 +63,6 @@ namespace vd::loader::impl {
                     size_t len = close - open;
 
                     // TODO: Solve for cross-platform
-                    /*
-                    std::filesystem::path dirname(m_IncludeDirectory);
-                    std::filesystem::path basename(line.substr(open, close));
-
-                    std::filesystem::path location = dirname / basename;
-                    */
 
                     std::string location;
                     if (usingIncludeDirectory) {

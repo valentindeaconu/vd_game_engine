@@ -1,42 +1,15 @@
 cmake_minimum_required(VERSION 3.16)
-project(vd_game_engine)
 
+project(VDGE LANGUAGES CXX)
+
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 include_directories(src/)
-include_directories(src/engine/api/gl)
-include_directories(src/engine/camera)
-include_directories(src/engine/camera/first)
-include_directories(src/engine/camera/free)
-include_directories(src/engine/camera/third)
-include_directories(src/engine/collision)
-include_directories(src/engine/component)
-include_directories(src/engine/core)
-include_directories(src/engine/culling)
-include_directories(src/engine/datastruct)
-include_directories(src/engine/event)
-include_directories(src/engine/exception)
-include_directories(src/engine/fog)
-include_directories(src/engine/kernel)
-include_directories(src/engine/light)
-include_directories(src/engine/loader)
-include_directories(src/engine/logger)
-include_directories(src/engine/math)
-include_directories(src/engine/misc)
-include_directories(src/engine/model)
-include_directories(src/engine/object)
-include_directories(src/engine/shader)
-include_directories(src/engine/service)
-include_directories(src/engine/window)
-include_directories(src/modules/gui)
-include_directories(src/modules/player)
-include_directories(src/modules/shadow)
-include_directories(src/modules/sky)
-include_directories(src/modules/props)
-include_directories(src/modules/terrain)
-include_directories(src/modules/water)
+include_directories(include/)
 
-add_executable(vd_game_engine
+set(SOURCES
         src/engine/api/gl/GL.hpp
         src/engine/api/gl/GLTypes.hpp
         src/engine/api/gl/Buffer.hpp
@@ -220,46 +193,41 @@ add_executable(vd_game_engine
         src/modules/ModuleFactory.hpp
         src/main.cpp)
 
-# dependencies
+if (ANDROID)
+    add_library(VDGE SHARED ${SOURCES})
+else()
+    add_executable(VDGE ${SOURCES})
+endif()
 
-# opengl
 find_package(OpenGL REQUIRED)
-
-target_include_directories(vd_game_engine PRIVATE ${OPENGL_INCLUDE_DIRS} ${CMAKE_SOURCE_DIR}/include)
 
 if (WIN32)
     find_library(GLEW_LIBRARY glew32s HINTS ${CMAKE_SOURCE_DIR}/lib/win)
     find_library(GLFW_LIBRARY glfw3 HINTS ${CMAKE_SOURCE_DIR}/lib/win)
 
-    target_link_libraries(vd_game_engine PRIVATE
-            ${GLEW_LIBRARY}
-            ${GLFW_LIBRARY}
-            opengl32)
+    target_link_libraries(VDGE PRIVATE ${GLEW_LIBRARY} ${GLFW_LIBRARY} opengl32 pthread)
+elseif(UNIX)
+    find_library(GLEW_LIBRARY GLEW HINTS ${CMAKE_SOURCE_DIR}/lib/unix)
+    find_library(GLFW_LIBRARY glfw3 HINTS ${CMAKE_SOURCE_DIR}/lib/unix)
 
+    target_link_libraries(VDGE PRIVATE ${GLFW_LIBRARY} ${GLEW_LIBRARY} GL dl X11 pthread)
+
+    add_definitions(-DGLEW_NO_GLU)
+endif()
+
+if (WIN32)
     if (EXISTS ${CMAKE_CURRENT_BINARY_DIR}/glfw3.dll)
         file(REMOVE ${CMAKE_CURRENT_BINARY_DIR}/glfw3.dll )
     endif()
     configure_file(${CMAKE_CURRENT_SOURCE_DIR}/lib/win/glfw3.dll ${CMAKE_CURRENT_BINARY_DIR}/glfw3.dll COPYONLY)
-endif (WIN32)
-
-if (UNIX)
-    find_library(GLEW_LIBRARY GLEW HINTS ${CMAKE_SOURCE_DIR}/lib/unix)
-    find_library(GLFW_LIBRARY glfw3 HINTS ${CMAKE_SOURCE_DIR}/lib/unix)
-
-    target_link_libraries(vd_game_engine PRIVATE ${GLFW_LIBRARY} ${GLEW_LIBRARY} GL dl X11 pthread)
-
-    add_definitions(-DGLEW_NO_GLU)
-
-    #if (EXISTS ${CMAKE_CURRENT_BINARY_DIR}/libGLEW.a)
-    #    file(REMOVE ${CMAKE_CURRENT_BINARY_DIR}/libGLEW.a)
-    #endif()
-    #configure_file(${CMAKE_CURRENT_SOURCE_DIR}/lib/unix/libGLEW.a ${CMAKE_CURRENT_BINARY_DIR}/libGLEW.a COPYONLY)
-endif (UNIX)
-
-# Copy resources to binary
+elseif (UNIX)
+    if (EXISTS ${CMAKE_CURRENT_BINARY_DIR}/libGLEW.a)
+        file(REMOVE ${CMAKE_CURRENT_BINARY_DIR}/libGLEW.a)
+    endif()
+    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/lib/unix/libGLEW.a ${CMAKE_CURRENT_BINARY_DIR}/libGLEW.a COPYONLY)
+endif()
 
 if (EXISTS ${CMAKE_CURRENT_BINARY_DIR}/resources)
     file(REMOVE ${CMAKE_CURRENT_BINARY_DIR}/resources)
 endif()
 file(COPY resources DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
-

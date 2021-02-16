@@ -227,17 +227,25 @@ namespace vd::collision {
 
     bool Detector::IsAnyBounds3InsideFrustum(const std::vector<vd::math::Bounds3>& boundsVec,
                                              const vd::math::Frustum& frustum) {
-        return std::ranges::any_of(boundsVec.cbegin(), boundsVec.cend(), [&](const math::Bounds3& bounds) {
-            return Bounds3AgainstFrustum(bounds, frustum) != eOutside;
-        });
+        for (const auto& bounds : boundsVec) {
+            if (Bounds3AgainstFrustum(bounds, frustum) != eOutside) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     bool Detector::IsAnyTransformedBounds3InsideFrustum(const std::vector<vd::math::Bounds3>& boundsVec,
                                                         const vd::math::Transform& transform,
                                                         const vd::math::Frustum& frustum) {
-        return std::ranges::any_of(boundsVec.cbegin(), boundsVec.cend(), [&](const math::Bounds3& bounds) {
-            return Bounds3AgainstFrustum(bounds.WithTransform(transform), frustum) != eOutside;
-        });
+        for (const auto& bounds : boundsVec) {
+            if (Bounds3AgainstFrustum(bounds.WithTransform(transform), frustum) != eOutside) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
 }

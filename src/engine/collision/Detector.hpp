@@ -10,11 +10,11 @@
 #include <memory>
 #include <algorithm>
 
-#include <Exceptions.hpp>
+#include <engine/exception/Exceptions.hpp>
 
-#include "Bounds.hpp"
-#include "Frustum.hpp"
-#include "Transform.hpp"
+#include <engine/math/Bounds.hpp>
+#include <engine/math/Frustum.hpp>
+#include <engine/math/Transform.hpp>
 
 namespace vd::collision {
     enum Relationship {
