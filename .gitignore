@@ -2,6 +2,9 @@
 /.vscode
 /.cache-vdge
 
+cmake-build-release
+cmake-build-debug
+
 CMakeLists.txt.user
 bin
 include
