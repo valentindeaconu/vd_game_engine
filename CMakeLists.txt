@@ -12,13 +12,10 @@ include_directories(include/)
 set(SOURCES
         src/engine/api/gl/GL.hpp
         src/engine/api/gl/GLTypes.hpp
+        src/engine/api/gl/Buffer.cpp
         src/engine/api/gl/Buffer.hpp
-        src/engine/api/gl/MeshBuffer.cpp
-        src/engine/api/gl/MeshBuffer.hpp
         src/engine/api/gl/FrameBuffer.cpp
         src/engine/api/gl/FrameBuffer.hpp
-        src/engine/api/gl/PatchBuffer.cpp
-        src/engine/api/gl/PatchBuffer.hpp
         src/engine/api/gl/Texture.cpp
         src/engine/api/gl/Texture.hpp
         src/engine/api/gl/Shader.cpp
@@ -42,6 +39,7 @@ set(SOURCES
         src/engine/component/IModuleFactory.hpp
         src/engine/component/RenderingPass.cpp
         src/engine/component/RenderingPass.hpp
+        src/engine/component/IEntityShader.cpp
         src/engine/component/IEntityShader.hpp
         src/engine/component/IShading.hpp
         src/engine/core/AsyncWorker.cpp
@@ -78,6 +76,8 @@ set(SOURCES
         src/engine/light/Light.hpp
         src/engine/loader/FileLoader.cpp
         src/engine/loader/FileLoader.hpp
+        src/engine/loader/FontLoader.cpp
+        src/engine/loader/FontLoader.hpp
         src/engine/loader/ImageLoader.cpp
         src/engine/loader/ImageLoader.hpp
         src/engine/loader/ObjectLoader.cpp
@@ -86,6 +86,8 @@ set(SOURCES
         src/engine/loader/ShaderLoader.hpp
         src/engine/loader/PropertiesLoader.cpp
         src/engine/loader/PropertiesLoader.hpp
+        src/engine/loader/impl/FreeTypeImpl.cpp
+        src/engine/loader/impl/FreeTypeImpl.hpp
         src/engine/loader/impl/StreamImpl.cpp
         src/engine/loader/impl/StreamImpl.hpp
         src/engine/loader/impl/StbiImpl.cpp
@@ -107,6 +109,8 @@ set(SOURCES
         src/engine/math/Transform.cpp
         src/engine/math/Transform.hpp
         src/engine/misc/Types.hpp
+        src/engine/model/Font.cpp
+        src/engine/model/Font.hpp
         src/engine/model/Image.cpp
         src/engine/model/Image.hpp
         src/engine/model/Material.cpp
@@ -117,6 +121,10 @@ set(SOURCES
         src/engine/model/Vertex.hpp
         src/engine/object/Entity.cpp
         src/engine/object/Entity.hpp
+        src/engine/object/Entity2D.cpp
+        src/engine/object/Entity2D.hpp
+        src/engine/object/Entity3D.cpp
+        src/engine/object/Entity3D.hpp
         src/engine/property/Properties.cpp
         src/engine/property/Properties.hpp
         src/engine/service/TextureService.cpp
@@ -131,6 +139,10 @@ set(SOURCES
         src/modules/gui/GuiShader.hpp
         src/modules/gui/GuiFactory.cpp
         src/modules/gui/GuiFactory.hpp
+        src/modules/gui/GuiText.cpp
+        src/modules/gui/GuiText.hpp
+        src/modules/gui/GuiTextShader.cpp
+        src/modules/gui/GuiTextShader.hpp
         src/modules/player/Player.cpp
         src/modules/player/Player.hpp
         src/modules/player/PlayerShader.cpp
@@ -197,6 +209,9 @@ if (ANDROID)
     add_library(VDGE SHARED ${SOURCES})
 else()
     add_executable(VDGE ${SOURCES})
+    add_custom_command(TARGET VDGE
+            PRE_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/resources/ $<TARGET_FILE_DIR:VDGE>/resources/)
 endif()
 
 find_package(OpenGL REQUIRED)
@@ -204,8 +219,9 @@ find_package(OpenGL REQUIRED)
 if (WIN32)
     find_library(GLEW_LIBRARY glew32s HINTS ${CMAKE_SOURCE_DIR}/lib/win)
     find_library(GLFW_LIBRARY glfw3 HINTS ${CMAKE_SOURCE_DIR}/lib/win)
+    find_library(FREETYPE_LIBRARY freetype HINTS ${CMAKE_SOURCE_DIR}/lib/win)
 
-    target_link_libraries(VDGE PRIVATE ${GLEW_LIBRARY} ${GLFW_LIBRARY} opengl32 pthread)
+    target_link_libraries(VDGE PRIVATE ${GLEW_LIBRARY} ${GLFW_LIBRARY} ${FREETYPE_LIBRARY} opengl32 pthread)
 elseif(UNIX)
     find_library(GLEW_LIBRARY GLEW HINTS ${CMAKE_SOURCE_DIR}/lib/unix)
     find_library(GLFW_LIBRARY glfw3 HINTS ${CMAKE_SOURCE_DIR}/lib/unix)

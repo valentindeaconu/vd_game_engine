@@ -1,7 +1,7 @@
 #include "PropsRenderer.hpp"
 
 namespace mod::props {
-    PropsRenderer::PropsRenderer(vd::component::EntityShaderPtr shaderPtr,
+    PropsRenderer::PropsRenderer(vd::component::IEntityShaderPtr shaderPtr,
                                  vd::Consumer beforeExecution,
                                  vd::Consumer afterExecution)
         : IRenderer(std::move(shaderPtr), std::move(beforeExecution), std::move(afterExecution))
@@ -39,7 +39,7 @@ namespace mod::props {
 
         Prepare();
 
-        vd::component::EntityShaderPtr pShader = (renderingPass != "Shadow") ? m_pShader : m_pShadowShader;
+        vd::component::IEntityShaderPtr pShader = (renderingPass != "Shadow") ? m_pShader : m_pShadowShader;
 
         pShader->Bind();
 
@@ -53,7 +53,9 @@ namespace mod::props {
                                                                m_pFrustumCullingManager->Frustum())) {
                 for (int mId = 0; mId < pProp->Buffers().size(); ++mId) {
                     pShader->UpdateUniforms(pProp, mId);
-                    pProp->Buffers()[mId]->Render();
+
+                    const int count = pProp->Meshes()[mId]->Indices().size();
+                    pProp->Buffers()[mId]->DrawElements(vd::gl::eTriangles, count, vd::gl::eUnsignedInt);
                 }
             }
         }

@@ -6,7 +6,7 @@
 
 namespace vd::loader {
 
-    vd::model::MeshPtrVec ObjectLoader::Load(const std::string& path) {
+    vd::model::Mesh3DPtrVec ObjectLoader::Load(const std::string& path) {
         impl::IObjectLoaderPtr impl = vd::ObjectOfType<impl::IObjectLoader>::Find();
 
         return impl->Load(path);

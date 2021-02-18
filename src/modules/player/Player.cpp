@@ -10,7 +10,9 @@ namespace mod::player {
     {
     }
 
-    Player::~Player() = default;
+    void Player::Setup() {
+        Meshes() = vd::loader::ObjectLoader::Load("./resources/objects/nanosuit/nanosuit.obj");
+    }
 
     void Player::Link() {
         m_pContext = vd::ObjectOfType<vd::kernel::Context>::Find();
@@ -20,13 +22,10 @@ namespace mod::player {
     }
 
     void Player::Init() {
+        Entity3D::Init();
+
         float h = m_pTerrain->HeightAt(0.0f, 0.0f);
-
         WorldTransform().Translation() = glm::vec3(0.0f, h + m_kModelYOffset, 0.0f);
-
-        this->Meshes() = vd::loader::ObjectLoader::Load("./resources/objects/nanosuit/nanosuit.obj");
-
-        Entity::Init(); // call super.Init() to initialize meshBuffers;
     }
 
     void Player::Update() {
@@ -64,10 +63,6 @@ namespace mod::player {
         }
 
         WorldTransform().Translation() = currentPosition;
-    }
-
-    void Player::CleanUp() {
-        Entity::CleanUp(); // call super.CleanUp() to clear meshBuffers;
     }
 
     float Player::ModelYOffset() const {

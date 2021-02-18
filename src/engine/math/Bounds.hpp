@@ -30,19 +30,27 @@ namespace vd::math {
         T m_Left;
         T m_Right;
     };
-    typedef Bounds<glm::vec2>   Bounds2;
+
+    class Bounds2 : public Bounds<glm::vec2> {
+    public:
+        Bounds2();
+        Bounds2(const glm::vec2& left, const glm::vec2& right);
+        explicit Bounds2(const model::Mesh2DPtr& meshPtr);
+
+        void WrapMesh(const model::Mesh2DPtr& meshPtr);
+    };
+    typedef std::vector<Bounds2>    Bounds2Vec;
 
     class Bounds3 : public Bounds<glm::vec3> {
     public:
         Bounds3();
         Bounds3(const glm::vec3& left, const glm::vec3& right);
-        explicit Bounds3(const model::MeshPtr& meshPtr);
+        explicit Bounds3(const model::Mesh3DPtr& meshPtr);
 
-        void WrapMesh(const model::MeshPtr& meshPtr);
+        void WrapMesh(const model::Mesh3DPtr& meshPtr);
 
         [[nodiscard]] Bounds3 WithTransform(const Transform& transform) const;
     };
-
     typedef std::vector<Bounds3>    Bounds3Vec;
 }
 

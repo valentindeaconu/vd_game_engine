@@ -15,7 +15,7 @@ namespace mod::water {
         static const int kPriority = kDefaultPriority + 50;
 
         WaterRenderer(WaterPtr waterPtr,
-                      vd::component::EntityShaderPtr shaderPtr,
+                      vd::component::IEntityShaderPtr shaderPtr,
                       vd::Consumer beforeExecution = vd::g_kEmptyConsumer,
                       vd::Consumer afterExecution = vd::g_kEmptyConsumer);
         ~WaterRenderer();

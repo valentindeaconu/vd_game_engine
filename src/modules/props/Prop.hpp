@@ -5,20 +5,18 @@
 #ifndef VD_GAME_ENGINE_PROP_HPP
 #define VD_GAME_ENGINE_PROP_HPP
 
-#include <engine/object/Entity.hpp>
+#include <engine/object/Entity3D.hpp>
 
-#include <engine/injector/ObjectOfType.hpp>
 #include <engine/loader/ObjectLoader.hpp>
 
 namespace mod::props {
-    class Prop : public vd::object::Entity {
+    class Prop : public vd::object::Entity3D {
     public:
-        Prop(std::string path, std::string file);
-        ~Prop();
+        Prop(std::string  path, std::string  file);
 
-        void Init() override;
+        void Setup() override;
+
         void Update() override;
-        void CleanUp() override;
     private:
         const std::string m_kPath;
         const std::string m_kFile;

@@ -5,12 +5,12 @@
 #ifndef VD_GAME_ENGINE_GUIQUAD_HPP
 #define VD_GAME_ENGINE_GUIQUAD_HPP
 
-#include <engine/object/Entity.hpp>
+#include <engine/object/Entity2D.hpp>
 
 #include <memory>
 
 namespace mod::gui {
-    class GuiQuad : public vd::object::Entity {
+    class GuiQuad : public vd::object::Entity2D {
     public:
         typedef std::function<vd::gl::Texture2DPtr()> TextureGetter;
 
@@ -18,9 +18,8 @@ namespace mod::gui {
         GuiQuad(vd::gl::Texture2DPtr texture2DPtr, const glm::vec2& position, const glm::vec2& scale);
         ~GuiQuad();
 
-        void Init() override;
+        void Setup() override;
         void Update() override;
-        void CleanUp() override;
     private:
         TextureGetter m_TextureGetter;
         vd::gl::Texture2DPtr m_Texture;

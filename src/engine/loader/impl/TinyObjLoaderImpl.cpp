@@ -8,7 +8,7 @@
 #include <tiny_obj_loader.h>
 
 namespace vd::loader::impl {
-    vd::model::MeshPtrVec TinyObjLoaderImpl::Load(const std::string &path) {
+    vd::model::Mesh3DPtrVec TinyObjLoaderImpl::Load(const std::string &path) {
         tinyobj::attrib_t attrib;
         std::vector<tinyobj::shape_t> shapes;
         std::vector<tinyobj::material_t> materials;
@@ -44,12 +44,12 @@ namespace vd::loader::impl {
 
         vd::Logger::log("[" + basename + "] " + std::to_string(shapes.size()) + " shape(s), " + std::to_string(materials.size()) + " material(s)");
 
-        vd::model::MeshPtrVec meshes;
+        vd::model::Mesh3DPtrVec meshes;
         meshes.reserve(shapes.size());
 
         // Loop over shapes
         for (auto & shape : shapes) {
-            vd::model::MeshPtr pMesh = std::make_shared<vd::model::Mesh>();
+            vd::model::Mesh3DPtr pMesh = std::make_shared<vd::model::Mesh3D>();
 
             // Loop over faces
             size_t index_offset = 0;

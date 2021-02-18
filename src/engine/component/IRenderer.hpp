@@ -1,5 +1,9 @@
-#ifndef __RENDERER_HPP_
-#define __RENDERER_HPP_
+//
+// Created by Vali on 11/10/2020.
+//
+
+#ifndef VD_GAME_ENGINE_IRENDERER_HPP
+#define VD_GAME_ENGINE_IRENDERER_HPP
 
 #include <engine/datastruct/Observer.hpp>
 #include <engine/misc/Types.hpp>
@@ -13,7 +17,7 @@ namespace vd::component {
     public:
         static const vd::datastruct::Observable::priority_t kDefaultPriority = 200;
 
-        explicit IRenderer(EntityShaderPtr shaderPtr,
+        explicit IRenderer(IEntityShaderPtr shaderPtr,
                   Consumer beforeExecution = g_kEmptyConsumer,
                   Consumer afterExecution = g_kEmptyConsumer);
         ~IRenderer();
@@ -21,17 +25,16 @@ namespace vd::component {
         void Prepare();
         void Finish();
 
-        EntityShaderPtr& Shader();
-
+        IEntityShaderPtr& Shader();
     protected:
         virtual bool IsReady();
 
         vd::Consumer m_BeforeExecution;
         vd::Consumer m_AfterExecution;
 
-        EntityShaderPtr m_pShader;
+        IEntityShaderPtr m_pShader;
     };
     typedef std::shared_ptr<IRenderer>	RendererPtr;
 }
 
-#endif // !__RENDERER_HPP_
+#endif // VD_GAME_ENGINE_IRENDERER_HPP

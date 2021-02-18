@@ -19,7 +19,7 @@
 
 namespace mod::player {
     class PlayerShader
-            : public vd::component::IEntityShader
+            : public vd::component::IEntity3DShader
             , public vd::injector::Injectable
             , public std::enable_shared_from_this<PlayerShader> {
     public:
@@ -28,8 +28,8 @@ namespace mod::player {
 
         void Link() override;
 
-        void InitUniforms(vd::object::EntityPtr pEntity) override;
-        void UpdateUniforms(vd::object::EntityPtr pEntity, uint32_t meshIndex) override;
+        void InitUniforms(vd::object::Entity3DPtr pEntity) override;
+        void UpdateUniforms(vd::object::Entity3DPtr pEntity, uint32_t meshIndex) override;
     private:
         void AddUniforms() override;
 

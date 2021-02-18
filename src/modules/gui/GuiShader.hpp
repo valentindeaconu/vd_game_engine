@@ -12,13 +12,13 @@
 #include <memory>
 
 namespace mod::gui {
-    class GuiShader : public vd::component::IEntityShader {
+    class GuiShader : public vd::component::IEntity2DShader {
     public:
         GuiShader();
         ~GuiShader();
 
-        void InitUniforms(vd::object::EntityPtr pEntity) override;
-        void UpdateUniforms(vd::object::EntityPtr pEntity, uint32_t meshIndex) override;
+        void InitUniforms(vd::object::Entity2DPtr pEntity) override;
+        void UpdateUniforms(vd::object::Entity2DPtr pEntity, uint32_t meshIndex) override;
     private:
         void AddUniforms() override;
     };

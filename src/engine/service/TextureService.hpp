@@ -34,14 +34,14 @@ namespace vd::service {
         static gl::Texture2DPtr UncachedCreate(const vd::Dimension& dimension,
                                                const gl::TextureFormat& internalFormat,
                                                const gl::TextureFormat& format,
-                                               const gl::TextureType& type,
+                                               const gl::DataType& type,
                                                const void* data = nullptr);
 
         static gl::Texture2DPtr Create(const std::string& name,
                                        const vd::Dimension& dimension,
                                        const gl::TextureFormat& internalFormat,
                                        const gl::TextureFormat& format,
-                                       const gl::TextureType& type,
+                                       const gl::DataType& type,
                                        const void* data = nullptr);
 
         static gl::Texture2DPtr CreateFromFile(const std::string& path);

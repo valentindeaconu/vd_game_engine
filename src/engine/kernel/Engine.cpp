@@ -109,7 +109,6 @@ namespace vd {
 
                 if (frameCounter >= 1000000000.0) {
                     m_pContext->FPS() = frames;
-                    std::cout << m_pContext->FPS() << std::endl;
 
                     frames = 0;
                     frameCounter = 0;

@@ -7,7 +7,7 @@
 namespace mod::terrain {
 
     TerrainRenderer::TerrainRenderer(TerrainPtr terrainPtr,
-                                     vd::component::EntityShaderPtr shaderPtr,
+                                     vd::component::IEntityShaderPtr shaderPtr,
                                      vd::Consumer beforeExecution,
                                      vd::Consumer afterExecution)
         : IRenderer(std::move(shaderPtr), std::move(beforeExecution), std::move(afterExecution))
@@ -70,7 +70,7 @@ namespace mod::terrain {
                     m_pShader->UpdateUniforms(m_pTerrain, 0);
 
                     vd::gl::BufferPtr& buffer = m_pTerrain->Buffers().front();
-                    buffer->Render();
+                    buffer->DrawArrays(vd::gl::ePatches, 16);
                 } else {
                     const auto& children = pNode->Children();
                     for (const auto& child : children) {

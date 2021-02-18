@@ -5,7 +5,7 @@
 #include "ShadowShader.hpp"
 
 namespace mod::shadow {
-    ShadowShader::ShadowShader() : vd::component::IEntityShader() {
+    ShadowShader::ShadowShader() : vd::component::IEntity3DShader() {
         std::string vsSource;
         vd::loader::ShaderLoader::Load("./resources/shaders/shadow/shadow_VS.glsl", vsSource);
         AddShader(vsSource, vd::gl::Shader::eVertexShader);
@@ -31,17 +31,17 @@ namespace mod::shadow {
         AddUniform("diffuseMap");
     }
 
-    void ShadowShader::InitUniforms(vd::object::EntityPtr pEntity) {
+    void ShadowShader::InitUniforms(vd::object::Entity3DPtr pEntity) {
         AddUniforms();
     }
 
-    void ShadowShader::UpdateUniforms(vd::object::EntityPtr pEntity, uint32_t meshIndex) {
+    void ShadowShader::UpdateUniforms(vd::object::Entity3DPtr pEntity, uint32_t meshIndex) {
         SetUniform("model", pEntity->WorldTransform().Get());
 
         SetUniform("view", m_pShadowManager->ViewMatrix());
         SetUniform("projection", m_pShadowManager->ProjectionMatrix());
 
-        vd::model::MeshPtr& pMesh = pEntity->Meshes()[meshIndex];
+        vd::model::Mesh3DPtr& pMesh = pEntity->Meshes()[meshIndex];
 
         if (!pMesh->Materials().empty()) {
             vd::model::Material& meshMaterial = pMesh->Materials().front();

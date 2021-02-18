@@ -119,7 +119,7 @@ namespace vd::gl {
         eRGBA32UI = GL_RGBA32UI
     };
 
-    enum TextureType {
+    enum DataType {
         eUnsignedByte = GL_UNSIGNED_BYTE,
         eByte = GL_BYTE,
         eUnsignedShort = GL_UNSIGNED_SHORT,
@@ -159,7 +159,6 @@ namespace vd::gl {
         eTextureMaxAnisotropy = GL_TEXTURE_MAX_ANISOTROPY_EXT,
         eTextureBorderColor = GL_TEXTURE_BORDER_COLOR
     };
-
 }
 
 #endif //VD_GAME_ENGINE_GLTYPES_HPP

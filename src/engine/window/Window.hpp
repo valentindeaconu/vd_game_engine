@@ -44,6 +44,7 @@ namespace vd::window {
         [[nodiscard]] bool CloseRequested() const;
 
         [[nodiscard]] glm::mat4 ProjectionMatrix() const;
+        [[nodiscard]] glm::mat4 OrthoProjectionMatrix() const;
     private:
         friend class WindowManager;
 

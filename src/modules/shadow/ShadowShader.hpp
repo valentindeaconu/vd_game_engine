@@ -14,15 +14,15 @@
 #include <memory>
 
 namespace mod::shadow {
-    class ShadowShader : public vd::component::IEntityShader, public vd::injector::Injectable {
+    class ShadowShader : public vd::component::IEntity3DShader, public vd::injector::Injectable {
     public:
         ShadowShader();
         ~ShadowShader();
 
         void Link() override;
 
-        void InitUniforms(vd::object::EntityPtr pEntity) override;
-        void UpdateUniforms(vd::object::EntityPtr pEntity, uint32_t meshIndex) override;
+        void InitUniforms(vd::object::Entity3DPtr pEntity) override;
+        void UpdateUniforms(vd::object::Entity3DPtr pEntity, uint32_t meshIndex) override;
     private:
         void AddUniforms() override;
 

@@ -5,7 +5,7 @@
 #ifndef VD_GAME_ENGINE_PLAYER_HPP
 #define VD_GAME_ENGINE_PLAYER_HPP
 
-#include <engine/object/Entity.hpp>
+#include <engine/object/Entity3D.hpp>
 
 #include <engine/injector/Injectable.hpp>
 
@@ -16,16 +16,16 @@
 #include <modules/terrain/Terrain.hpp>
 
 namespace mod::player {
-    class Player : public vd::object::Entity, public vd::injector::Injectable {
+    class Player : public vd::object::Entity3D, public vd::injector::Injectable {
     public:
         Player();
-        ~Player();
+
+        void Setup() override;
 
         void Link() override;
 
         void Init() override;
         void Update() override;
-        void CleanUp() override;
 
         [[nodiscard]] float ModelYOffset() const;
     private:

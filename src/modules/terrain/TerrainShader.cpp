@@ -6,7 +6,7 @@
 
 namespace mod::terrain {
 
-    TerrainShader::TerrainShader() : vd::component::IEntityShader() {
+    TerrainShader::TerrainShader() : vd::component::IEntity2DShader() {
         std::string vsSource;
         vd::loader::ShaderLoader::Load("./resources/shaders/terrain/terrain_VS.glsl", vsSource);
         AddShader(vsSource, vd::gl::Shader::eVertexShader);
@@ -82,7 +82,7 @@ namespace mod::terrain {
 
     }
 
-    void TerrainShader::InitUniforms(vd::object::EntityPtr pEntity) {
+    void TerrainShader::InitUniforms(vd::object::Entity2DPtr pEntity) {
         m_BiomeCount = std::dynamic_pointer_cast<Terrain>(pEntity)->Biomes().size();
 
         AddUniforms();
@@ -91,7 +91,7 @@ namespace mod::terrain {
         m_pLightManager->SetUniforms(shared_from_this());
     }
 
-    void TerrainShader::UpdateUniforms(vd::object::EntityPtr pEntity, uint32_t meshIndex) {
+    void TerrainShader::UpdateUniforms(vd::object::Entity2DPtr pEntity, uint32_t meshIndex) {
         SetUniform("worldModel", pEntity->WorldTransform().Get());
 
         SetUniform("view", m_pCamera->ViewMatrix());

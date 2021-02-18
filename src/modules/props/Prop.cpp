@@ -1,7 +1,5 @@
 #include "Prop.hpp"
 
-#include <utility>
-
 namespace mod::props {
     Prop::Prop(std::string path, std::string file)
         : m_kPath(std::move(path))
@@ -9,17 +7,10 @@ namespace mod::props {
     {
     }
 
-    Prop::~Prop() = default;
-
-    void Prop::Init() {
-        this->Meshes() = vd::loader::ObjectLoader::Load(m_kPath + '/' + m_kFile);
-
-        Entity::Init();
+    void Prop::Setup() {
+        // TODO: Solve for cross-platform paths
+        Meshes() = vd::loader::ObjectLoader::Load(m_kPath + '/' + m_kFile);
     }
 
     void Prop::Update() { }
-
-    void Prop::CleanUp() {
-        Entity::CleanUp();
-    }
 }

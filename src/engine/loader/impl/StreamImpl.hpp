@@ -16,7 +16,6 @@ namespace vd::loader::impl {
     public:
         void Load(const std::string& path, std::string& output) override;
     };
-
     typedef std::shared_ptr<StreamImpl> StreamImplPtr;
 }
 

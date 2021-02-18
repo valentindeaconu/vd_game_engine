@@ -5,7 +5,7 @@
 #include "PlayerShader.hpp"
 
 namespace mod::player {
-    PlayerShader::PlayerShader() : vd::component::IEntityShader() {
+    PlayerShader::PlayerShader() : vd::component::IEntity3DShader() {
         std::string vsSource;
         vd::loader::ShaderLoader::Load("./resources/shaders/entity/entity_VS.glsl", vsSource);
         AddShader(vsSource, vd::gl::Shader::eVertexShader);
@@ -44,19 +44,19 @@ namespace mod::player {
         AddUniform("clipPlane");
     }
 
-    void PlayerShader::InitUniforms(vd::object::EntityPtr pEntity) {
+    void PlayerShader::InitUniforms(vd::object::Entity3DPtr pEntity) {
         AddUniforms();
 
         m_pFogManager->SetUniforms(shared_from_this());
         m_pLightManager->SetUniforms(shared_from_this());
     }
 
-    void PlayerShader::UpdateUniforms(vd::object::EntityPtr pEntity, uint32_t meshIndex) {
+    void PlayerShader::UpdateUniforms(vd::object::Entity3DPtr pEntity, uint32_t meshIndex) {
         SetUniform("model", pEntity->WorldTransform().Get());
         SetUniform("view", m_pCamera->ViewMatrix());
         SetUniform("projection", m_pWindow->ProjectionMatrix());
 
-        vd::model::MeshPtr& pMesh = pEntity->Meshes()[meshIndex];
+        vd::model::Mesh3DPtr& pMesh = pEntity->Meshes()[meshIndex];
 
         SetUniform("transparency", 0);
 

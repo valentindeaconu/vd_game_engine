@@ -5,7 +5,7 @@
 #ifndef VD_GAME_ENGINE_TERRAIN_HPP
 #define VD_GAME_ENGINE_TERRAIN_HPP
 
-#include <engine/object/Entity.hpp>
+#include <engine/object/Entity2D.hpp>
 
 #include <engine/loader/PropertiesLoader.hpp>
 #include <engine/service/TextureService.hpp>
@@ -25,13 +25,13 @@
 #include "splatmap/SplatMapBuilder.hpp"
 
 namespace mod::terrain {
-    class Terrain : public vd::object::Entity, public vd::injector::Injectable {
+    class Terrain : public vd::object::Entity2D, public vd::injector::Injectable {
     public:
         explicit Terrain(const std::string& propsFilePath);
-        ~Terrain();
 
         void Link() override;
 
+        void Setup() override;
         void Init() override;
         void Update() override;
         void CleanUp() override;
@@ -54,7 +54,7 @@ namespace mod::terrain {
         void ComputeMaps();
         void PopulateBiomeWithProps(BiomePtr& pBiome, const std::string& biomePrefix);
 
-        void GeneratePatch();
+        std::vector<glm::vec2> GeneratePatch();
         void PopulateTree(const TerrainNode::ptr_type_t& root);
 
         vd::property::PropertiesPtr m_pProperties;

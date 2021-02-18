@@ -25,6 +25,7 @@ Steps for the installation:
 * [tinyobjloader](https://github.com/tinyobjloader/tinyobjloader)
 * [stb_image](https://github.com/nothings/stb/blob/master/stb_image.h)
 * [boost](https://www.boost.org/)
+* [FreeType](https://www.freetype.org/)
 
 ## Features
 

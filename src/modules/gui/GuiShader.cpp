@@ -6,7 +6,7 @@
 
 namespace mod::gui {
 
-    GuiShader::GuiShader() : vd::component::IEntityShader() {
+    GuiShader::GuiShader() : vd::component::IEntity2DShader() {
         std::string vsSource;
         vd::loader::ShaderLoader::Load("./resources/shaders/gui/gui_VS.glsl", vsSource);
         AddShader(vsSource, vd::gl::Shader::eVertexShader);
@@ -25,11 +25,11 @@ namespace mod::gui {
         AddUniform("guiTexture");
     }
 
-    void GuiShader::InitUniforms(vd::object::EntityPtr pEntity) {
+    void GuiShader::InitUniforms(vd::object::Entity2DPtr pEntity) {
         AddUniforms();
     }
 
-    void GuiShader::UpdateUniforms(vd::object::EntityPtr pEntity, uint32_t meshIndex) {
+    void GuiShader::UpdateUniforms(vd::object::Entity2DPtr pEntity, uint32_t meshIndex) {
         SetUniform("transform", pEntity->LocalTransform().Get());
 
         vd::gl::ActiveTexture(1);

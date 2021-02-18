@@ -51,22 +51,48 @@ namespace vd::math {
         return m_Right;
     }
 
+
+    Bounds2::Bounds2() : Bounds<glm::vec2>() { }
+
+    Bounds2::Bounds2(const glm::vec2 &left, const glm::vec2 &right) : Bounds<glm::vec2>(left, right) { }
+
+    Bounds2::Bounds2(const model::Mesh2DPtr& meshPtr) : Bounds<glm::vec2>() {
+        WrapMesh(meshPtr);
+    }
+
+    void Bounds2::WrapMesh(const model::Mesh2DPtr& meshPtr) {
+        if (meshPtr != nullptr && !meshPtr->Vertices().empty()) {
+            m_Left.x = m_Right.x = meshPtr->Vertices().front().Position.x;
+            m_Left.y = m_Right.y = meshPtr->Vertices().front().Position.y;
+
+            for (size_t i = 1; i < meshPtr->Vertices().size(); ++i) {
+                model::Vertex2D& v = meshPtr->Vertices()[i];
+
+                m_Right.x = std::max(m_Right.x, v.Position.x);
+                m_Left.x = std::min(m_Left.x, v.Position.x);
+
+                m_Right.y = std::max(m_Right.y, v.Position.y);
+                m_Left.y = std::min(m_Left.y, v.Position.y);
+            }
+        }
+    }
+
     Bounds3::Bounds3() : Bounds() { }
 
     Bounds3::Bounds3(const glm::vec3& left, const glm::vec3&right) : Bounds(left, right) { }
 
-    Bounds3::Bounds3(const model::MeshPtr& meshPtr) : Bounds<glm::vec3>() {
+    Bounds3::Bounds3(const model::Mesh3DPtr& meshPtr) : Bounds<glm::vec3>() {
         WrapMesh(meshPtr);
     }
 
-    void Bounds3::WrapMesh(const model::MeshPtr& meshPtr) {
+    void Bounds3::WrapMesh(const model::Mesh3DPtr& meshPtr) {
         if (meshPtr != nullptr && !meshPtr->Vertices().empty()) {
             m_Left.x = m_Right.x = meshPtr->Vertices().front().Position.x;
             m_Left.y = m_Right.y = meshPtr->Vertices().front().Position.y;
             m_Left.z = m_Right.z = meshPtr->Vertices().front().Position.z;
 
             for (size_t i = 1; i < meshPtr->Vertices().size(); ++i) {
-                model::Vertex& v = meshPtr->Vertices()[i];
+                model::Vertex3D& v = meshPtr->Vertices()[i];
 
                 m_Right.x = std::max(m_Right.x, v.Position.x);
                 m_Left.x = std::min(m_Left.x, v.Position.x);

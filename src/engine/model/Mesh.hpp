@@ -14,14 +14,14 @@
 #include "Material.hpp"
 
 namespace vd::model {
-    class Mesh {
+    class Mesh2D {
     public:
-        typedef std::vector<Vertex>     VertexVec;
+        typedef std::vector<Vertex2D>   VertexVec;
         typedef std::vector<GLuint>     IndexVec;
         typedef std::vector<Material>   MaterialVec;
 
-        Mesh();
-        ~Mesh();
+        Mesh2D();
+        ~Mesh2D();
 
         VertexVec&      Vertices();
         IndexVec&       Indices();
@@ -32,8 +32,29 @@ namespace vd::model {
         MaterialVec     m_Materials;
     };
 
-    typedef std::shared_ptr<Mesh>	MeshPtr;
-    typedef std::vector<MeshPtr>	MeshPtrVec;
+    typedef std::shared_ptr<Mesh2D>	Mesh2DPtr;
+    typedef std::vector<Mesh2DPtr>	Mesh2DPtrVec;
+
+    class Mesh3D {
+    public:
+        typedef std::vector<Vertex3D>   VertexVec;
+        typedef std::vector<GLuint>     IndexVec;
+        typedef std::vector<Material>   MaterialVec;
+
+        Mesh3D();
+        ~Mesh3D();
+
+        VertexVec&      Vertices();
+        IndexVec&       Indices();
+        MaterialVec&    Materials();
+    private:
+        VertexVec	    m_Vertices;
+        IndexVec	    m_Indices;
+        MaterialVec     m_Materials;
+    };
+
+    typedef std::shared_ptr<Mesh3D>	Mesh3DPtr;
+    typedef std::vector<Mesh3DPtr>	Mesh3DPtrVec;
 }
 
 #endif //VD_GAME_ENGINE_MESH_HPP

@@ -44,7 +44,7 @@ namespace vd::gl {
                     vd::Dimension(width, height),
                     gl::TextureFormat::eRGB,
                     gl::TextureFormat::eRGB,
-                    gl::TextureType::eUnsignedByte
+                    gl::DataType::eUnsignedByte
             );
 
             this->m_ColorTexture->Bind();
@@ -65,7 +65,7 @@ namespace vd::gl {
                         vd::Dimension(width, height),
                         gl::TextureFormat::eDepthComponent32,
                         gl::TextureFormat::eDepthComponent,
-                        gl::TextureType::eFloat
+                        gl::DataType::eFloat
                 );
 
                 this->m_DepthTexture->Bind();

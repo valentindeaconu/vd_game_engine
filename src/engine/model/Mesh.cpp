@@ -6,24 +6,45 @@
 
 namespace vd::model {
 
-    model::Mesh::Mesh()
+    Mesh2D::Mesh2D()
         : m_Vertices()
         , m_Indices()
         , m_Materials()
     {
     }
 
-    Mesh::~Mesh() = default;
+    Mesh2D::~Mesh2D() = default;
 
-    Mesh::VertexVec& Mesh::Vertices() {
+    Mesh2D::VertexVec& Mesh2D::Vertices() {
         return m_Vertices;
     }
 
-    Mesh::IndexVec& Mesh::Indices() {
+    Mesh2D::IndexVec& Mesh2D::Indices() {
         return m_Indices;
     }
 
-    Mesh::MaterialVec& Mesh::Materials() {
+    Mesh2D::MaterialVec& Mesh2D::Materials() {
+        return m_Materials;
+    }
+
+    Mesh3D::Mesh3D()
+        : m_Vertices()
+        , m_Indices()
+        , m_Materials()
+    {
+    }
+
+    Mesh3D::~Mesh3D() = default;
+
+    Mesh3D::VertexVec& Mesh3D::Vertices() {
+        return m_Vertices;
+    }
+
+    Mesh3D::IndexVec& Mesh3D::Indices() {
+        return m_Indices;
+    }
+
+    Mesh3D::MaterialVec& Mesh3D::Materials() {
         return m_Materials;
     }
 }

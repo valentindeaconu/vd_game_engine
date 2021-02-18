@@ -7,7 +7,7 @@
 namespace mod::water {
 
     WaterRenderer::WaterRenderer(WaterPtr waterPtr,
-                                 vd::component::EntityShaderPtr shaderPtr,
+                                 vd::component::IEntityShaderPtr shaderPtr,
                                  vd::Consumer beforeExecution,
                                  vd::Consumer afterExecution)
         : IRenderer(std::move(shaderPtr), std::move(beforeExecution), std::move(afterExecution))
@@ -45,7 +45,7 @@ namespace mod::water {
 
         m_pShader->UpdateUniforms(m_pWater, 0);
 
-        m_pWater->Buffers()[0]->Render();
+        m_pWater->Buffers()[0]->DrawElements(vd::gl::eTriangles, 6, vd::gl::eUnsignedInt);
 
         Finish();
     }

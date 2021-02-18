@@ -23,7 +23,7 @@
 
 namespace mod::terrain {
     class TerrainShader
-            : public vd::component::IEntityShader
+            : public vd::component::IEntity2DShader
             , public vd::injector::Injectable
             , public std::enable_shared_from_this<TerrainShader> {
     public:
@@ -32,8 +32,8 @@ namespace mod::terrain {
 
         void Link() override;
 
-        void InitUniforms(vd::object::EntityPtr pEntity) override;
-        void UpdateUniforms(vd::object::EntityPtr pEntity, uint32_t meshIndex) override;
+        void InitUniforms(vd::object::Entity2DPtr pEntity) override;
+        void UpdateUniforms(vd::object::Entity2DPtr pEntity, uint32_t meshIndex) override;
     private:
         void AddUniforms() override;
 

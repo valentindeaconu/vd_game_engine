@@ -10,6 +10,12 @@
 
 namespace mod::gui {
 
+    GuiFactory::GuiFactory() {
+        m_pFont = vd::loader::FontLoader::Load("./resources/fonts/Roboto/Roboto-Regular.ttf", 32);
+        m_pGuiShader = std::make_shared<GuiShader>();
+        m_pGuiTextShader = std::make_shared<GuiTextShader>();
+    }
+
     void GuiFactory::Create(const vd::EnginePtr& pEngine) {
         /// Reflection Texture
         /* CreateGui(pEngine,
@@ -42,6 +48,35 @@ namespace mod::gui {
                   },
                   glm::vec2(0.75f, -0.75f),
                   glm::vec2(0.250f, 0.250f)); */
+
+        CreateUpdatableText(
+            pEngine,
+            "0",
+            [
+                ctx = vd::ObjectOfType<vd::kernel::Context>::Find(),
+                w = vd::ObjectOfType<vd::window::Window>::Find()
+            ](UpdatableGuiText& el) {
+                bool shouldRebuild = false;
+                if (!el.Contains("U")) {
+                    el["U"] = "true";
+                    el.Position() = glm::vec2(5.0f, w->Height() - 30.0f);
+                    shouldRebuild = true;
+                }
+
+                std::string now = std::to_string(ctx->FPS());
+                if (now != el.Text()) {
+                    el.Text() = now;
+                    shouldRebuild = true;
+                }
+
+                if (shouldRebuild) {
+                    el.Rebuild();
+                }
+            },
+            glm::vec2(200, 200),
+            1.0f,
+            glm::vec3(0.0039f, 0.4745f, 0.4353f)
+        );
     }
 
     void GuiFactory::CreateGui(const vd::EnginePtr& pEngine,
@@ -50,11 +85,68 @@ namespace mod::gui {
                                const glm::vec2& scale) {
 
         GuiQuadPtr pGuiQuad = std::make_shared<GuiQuad>(textureGetter, position, scale);
-        GuiShaderPtr pGuiShader = std::make_shared<GuiShader>();
         GuiRendererPtr pGuiRenderer = std::make_shared<GuiRenderer>(pGuiQuad,
-                                                                    pGuiShader,
+                                                                    m_pGuiShader,
                                                                     []() { glFrontFace(GL_CCW); },
                                                                     []() { glFrontFace(GL_CW); });
+
+        pEngine->Subscribe(pGuiRenderer, GuiRenderer::kPriority);
+    }
+
+    void GuiFactory::CreateText(const vd::EnginePtr& pEngine,
+                                const std::string& text,
+                                const glm::vec2& position,
+                                float scale,
+                                const glm::vec3& color) {
+        GuiTextPtr pGuiText = std::make_shared<GuiText>(text, m_pFont, position, scale, color);
+
+        vd::Consumer before = []() {
+            glFrontFace(GL_CW);
+            glEnable(GL_BLEND);
+            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+            glDisable(GL_DEPTH_TEST);
+        };
+
+        vd::Consumer after = []() {
+            glFrontFace(GL_CCW);
+            glDisable(GL_BLEND);
+            glEnable(GL_DEPTH_TEST);
+        };
+
+        GuiRendererPtr pGuiRenderer = std::make_shared<GuiRenderer>(pGuiText,
+                                                                    m_pGuiTextShader,
+                                                                    before,
+                                                                    after);
+
+        pEngine->Subscribe(pGuiRenderer, GuiRenderer::kPriority);
+    }
+
+    void GuiFactory::CreateUpdatableText(const vd::EnginePtr& pEngine,
+                                         const std::string& text,
+                                         const UpdatableGuiText::UpdateConsumer& updateFn,
+                                         const glm::vec2& position,
+                                         float scale,
+                                         const glm::vec3& color)
+    {
+        UpdatableGuiTextPtr pGuiText = std::make_shared<UpdatableGuiText>(text, m_pFont, updateFn, position, scale, color);
+
+        vd::Consumer before = []() {
+            glFrontFace(GL_CW);
+            glEnable(GL_BLEND);
+            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+            glDisable(GL_DEPTH_TEST);
+        };
+
+        vd::Consumer after = []() {
+            glFrontFace(GL_CCW);
+            glDisable(GL_BLEND);
+            glEnable(GL_DEPTH_TEST);
+        };
+
+        GuiRendererPtr pGuiRenderer = std::make_shared<GuiRenderer>(pGuiText,
+                                                                    m_pGuiTextShader,
+                                                                    before,
+                                                                    after);
 
         pEngine->Subscribe(pGuiRenderer, GuiRenderer::kPriority);
     }

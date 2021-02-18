@@ -21,7 +21,7 @@ namespace mod::props {
             : public vd::component::IRenderer
             , public vd::injector::Injectable {
     public:
-        explicit PropsRenderer(vd::component::EntityShaderPtr shaderPtr,
+        explicit PropsRenderer(vd::component::IEntityShaderPtr shaderPtr,
                       vd::Consumer beforeExecution = vd::g_kEmptyConsumer,
                       vd::Consumer afterExecution = vd::g_kEmptyConsumer);
         ~PropsRenderer();

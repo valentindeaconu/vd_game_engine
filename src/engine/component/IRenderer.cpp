@@ -1,7 +1,7 @@
 #include "IRenderer.hpp"
 
 namespace vd::component {
-    IRenderer::IRenderer(EntityShaderPtr shaderPtr,
+    IRenderer::IRenderer(IEntityShaderPtr shaderPtr,
                          vd::Consumer beforeExecution,
                          vd::Consumer afterExecution)
         : m_pShader(std::move(shaderPtr))
@@ -20,7 +20,7 @@ namespace vd::component {
         m_AfterExecution();
     }
 
-    EntityShaderPtr& IRenderer::Shader() {
+    IEntityShaderPtr& IRenderer::Shader() {
         return m_pShader;
     }
 

@@ -48,6 +48,10 @@ namespace vd {
         // Shader Loader
         loader::impl::VDGEGLSLImplPtr pVDGEGLSLImpl = std::make_shared<loader::impl::VDGEGLSLImpl>();
         ObjectOfType<loader::impl::IShaderLoader>::Provide(pVDGEGLSLImpl);
+
+        // Font Loader
+        loader::impl::FreeTypeImplPtr pFreeTypeImpl = std::make_shared<loader::impl::FreeTypeImpl>();
+        ObjectOfType<loader::impl::IFontLoader>::Provide(pFreeTypeImpl);
     }
 
     void EngineFactory::CreateManagers(EnginePtr& pEngine) {

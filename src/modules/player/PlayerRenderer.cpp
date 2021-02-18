@@ -2,7 +2,7 @@
 
 namespace mod::player {
     PlayerRenderer::PlayerRenderer(PlayerPtr playerPtr,
-                                   vd::component::EntityShaderPtr shaderPtr,
+                                   vd::component::IEntityShaderPtr shaderPtr,
                                    vd::Consumer beforeExecution,
                                    vd::Consumer afterExecution)
         : IRenderer(std::move(shaderPtr), std::move(beforeExecution), std::move(afterExecution))
@@ -40,14 +40,16 @@ namespace mod::player {
 
         Prepare();
 
-        const vd::component::EntityShaderPtr& shaderPtr = (renderingPass == "Shadow") ? m_pShadowShader : m_pShader;
+        const vd::component::IEntityShaderPtr& shaderPtr = (renderingPass == "Shadow") ? m_pShadowShader : m_pShader;
 
         shaderPtr->Bind();
 
         vd::gl::BufferPtrVec& buffers = m_pPlayer->Buffers();
+        vd::model::Mesh3DPtrVec& meshes = m_pPlayer->Meshes();
         for (size_t meshIndex = 0; meshIndex < buffers.size(); ++meshIndex) {
             shaderPtr->UpdateUniforms(m_pPlayer, meshIndex);
-            buffers[meshIndex]->Render();
+            const int count = meshes[meshIndex]->Indices().size();
+            buffers[meshIndex]->DrawElements(vd::gl::eTriangles, count, vd::gl::eUnsignedInt);
         }
 
         Finish();

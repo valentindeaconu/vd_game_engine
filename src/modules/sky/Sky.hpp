@@ -1,19 +1,21 @@
-#ifndef __SKY_HPP_
-#define __SKY_HPP_
+//
+// Created by Vali on 2/17/2021.
+//
 
-#include <engine/object/Entity.hpp>
+#ifndef VDGE_SKY_HPP
+#define VDGE_SKY_HPP
+
+#include <engine/object/Entity3D.hpp>
 
 #include <memory>
 
 namespace mod::sky {
-    class Sky : public vd::object::Entity {
+    class Sky : public vd::object::Entity3D {
     public:
-        Sky();
-        ~Sky();
+        void Setup() override;
 
-        void Init() override;
         void Update() override;
-        void CleanUp() override;
+
     private:
         const std::vector<float> kSkyboxVertices = {
             -1.0f, -1.0f, -1.0f,    // 0
@@ -39,4 +41,4 @@ namespace mod::sky {
     typedef std::shared_ptr<Sky>	SkyPtr;
 }
 
-#endif // !__SKY_HPP_
+#endif // VDGE_SKY_HPP

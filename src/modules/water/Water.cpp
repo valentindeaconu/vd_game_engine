@@ -19,7 +19,7 @@ namespace mod::water {
         m_pContext = vd::ObjectOfType<vd::kernel::Context>::Find();
     }
 
-    void Water::Init() {
+    void Water::Setup() {
         LocalTransform().Scale() = glm::vec3(6000.0f, 0.0f, 6000.0f);
         LocalTransform().Translation() = glm::vec3(-3000.0f, 180.0f, -3000.0f);
 
@@ -36,8 +36,6 @@ namespace mod::water {
                                    m_pProperties->Get<int>("Refraction.Height"),
                                    true,
                                    vd::gl::DepthAttachment::eDepthTexture);
-
-        Entity::Init();
     }
 
     void Water::Update() {
@@ -52,7 +50,7 @@ namespace mod::water {
         m_pReflectionFBO->CleanUp();
         m_pRefractionFBO->CleanUp();
 
-        Entity::CleanUp();
+        Entity3D::CleanUp();
     }
 
     const vd::property::PropertiesPtr& Water::Properties() const {
@@ -119,16 +117,16 @@ namespace mod::water {
     }
 
     void Water::GeneratePatch() {
-        vd::model::MeshPtr meshPtr = std::make_shared<vd::model::Mesh>();
+        vd::model::Mesh3DPtr meshPtr = std::make_shared<vd::model::Mesh3D>();
 
         meshPtr->Vertices() = {
-            vd::model::Vertex(0.0f, 1.0f),
-            vd::model::Vertex(0.0f, 0.0f),
-            vd::model::Vertex(1.0f, 1.0f),
-            vd::model::Vertex(1.0f, 0.0f)
+            vd::model::Vertex3D(0.0f, 0.0f, 1.0f),
+            vd::model::Vertex3D(0.0f, 0.0f, 0.0f),
+            vd::model::Vertex3D(1.0f, 0.0f, 1.0f),
+            vd::model::Vertex3D(1.0f, 0.0f, 0.0f)
         };
 
-        meshPtr->Indices() = {0, 2, 1, 1, 2, 3 };
+        meshPtr->Indices() = {0, 2, 1, 1, 2, 3};
 
         Meshes().push_back(meshPtr);
     }

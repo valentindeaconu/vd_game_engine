@@ -8,17 +8,27 @@
 #include <engine/component/IRenderer.hpp>
 
 #include "GuiQuad.hpp"
+#include "GuiText.hpp"
 
 namespace mod::gui {
     class GuiRenderer : public vd::component::IRenderer {
     public:
+        enum Type {
+            eQuad = 0,
+            eText
+        };
+
         static const int kPriority = kDefaultPriority + 100;
 
         GuiRenderer(GuiQuadPtr guiQuadPtr,
-                    vd::component::EntityShaderPtr shaderPtr,
+                    vd::component::IEntityShaderPtr shaderPtr,
                     vd::Consumer beforeExecution = vd::g_kEmptyConsumer,
                     vd::Consumer afterExecution = vd::g_kEmptyConsumer);
-        ~GuiRenderer();
+
+        GuiRenderer(GuiTextPtr guiTextPtr,
+                    vd::component::IEntityShaderPtr shaderPtr,
+                    vd::Consumer beforeExecution = vd::g_kEmptyConsumer,
+                    vd::Consumer afterExecution = vd::g_kEmptyConsumer);
 
         void Init() override;
         void Update() override;
@@ -28,7 +38,8 @@ namespace mod::gui {
     private:
         bool IsReady() override;
 
-        GuiQuadPtr m_pGuiQuad;
+        Type                    m_Type;
+        vd::object::Entity2DPtr m_pGuiEntity;
     };
     typedef std::shared_ptr<GuiRenderer>	GuiRendererPtr;
 }

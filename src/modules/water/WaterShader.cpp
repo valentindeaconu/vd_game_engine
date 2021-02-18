@@ -6,7 +6,7 @@
 
 namespace mod::water {
 
-    WaterShader::WaterShader() : vd::component::IEntityShader() {
+    WaterShader::WaterShader() : vd::component::IEntity3DShader() {
         std::string vsSource;
         vd::loader::ShaderLoader::Load("./resources/shaders/water/water_VS.glsl", vsSource);
         AddShader(vsSource, vd::gl::Shader::eVertexShader);
@@ -54,7 +54,7 @@ namespace mod::water {
         AddUniform("farPlane");
     }
 
-    void WaterShader::InitUniforms(vd::object::EntityPtr pEntity) {
+    void WaterShader::InitUniforms(vd::object::Entity3DPtr pEntity) {
         AddUniforms();
 
         WaterPtr pWater = std::dynamic_pointer_cast<Water>(pEntity);
@@ -68,7 +68,7 @@ namespace mod::water {
         SetUniform("baseColor", pProperties->Get<glm::vec3>("BaseColor"));
     }
 
-    void WaterShader::UpdateUniforms(vd::object::EntityPtr pEntity, uint32_t meshIndex) {
+    void WaterShader::UpdateUniforms(vd::object::Entity3DPtr pEntity, uint32_t meshIndex) {
         WaterPtr pWater = std::dynamic_pointer_cast<Water>(pEntity);
 
         SetUniform("model", pEntity->LocalTransform().Get());

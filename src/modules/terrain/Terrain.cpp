@@ -11,11 +11,11 @@ namespace mod::terrain {
     {
     }
 
-    Terrain::~Terrain() = default;
-
     void Terrain::Link() {
         m_pCamera = vd::ObjectOfType<vd::camera::Camera>::Find();
     }
+
+    void Terrain::Setup() { }
 
     void Terrain::Init() {
         CreateProps();
@@ -46,9 +46,26 @@ namespace mod::terrain {
 
         PopulateTree(m_RootNode);
 
-        GeneratePatch();
+        std::vector<glm::vec2> vertices = GeneratePatch();
 
-        Entity::Init();
+        Buffers().emplace_back(std::move(std::make_shared<vd::gl::Buffer>()));
+        vd::gl::BufferPtr pBuffer = Buffers().back();
+
+        pBuffer->Bind();
+
+        pBuffer->AddBuffer(
+                vd::gl::buffer::eArrayBuffer,
+                vertices.size() * sizeof(glm::vec2),
+                &vertices[0],
+                vd::gl::buffer::eStaticDraw
+        );
+
+        pBuffer->AttributeArray(0, 2, vd::gl::eFloat, sizeof(glm::vec2), (GLvoid*)0);
+
+        // TODO: Do something with this call (move it from this layer)
+        glPatchParameteri(GL_PATCH_VERTICES, vertices.size());
+
+        pBuffer->Unbind();
     }
 
     void Terrain::Update() {
@@ -71,14 +88,7 @@ namespace mod::terrain {
 
         m_RootNode = nullptr;
 
-        // TODO: Remove this comments
-        //for (auto& pBiome : m_Biomes) {
-        //    for (auto& pProp : pBiome->Props()) {
-        //        pProp->CleanUp();
-        //    }
-        //}
-
-        Entity::CleanUp();
+        Entity2D::CleanUp();
     }
 
     const vd::property::PropertiesPtr& Terrain::Properties() const {
@@ -222,7 +232,7 @@ namespace mod::terrain {
                 m_pHeightImg->Dimension(),
                 vd::gl::TextureFormat::eR16F,
                 vd::gl::TextureFormat::eR,
-                vd::gl::TextureType::eFloat,
+                vd::gl::DataType::eFloat,
                 &m_pHeightImg->Data()[0]
         );
 
@@ -261,35 +271,30 @@ namespace mod::terrain {
         }
     }
 
-    void Terrain::GeneratePatch() {
-        vd::model::MeshPtr meshPtr = std::make_shared<vd::model::Mesh>();
+    std::vector<glm::vec2> Terrain::GeneratePatch() {
+        std::vector<glm::vec2> vertices(16);
 
-        auto& vertices = meshPtr->Vertices();
-        vertices.resize(16);
+        vertices[0] = glm::vec2(0.0f, 0.0f);
+        vertices[1] = glm::vec2(0.333f, 0.0f);
+        vertices[2] = glm::vec2(0.666f, 0.0f);
+        vertices[3] = glm::vec2(1.0f, 0.0f);
 
-        vertices[0] = vd::model::Vertex(0.0f, 0.0f);
-        vertices[1] = vd::model::Vertex(0.333f, 0.0f);
-        vertices[2] = vd::model::Vertex(0.666f, 0.0f);
-        vertices[3] = vd::model::Vertex(1.0f, 0.0f);
+        vertices[4] = glm::vec2(0.0f, 0.333f);
+        vertices[5] = glm::vec2(0.333f,  0.333f);
+        vertices[6] = glm::vec2(0.666f, 0.333f);
+        vertices[7] = glm::vec2(1.0f, 0.333f);
 
-        vertices[4] = vd::model::Vertex(0.0f, 0.333f);
-        vertices[5] = vd::model::Vertex(0.333f,  0.333f);
-        vertices[6] = vd::model::Vertex(0.666f, 0.333f);
-        vertices[7] = vd::model::Vertex(1.0f, 0.333f);
+        vertices[8] = glm::vec2(0.0f, 0.666f);
+        vertices[9] = glm::vec2(0.333f, 0.666f);
+        vertices[10] = glm::vec2(0.666f, 0.666f);
+        vertices[11] = glm::vec2(1.0f, 0.666f);
 
-        vertices[8] = vd::model::Vertex(0.0f, 0.666f);
-        vertices[9] = vd::model::Vertex(0.333f, 0.666f);
-        vertices[10] = vd::model::Vertex(0.666f, 0.666f);
-        vertices[11] = vd::model::Vertex(1.0f, 0.666f);
+        vertices[12] = glm::vec2(0.0f, 1.0f);
+        vertices[13] = glm::vec2(0.333f, 1.0f);
+        vertices[14] = glm::vec2(0.666f, 1.0f);
+        vertices[15] = glm::vec2(1.0f, 1.0f);
 
-        vertices[12] = vd::model::Vertex(0.0f, 1.0f);
-        vertices[13] = vd::model::Vertex(0.333f, 1.0f);
-        vertices[14] = vd::model::Vertex(0.666f, 1.0f);
-        vertices[15] = vd::model::Vertex(1.0f, 1.0f);
-
-        SetBufferGenerationStrategy(ePatch);
-
-        Meshes().push_back(meshPtr);
+        return vertices;
     }
 
     void Terrain::PopulateTree(const TerrainNode::ptr_type_t& root) {

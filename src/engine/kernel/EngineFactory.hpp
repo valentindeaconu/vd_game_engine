@@ -27,6 +27,7 @@
 #include <engine/loader/impl/StbiImpl.hpp>
 #include <engine/loader/impl/StreamImpl.hpp>
 #include <engine/loader/impl/VDGEGLSLImpl.hpp>
+#include <engine/loader/impl/FreeTypeImpl.hpp>
 #include <engine/loader/PropertiesLoader.hpp>
 
 // Modules

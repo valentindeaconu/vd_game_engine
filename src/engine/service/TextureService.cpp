@@ -41,7 +41,7 @@ namespace vd::service {
     gl::Texture2DPtr TextureService::UncachedCreate(const Dimension& dimension,
                                                     const gl::TextureFormat& internalFormat,
                                                     const gl::TextureFormat& format,
-                                                    const gl::TextureType& type,
+                                                    const gl::DataType& type,
                                                     const void *data) {
         gl::Texture2DPtr pTexture = std::make_shared<gl::Texture2D>(dimension.width, dimension.height);
 
@@ -59,7 +59,7 @@ namespace vd::service {
                                          const Dimension& dimension,
                                          const gl::TextureFormat& internalFormat,
                                          const gl::TextureFormat& format,
-                                         const gl::TextureType& type,
+                                         const gl::DataType& type,
                                          const void *data) {
         TextureService& instance = getInstance();
 

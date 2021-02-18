@@ -5,7 +5,7 @@
 #include "SkyShader.hpp"
 
 namespace mod::sky {
-    SkyShader::SkyShader() : vd::component::IEntityShader() {
+    SkyShader::SkyShader() : vd::component::IEntity3DShader() {
         std::string vsSource;
         vd::loader::ShaderLoader::Load("./resources/shaders/sky/sky_VS.glsl", vsSource);
         AddShader(vsSource, vd::gl::Shader::eVertexShader);
@@ -32,13 +32,13 @@ namespace mod::sky {
         m_pFogManager->AddUniforms(shared_from_this());
     }
 
-    void SkyShader::InitUniforms(vd::object::EntityPtr pEntity) {
+    void SkyShader::InitUniforms(vd::object::Entity3DPtr pEntity) {
         AddUniforms();
 
         m_pFogManager->SetUniforms(shared_from_this());
     }
 
-    void SkyShader::UpdateUniforms(vd::object::EntityPtr pEntity, uint32_t meshIndex) {
+    void SkyShader::UpdateUniforms(vd::object::Entity3DPtr pEntity, uint32_t meshIndex) {
         SetUniform("view", glm::mat4(glm::mat3(m_pCamera->ViewMatrix())));
         SetUniform("projection", m_pWindow->ProjectionMatrix());
     }

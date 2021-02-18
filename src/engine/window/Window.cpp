@@ -125,6 +125,10 @@ namespace vd::window {
         return glm::perspective(glm::radians(m_FieldOfView), this->AspectRatio(), m_NearPlane, m_FarPlane);
     }
 
+    glm::mat4 Window::OrthoProjectionMatrix() const {
+        return glm::ortho(0.0f, (float) m_Dimension.width, 0.0f, (float) m_Dimension.height);
+    }
+
     void Window::WindowResizeCallback(GLFWwindow* window, int32_t width, int32_t height) {
         auto& inputHandler = vd::ObjectOfType<event::EventHandler>::Find();
         inputHandler->WindowResizeCallback(window, width, height);

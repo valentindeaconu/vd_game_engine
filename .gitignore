@@ -10,8 +10,8 @@ bin
 include
 lib
 
-refresh_resources.cmd
-refresh_resources.py
+postbuild.cmd
+postbuild.py
 resources/terrain/hm2.png
 
 **/__pycache__

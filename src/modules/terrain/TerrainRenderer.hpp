@@ -21,7 +21,7 @@ namespace mod::terrain {
             , public vd::injector::Injectable {
     public:
         TerrainRenderer(TerrainPtr terrainPtr,
-                        vd::component::EntityShaderPtr shaderPtr,
+                        vd::component::IEntityShaderPtr shaderPtr,
                         vd::Consumer beforeExecution = vd::g_kEmptyConsumer,
                         vd::Consumer afterExecution = vd::g_kEmptyConsumer);
         ~TerrainRenderer();

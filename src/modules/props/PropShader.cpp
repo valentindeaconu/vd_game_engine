@@ -2,7 +2,7 @@
 
 namespace mod::props {
 
-    PropShader::PropShader() : vd::component::IEntityShader() {
+    PropShader::PropShader() : vd::component::IEntity3DShader() {
         std::string vsSource;
         vd::loader::ShaderLoader::Load("./resources/shaders/entity/entity_VS.glsl", vsSource);
         AddShader(vsSource, vd::gl::Shader::eVertexShader);
@@ -39,7 +39,7 @@ namespace mod::props {
         AddUniform("clipPlane");
     }
 
-    void PropShader::InitUniforms(vd::object::EntityPtr pEntity) {
+    void PropShader::InitUniforms(vd::object::Entity3DPtr pEntity) {
         AddUniforms();
 
         m_pFogManager->SetUniforms(shared_from_this());
@@ -47,13 +47,13 @@ namespace mod::props {
     }
 
 
-    void PropShader::UpdateUniforms(vd::object::EntityPtr pEntity, uint32_t meshIndex) {
+    void PropShader::UpdateUniforms(vd::object::Entity3DPtr pEntity, uint32_t meshIndex) {
         SetUniform("model", pEntity->WorldTransform().Get());
 
         SetUniform("view", m_pCamera->ViewMatrix());
         SetUniform("projection", m_pWindow->ProjectionMatrix());
 
-        vd::model::MeshPtr& pMesh = pEntity->Meshes()[meshIndex];
+        vd::model::Mesh3DPtr& pMesh = pEntity->Meshes()[meshIndex];
 
         if (!pMesh->Materials().empty()) {
             vd::model::Material& meshMaterial = pMesh->Materials().front();

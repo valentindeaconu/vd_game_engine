@@ -5,7 +5,7 @@
 #ifndef VD_GAME_ENGINE_WATER_HPP
 #define VD_GAME_ENGINE_WATER_HPP
 
-#include <engine/object/Entity.hpp>
+#include <engine/object/Entity3D.hpp>
 
 #include <engine/api/gl/FrameBuffer.hpp>
 
@@ -19,14 +19,14 @@
 #include <unordered_map>
 
 namespace mod::water {
-    class Water : public vd::object::Entity, public vd::injector::Injectable {
+    class Water : public vd::object::Entity3D, public vd::injector::Injectable {
     public:
         explicit Water(const std::string& propsFilePath);
         ~Water();
 
         void Link() override;
 
-        void Init() override;
+        void Setup() override;
         void Update() override;
         void CleanUp() override;
 

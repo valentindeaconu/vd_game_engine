@@ -15,14 +15,14 @@ namespace vd::loader {
     namespace impl {
         class IObjectLoader {
         public:
-            virtual vd::model::MeshPtrVec Load(const std::string& path) = 0;
+            virtual vd::model::Mesh3DPtrVec Load(const std::string& path) = 0;
         };
         typedef std::shared_ptr<IObjectLoader>  IObjectLoaderPtr;
     }
 
     class ObjectLoader {
     public:
-        static vd::model::MeshPtrVec Load(const std::string& path);
+        static vd::model::Mesh3DPtrVec Load(const std::string& path);
     };
 }
 
