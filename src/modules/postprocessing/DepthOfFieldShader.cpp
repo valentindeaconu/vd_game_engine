@@ -2,44 +2,9 @@
 // Created by Vali on 2/23/2021.
 //
 
-#include "DepthOfField.hpp"
+#include "DepthOfFieldShader.hpp"
 
 namespace mod::postprocessing {
-
-    DepthOfField::DepthOfField()
-        : vd::postprocessing::SingularInputStage("DepthOfField",
-                                                 [ctx = vd::ObjectOfType<vd::kernel::ContextPtr>]())
-        , m_Getter(std::move(getter))
-    {
-    }
-
-    void DepthOfField::Setup(const vd::Dimension& windowDimension) {
-        m_pInput = m_Getter();
-
-        FrameBuffer() = std::make_shared<vd::gl::FrameBuffer>(windowDimension.width, windowDimension.height);
-        FrameBuffer()->Bind();
-        FrameBuffer()->PushAttachment(vd::gl::FrameBuffer::eColorTexture, [](vd::gl::Texture2DPtr& pTex) {
-            pTex->Bind();
-            pTex->BilinearFilter();
-            pTex->Unbind();
-        });
-        if (FrameBuffer()->Status() != vd::gl::FrameBuffer::eComplete) {
-            throw vd::RuntimeError("framebuffer is incomplete or has errors");
-        }
-        FrameBuffer()->Unbind();
-    }
-
-    bool DepthOfField::Precondition() {
-        return true;
-    }
-
-    void DepthOfField::Prepare() { }
-
-    void DepthOfField::Finish() { }
-
-    vd::gl::FrameBufferPtr& DepthOfField::InputFBO() {
-        return m_pInput;
-    }
 
     DepthOfFieldShader::DepthOfFieldShader() {
         std::string vsSource;
@@ -60,6 +25,7 @@ namespace mod::postprocessing {
     void DepthOfFieldShader::AddUniforms() {
         AddUniform("colorMap");
         AddUniform("depthMap");
+        AddUniform("blurMap");
         AddUniform("near");
         AddUniform("far");
     }
@@ -69,17 +35,21 @@ namespace mod::postprocessing {
     }
 
     void DepthOfFieldShader::UpdateUniforms(vd::postprocessing::StagePtr pStage) {
-        DepthOfFieldPtr pDepthOfField = std::dynamic_pointer_cast<DepthOfField>(pStage);
+        auto pDepthOfField = std::dynamic_pointer_cast<vd::postprocessing::MultipleInputStage>(pStage);
 
         SetUniform("near", m_pWindow->NearPlane());
         SetUniform("far", m_pWindow->FarPlane());
 
         vd::gl::ActiveTexture(0);
-        pDepthOfField->InputFBO()->ColorTexture()->Bind();
-        SetUniform("colorMap", 0);
+        pDepthOfField->InputFrameBuffer(0)->DepthTexture()->Bind();
+        SetUniform("depthMap", 0);
 
         vd::gl::ActiveTexture(1);
-        pDepthOfField->InputFBO()->DepthTexture()->Bind();
-        SetUniform("depthMap", 1);
+        pDepthOfField->InputFrameBuffer(0)->ColorTexture()->Bind();
+        SetUniform("colorMap", 1);
+
+        vd::gl::ActiveTexture(2);
+        pDepthOfField->InputFrameBuffer(1)->ColorTexture()->Bind();
+        SetUniform("blurMap", 2);
     }
 }

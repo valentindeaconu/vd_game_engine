@@ -125,6 +125,16 @@ set(SOURCES
         src/engine/object/Entity2D.hpp
         src/engine/object/Entity3D.cpp
         src/engine/object/Entity3D.hpp
+        src/engine/postprocessing/IStageShader.hpp
+        src/engine/postprocessing/MultipleInputStage.cpp
+        src/engine/postprocessing/MultipleInputStage.hpp
+        src/engine/postprocessing/PostProcessing.cpp
+        src/engine/postprocessing/PostProcessing.hpp
+        src/engine/postprocessing/SingularInputStage.cpp
+        src/engine/postprocessing/SingularInputStage.hpp
+        src/engine/postprocessing/Stage.cpp
+        src/engine/postprocessing/Stage.hpp
+        src/engine/postprocessing/Types.hpp
         src/engine/property/Properties.cpp
         src/engine/property/Properties.hpp
         src/engine/service/TextureService.cpp
@@ -151,6 +161,26 @@ set(SOURCES
         src/modules/player/PlayerRenderer.hpp
         src/modules/player/PlayerFactory.cpp
         src/modules/player/PlayerFactory.hpp
+        src/modules/postprocessing/ContrastShader.cpp
+        src/modules/postprocessing/ContrastShader.hpp
+        src/modules/postprocessing/DepthOfFieldShader.cpp
+        src/modules/postprocessing/DepthOfFieldShader.hpp
+        src/modules/postprocessing/HorizontalBlurShader.cpp
+        src/modules/postprocessing/HorizontalBlurShader.hpp
+        src/modules/postprocessing/PostProcessingFactory.cpp
+        src/modules/postprocessing/PostProcessingFactory.hpp
+        src/modules/postprocessing/VerticalBlurShader.cpp
+        src/modules/postprocessing/VerticalBlurShader.hpp
+        src/modules/props/Prop.cpp
+        src/modules/props/Prop.hpp
+        src/modules/props/PropsRenderer.cpp
+        src/modules/props/PropsRenderer.hpp
+        src/modules/props/PropShader.cpp
+        src/modules/props/PropShader.hpp
+        src/modules/props/PropGenerator.cpp
+        src/modules/props/PropGenerator.hpp
+        src/modules/props/PropsFactory.cpp
+        src/modules/props/PropsFactory.hpp
         src/modules/shadow/ShadowBox.cpp
         src/modules/shadow/ShadowBox.hpp
         src/modules/shadow/ShadowShader.cpp
@@ -167,16 +197,6 @@ set(SOURCES
         src/modules/sky/SkyRenderer.hpp
         src/modules/sky/SkyFactory.cpp
         src/modules/sky/SkyFactory.hpp
-        src/modules/props/Prop.cpp
-        src/modules/props/Prop.hpp
-        src/modules/props/PropsRenderer.cpp
-        src/modules/props/PropsRenderer.hpp
-        src/modules/props/PropShader.cpp
-        src/modules/props/PropShader.hpp
-        src/modules/props/PropGenerator.cpp
-        src/modules/props/PropGenerator.hpp
-        src/modules/props/PropsFactory.cpp
-        src/modules/props/PropsFactory.hpp
         src/modules/terrain/TerrainShader.cpp
         src/modules/terrain/TerrainShader.hpp
         src/modules/terrain/Terrain.cpp
@@ -203,7 +223,7 @@ set(SOURCES
         src/modules/water/WaterFactory.hpp
         src/modules/ModuleFactory.cpp
         src/modules/ModuleFactory.hpp
-        src/main.cpp)
+        src/main.cpp src/engine/object/primitive/Quad2D.cpp src/engine/object/primitive/Quad2D.hpp src/engine/postprocessing/StageRenderer.cpp src/engine/postprocessing/StageRenderer.hpp)
 
 if (ANDROID)
     add_library(VDGE SHARED ${SOURCES})

@@ -5,7 +5,7 @@ out vec4 fColor;
 
 uniform sampler2D colorMap;
 
-const float contrast = 0.3f;
+const float contrast = 0.15f;
 
 void main()
 {

@@ -5,19 +5,21 @@
 #ifndef VDGE_SINGULARINPUTSTAGE_HPP
 #define VDGE_SINGULARINPUTSTAGE_HPP
 
-#include <engine/postprocessing/Stage.hpp>
-#include <engine/postprocessing/IStageShader.hpp>
+#include "Stage.hpp"
+#include "Types.hpp"
 
-namespace mod::postprocessing {
+namespace vd::postprocessing {
     class SingularInputStage : public vd::postprocessing::Stage {
     public:
         explicit SingularInputStage(std::string name,
-                                    vd::postprocessing::FrameBufferGetter inputGetter,
-                                    vd::Predicate precondition = vd::g_kEmptyPredicate,
-                                    vd::Consumer beforeExecution = vd::g_kEmptyConsumer,
-                                    vd::Consumer afterExecution = vd::g_kEmptyConsumer);
+                                    float scale,
+                                    FrameBufferResolver inputGetter,
+                                    FrameBufferConfigurator frameBufferConfigurator,
+                                    Predicate precondition = vd::g_kEmptyPredicate,
+                                    Consumer beforeExecution = vd::g_kEmptyConsumer,
+                                    Consumer afterExecution = vd::g_kEmptyConsumer);
 
-        void Setup(const vd::Dimension& windowDimension) override;
+        void Setup(vd::Dimension dimension) override;
 
         bool Precondition() override;
         void Prepare() override;
@@ -25,16 +27,15 @@ namespace mod::postprocessing {
 
         vd::gl::FrameBufferPtr& InputFrameBuffer();
     private:
-        vd::postprocessing::FrameBufferGetter   m_Getter;
-
-        vd::Predicate   m_Precondition;
-        vd::Consumer    m_BeforeExecution;
-        vd::Consumer    m_AfterExecution;
-
-        vd::gl::FrameBufferPtr  m_pInput;
+        float                       m_Scale;
+        FrameBufferResolver         m_fnResolver;
+        FrameBufferConfigurator     m_fnConfigurator;
+        Predicate                   m_fnPrecondition;
+        Consumer                    m_fnBeforeExec;
+        Consumer                    m_fnAfterExec;
+        vd::gl::FrameBufferPtr      m_pInputFrameBuffer;
     };
     typedef std::shared_ptr<SingularInputStage>   SingularInputStagePtr;
 }
-
 
 #endif //VDGE_SINGULARINPUTSTAGE_HPP

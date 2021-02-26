@@ -18,7 +18,7 @@ namespace vd::component {
 
         RenderingPass(std::string  name,
                       const priority_t& priority,
-                      gl::FrameBufferPtr  frameBufferPtr,
+                      gl::FrameBufferPtr  frameBuffer,
                       vd::Predicate precondition = g_kEmptyPredicate,
                       vd::Consumer beforeExecution = g_kEmptyConsumer,
                       vd::Consumer afterExecution = g_kEmptyConsumer);
@@ -41,9 +41,8 @@ namespace vd::component {
         vd::Consumer m_BeforeExecution;
         vd::Consumer m_AfterExecution;
 
-        gl::FrameBufferPtr m_FrameBufferPtr;
+        gl::FrameBufferPtr m_pFrameBuffer;
     };
 }
-
 
 #endif //VD_GAME_ENGINE_RENDERINGPASS_HPP

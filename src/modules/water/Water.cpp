@@ -20,22 +20,40 @@ namespace mod::water {
     }
 
     void Water::Setup() {
-        LocalTransform().Scale() = glm::vec3(6000.0f, 0.0f, 6000.0f);
-        LocalTransform().Translation() = glm::vec3(-3000.0f, 180.0f, -3000.0f);
+        LocalTransform().Scale() = glm::vec3(1024.0f, 0.0f, 1024.0f);
+        LocalTransform().Translation() = glm::vec3(-512.0f, 30.0f, -512.0f);
 
         PopulatePacks();
 
         GeneratePatch();
 
-        m_pReflectionFBO->Allocate(m_pProperties->Get<int>("Reflection.Width"),
-                                   m_pProperties->Get<int>("Reflection.Height"),
-                                   true,
-                                   vd::gl::DepthAttachment::eDepthBuffer);
+        m_pReflectionFBO->Bind();
+        m_pReflectionFBO->Resize(m_pProperties->Get<int>("Reflection.Width"),
+                                 m_pProperties->Get<int>("Reflection.Height"));
 
-        m_pRefractionFBO->Allocate(m_pProperties->Get<int>("Refraction.Width"),
-                                   m_pProperties->Get<int>("Refraction.Height"),
-                                   true,
-                                   vd::gl::DepthAttachment::eDepthTexture);
+        m_pReflectionFBO->PushAttachment(vd::gl::FrameBuffer::eColorTexture, [](vd::gl::Texture2DPtr& pTex) {
+            pTex->Bind();
+            pTex->BilinearFilter();
+            pTex->Unbind();
+        });
+        m_pReflectionFBO->PushAttachment(vd::gl::FrameBuffer::eDepthBuffer);
+        m_pReflectionFBO->Unbind();
+
+        m_pRefractionFBO->Bind();
+        m_pRefractionFBO->Resize(m_pProperties->Get<int>("Refraction.Width"),
+                                 m_pProperties->Get<int>("Refraction.Height"));
+
+        m_pRefractionFBO->PushAttachment(vd::gl::FrameBuffer::eColorTexture, [](vd::gl::Texture2DPtr& pTex) {
+            pTex->Bind();
+            pTex->BilinearFilter();
+            pTex->Unbind();
+        });
+        m_pRefractionFBO->PushAttachment(vd::gl::FrameBuffer::eDepthTexture, [](vd::gl::Texture2DPtr& pTex) {
+            pTex->Bind();
+            pTex->BilinearFilter();
+            pTex->Unbind();
+        });
+        m_pRefractionFBO->Unbind();
     }
 
     void Water::Update() {
@@ -47,8 +65,8 @@ namespace mod::water {
     }
 
     void Water::CleanUp() {
-        m_pReflectionFBO->CleanUp();
-        m_pRefractionFBO->CleanUp();
+        m_pReflectionFBO = nullptr;
+        m_pRefractionFBO = nullptr;
 
         Entity3D::CleanUp();
     }
@@ -75,7 +93,7 @@ namespace mod::water {
     }
 
     float Water::GetHeight() const {
-        return 180.0f;
+        return 30.0f;
     }
 
     float Water::GetMoveFactor() const {

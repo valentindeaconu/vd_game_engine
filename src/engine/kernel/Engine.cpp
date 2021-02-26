@@ -26,19 +26,33 @@ namespace vd {
         glCullFace(GL_BACK); // cull back face
         glFrontFace(GL_CCW); // GL_CCW for counter clock-wise
 
-        // Create main rendering pass
-        component::RenderingPass renderingPass(
-                "Main",
-                std::numeric_limits<uint64_t>::max(),
-                nullptr,
-                vd::g_kEmptyPredicate,
-                [&]() { glViewport(0, 0, m_pWindow->Width(), m_pWindow->Height()); }
-        );
+        // Create main rendering pass (3d scene rendering pass)
+        gl::FrameBufferPtr pSceneFbo = std::make_shared<gl::FrameBuffer>(m_pWindow->Width(), m_pWindow->Height());
+        pSceneFbo->Bind();
+        pSceneFbo->PushAttachment(gl::FrameBuffer::eColorTexture, [](gl::Texture2DPtr& pTex) {
+            pTex->Bind();
+            pTex->BilinearFilter();
+            pTex->Unbind();
+        });
+        pSceneFbo->PushAttachment(gl::FrameBuffer::eDepthTexture, [](gl::Texture2DPtr& pTex) {
+            pTex->Bind();
+            pTex->BilinearFilter();
+            pTex->Unbind();
+        });
+        if (pSceneFbo->Status() != gl::FrameBuffer::eComplete) {
+            throw RuntimeError("framebuffer is incomplete or has errors");
+        }
+        pSceneFbo->Unbind();
 
-        this->Add(renderingPass);
+        m_pContext->SceneFBO() = pSceneFbo;
+
+        this->Add(component::RenderingPass("Main", std::numeric_limits<uint64_t>::max(), pSceneFbo));
 
         // Initialise all subscribed components
         this->Broadcast(BroadcastType::eInit);
+
+        // Initialise post processing
+        m_pPostProcessing->Init();
     }
 
     void Engine::Start() {
@@ -69,14 +83,19 @@ namespace vd {
         }
     }
 
-    void Engine::Remove(const std::string& renderingPassName) {
+    void Engine::Remove(const std::string& name) {
         auto it = std::find_if(m_RenderingPasses.begin(), m_RenderingPasses.end(), [&](const component::RenderingPass &r) {
-            return r.Name() == renderingPassName;
+            return r.Name() == name;
         });
 
         if (it != m_RenderingPasses.end()) {
             m_RenderingPasses.erase(it);
+            return;
         }
+    }
+
+    postprocessing::PostProcessingPtr& Engine::PostProcessing() {
+        return m_pPostProcessing;
     }
 
     void Engine::Run() {
@@ -145,25 +164,34 @@ namespace vd {
 
                 params["RenderingPass"] = renderingPass.Name();
 
-                if (renderingPass.FrameBuffer() != nullptr)
-                    renderingPass.FrameBuffer()->Bind();
-
                 glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
                 this->Broadcast(BroadcastType::eRender, params);
 
-                glCheckError();
-
-                if (renderingPass.FrameBuffer() != nullptr)
-                    renderingPass.FrameBuffer()->Unbind();
-
                 renderingPass.Finish();
             }
         }
+
+        /// Render the final picture
+        // Do post processing work
+        m_pPostProcessing->Render();
+
+        // Disable depth test since everything from now on is rendering on 2D coords
+        glDisable(GL_DEPTH_TEST);
+
+        // Render GUI
+        params["RenderingPass"] = "GUI";
+        this->Broadcast(BroadcastType::eRender, params);
+
+        glEnable(GL_DEPTH_TEST);
+        // TODO: Remove this check when it's not needed
+        glCheckError();
     }
 
     void Engine::CleanUp() {
         this->Broadcast(BroadcastType::eCleanUp);
+
+        m_pPostProcessing->CleanUp();
 
         glfwTerminate();
     }

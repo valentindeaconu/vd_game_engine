@@ -2,12 +2,13 @@
 // Created by Vali on 2/19/2021.
 //
 
-#ifndef VDGE_STAGESHADER_HPP
-#define VDGE_STAGESHADER_HPP
+#ifndef VDGE_ISTAGESHADER_HPP
+#define VDGE_ISTAGESHADER_HPP
 
 #include <memory>
 
 #include <engine/api/gl/Shader.hpp>
+#include <engine/loader/ShaderLoader.hpp>
 
 #include "Stage.hpp"
 
@@ -19,8 +20,8 @@ namespace vd::postprocessing {
         virtual void InitUniforms(StagePtr pStage) = 0;
         virtual void UpdateUniforms(StagePtr pStage) = 0;
     };
-    typedef std::shared_ptr<StageShader>    StageShaderPtr;
+    typedef std::shared_ptr<IStageShader>    IStageShaderPtr;
 }
 
 
-#endif //VDGE_STAGESHADER_HPP
+#endif //VDGE_ISTAGESHADER_HPP

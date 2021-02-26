@@ -48,7 +48,8 @@ namespace vd::gl {
     }
 
     Shader::Shader()
-            : m_Program(0), m_UniformMap() {
+        : m_Program(0), m_UniformMap()
+    {
     }
 
     Shader::~Shader() = default;

@@ -33,6 +33,8 @@ namespace vd::gl {
         eDepthComponent16 = GL_DEPTH_COMPONENT16,
         eDepthComponent24 = GL_DEPTH_COMPONENT24,
         eDepthComponent32 = GL_DEPTH_COMPONENT32,
+        eDepthComponent32F = GL_DEPTH_COMPONENT32F,
+        eDepth24Stencil8 = GL_DEPTH24_STENCIL8,
         eLuminance = GL_LUMINANCE,
         eLuminance4 = GL_LUMINANCE4,
         eLuminance8 = GL_LUMINANCE8,

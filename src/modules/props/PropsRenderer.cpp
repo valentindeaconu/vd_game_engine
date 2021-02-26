@@ -5,7 +5,7 @@ namespace mod::props {
                                  vd::Consumer beforeExecution,
                                  vd::Consumer afterExecution)
         : IRenderer(std::move(shaderPtr), std::move(beforeExecution), std::move(afterExecution))
-        , m_pPropGenerator(std::make_shared<PropGenerator>(6000)) // TODO: Read prop count from a properties file
+        , m_pPropGenerator(std::make_shared<PropGenerator>(4500)) // TODO: Read prop count from a properties file
     {
     }
 
@@ -37,30 +37,35 @@ namespace mod::props {
 
         const auto& renderingPass = params.at("RenderingPass");
 
-        Prepare();
+        if (renderingPass == "Shadow" ||
+            renderingPass == "Reflection" ||
+            renderingPass == "Refraction" ||
+            renderingPass == "Main") {
+            Prepare();
 
-        vd::component::IEntityShaderPtr pShader = (renderingPass != "Shadow") ? m_pShader : m_pShadowShader;
+            vd::component::IEntityShaderPtr pShader = (renderingPass != "Shadow") ? m_pShader : m_pShadowShader;
 
-        pShader->Bind();
+            pShader->Bind();
 
-        for (const auto& placement : m_pPropGenerator->Placements()) {
-            const PropPtr& pProp = placement.Prop;
+            for (const auto &placement : m_pPropGenerator->Placements()) {
+                const PropPtr &pProp = placement.Prop;
 
-            pProp->WorldTransform().Translation() = placement.Location;
+                pProp->WorldTransform().Translation() = placement.Location;
 
-            if (Detector::IsAnyTransformedBounds3InsideFrustum(pProp->BoundingBoxes(),
-                                                               pProp->WorldTransform(),
-                                                               m_pFrustumCullingManager->Frustum())) {
-                for (int mId = 0; mId < pProp->Buffers().size(); ++mId) {
-                    pShader->UpdateUniforms(pProp, mId);
+                if (Detector::IsAnyTransformedBounds3InsideFrustum(pProp->BoundingBoxes(),
+                                                                   pProp->WorldTransform(),
+                                                                   m_pFrustumCullingManager->Frustum())) {
+                    for (int mId = 0; mId < pProp->Buffers().size(); ++mId) {
+                        pShader->UpdateUniforms(pProp, mId);
 
-                    const int count = pProp->Meshes()[mId]->Indices().size();
-                    pProp->Buffers()[mId]->DrawElements(vd::gl::eTriangles, count, vd::gl::eUnsignedInt);
+                        const int count = pProp->Meshes()[mId]->Indices().size();
+                        pProp->Buffers()[mId]->DrawElements(vd::gl::eTriangles, count, vd::gl::eUnsignedInt);
+                    }
                 }
             }
-        }
 
-        Finish();
+            Finish();
+        }
     }
 
     void PropsRenderer::CleanUp() {

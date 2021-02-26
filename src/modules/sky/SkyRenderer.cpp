@@ -39,19 +39,25 @@ namespace mod::sky {
 
         const auto& renderingPass = params.at("RenderingPass");
 
-        Prepare();
+        if (renderingPass == "Shadow" ||
+            renderingPass == "Reflection" ||
+            renderingPass == "Refraction" ||
+            renderingPass == "Main") {
+            Prepare();
 
-        const vd::component::IEntityShaderPtr& shaderPtr = (renderingPass == "Shadow") ? m_pShadowShader : m_pShader;
+            const vd::component::IEntityShaderPtr &shaderPtr = (renderingPass == "Shadow") ? m_pShadowShader
+                                                                                           : m_pShader;
 
-        shaderPtr->Bind();
+            shaderPtr->Bind();
 
-        vd::gl::BufferPtrVec& buffers = m_pSky->Buffers();
-        for (size_t meshIndex = 0; meshIndex < buffers.size(); ++meshIndex) {
-            shaderPtr->UpdateUniforms(m_pSky, meshIndex);
-            buffers[meshIndex]->DrawElements(vd::gl::eTriangles, 36, vd::gl::eUnsignedInt);
+            vd::gl::BufferPtrVec &buffers = m_pSky->Buffers();
+            for (size_t meshIndex = 0; meshIndex < buffers.size(); ++meshIndex) {
+                shaderPtr->UpdateUniforms(m_pSky, meshIndex);
+                buffers[meshIndex]->DrawElements(vd::gl::eTriangles, 36, vd::gl::eUnsignedInt);
+            }
+
+            Finish();
         }
-
-        Finish();
     }
 
     void SkyRenderer::CleanUp() {

@@ -16,6 +16,10 @@ namespace vd {
         /// Linker creation
         injector::LinkerPtr pLinker = injector::CreateAndStore<injector::Linker>();
 
+        /// Post processing module creation
+        // TODO: This is not pretty
+        pEngine->PostProcessing() = injector::CreateAndStore<postprocessing::PostProcessing>();
+
         /// Loaders
         CreateLoaders();
 

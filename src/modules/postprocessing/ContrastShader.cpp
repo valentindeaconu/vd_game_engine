@@ -2,42 +2,9 @@
 // Created by Vali on 2/19/2021.
 //
 
-#include "Contrast.hpp"
+#include "ContrastShader.hpp"
 
 namespace mod::postprocessing {
-    Contrast::Contrast(vd::postprocessing::FrameBufferGetter getter)
-        : vd::postprocessing::Stage("Contrast")
-        , m_Getter(std::move(getter))
-    {
-    }
-
-    void Contrast::Setup(const vd::Dimension& windowDimension) {
-        m_pInput = m_Getter();
-
-        FrameBuffer() = std::make_shared<vd::gl::FrameBuffer>(windowDimension.width, windowDimension.height);
-        FrameBuffer()->Bind();
-        FrameBuffer()->PushAttachment(vd::gl::FrameBuffer::eColorTexture);
-        if (FrameBuffer()->Status() != vd::gl::FrameBuffer::eComplete) {
-            throw vd::RuntimeError("framebuffer is incomplete or has errors");
-        }
-        FrameBuffer()->Unbind();
-    }
-
-    bool Contrast::Precondition() {
-        return true;
-    }
-
-    void Contrast::Prepare() {
-
-    }
-
-    void Contrast::Finish() {
-
-    }
-
-    vd::gl::FrameBufferPtr& Contrast::InputFBO() {
-        return m_pInput;
-    }
 
     ContrastShader::ContrastShader() {
         std::string vsSource;
@@ -60,10 +27,10 @@ namespace mod::postprocessing {
     }
 
     void ContrastShader::UpdateUniforms(vd::postprocessing::StagePtr pStage) {
-        ContrastPtr pContrast = std::dynamic_pointer_cast<Contrast>(pStage);
+        auto pContrast = std::dynamic_pointer_cast<vd::postprocessing::SingularInputStage>(pStage);
 
         vd::gl::ActiveTexture(0);
-        pContrast->InputFBO()->ColorTexture()->Bind();
+        pContrast->InputFrameBuffer()->ColorTexture()->Bind();
         SetUniform("colorMap", 0);
     }
 

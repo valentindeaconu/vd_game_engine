@@ -35,19 +35,17 @@ namespace mod::water {
         }
 
         const auto& renderingPass = params.at("RenderingPass");
-        if (renderingPass != "Main") {
-            return;
+        if (renderingPass == "Main") {
+            Prepare();
+
+            m_pShader->Bind();
+
+            m_pShader->UpdateUniforms(m_pWater, 0);
+
+            m_pWater->Buffers()[0]->DrawElements(vd::gl::eTriangles, 6, vd::gl::eUnsignedInt);
+
+            Finish();
         }
-
-        Prepare();
-
-        m_pShader->Bind();
-
-        m_pShader->UpdateUniforms(m_pWater, 0);
-
-        m_pWater->Buffers()[0]->DrawElements(vd::gl::eTriangles, 6, vd::gl::eUnsignedInt);
-
-        Finish();
     }
 
     void WaterRenderer::CleanUp() {
