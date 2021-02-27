@@ -44,7 +44,7 @@ namespace mod::gui {
             return;
         }
 
-        if (params.at("RenderingPass") != "Main") {
+        if (params.at("RenderingPass") != "GUI") {
             return;
         }
 

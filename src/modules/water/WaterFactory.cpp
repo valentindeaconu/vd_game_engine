@@ -48,6 +48,7 @@ namespace mod::water {
                 "Reflection",
                 20,
                 pWater->ReflectionFramebuffer(),
+                true,
                 passPrecondition,
                 reflectionPassBefore,
                 reflectionPassAfter
@@ -55,7 +56,7 @@ namespace mod::water {
         pEngine->Add(reflectionPass);
 
         vd::Consumer refractionPassBefore = [w = pWater.get(), ctx = pContext.get()] {
-            ctx->ClipPlane() = glm::vec4(0.0f, -1.0f, 0.0f, w->GetHeight());
+            ctx->ClipPlane() = glm::vec4(0.0f, -1.0f, 0.0f, w->GetHeight() + 1.0f);
             glEnable(GL_CLIP_DISTANCE0);
         };
 
@@ -68,6 +69,7 @@ namespace mod::water {
                 "Refraction",
                 20,
                 pWater->RefractionFramebuffer(),
+                true,
                 passPrecondition,
                 refractionPassBefore,
                 refractionPassAfter

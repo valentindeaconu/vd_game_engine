@@ -17,12 +17,19 @@ namespace mod::gui {
     }
 
     void GuiFactory::Create(const vd::EnginePtr& pEngine) {
-        /// Reflection Texture
+        /// Refraction Texture
         /* CreateGui(pEngine,
                   [w = vd::ObjectOfType<mod::water::Water>::Find()]() {
-                    return w->ReflectionFramebuffer()->GetColorTexture();
+                    return w->RefractionFramebuffer()->GetColorTexture();
                   },
                   glm::vec2(0.75f, 0.75f),
+                  glm::vec2(0.250f, 0.250f));
+
+        CreateGui(pEngine,
+                  [w = vd::ObjectOfType<mod::water::Water>::Find()]() {
+                      return w->RefractionFramebuffer()->DepthTexture();
+                  },
+                  glm::vec2(-0.75f, -0.75f),
                   glm::vec2(0.250f, 0.250f)); */
 
         /// Shadow Texture
@@ -30,7 +37,7 @@ namespace mod::gui {
                   [s = vd::ObjectOfType<mod::shadow::ShadowManager>::Find()]() {
                       return s->ShadowTexture();
                   },
-                  glm::vec2(-0.75f, -0.75f),
+                  glm::vec2(0.75f, 0.75f),
                   glm::vec2(0.250f, 0.250f)); */
 
         /* /// Terrain Height Map
@@ -45,6 +52,14 @@ namespace mod::gui {
         CreateGui(pEngine,
                   [t = vd::ObjectOfType<mod::terrain::Terrain>::Find()]() {
                       return t->NormalMap();
+                  },
+                  glm::vec2(0.75f, -0.75f),
+                  glm::vec2(0.250f, 0.250f)); */
+
+        /// Scene FBO
+        /* CreateGui(pEngine,
+                  [ctx = vd::ObjectOfType<vd::kernel::Context>::Find()]() {
+                      return ctx->SceneFBO()->ColorTexture();
                   },
                   glm::vec2(0.75f, -0.75f),
                   glm::vec2(0.250f, 0.250f)); */

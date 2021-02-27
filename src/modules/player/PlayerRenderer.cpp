@@ -34,25 +34,24 @@ namespace mod::player {
         }
 
         const auto& renderingPass = params.at("RenderingPass");
-        if (renderingPass == "Reflection" || renderingPass == "Refraction") {
-            return;
+        if (renderingPass == "Shadow" || renderingPass == "Main") {
+            Prepare();
+
+            const vd::component::IEntityShaderPtr& shaderPtr = (renderingPass == "Shadow") ? m_pShadowShader
+                                                                                           : m_pShader;
+
+            shaderPtr->Bind();
+
+            vd::gl::BufferPtrVec &buffers = m_pPlayer->Buffers();
+            vd::model::Mesh3DPtrVec &meshes = m_pPlayer->Meshes();
+            for (size_t meshIndex = 0; meshIndex < buffers.size(); ++meshIndex) {
+                shaderPtr->UpdateUniforms(m_pPlayer, meshIndex);
+                const int count = meshes[meshIndex]->Indices().size();
+                buffers[meshIndex]->DrawElements(vd::gl::eTriangles, count, vd::gl::eUnsignedInt);
+            }
+
+            Finish();
         }
-
-        Prepare();
-
-        const vd::component::IEntityShaderPtr& shaderPtr = (renderingPass == "Shadow") ? m_pShadowShader : m_pShader;
-
-        shaderPtr->Bind();
-
-        vd::gl::BufferPtrVec& buffers = m_pPlayer->Buffers();
-        vd::model::Mesh3DPtrVec& meshes = m_pPlayer->Meshes();
-        for (size_t meshIndex = 0; meshIndex < buffers.size(); ++meshIndex) {
-            shaderPtr->UpdateUniforms(m_pPlayer, meshIndex);
-            const int count = meshes[meshIndex]->Indices().size();
-            buffers[meshIndex]->DrawElements(vd::gl::eTriangles, count, vd::gl::eUnsignedInt);
-        }
-
-        Finish();
     }
 
     void PlayerRenderer::CleanUp() {

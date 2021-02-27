@@ -39,21 +39,22 @@ namespace mod::terrain {
         }
 
         const auto& renderingPass = params.at("RenderingPass");
-        if (renderingPass == "Shadow") {
-            return;
+
+        if (renderingPass == "Reflection" ||
+            renderingPass == "Refraction" ||
+            renderingPass == "Main") {
+            Prepare();
+
+            m_pShader->Bind();
+
+            const auto &rootNodes = m_pTerrain->RootNodes();
+
+            for (auto &rootNode : rootNodes) {
+                RenderNode(rootNode);
+            }
+
+            Finish();
         }
-
-        Prepare();
-
-        m_pShader->Bind();
-
-        const auto& rootNodes = m_pTerrain->RootNodes();
-
-        for (auto& rootNode : rootNodes) {
-            RenderNode(rootNode);
-        }
-
-        Finish();
      }
 
     void TerrainRenderer::RenderNode(const TerrainNode::ptr_type_t& pNode) {

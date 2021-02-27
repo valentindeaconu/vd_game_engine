@@ -28,29 +28,31 @@ namespace mod::shadow {
     }
 
     void ShadowManager::Init() {
-        m_pFrameBuffer->Allocate(m_MapSize, m_MapSize, false, vd::gl::DepthAttachment::eDepthTexture);
-
-        m_pFrameBuffer->GetDepthTexture()->Bind();
-
-        m_pFrameBuffer->GetDepthTexture()->NoFilter();
-        m_pFrameBuffer->GetDepthTexture()->WrapClampToBorder();
-
-        float border[] = {1.0f, 1.0f, 1.0f, 1.0f};
-        m_pFrameBuffer->GetDepthTexture()->Parameter(vd::gl::TextureParameter::eTextureBorderColor, border);
-
-        m_pFrameBuffer->GetDepthTexture()->Unbind();
-
         m_pFrameBuffer->Bind();
+        m_pFrameBuffer->Resize(m_MapSize, m_MapSize);
 
-        glDrawBuffer(GL_NONE);
-        glReadBuffer(GL_NONE);
+        m_pFrameBuffer->PushAttachment(vd::gl::FrameBuffer::eDepthTexture, [](vd::gl::Texture2DPtr& pTex) {
+            pTex->Bind();
+
+            pTex->BilinearFilter();
+
+            pTex->WrapClampToBorder();
+            float border[] = {1.0f, 1.0f, 1.0f, 1.0f};
+
+            pTex->Parameter(vd::gl::TextureParameter::eTextureBorderColor, border);
+
+            pTex->Unbind();
+        });
+
+        if (m_pFrameBuffer->Status() != vd::gl::FrameBuffer::eComplete) {
+            throw vd::RuntimeError("framebuffer is incomplete or has errors");
+        }
 
         m_pFrameBuffer->Unbind();
 
         m_pShadowBox = std::make_shared<ShadowBox>(m_pView, m_Distance, m_Offset);
 
         m_pShadowBox->Link();
-
     }
 
     void ShadowManager::Update() {
@@ -61,7 +63,7 @@ namespace mod::shadow {
     }
 
     void ShadowManager::CleanUp() {
-        m_pFrameBuffer->CleanUp();
+        m_pFrameBuffer = nullptr;
     }
 
     float ShadowManager::Distance() const {
@@ -77,7 +79,7 @@ namespace mod::shadow {
     }
 
     const vd::gl::Texture2DPtr& ShadowManager::ShadowTexture() const {
-        return m_pFrameBuffer->GetDepthTexture();
+        return m_pFrameBuffer->DepthTexture();
     }
 
     const glm::mat4& ShadowManager::ViewMatrix() const {

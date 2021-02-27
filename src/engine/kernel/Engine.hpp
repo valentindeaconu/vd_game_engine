@@ -33,7 +33,7 @@ namespace vd {
         void Start();
 
         void Add(const component::RenderingPass& renderingPass);
-        void Remove(const std::string& renderingPassName);
+        void Remove(const std::string& name);
     private:
         void Run();
         void Stop();
@@ -47,8 +47,7 @@ namespace vd {
 
         window::WindowPtr   m_pWindow;
         kernel::ContextPtr  m_pContext;
-
-        std::list<component::RenderingPass> m_RenderingPasses;
+        std::list<component::RenderingPass>         m_RenderingPasses;
     };
     typedef std::shared_ptr<Engine>	EnginePtr;
 }

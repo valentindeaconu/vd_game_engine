@@ -47,7 +47,7 @@ float computeShadow(vec4 fragPosLightSpace, vec3 normal, vec3 lightDirection, fl
     float currentDepth = projCoords.z;
 
     // TODO: Solve bias
-    float bias = 0.005f; // max(0.0075f * (1.0f - dot(normal, lightDirection)), 0.005f);
+    float bias = /*0.005f; //*/ max(0.0075f * (1.0f - dot(normal, lightDirection)), 0.005f);
 
     // check whether current frag pos is in shadow
     float shadow = 0.0;
@@ -91,6 +91,8 @@ void main() {
         materialColor /= total;
 
         // compute normal
+        vec3 normalEye = normal;
+
         float dist = length(cameraPosition - fPosition);
         if (dist < highDetailRange - 50) {
             float attenuation = clamp(-dist/(highDetailRange - 50) + 1.0f, 0.0f, 1.0f);
@@ -110,13 +112,16 @@ void main() {
             bumpNormal = normalize(bumpNormal);
             bumpNormal.xz *= attenuation;
             normal = normalize(TBN * bumpNormal);
+
+            // from tangent space to world space
+            normalEye = normalize(transpose(TBN) * normal);
         }
 
         // compute lights
         // in eye coordinates, the viewer is situated at the origin
         vec3 cameraPosEye = vec3(0.0f);
-        // transform normal
-        vec3 normalEye = normalize(fNormalMatrix * normal);
+        // from world space to light space
+        normalEye = normalize(fNormalMatrix * normalEye);
         // compute view direction
         vec3 viewDirN = normalize(cameraPosition - fPosition);
         // compute light direction matrix

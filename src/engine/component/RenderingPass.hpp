@@ -16,9 +16,10 @@ namespace vd::component {
     public:
         typedef uint64_t priority_t;
 
-        RenderingPass(std::string  name,
+        RenderingPass(std::string name,
                       const priority_t& priority,
-                      gl::FrameBufferPtr  frameBufferPtr,
+                      gl::FrameBufferPtr frameBuffer,
+                      bool enableClearing = true,
                       vd::Predicate precondition = g_kEmptyPredicate,
                       vd::Consumer beforeExecution = g_kEmptyConsumer,
                       vd::Consumer afterExecution = g_kEmptyConsumer);
@@ -34,16 +35,16 @@ namespace vd::component {
 
         [[nodiscard]] const gl::FrameBufferPtr& FrameBuffer() const;
     private:
+        bool        m_ClearEnabled;
+        priority_t  m_Priority;
         std::string m_Name;
-        priority_t m_Priority;
 
-        vd::Predicate m_Precondition;
-        vd::Consumer m_BeforeExecution;
-        vd::Consumer m_AfterExecution;
+        vd::Predicate   m_Precondition;
+        vd::Consumer    m_BeforeExecution;
+        vd::Consumer    m_AfterExecution;
 
-        gl::FrameBufferPtr m_FrameBufferPtr;
+        gl::FrameBufferPtr m_pFrameBuffer;
     };
 }
-
 
 #endif //VD_GAME_ENGINE_RENDERINGPASS_HPP

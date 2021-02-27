@@ -10,6 +10,7 @@ namespace vd::kernel {
         : m_FPS(0)
         , m_FrameTimeInSeconds(0.0f)
         , m_ClipPlane(0.0f)
+        , m_pSceneFBO(nullptr)
     {
     }
 
@@ -25,6 +26,10 @@ namespace vd::kernel {
 
     glm::vec4& Context::ClipPlane() {
         return m_ClipPlane;
+    }
+
+    gl::FrameBufferPtr& Context::SceneFBO() {
+        return m_pSceneFBO;
     }
 
 }

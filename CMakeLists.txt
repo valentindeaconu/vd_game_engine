@@ -32,16 +32,19 @@ set(SOURCES
         src/engine/camera/CameraWrapper.hpp
         src/engine/collision/Detector.cpp
         src/engine/collision/Detector.hpp
-        src/engine/component/IRenderer.cpp
-        src/engine/component/IRenderer.hpp
+        src/engine/component/IEntityShader.cpp
+        src/engine/component/IEntityShader.hpp
         src/engine/component/IManager.cpp
         src/engine/component/IManager.hpp
         src/engine/component/IModuleFactory.hpp
-        src/engine/component/RenderingPass.cpp
-        src/engine/component/RenderingPass.hpp
-        src/engine/component/IEntityShader.cpp
-        src/engine/component/IEntityShader.hpp
+        src/engine/component/IRenderer.cpp
+        src/engine/component/IRenderer.hpp
+        src/engine/component/IRenderingEffectShader.hpp
         src/engine/component/IShading.hpp
+        src/engine/component/RenderingEffect.cpp
+        src/engine/component/RenderingEffect.hpp
+        src/engine/component/RenderingPass.hpp
+        src/engine/component/RenderingPass.cpp
         src/engine/core/AsyncWorker.cpp
         src/engine/core/AsyncWorker.hpp
         src/engine/culling/FrustumCullingManager.cpp
@@ -119,6 +122,8 @@ set(SOURCES
         src/engine/model/Mesh.hpp
         src/engine/model/Vertex.cpp
         src/engine/model/Vertex.hpp
+        src/engine/object/primitive/Quad2D.cpp
+        src/engine/object/primitive/Quad2D.hpp
         src/engine/object/Entity.cpp
         src/engine/object/Entity.hpp
         src/engine/object/Entity2D.cpp
@@ -151,6 +156,30 @@ set(SOURCES
         src/modules/player/PlayerRenderer.hpp
         src/modules/player/PlayerFactory.cpp
         src/modules/player/PlayerFactory.hpp
+        src/modules/postprocessing/effects/ContrastShader.cpp
+        src/modules/postprocessing/effects/ContrastShader.hpp
+        src/modules/postprocessing/effects/DepthOfFieldShader.cpp
+        src/modules/postprocessing/effects/DepthOfFieldShader.hpp
+        src/modules/postprocessing/effects/HorizontalBlurShader.cpp
+        src/modules/postprocessing/effects/HorizontalBlurShader.hpp
+        src/modules/postprocessing/effects/VerticalBlurShader.cpp
+        src/modules/postprocessing/effects/VerticalBlurShader.hpp
+        src/modules/postprocessing/EffectFactory.cpp
+        src/modules/postprocessing/EffectFactory.hpp
+        src/modules/postprocessing/EffectRenderer.cpp
+        src/modules/postprocessing/EffectRenderer.hpp
+        src/modules/postprocessing/ToScreenPseudoEffect.cpp
+        src/modules/postprocessing/ToScreenPseudoEffect.hpp
+        src/modules/props/Prop.cpp
+        src/modules/props/Prop.hpp
+        src/modules/props/PropsRenderer.cpp
+        src/modules/props/PropsRenderer.hpp
+        src/modules/props/PropShader.cpp
+        src/modules/props/PropShader.hpp
+        src/modules/props/PropGenerator.cpp
+        src/modules/props/PropGenerator.hpp
+        src/modules/props/PropsFactory.cpp
+        src/modules/props/PropsFactory.hpp
         src/modules/shadow/ShadowBox.cpp
         src/modules/shadow/ShadowBox.hpp
         src/modules/shadow/ShadowShader.cpp
@@ -167,16 +196,6 @@ set(SOURCES
         src/modules/sky/SkyRenderer.hpp
         src/modules/sky/SkyFactory.cpp
         src/modules/sky/SkyFactory.hpp
-        src/modules/props/Prop.cpp
-        src/modules/props/Prop.hpp
-        src/modules/props/PropsRenderer.cpp
-        src/modules/props/PropsRenderer.hpp
-        src/modules/props/PropShader.cpp
-        src/modules/props/PropShader.hpp
-        src/modules/props/PropGenerator.cpp
-        src/modules/props/PropGenerator.hpp
-        src/modules/props/PropsFactory.cpp
-        src/modules/props/PropsFactory.hpp
         src/modules/terrain/TerrainShader.cpp
         src/modules/terrain/TerrainShader.hpp
         src/modules/terrain/Terrain.cpp

@@ -82,15 +82,15 @@ namespace mod::water {
         SetUniform("farPlane", m_pWindow->FarPlane());
 
         vd::gl::ActiveTexture(0);
-        pWater->ReflectionFramebuffer()->GetColorTexture()->Bind();
+        pWater->ReflectionFramebuffer()->ColorTexture()->Bind();
         SetUniform("reflectionTexture", 0);
 
         vd::gl::ActiveTexture(1);
-        pWater->RefractionFramebuffer()->GetColorTexture()->Bind();
+        pWater->RefractionFramebuffer()->ColorTexture()->Bind();
         SetUniform("refractionTexture", 1);
 
         vd::gl::ActiveTexture(2);
-        pWater->RefractionFramebuffer()->GetDepthTexture()->Bind();
+        pWater->RefractionFramebuffer()->DepthTexture()->Bind();
         SetUniform("depthMap", 2);
 
         auto& pSun = m_pLightManager->Sun();
