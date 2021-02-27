@@ -35,6 +35,10 @@ namespace mod::postprocessing {
         Compile();
     }
 
+    void ToScreenShader::Link() {
+        m_pContext = vd::ObjectOfType<vd::context::Context>::Find();
+    }
+
     void ToScreenShader::AddUniforms() {
         AddUniform("colorMap");
     }
@@ -47,7 +51,11 @@ namespace mod::postprocessing {
          auto pToScreenPseudoEffect = std::dynamic_pointer_cast<ToScreenPseudoEffect>(pEffect);
 
         vd::gl::ActiveTexture(0);
-        pToScreenPseudoEffect->InputFrameBuffer()->ColorTexture()->Bind();
+        if (m_pContext->WireframeMode()) {
+            m_pContext->SceneFrameBuffer()->ColorTexture()->Bind();
+        } else {
+            pToScreenPseudoEffect->InputFrameBuffer()->ColorTexture()->Bind();
+        }
         SetUniform("colorMap", 0);
     }
 }

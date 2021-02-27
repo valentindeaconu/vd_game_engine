@@ -10,7 +10,7 @@
 #include <engine/injector/Injectable.hpp>
 
 #include <engine/window/Window.hpp>
-#include <engine/kernel/Context.hpp>
+#include <engine/context/Context.hpp>
 
 #include <modules/postprocessing/effects/ContrastShader.hpp>
 #include <modules/postprocessing/effects/HorizontalBlurShader.hpp>

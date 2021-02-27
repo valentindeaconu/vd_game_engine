@@ -19,7 +19,6 @@ namespace vd::component {
         RenderingPass(std::string name,
                       const priority_t& priority,
                       gl::FrameBufferPtr frameBuffer,
-                      bool enableClearing = true,
                       vd::Predicate precondition = g_kEmptyPredicate,
                       vd::Consumer beforeExecution = g_kEmptyConsumer,
                       vd::Consumer afterExecution = g_kEmptyConsumer);
@@ -30,6 +29,7 @@ namespace vd::component {
         void Prepare();
         void Finish();
 
+        bool& Clearing();
         [[nodiscard]] const std::string& Name() const;
         [[nodiscard]] const priority_t& Priority() const;
 

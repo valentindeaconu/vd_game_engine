@@ -8,7 +8,7 @@
 #include <engine/component/IModuleFactory.hpp>
 
 #include <engine/loader/FontLoader.hpp>
-#include <engine/kernel/Context.hpp>
+#include <engine/context/Context.hpp>
 
 #include "GuiQuad.hpp"
 #include "GuiText.hpp"

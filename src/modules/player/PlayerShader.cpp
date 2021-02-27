@@ -24,7 +24,7 @@ namespace mod::player {
         m_pWindow = vd::ObjectOfType<vd::window::Window>::Find();
         m_pLightManager = vd::ObjectOfType<vd::light::LightManager>::Find();
         m_pFogManager = vd::ObjectOfType<vd::fog::FogManager>::Find();
-        m_pContext = vd::ObjectOfType<vd::kernel::Context>::Find();
+        m_pContext = vd::ObjectOfType<vd::context::Context>::Find();
     }
 
     void PlayerShader::AddUniforms() {

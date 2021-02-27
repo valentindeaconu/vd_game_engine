@@ -18,8 +18,8 @@ float computeDistanceUsingDepth(float depth, float nearPlane, float farPlane) {
 }
 
 void main() {
-    float depth = computeDistanceUsingDepth(texture(depthMap, fTexCoords).r, near, far) / 250.0f;
-    depth = clamp(depth, 0.0f, 0.85f);
+    float depth = computeDistanceUsingDepth(texture(depthMap, fTexCoords).r, near, far) / 300.0f;
+    depth = clamp(depth, 0.0f, 0.65f);
 
     vec4 color = texture(colorMap, fTexCoords);
     vec4 blur = texture(blurMap, fTexCoords);

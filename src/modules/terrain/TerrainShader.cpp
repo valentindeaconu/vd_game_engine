@@ -33,7 +33,7 @@ namespace mod::terrain {
     TerrainShader::~TerrainShader() = default;
 
     void TerrainShader::Link() {
-        m_pContext = vd::ObjectOfType<vd::kernel::Context>::Find();
+        m_pContext = vd::ObjectOfType<vd::context::Context>::Find();
         m_pLightManager = vd::ObjectOfType<vd::light::LightManager>::Find();
         m_pFogManager = vd::ObjectOfType<vd::fog::FogManager>::Find();
         m_pCamera = vd::ObjectOfType<vd::camera::Camera>::Find();
@@ -76,6 +76,10 @@ namespace mod::terrain {
         }
 
         AddUniform("clipPlane");
+
+        AddUniform("isWireframe");
+        AddUniform("wireframeColor");
+
 
         m_pFogManager->AddUniforms(shared_from_this());
         m_pLightManager->AddUniforms(shared_from_this());
@@ -154,6 +158,9 @@ namespace mod::terrain {
         }
 
         SetUniform("clipPlane", m_pContext->ClipPlane());
+
+        SetUniform("isWireframe", m_pContext->WireframeMode());
+        SetUniform("wireframeColor", glm::vec4(0.1f, 1.0f, 0.1f, 1.0f));
     }
 
 }

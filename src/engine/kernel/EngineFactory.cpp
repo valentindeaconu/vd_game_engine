@@ -10,9 +10,6 @@ namespace vd {
         /// Engine Creation
         EnginePtr pEngine = injector::CreateAndStore<vd::Engine>();
 
-        /// Context Holder
-        kernel::ContextPtr pDataStore = injector::CreateAndStore<kernel::Context>();
-
         /// Linker creation
         injector::LinkerPtr pLinker = injector::CreateAndStore<injector::Linker>();
 
@@ -63,6 +60,9 @@ namespace vd {
 
         // Camera creation
         pEngine->Subscribe(injector::CreateAndStore<camera::CameraManager>(), 3);
+
+        // Context creation
+        pEngine->Subscribe(injector::CreateAndStore<context::ContextManager>(), 4);
 
         // FrustumCullingManager creation
         pEngine->Subscribe(injector::CreateAndStore<culling::FrustumCullingManager>(), component::IManager::kDefaultPriority);

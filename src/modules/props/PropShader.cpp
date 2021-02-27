@@ -17,7 +17,7 @@ namespace mod::props {
     PropShader::~PropShader() = default;
 
     void PropShader::Link() {
-        m_pContext = vd::ObjectOfType<vd::kernel::Context>::Find();
+        m_pContext = vd::ObjectOfType<vd::context::Context>::Find();
         m_pCamera = vd::ObjectOfType<vd::camera::Camera>::Find();
         m_pWindow = vd::ObjectOfType<vd::window::Window>::Find();
 

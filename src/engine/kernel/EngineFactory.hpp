@@ -15,7 +15,7 @@
 #include <engine/event/EventHandler.hpp>
 #include <engine/window/Window.hpp>
 #include <engine/camera/Camera.hpp>
-#include <engine/kernel/Context.hpp>
+#include <engine/context/Context.hpp>
 
 // Required managers
 #include <engine/culling/FrustumCullingManager.hpp>

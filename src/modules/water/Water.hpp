@@ -12,7 +12,7 @@
 #include <engine/loader/PropertiesLoader.hpp>
 
 #include <engine/injector/Injectable.hpp>
-#include <engine/kernel/Context.hpp>
+#include <engine/context/Context.hpp>
 
 #include <memory>
 #include <numbers>
@@ -45,7 +45,7 @@ namespace mod::water {
         void GeneratePatch();
 
         // Engine required to get current frame time
-        vd::kernel::ContextPtr m_pContext;
+        vd::context::ContextPtr m_pContext;
 
         std::string m_CurrentPack;
 

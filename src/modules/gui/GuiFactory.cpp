@@ -17,6 +17,16 @@ namespace mod::gui {
     }
 
     void GuiFactory::Create(const vd::EnginePtr& pEngine) {
+        /// Create & register rendering pass
+        vd::component::RenderingPass rpGUI("GUI",
+                                           1000,
+                                           nullptr,
+                                           vd::g_kEmptyPredicate,
+                                           []() { glDisable(GL_DEPTH_TEST); },
+                                           []() { glEnable(GL_DEPTH_TEST); });
+        rpGUI.Clearing() = false;
+        pEngine->Add(rpGUI);
+
         /// Refraction Texture
         /* CreateGui(pEngine,
                   [w = vd::ObjectOfType<mod::water::Water>::Find()]() {
@@ -40,16 +50,16 @@ namespace mod::gui {
                   glm::vec2(0.75f, 0.75f),
                   glm::vec2(0.250f, 0.250f)); */
 
-        /* /// Terrain Height Map
-        CreateGui(pEngine,
+        /// Terrain Height Map
+        /* CreateGui(pEngine,
                   [t = vd::ObjectOfType<mod::terrain::Terrain>::Find()]() {
                       return t->HeightMap();
                   },
                   glm::vec2(0.75f, 0.75f),
                   glm::vec2(0.250f, 0.250f)); */
 
-        /* /// Terrain Normal Map
-        CreateGui(pEngine,
+        /// Terrain Normal Map
+        /* CreateGui(pEngine,
                   [t = vd::ObjectOfType<mod::terrain::Terrain>::Find()]() {
                       return t->NormalMap();
                   },
@@ -58,17 +68,17 @@ namespace mod::gui {
 
         /// Scene FBO
         /* CreateGui(pEngine,
-                  [ctx = vd::ObjectOfType<vd::kernel::Context>::Find()]() {
-                      return ctx->SceneFBO()->ColorTexture();
+                  [ctx = vd::ObjectOfType<vd::context::Context>::Find()]() {
+                      return ctx->SceneFrameBuffer()->ColorTexture();
                   },
                   glm::vec2(0.75f, -0.75f),
-                  glm::vec2(0.250f, 0.250f)); */
+                  glm::vec2(0.250f, 0.250f));*/
 
         CreateUpdatableText(
             pEngine,
             "0",
             [
-                ctx = vd::ObjectOfType<vd::kernel::Context>::Find(),
+                ctx = vd::ObjectOfType<vd::context::Context>::Find(),
                 w = vd::ObjectOfType<vd::window::Window>::Find()
             ](UpdatableGuiText& el) {
                 bool shouldRebuild = false;
@@ -90,7 +100,7 @@ namespace mod::gui {
             },
             glm::vec2(200, 200),
             1.0f,
-            glm::vec3(0.0039f, 0.4745f, 0.4353f)
+            glm::vec3(0.0f, 0.0f, 0.0f) // glm::vec3(0.0039f, 0.4745f, 0.4353f)
         );
     }
 

@@ -9,7 +9,7 @@
 
 #include <engine/injector/Injectable.hpp>
 
-#include <engine/kernel/Context.hpp>
+#include <engine/context/Context.hpp>
 #include <engine/camera/Camera.hpp>
 #include <engine/event/EventHandler.hpp>
 #include <engine/loader/ObjectLoader.hpp>
@@ -40,7 +40,7 @@ namespace mod::player {
 
         const float m_kModelYOffset;
 
-        vd::kernel::ContextPtr          m_pContext;
+        vd::context::ContextPtr         m_pContext;
         vd::camera::CameraManagerPtr    m_pCameraManager;
         vd::event::EventHandlerPtr      m_pEventHandler;
         mod::terrain::TerrainPtr        m_pTerrain;

@@ -16,8 +16,7 @@ namespace mod::shadow {
                 "Shadow",
                 10,
                 pShadowManager->FrameBuffer(),
-                true,
-                vd::g_kEmptyPredicate,
+                [ctx = vd::ObjectOfType<vd::context::Context>::Find()]() { return !ctx->WireframeMode(); },
                 []() { glDisable(GL_CULL_FACE); },
                 []() { glEnable(GL_CULL_FACE); }
         );

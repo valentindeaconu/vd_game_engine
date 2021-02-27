@@ -13,7 +13,7 @@ namespace vd {
 
     void Engine::Link() {
         m_pWindow = vd::ObjectOfType<window::Window>::Find();
-        m_pContext = vd::ObjectOfType<kernel::Context>::Find();
+        m_pContext = vd::ObjectOfType<context::Context>::Find();
     }
 
     void Engine::Init() {
@@ -44,22 +44,27 @@ namespace vd {
         }
         pSceneFbo->Unbind();
 
-        m_pContext->SceneFBO() = pSceneFbo;
+        m_pContext->SceneFrameBuffer() = pSceneFbo;
 
-        /// Create default rendering passes
-        const auto minPriority = std::numeric_limits<uint64_t>::max();
-        this->Add(component::RenderingPass("Main", minPriority - 2, pSceneFbo));
-        this->Add(component::RenderingPass("PostProcessing", minPriority - 1, nullptr));
-        this->Add(component::RenderingPass("GUI",
-                                           minPriority,
-                                           nullptr,
-                                           false,
-                                           vd::g_kEmptyPredicate,
-                                           []() { glDisable(GL_DEPTH_TEST); },
-                                           []() { glEnable(GL_DEPTH_TEST); }));
+        // Main rendering pass will render the scene
+        auto beforeFn = [ctx = m_pContext]() {
+            if (ctx->WireframeMode()) {
+                glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+            }
+        };
+        auto afterFn = [ctx = m_pContext]() {
+            if (ctx->WireframeMode()) {
+                glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+            }
+        };
+
+        component::RenderingPass rpMain("Main", 100, pSceneFbo, g_kEmptyPredicate, beforeFn, afterFn);
+        this->Add(rpMain);
 
         // Initialise all subscribed components
         this->Broadcast(BroadcastType::eInit);
+
+        Summary();
     }
 
     void Engine::Start() {
@@ -180,5 +185,23 @@ namespace vd {
         this->Broadcast(BroadcastType::eCleanUp);
 
         glfwTerminate();
+    }
+
+    void Engine::Summary() {
+        std::stringstream ss;
+
+        ss << "Post-Init Summary\n\n";
+        ss << "A total of " << m_Observers.size() << " observers subscribed and ";
+        ss << m_RenderingPasses.size() << " rendering passes created\n";
+        ss << "\n";
+        ss << "Rendering passes (in order of drawing):\n";
+
+        int count = 1;
+        for (auto it = m_RenderingPasses.begin(); it != m_RenderingPasses.end(); ++it) {
+            ss << "\t" << count << ". " << it->Name() << ", priority = " << it->Priority() << "\n";
+            ++count;
+        }
+
+        Logger::log(ss.str());
     }
 }

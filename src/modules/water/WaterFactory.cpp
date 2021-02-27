@@ -24,10 +24,10 @@ namespace mod::water {
         WaterRendererPtr pWaterRenderer = std::make_shared<WaterRenderer>(pWater, pWaterShader, before, after);
 
         vd::camera::CameraPtr pCamera = vd::ObjectOfType<vd::camera::Camera>::Find();
-        vd::kernel::ContextPtr pContext = vd::ObjectOfType<vd::kernel::Context>::Find();
+        vd::context::ContextPtr pContext = vd::ObjectOfType<vd::context::Context>::Find();
 
-        vd::Predicate passPrecondition = [w = pWater.get(), c = pCamera.get()]() {
-            return c->Position().y > w->GetHeight();
+        vd::Predicate passPrecondition = [w = pWater.get(), c = pCamera.get(), ctx = pContext]() {
+            return !ctx->WireframeMode() && c->Position().y > w->GetHeight();
         };
 
         vd::Consumer reflectionPassBefore = [w = pWater.get(), ctx = pContext.get(), c = pCamera.get()] {
@@ -48,7 +48,6 @@ namespace mod::water {
                 "Reflection",
                 20,
                 pWater->ReflectionFramebuffer(),
-                true,
                 passPrecondition,
                 reflectionPassBefore,
                 reflectionPassAfter
@@ -69,7 +68,6 @@ namespace mod::water {
                 "Refraction",
                 20,
                 pWater->RefractionFramebuffer(),
-                true,
                 passPrecondition,
                 refractionPassBefore,
                 refractionPassAfter

@@ -45,6 +45,8 @@ set(SOURCES
         src/engine/component/RenderingEffect.hpp
         src/engine/component/RenderingPass.hpp
         src/engine/component/RenderingPass.cpp
+        src/engine/context/Context.cpp
+        src/engine/context/Context.hpp
         src/engine/core/AsyncWorker.cpp
         src/engine/core/AsyncWorker.hpp
         src/engine/culling/FrustumCullingManager.cpp
@@ -69,8 +71,6 @@ set(SOURCES
         src/engine/injector/ObjectOfType.hpp
         src/engine/kernel/Engine.cpp
         src/engine/kernel/Engine.hpp
-        src/engine/kernel/Context.cpp
-        src/engine/kernel/Context.hpp
         src/engine/kernel/EngineFactory.cpp
         src/engine/kernel/EngineFactory.hpp
         src/engine/light/LightManager.cpp

@@ -15,7 +15,7 @@
 #include <engine/camera/Camera.hpp>
 #include <engine/light/LightManager.hpp>
 #include <engine/fog/FogManager.hpp>
-#include <engine/kernel/Context.hpp>
+#include <engine/context/Context.hpp>
 
 namespace mod::player {
     class PlayerShader
@@ -39,7 +39,7 @@ namespace mod::player {
         vd::window::WindowPtr m_pWindow;
         vd::camera::CameraPtr m_pCamera;
 
-        vd::kernel::ContextPtr m_pContext;
+        vd::context::ContextPtr m_pContext;
     };
     typedef std::shared_ptr<PlayerShader>	PlayerShaderPtr;
 }

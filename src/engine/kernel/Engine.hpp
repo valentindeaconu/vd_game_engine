@@ -19,7 +19,7 @@
 #include <engine/misc/Types.hpp>
 
 #include <engine/window/Window.hpp>
-#include "Context.hpp"
+#include <engine/context/Context.hpp>
 
 namespace vd {
     class Engine : public datastruct::Observable {
@@ -35,6 +35,8 @@ namespace vd {
         void Add(const component::RenderingPass& renderingPass);
         void Remove(const std::string& name);
     private:
+        void Summary();
+
         void Run();
         void Stop();
 
@@ -46,7 +48,7 @@ namespace vd {
         bool    m_Running;
 
         window::WindowPtr   m_pWindow;
-        kernel::ContextPtr  m_pContext;
+        context::ContextPtr  m_pContext;
         std::list<component::RenderingPass>         m_RenderingPasses;
     };
     typedef std::shared_ptr<Engine>	EnginePtr;

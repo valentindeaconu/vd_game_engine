@@ -15,7 +15,7 @@ namespace mod::player {
     }
 
     void Player::Link() {
-        m_pContext = vd::ObjectOfType<vd::kernel::Context>::Find();
+        m_pContext = vd::ObjectOfType<vd::context::Context>::Find();
         m_pCameraManager = vd::ObjectOfType<vd::camera::CameraManager>::Find();
         m_pTerrain = vd::ObjectOfType<mod::terrain::Terrain>::Find();
         m_pEventHandler = vd::ObjectOfType<vd::event::EventHandler>::Find();

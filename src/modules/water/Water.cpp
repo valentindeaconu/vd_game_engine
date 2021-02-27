@@ -16,7 +16,7 @@ namespace mod::water {
     Water::~Water() = default;
 
     void Water::Link() {
-        m_pContext = vd::ObjectOfType<vd::kernel::Context>::Find();
+        m_pContext = vd::ObjectOfType<vd::context::Context>::Find();
     }
 
     void Water::Setup() {

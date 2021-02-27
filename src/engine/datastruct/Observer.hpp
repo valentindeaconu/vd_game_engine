@@ -48,6 +48,7 @@ namespace vd::datastruct {
             ObserverPtr observer;
         };
 
+    protected:
         std::list<Member> m_Observers;
     };
 }

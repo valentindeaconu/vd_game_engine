@@ -16,7 +16,6 @@ namespace mod::postprocessing {
 
     void EffectRenderer::Link() {
         m_pWindow = vd::ObjectOfType<vd::window::Window>::Find();
-        m_pContext = vd::ObjectOfType<vd::kernel::Context>::Find();
     }
 
     void EffectRenderer::Init() {
@@ -62,7 +61,6 @@ namespace mod::postprocessing {
 
                     effect->Finish();
                 }
-
             }
 
             Finish();

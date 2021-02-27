@@ -9,7 +9,7 @@
 #include <engine/loader/ShaderLoader.hpp>
 
 #include <engine/injector/Injectable.hpp>
-#include <engine/kernel/Context.hpp>
+#include <engine/context/Context.hpp>
 #include <engine/window/Window.hpp>
 #include <engine/camera/Camera.hpp>
 #include <engine/light/LightManager.hpp>
@@ -31,7 +31,7 @@ namespace mod::props {
     private:
         void AddUniforms() override;
 
-        vd::kernel::ContextPtr  m_pContext;
+        vd::context::ContextPtr  m_pContext;
         vd::camera::CameraPtr   m_pCamera;
         vd::window::WindowPtr   m_pWindow;
 

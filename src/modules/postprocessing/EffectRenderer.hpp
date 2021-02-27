@@ -13,7 +13,6 @@
 
 #include <engine/injector/Injectable.hpp>
 #include <engine/window/Window.hpp>
-#include <engine/kernel/Context.hpp>
 
 namespace mod::postprocessing {
     class EffectRenderer : public vd::component::IRenderer, public vd::injector::Injectable {
@@ -43,7 +42,6 @@ namespace mod::postprocessing {
 
         // Utility
         vd::window::WindowPtr   m_pWindow;
-        vd::kernel::ContextPtr  m_pContext;
     };
     typedef std::shared_ptr<EffectRenderer>	EffectRendererPtr;
 }
