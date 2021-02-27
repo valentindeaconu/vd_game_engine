@@ -46,13 +46,20 @@ namespace vd {
 
         m_pContext->SceneFBO() = pSceneFbo;
 
-        this->Add(component::RenderingPass("Main", std::numeric_limits<uint64_t>::max(), pSceneFbo));
+        /// Create default rendering passes
+        const auto minPriority = std::numeric_limits<uint64_t>::max();
+        this->Add(component::RenderingPass("Main", minPriority - 2, pSceneFbo));
+        this->Add(component::RenderingPass("PostProcessing", minPriority - 1, nullptr));
+        this->Add(component::RenderingPass("GUI",
+                                           minPriority,
+                                           nullptr,
+                                           false,
+                                           vd::g_kEmptyPredicate,
+                                           []() { glDisable(GL_DEPTH_TEST); },
+                                           []() { glEnable(GL_DEPTH_TEST); }));
 
         // Initialise all subscribed components
         this->Broadcast(BroadcastType::eInit);
-
-        // Initialise post processing
-        m_pPostProcessing->Init();
     }
 
     void Engine::Start() {
@@ -92,10 +99,6 @@ namespace vd {
             m_RenderingPasses.erase(it);
             return;
         }
-    }
-
-    postprocessing::PostProcessingPtr& Engine::PostProcessing() {
-        return m_pPostProcessing;
     }
 
     void Engine::Run() {
@@ -163,35 +166,18 @@ namespace vd {
                 renderingPass.Prepare();
 
                 params["RenderingPass"] = renderingPass.Name();
-
-                glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
                 this->Broadcast(BroadcastType::eRender, params);
 
                 renderingPass.Finish();
             }
         }
 
-        /// Render the final picture
-        // Do post processing work
-        m_pPostProcessing->Render();
-
-        // Disable depth test since everything from now on is rendering on 2D coords
-        glDisable(GL_DEPTH_TEST);
-
-        // Render GUI
-        params["RenderingPass"] = "GUI";
-        this->Broadcast(BroadcastType::eRender, params);
-
-        glEnable(GL_DEPTH_TEST);
         // TODO: Remove this check when it's not needed
         glCheckError();
     }
 
     void Engine::CleanUp() {
         this->Broadcast(BroadcastType::eCleanUp);
-
-        m_pPostProcessing->CleanUp();
 
         glfwTerminate();
     }

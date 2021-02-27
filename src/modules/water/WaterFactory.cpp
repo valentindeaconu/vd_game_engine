@@ -48,6 +48,7 @@ namespace mod::water {
                 "Reflection",
                 20,
                 pWater->ReflectionFramebuffer(),
+                true,
                 passPrecondition,
                 reflectionPassBefore,
                 reflectionPassAfter
@@ -68,6 +69,7 @@ namespace mod::water {
                 "Refraction",
                 20,
                 pWater->RefractionFramebuffer(),
+                true,
                 passPrecondition,
                 refractionPassBefore,
                 refractionPassAfter

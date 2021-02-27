@@ -32,16 +32,19 @@ set(SOURCES
         src/engine/camera/CameraWrapper.hpp
         src/engine/collision/Detector.cpp
         src/engine/collision/Detector.hpp
-        src/engine/component/IRenderer.cpp
-        src/engine/component/IRenderer.hpp
+        src/engine/component/IEntityShader.cpp
+        src/engine/component/IEntityShader.hpp
         src/engine/component/IManager.cpp
         src/engine/component/IManager.hpp
         src/engine/component/IModuleFactory.hpp
-        src/engine/component/RenderingPass.cpp
-        src/engine/component/RenderingPass.hpp
-        src/engine/component/IEntityShader.cpp
-        src/engine/component/IEntityShader.hpp
+        src/engine/component/IRenderer.cpp
+        src/engine/component/IRenderer.hpp
+        src/engine/component/IRenderingEffectShader.hpp
         src/engine/component/IShading.hpp
+        src/engine/component/RenderingEffect.cpp
+        src/engine/component/RenderingEffect.hpp
+        src/engine/component/RenderingPass.hpp
+        src/engine/component/RenderingPass.cpp
         src/engine/core/AsyncWorker.cpp
         src/engine/core/AsyncWorker.hpp
         src/engine/culling/FrustumCullingManager.cpp
@@ -119,22 +122,14 @@ set(SOURCES
         src/engine/model/Mesh.hpp
         src/engine/model/Vertex.cpp
         src/engine/model/Vertex.hpp
+        src/engine/object/primitive/Quad2D.cpp
+        src/engine/object/primitive/Quad2D.hpp
         src/engine/object/Entity.cpp
         src/engine/object/Entity.hpp
         src/engine/object/Entity2D.cpp
         src/engine/object/Entity2D.hpp
         src/engine/object/Entity3D.cpp
         src/engine/object/Entity3D.hpp
-        src/engine/postprocessing/IStageShader.hpp
-        src/engine/postprocessing/MultipleInputStage.cpp
-        src/engine/postprocessing/MultipleInputStage.hpp
-        src/engine/postprocessing/PostProcessing.cpp
-        src/engine/postprocessing/PostProcessing.hpp
-        src/engine/postprocessing/SingularInputStage.cpp
-        src/engine/postprocessing/SingularInputStage.hpp
-        src/engine/postprocessing/Stage.cpp
-        src/engine/postprocessing/Stage.hpp
-        src/engine/postprocessing/Types.hpp
         src/engine/property/Properties.cpp
         src/engine/property/Properties.hpp
         src/engine/service/TextureService.cpp
@@ -161,16 +156,20 @@ set(SOURCES
         src/modules/player/PlayerRenderer.hpp
         src/modules/player/PlayerFactory.cpp
         src/modules/player/PlayerFactory.hpp
-        src/modules/postprocessing/ContrastShader.cpp
-        src/modules/postprocessing/ContrastShader.hpp
-        src/modules/postprocessing/DepthOfFieldShader.cpp
-        src/modules/postprocessing/DepthOfFieldShader.hpp
-        src/modules/postprocessing/HorizontalBlurShader.cpp
-        src/modules/postprocessing/HorizontalBlurShader.hpp
-        src/modules/postprocessing/PostProcessingFactory.cpp
-        src/modules/postprocessing/PostProcessingFactory.hpp
-        src/modules/postprocessing/VerticalBlurShader.cpp
-        src/modules/postprocessing/VerticalBlurShader.hpp
+        src/modules/postprocessing/effects/ContrastShader.cpp
+        src/modules/postprocessing/effects/ContrastShader.hpp
+        src/modules/postprocessing/effects/DepthOfFieldShader.cpp
+        src/modules/postprocessing/effects/DepthOfFieldShader.hpp
+        src/modules/postprocessing/effects/HorizontalBlurShader.cpp
+        src/modules/postprocessing/effects/HorizontalBlurShader.hpp
+        src/modules/postprocessing/effects/VerticalBlurShader.cpp
+        src/modules/postprocessing/effects/VerticalBlurShader.hpp
+        src/modules/postprocessing/EffectFactory.cpp
+        src/modules/postprocessing/EffectFactory.hpp
+        src/modules/postprocessing/EffectRenderer.cpp
+        src/modules/postprocessing/EffectRenderer.hpp
+        src/modules/postprocessing/ToScreenPseudoEffect.cpp
+        src/modules/postprocessing/ToScreenPseudoEffect.hpp
         src/modules/props/Prop.cpp
         src/modules/props/Prop.hpp
         src/modules/props/PropsRenderer.cpp
@@ -223,7 +222,7 @@ set(SOURCES
         src/modules/water/WaterFactory.hpp
         src/modules/ModuleFactory.cpp
         src/modules/ModuleFactory.hpp
-        src/main.cpp src/engine/object/primitive/Quad2D.cpp src/engine/object/primitive/Quad2D.hpp src/engine/postprocessing/StageRenderer.cpp src/engine/postprocessing/StageRenderer.hpp)
+        src/main.cpp)
 
 if (ANDROID)
     add_library(VDGE SHARED ${SOURCES})

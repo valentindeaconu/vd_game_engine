@@ -9,19 +9,18 @@ namespace vd::component {
     RenderingPass::RenderingPass(std::string name,
                                  const RenderingPass::priority_t& priority,
                                  gl::FrameBufferPtr frameBuffer,
+                                 bool enableClearing,
                                  vd::Predicate precondition,
                                  vd::Consumer beforeExecution,
                                  vd::Consumer afterExecution)
         : m_Name(std::move(name))
         , m_Priority(priority)
         , m_pFrameBuffer(std::move(frameBuffer))
+        , m_ClearEnabled(enableClearing)
         , m_Precondition(std::move(precondition))
         , m_BeforeExecution(std::move(beforeExecution))
         , m_AfterExecution(std::move(afterExecution))
     {
-        if (m_pFrameBuffer == nullptr) {
-            throw RuntimeError("could not create a rendering pass without a frame buffer");
-        }
     }
 
     RenderingPass::~RenderingPass() = default;
@@ -32,11 +31,19 @@ namespace vd::component {
 
     void RenderingPass::Prepare() {
         m_BeforeExecution();
-        m_pFrameBuffer->Bind();
+
+        if (m_pFrameBuffer != nullptr) {
+            m_pFrameBuffer->Bind();
+            if (m_ClearEnabled) {
+                m_pFrameBuffer->Clear();
+            }
+        }
     }
 
     void RenderingPass::Finish() {
-        m_pFrameBuffer->Unbind();
+        if (m_pFrameBuffer != nullptr) {
+            m_pFrameBuffer->Unbind();
+        }
         m_AfterExecution();
     }
 
@@ -48,7 +55,7 @@ namespace vd::component {
         return m_Priority;
     }
 
-    const gl::FrameBufferPtr &RenderingPass::FrameBuffer() const {
+    const gl::FrameBufferPtr& RenderingPass::FrameBuffer() const {
         return m_pFrameBuffer;
     }
 

@@ -23,12 +23,12 @@ namespace mod::postprocessing {
         AddUniform("targetWidth");
     }
 
-    void VerticalBlurShader::InitUniforms(vd::postprocessing::StagePtr pStage) {
+    void VerticalBlurShader::InitUniforms(vd::component::IRenderingEffectPtr pEffect) {
         AddUniforms();
     }
 
-    void VerticalBlurShader::UpdateUniforms(vd::postprocessing::StagePtr pStage) {
-        auto pVBlur = std::dynamic_pointer_cast<vd::postprocessing::SingularInputStage>(pStage);
+    void VerticalBlurShader::UpdateUniforms(vd::component::IRenderingEffectPtr pEffect) {
+        auto pVBlur = std::dynamic_pointer_cast<vd::component::ConcreteEffect>(pEffect);
 
         vd::gl::ActiveTexture(0);
         pVBlur->InputFrameBuffer()->ColorTexture()->Bind();

@@ -23,7 +23,8 @@ namespace vd::gl {
         enum Type {
             eRead = GL_READ_FRAMEBUFFER,
             eDraw = GL_DRAW_FRAMEBUFFER,
-            eReadWrite = GL_FRAMEBUFFER
+            eReadWrite = GL_FRAMEBUFFER,
+            eDefault = 0
         };
 
         enum Attachment {
@@ -50,14 +51,19 @@ namespace vd::gl {
 
         void Bind();
         void Unbind();
+        void Clear() const;
 
         [[nodiscard]] bool IsBound() const;
 
         void PushAttachment(const Attachment& attachment, const TextureConfigurator& configurator = g_kDefaultConfigurator);
         void Resize(size_t width, size_t height);
 
+        /// Method used to confirm the validity of the FrameBuffer object
+        [[nodiscard]] bool Commit() const;
+
         [[nodiscard]] StatusType Status() const;
         [[nodiscard]] std::string StatusAsString() const;
+        [[nodiscard]] static std::string StatusToString(StatusType statusType);
 
         [[nodiscard]] GLuint Id() const;
         [[nodiscard]] const vd::Dimension& Dimension() const;
@@ -81,8 +87,8 @@ namespace vd::gl {
 
         std::unordered_map<GLuint, Texture2DPtr>    m_Textures;
     };
-    typedef std::shared_ptr<FrameBuffer>    FrameBufferPtr;
-    typedef std::vector<FrameBufferPtr>     FrameBufferPtrVec;
+    typedef std::shared_ptr<FrameBuffer>        FrameBufferPtr;
+    typedef std::vector<FrameBufferPtr>         FrameBufferPtrVec;
 
 }
 

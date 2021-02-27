@@ -5,22 +5,22 @@
 #ifndef VDGE_DEPTHOFFIELDSHADER_HPP
 #define VDGE_DEPTHOFFIELDSHADER_HPP
 
-#include <engine/postprocessing/IStageShader.hpp>
-#include <engine/postprocessing/MultipleInputStage.hpp>
+#include <engine/component/IRenderingEffectShader.hpp>
+#include <engine/component/RenderingEffect.hpp>
 
 #include <engine/injector/Injectable.hpp>
 #include <engine/window/Window.hpp>
 
 namespace mod::postprocessing {
 
-    class DepthOfFieldShader : public vd::postprocessing::IStageShader, public vd::injector::Injectable {
+    class DepthOfFieldShader : public vd::component::IRenderingEffectShader, public vd::injector::Injectable {
     public:
         DepthOfFieldShader();
 
         void Link() override;
 
-        void InitUniforms(vd::postprocessing::StagePtr pStage) override;
-        void UpdateUniforms(vd::postprocessing::StagePtr pStage) override;
+        void InitUniforms(vd::component::IRenderingEffectPtr pEffect) override;
+        void UpdateUniforms(vd::component::IRenderingEffectPtr pEffect) override;
 
     protected:
         void AddUniforms() override;

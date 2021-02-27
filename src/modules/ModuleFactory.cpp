@@ -7,7 +7,7 @@
 // Factories
 #include <modules/gui/GuiFactory.hpp>
 #include <modules/player/PlayerFactory.hpp>
-#include <modules/postprocessing/PostProcessingFactory.hpp>
+#include <modules/postprocessing/EffectFactory.hpp>
 #include <modules/shadow/ShadowFactory.hpp>
 #include <modules/sky/SkyFactory.hpp>
 #include <modules/props/PropsFactory.hpp>
@@ -26,7 +26,7 @@ namespace mod {
         std::make_shared<props::PropsFactory>()->Create(pEngine);
 
         std::make_shared<gui::GuiFactory>()->Create(pEngine);
-        std::make_shared<postprocessing::PostProcessingFactory>()->Create(pEngine);
+        std::make_shared<postprocessing::EffectFactory>()->Create(pEngine);
     }
 
 }

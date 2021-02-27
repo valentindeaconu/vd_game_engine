@@ -26,6 +26,8 @@ namespace vd {
     inline Consumer g_kEmptyConsumer = []() { };
     typedef std::function<bool()>   Predicate;
     inline Predicate g_kEmptyPredicate = []() { return true; };
+
+    template <typename T> using Getter = std::function<T()>;
 }
 
 #endif //VD_GAME_ENGINE_TYPES_HPP

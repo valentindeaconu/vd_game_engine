@@ -30,12 +30,12 @@ namespace mod::postprocessing {
         AddUniform("far");
     }
 
-    void DepthOfFieldShader::InitUniforms(vd::postprocessing::StagePtr pStage) {
+    void DepthOfFieldShader::InitUniforms(vd::component::IRenderingEffectPtr pEffect) {
         AddUniforms();
     }
 
-    void DepthOfFieldShader::UpdateUniforms(vd::postprocessing::StagePtr pStage) {
-        auto pDepthOfField = std::dynamic_pointer_cast<vd::postprocessing::MultipleInputStage>(pStage);
+    void DepthOfFieldShader::UpdateUniforms(vd::component::IRenderingEffectPtr pEffect) {
+        auto pDepthOfField = std::dynamic_pointer_cast<vd::component::ConcreteEffect>(pEffect);
 
         SetUniform("near", m_pWindow->NearPlane());
         SetUniform("far", m_pWindow->FarPlane());

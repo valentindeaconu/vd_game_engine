@@ -5,15 +5,15 @@
 #ifndef VDGE_CONTRASTSHADER_HPP
 #define VDGE_CONTRASTSHADER_HPP
 
-#include <engine/postprocessing/SingularInputStage.hpp>
-#include <engine/postprocessing/IStageShader.hpp>
+#include <engine/component/RenderingEffect.hpp>
+#include <engine/component/IRenderingEffectShader.hpp>
 
 namespace mod::postprocessing {
-    class ContrastShader : public vd::postprocessing::IStageShader {
+    class ContrastShader : public vd::component::IRenderingEffectShader {
     public:
         ContrastShader();
-        void InitUniforms(vd::postprocessing::StagePtr pStage) override;
-        void UpdateUniforms(vd::postprocessing::StagePtr pStage) override;
+        void InitUniforms(vd::component::IRenderingEffectPtr pEffect) override;
+        void UpdateUniforms(vd::component::IRenderingEffectPtr pEffect) override;
 
     protected:
         void AddUniforms() override;

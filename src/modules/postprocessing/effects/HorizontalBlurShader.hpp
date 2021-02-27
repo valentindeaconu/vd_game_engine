@@ -5,16 +5,16 @@
 #ifndef VDGE_HORIZONTALBLURSHADER_HPP
 #define VDGE_HORIZONTALBLURSHADER_HPP
 
-#include <engine/postprocessing/IStageShader.hpp>
-#include <engine/postprocessing/SingularInputStage.hpp>
+#include <engine/component/IRenderingEffectShader.hpp>
+#include <engine/component/RenderingEffect.hpp>
 
 namespace mod::postprocessing {
-    class HorizontalBlurShader : public vd::postprocessing::IStageShader {
+    class HorizontalBlurShader : public vd::component::IRenderingEffectShader {
     public:
         HorizontalBlurShader();
 
-        void InitUniforms(vd::postprocessing::StagePtr pStage) override;
-        void UpdateUniforms(vd::postprocessing::StagePtr pStage) override;
+        void InitUniforms(vd::component::IRenderingEffectPtr pEffect) override;
+        void UpdateUniforms(vd::component::IRenderingEffectPtr pEffect) override;
 
     protected:
         void AddUniforms() override;

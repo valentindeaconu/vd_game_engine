@@ -15,7 +15,6 @@
 
 #include <engine/datastruct/Observer.hpp>
 #include <engine/component/RenderingPass.hpp>
-#include <engine/postprocessing/PostProcessing.hpp>
 
 #include <engine/misc/Types.hpp>
 
@@ -35,8 +34,6 @@ namespace vd {
 
         void Add(const component::RenderingPass& renderingPass);
         void Remove(const std::string& name);
-
-        postprocessing::PostProcessingPtr& PostProcessing();
     private:
         void Run();
         void Stop();
@@ -50,7 +47,6 @@ namespace vd {
 
         window::WindowPtr   m_pWindow;
         kernel::ContextPtr  m_pContext;
-        postprocessing::PostProcessingPtr           m_pPostProcessing;
         std::list<component::RenderingPass>         m_RenderingPasses;
     };
     typedef std::shared_ptr<Engine>	EnginePtr;

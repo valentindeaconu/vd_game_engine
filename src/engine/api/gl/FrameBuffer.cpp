@@ -16,12 +16,16 @@ namespace vd::gl {
         , m_HasDepthTexture(false)
         , m_ColorAttachments(0)
     {
-        glGenFramebuffers(1, &m_Id);
+        if (type == eDefault) {
+            m_Type = eReadWrite;
+        } else {
+            glGenFramebuffers(1, &m_Id);
 
-        glBindFramebuffer(m_Type, m_Id);
-        glDrawBuffer(GL_NONE);
-        glReadBuffer(GL_NONE);
-        glBindFramebuffer(m_Type, 0);
+            glBindFramebuffer(m_Type, m_Id);
+            glDrawBuffer(GL_NONE);
+            glReadBuffer(GL_NONE);
+            glBindFramebuffer(m_Type, 0);
+        }
     }
 
     FrameBuffer::FrameBuffer(size_t width, size_t height, const Type& type)
@@ -34,14 +38,19 @@ namespace vd::gl {
         , m_HasDepthTexture(false)
         , m_ColorAttachments(0)
     {
-        glGenFramebuffers(1, &m_Id);
+        if (type == eDefault) {
+            m_Type = eReadWrite;
+        } else {
+            glGenFramebuffers(1, &m_Id);
 
-        glBindFramebuffer(m_Type, m_Id);
-        glDepthFunc(GL_LEQUAL);
-        glEnable(GL_DEPTH_TEST);
-        glDrawBuffer(GL_NONE);
-        glReadBuffer(GL_NONE);
-        glBindFramebuffer(m_Type, 0);
+            glBindFramebuffer(m_Type, m_Id);
+            glDepthFunc(GL_LEQUAL);
+            glEnable(GL_DEPTH_TEST);
+            glDrawBuffer(GL_NONE);
+            glReadBuffer(GL_NONE);
+            glBindFramebuffer(m_Type, 0);
+        }
+
     }
 
     FrameBuffer::~FrameBuffer() {
@@ -79,11 +88,30 @@ namespace vd::gl {
         }
     }
 
+    void FrameBuffer::Clear() const {
+        if (m_Id == 0) {
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+            return;
+        }
+
+        if (m_ColorAttachments > 0) {
+            glClear(GL_COLOR_BUFFER_BIT);
+        }
+
+        if (m_HasDepthTexture || m_HasDepthBuffer) {
+            glClear(GL_DEPTH_BUFFER_BIT);
+        }
+    }
+
     bool FrameBuffer::IsBound() const {
         return m_Bound;
     }
 
     void FrameBuffer::PushAttachment(const FrameBuffer::Attachment& attachment, const TextureConfigurator& configurator) {
+        if (m_Id == 0) {
+            throw RuntimeError("cannot push attachment into the default framebuffer (id 0)");
+        }
+
         bool revert = false;
         if (!m_Bound) {
             glBindFramebuffer(m_Type, m_Id);
@@ -139,7 +167,25 @@ namespace vd::gl {
         }
     }
 
+    bool FrameBuffer::Commit() const {
+        if (m_Id == 0) {
+            return true;
+        }
+
+        StatusType status = Status();
+
+        if (status != FrameBuffer::eComplete) {
+            throw RuntimeError("FrameBuffer with id " + std::to_string(m_Id) + " is incomplete: " + StatusToString(status));
+        }
+
+        return true;
+    }
+
     FrameBuffer::StatusType FrameBuffer::Status() const {
+        if (m_Id == 0) {
+            return eComplete;
+        }
+
         switch (glCheckFramebufferStatus(m_Type)) {
             case GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT: return eIncompleteAttachment;
             case GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT: return eIncompleteMissingAttachment;
@@ -156,19 +202,23 @@ namespace vd::gl {
     }
 
      std::string FrameBuffer::StatusAsString() const {
-         switch (glCheckFramebufferStatus(m_Type)) {
-             case GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT: return "Incomplete Attachment";
-             case GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT: return "Incomplete Missing Attachment";
-             case GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER: return "Incomplete Draw Buffer";
-             case GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER: return "Incomplete Read Buffer";
-             case GL_FRAMEBUFFER_UNSUPPORTED: return "Unsupported";
-             case GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE: return "Incomplete MultiSample";
-             case GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS: return "Incomplete Layer Targets";
-             case GL_FRAMEBUFFER_COMPLETE: return "Complete";
-             case GL_FRAMEBUFFER_UNDEFINED:
-             default:
-                 return "Undefined";
-         }
+         return StatusToString(Status());
+    }
+
+    std::string FrameBuffer::StatusToString(FrameBuffer::StatusType statusType) {
+        switch (statusType) {
+            case eIncompleteAttachment: return "Incomplete Attachment";
+            case eIncompleteMissingAttachment: return "Incomplete Missing Attachment";
+            case eIncompleteDrawBuffer: return "Incomplete Draw Buffer";
+            case eIncompleteReadBuffer: return "Incomplete Read Buffer";
+            case eUnsupported: return "Unsupported";
+            case eIncompleteMultiSample: return "Incomplete MultiSample";
+            case eIncompleteLayerTargets: return "Incomplete Layer Targets";
+            case eComplete: return "Complete";
+            case eUndefined:
+            default:
+                return "Undefined";
+        }
     }
 
     GLuint FrameBuffer::Id() const {
@@ -180,6 +230,10 @@ namespace vd::gl {
     }
 
     Texture2DPtr& FrameBuffer::ColorTexture(GLuint index) {
+        if (m_Id == 0) {
+            throw RuntimeError("cannot fetch any color texture from the default framebuffer (id 0)");
+        }
+
         const GLuint key = GL_COLOR_ATTACHMENT0 + index;
         if (m_ColorAttachments == 0 || !m_Textures.contains(key)) {
             throw RuntimeError("color attachment with index " + std::to_string(index) + " is not allocated");
@@ -189,6 +243,10 @@ namespace vd::gl {
     }
 
     Texture2DPtr& FrameBuffer::DepthTexture() {
+        if (m_Id == 0) {
+            throw RuntimeError("cannot fetch depth texture from the default framebuffer (id 0)");
+        }
+
         if (!m_HasDepthTexture || !m_Textures.contains(kDepthAttachment)) {
             throw RuntimeError("depth texture attachment is not allocated");
         }
@@ -197,6 +255,10 @@ namespace vd::gl {
     }
 
     GLuint& FrameBuffer::DepthBuffer() {
+        if (m_Id == 0) {
+            throw RuntimeError("cannot fetch depth buffer from the default framebuffer (id 0)");
+        }
+
         if (!m_HasDepthBuffer) {
             throw RuntimeError("depth buffer attachment is not allocated");
         }
@@ -205,6 +267,11 @@ namespace vd::gl {
     }
 
     void FrameBuffer::Resize(size_t width, size_t height) {
+        if (m_Id == 0) {
+            m_Dimension = vd::Dimension(width, height);
+            return;
+        }
+
         bool revert = false;
         if (!m_Bound) {
             glBindFramebuffer(m_Type, m_Id);

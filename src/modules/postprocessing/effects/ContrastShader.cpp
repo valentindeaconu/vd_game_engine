@@ -22,12 +22,12 @@ namespace mod::postprocessing {
         AddUniform("colorMap");
     }
 
-    void ContrastShader::InitUniforms(vd::postprocessing::StagePtr pStage) {
+    void ContrastShader::InitUniforms(vd::component::IRenderingEffectPtr pEffect) {
         AddUniforms();
     }
 
-    void ContrastShader::UpdateUniforms(vd::postprocessing::StagePtr pStage) {
-        auto pContrast = std::dynamic_pointer_cast<vd::postprocessing::SingularInputStage>(pStage);
+    void ContrastShader::UpdateUniforms(vd::component::IRenderingEffectPtr pEffect) {
+        auto pContrast = std::dynamic_pointer_cast<vd::component::ConcreteEffect>(pEffect);
 
         vd::gl::ActiveTexture(0);
         pContrast->InputFrameBuffer()->ColorTexture()->Bind();

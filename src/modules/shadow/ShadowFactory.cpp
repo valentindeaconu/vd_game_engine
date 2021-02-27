@@ -16,6 +16,7 @@ namespace mod::shadow {
                 "Shadow",
                 10,
                 pShadowManager->FrameBuffer(),
+                true,
                 vd::g_kEmptyPredicate,
                 []() { glDisable(GL_CULL_FACE); },
                 []() { glEnable(GL_CULL_FACE); }
