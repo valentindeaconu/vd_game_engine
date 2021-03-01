@@ -81,6 +81,7 @@ namespace mod::postprocessing {
 
         /// At the end of the processing, send last result to the ToScreenPseudoEffect to display it
         auto pToScreenPseudoEffect = std::make_shared<ToScreenPseudoEffect>(
+                //[ctx = CONTEXT_FINDER]() { return vd::gl::FrameBufferPtrVec({ ctx->SceneFrameBuffer() }); }
                 [c = pDepthOfField]() {
                     return vd::gl::FrameBufferPtrVec({ c->FrameBuffer() });
                 }

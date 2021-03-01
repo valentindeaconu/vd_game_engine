@@ -37,6 +37,8 @@ namespace mod::props {
         m_pLightManager->AddUniforms(shared_from_this());
 
         AddUniform("clipPlane");
+
+        AddUniform("fakeLighting");
     }
 
     void PropShader::InitUniforms(vd::object::Entity3DPtr pEntity) {
@@ -47,13 +49,13 @@ namespace mod::props {
     }
 
 
-    void PropShader::UpdateUniforms(vd::object::Entity3DPtr pEntity, uint32_t meshIndex) {
+    void PropShader::UpdateUniforms(vd::object::Entity3DPtr pEntity, uint64_t levelOfDetail, uint32_t meshIndex) {
         SetUniform("model", pEntity->WorldTransform().Get());
 
         SetUniform("view", m_pCamera->ViewMatrix());
         SetUniform("projection", m_pWindow->ProjectionMatrix());
 
-        vd::model::Mesh3DPtr& pMesh = pEntity->Meshes()[meshIndex];
+        const vd::model::Mesh3DPtr& pMesh = pEntity->Meshes(levelOfDetail)[meshIndex];
 
         if (!pMesh->Materials().empty()) {
             vd::model::Material& meshMaterial = pMesh->Materials().front();
@@ -72,5 +74,13 @@ namespace mod::props {
         }
 
         SetUniform("clipPlane", m_pContext->ClipPlane());
+
+        auto pProp = std::dynamic_pointer_cast<Prop>(pEntity);
+
+        if (pProp->BillboardAtLevel(levelOfDetail)) {
+            SetUniform("fakeLighting", 1);
+        } else {
+            SetUniform("fakeLighting", 0);
+        }
     }
 }

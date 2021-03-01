@@ -12,14 +12,21 @@
 namespace mod::props {
     class Prop : public vd::object::Entity3D {
     public:
-        Prop(std::string  path, std::string  file);
+        struct Details {
+            std::string Path;
+            std::string File;
+            float       Distance;
+            bool        Billboard;
+        };
+
+        explicit Prop(std::vector<Details> details);
 
         void Setup() override;
-
         void Update() override;
+
+        bool BillboardAtLevel(size_t level);
     private:
-        const std::string m_kPath;
-        const std::string m_kFile;
+        const std::vector<Details>  m_kDetails;
     };
     typedef std::shared_ptr<Prop>	PropPtr;
 }

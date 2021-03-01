@@ -40,7 +40,7 @@ namespace mod::water {
 
             m_pShader->Bind();
 
-            m_pShader->UpdateUniforms(m_pWater, 0);
+            m_pShader->UpdateUniforms(m_pWater, 0, 0);
 
             m_pWater->Buffers()[0]->DrawElements(vd::gl::eTriangles, 6, vd::gl::eUnsignedInt);
 

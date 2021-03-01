@@ -18,8 +18,8 @@ namespace mod::props {
     class PropGenerator : public vd::injector::Injectable {
     public:
         struct Placement {
-            glm::vec3   Location;
-            PropPtr     Prop;
+            glm::vec3 Location;
+            PropPtr   Prop;
         };
         typedef std::vector<Placement>  PlacementVec;
 

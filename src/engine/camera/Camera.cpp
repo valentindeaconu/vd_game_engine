@@ -66,8 +66,6 @@ namespace vd::camera {
     }
 
     float Camera::Yaw() const {
-        // TODO: Compute yaw from position vectors
-
         const glm::vec3 x_unit = glm::vec3(1.0f, 0.0f, 0.0f);
         const glm::vec3 z_unit = glm::vec3(0.0f, 0.0f, 1.0f);
 

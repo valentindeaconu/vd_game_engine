@@ -68,9 +68,9 @@ namespace mod::terrain {
                     m_pShader->SetUniform("localModel", pNode->Transform().Get());
                     m_pShader->SetUniform("tessFactor", pNode->TessFactors());
 
-                    m_pShader->UpdateUniforms(m_pTerrain, 0);
+                    m_pShader->UpdateUniforms(m_pTerrain, 0, 0);
 
-                    vd::gl::BufferPtr& buffer = m_pTerrain->Buffers().front();
+                    vd::gl::BufferPtr& buffer = m_pTerrain->Buffers()[0];
                     buffer->DrawArrays(vd::gl::ePatches, 16);
                 } else {
                     const auto& children = pNode->Children();

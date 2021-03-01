@@ -18,7 +18,7 @@ namespace mod::gui {
         ~GuiShader();
 
         void InitUniforms(vd::object::Entity2DPtr pEntity) override;
-        void UpdateUniforms(vd::object::Entity2DPtr pEntity, uint32_t meshIndex) override;
+        void UpdateUniforms(vd::object::Entity2DPtr pEntity, uint64_t levelOfDetail, uint32_t meshIndex) override;
     private:
         void AddUniforms() override;
     };

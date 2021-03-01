@@ -13,16 +13,34 @@
 namespace vd::object {
     class Entity3D : public Entity {
     public:
+        Entity3D();
+
         virtual void Setup() = 0;
 
         virtual void Init();
         virtual void CleanUp();
 
-        model::Mesh3DPtrVec& Meshes();
-        math::Bounds3Vec& BoundingBoxes();
+        uint64_t LevelOfDetailAtDistance(float distance);
+
+        [[nodiscard]] const model::Mesh3DPtrVec&      Meshes(uint64_t index) const;
+        [[nodiscard]] const math::Bounds3Vec&         BoundingBoxes(uint64_t index) const;
+        [[nodiscard]] const std::vector<uint64_t>&    BufferIndices(uint64_t index) const;
+
+        void UpdateBoundsForLevel(uint64_t levelOfDetail);
+    protected:
+        void PushMesh(const model::Mesh3DPtrVec& meshes, float distance);
+
     private:
-        model::Mesh3DPtrVec m_Meshes;
-        math::Bounds3Vec    m_BoundingBoxes;
+        uint64_t m_Count;
+
+        /// Structure of Arrays (SoA) for easy computations
+        struct {
+            std::vector<float>                  Distances;
+            std::vector<model::Mesh3DPtrVec>    Meshes;
+            std::vector<math::Bounds3Vec>       BoundingBoxes;
+            std::vector<std::vector<uint64_t>>  BufferIndices;
+        } m_DetailedMeshes;
+
     };
     typedef std::shared_ptr<Entity3D>   Entity3DPtr;
 }

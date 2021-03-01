@@ -15,6 +15,7 @@ uniform mat4 view;
 uniform sampler2D diffuseMap;
 uniform sampler2D specularMap;
 
+uniform int fakeLighting = 0;
 uniform int transparency = 1;
 
 #include <light.glsl>
@@ -24,8 +25,13 @@ void main()
 {	
 	vec4 diffuseColor = texture(diffuseMap, fTexCoords);
 
-	if (transparency == 1 && diffuseColor.a < 0.01f) {
+	if (transparency == 1 && diffuseColor.a < 0.25f) {
 		discard;
+	}
+
+	vec3 normal = fNormal;
+	if (fakeLighting == 1) {
+		normal = vec3(0.0f, 1.0f, 0.0f);
 	}
 
 	vec4 specularColor = texture(specularMap, fTexCoords);
@@ -33,7 +39,7 @@ void main()
 	//in eye coordinates, the viewer is situated at the origin
 	vec3 cameraPosEye = vec3(0.0f);
 	//transform normal
-	vec3 normalEye = normalize(fNormalMatrix * fNormal);	
+	vec3 normalEye = normalize(fNormalMatrix * normal);
 	//compute view direction 
 	vec3 viewDirN = normalize(cameraPosEye - fPosition.xyz);
 

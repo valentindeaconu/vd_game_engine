@@ -11,6 +11,8 @@
 
 #include <engine/collision/Detector.hpp>
 #include <engine/culling/FrustumCullingManager.hpp>
+#include <engine/camera/Camera.hpp>
+#include <engine/event/EventHandler.hpp>
 #include <modules/shadow/ShadowShader.hpp>
 #include <modules/terrain/Terrain.hpp>
 
@@ -35,10 +37,20 @@ namespace mod::props {
     private:
         bool IsReady() override;
 
+        struct Props {
+            std::vector<vd::math::Transform>    Transforms;
+            std::vector<PropPtr>                Props;
+            std::vector<uint64_t>               Levels;
+            std::vector<bool>                   Culled;
+            size_t                              Total;
+        } m_Units;
+
         PropGeneratorPtr m_pPropGenerator;
 
-        mod::shadow::ShadowShaderPtr            m_pShadowShader;
+        vd::event::EventHandlerPtr              m_pEventHandler;
+        vd::camera::CameraPtr                   m_pCamera;
         vd::culling::FrustumCullingManagerPtr   m_pFrustumCullingManager;
+        mod::shadow::ShadowShaderPtr            m_pShadowShader;
     };
     typedef std::shared_ptr<PropsRenderer>	PropsRendererPtr;
 }

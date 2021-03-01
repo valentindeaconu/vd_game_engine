@@ -35,13 +35,13 @@ namespace mod::shadow {
         AddUniforms();
     }
 
-    void ShadowShader::UpdateUniforms(vd::object::Entity3DPtr pEntity, uint32_t meshIndex) {
+    void ShadowShader::UpdateUniforms(vd::object::Entity3DPtr pEntity, uint64_t levelOfDetail, uint32_t meshIndex) {
         SetUniform("model", pEntity->WorldTransform().Get());
 
         SetUniform("view", m_pShadowManager->ViewMatrix());
         SetUniform("projection", m_pShadowManager->ProjectionMatrix());
 
-        vd::model::Mesh3DPtr& pMesh = pEntity->Meshes()[meshIndex];
+        const vd::model::Mesh3DPtr& pMesh = pEntity->Meshes(levelOfDetail)[meshIndex];
 
         if (!pMesh->Materials().empty()) {
             vd::model::Material& meshMaterial = pMesh->Materials().front();

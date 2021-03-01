@@ -68,7 +68,7 @@ namespace mod::water {
         SetUniform("baseColor", pProperties->Get<glm::vec3>("BaseColor"));
     }
 
-    void WaterShader::UpdateUniforms(vd::object::Entity3DPtr pEntity, uint32_t meshIndex) {
+    void WaterShader::UpdateUniforms(vd::object::Entity3DPtr pEntity, uint64_t levelOfDetail, uint32_t meshIndex) {
         WaterPtr pWater = std::dynamic_pointer_cast<Water>(pEntity);
 
         SetUniform("model", pEntity->LocalTransform().Get());

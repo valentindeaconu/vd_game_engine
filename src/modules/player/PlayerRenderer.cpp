@@ -13,6 +13,7 @@ namespace mod::player {
     PlayerRenderer::~PlayerRenderer() = default;
 
     void PlayerRenderer::Link() {
+        m_pCamera = vd::ObjectOfType<vd::camera::Camera>::Find();
         m_pShadowShader = vd::ObjectOfType<mod::shadow::ShadowShader>::Find();
     }
 
@@ -33,6 +34,8 @@ namespace mod::player {
             return;
         }
 
+        using vd::collision::Detector;
+
         const auto& renderingPass = params.at("RenderingPass");
         if (renderingPass == "Shadow" || renderingPass == "Main") {
             Prepare();
@@ -42,12 +45,19 @@ namespace mod::player {
 
             shaderPtr->Bind();
 
-            vd::gl::BufferPtrVec &buffers = m_pPlayer->Buffers();
-            vd::model::Mesh3DPtrVec &meshes = m_pPlayer->Meshes();
-            for (size_t meshIndex = 0; meshIndex < buffers.size(); ++meshIndex) {
-                shaderPtr->UpdateUniforms(m_pPlayer, meshIndex);
+            vd::gl::BufferPtrVec& buffers = m_pPlayer->Buffers();
+
+            const float distanceToCamera = glm::length(m_pCamera->Position() - m_pPlayer->WorldTransform().Translation());
+            const auto levelOfDetail = m_pPlayer->LevelOfDetailAtDistance(distanceToCamera);
+
+            auto& meshes = m_pPlayer->Meshes(levelOfDetail);
+            auto& boundingBoxes = m_pPlayer->BoundingBoxes(levelOfDetail);
+            auto& bufferIndices = m_pPlayer->BufferIndices(levelOfDetail);
+
+            for (size_t meshIndex = 0; meshIndex < meshes.size(); ++meshIndex) {
+                shaderPtr->UpdateUniforms(m_pPlayer, levelOfDetail, meshIndex);
                 const int count = meshes[meshIndex]->Indices().size();
-                buffers[meshIndex]->DrawElements(vd::gl::eTriangles, count, vd::gl::eUnsignedInt);
+                buffers[ bufferIndices[meshIndex] ]->DrawElements(vd::gl::eTriangles, count, vd::gl::eUnsignedInt);
             }
 
             Finish();

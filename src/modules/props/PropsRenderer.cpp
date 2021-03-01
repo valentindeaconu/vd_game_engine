@@ -12,19 +12,81 @@ namespace mod::props {
     PropsRenderer::~PropsRenderer() = default;
 
     void PropsRenderer::Link() {
-        m_pShadowShader = vd::ObjectOfType<mod::shadow::ShadowShader>::Find();
+        // TODO: Remove dependency (used only for debugging)
+        m_pEventHandler = vd::ObjectOfType<vd::event::EventHandler>::Find();
+
+        m_pCamera = vd::ObjectOfType<vd::camera::Camera>::Find();
         m_pFrustumCullingManager = vd::ObjectOfType<vd::culling::FrustumCullingManager>::Find();
+        m_pShadowShader = vd::ObjectOfType<mod::shadow::ShadowShader>::Find();
     }
 
     void PropsRenderer::Init() {
         m_pPropGenerator->GenerateLocations();
+
+        const auto& placements = m_pPropGenerator->Placements();
+        m_Units.Total = placements.size();
+
+        m_Units.Transforms.resize(m_Units.Total);
+        m_Units.Props.resize(m_Units.Total);
+        m_Units.Levels.resize(m_Units.Total);
+        m_Units.Culled.resize(m_Units.Total);
+
+        for (int i = 0; i < m_Units.Total; ++i) {
+            const auto& placement = placements[i];
+            m_Units.Props[i] = placement.Prop;
+            m_Units.Levels[i] = 0;
+            m_Units.Transforms[i] = placement.Prop->WorldTransform();
+            m_Units.Transforms[i].Translation() = placement.Location;
+            m_Units.Culled[i] = false;
+        }
+        // TODO: Now that we saved generator's data, we can release it from memory
 
         m_pShader->Bind();
         m_pShader->InitUniforms(nullptr);
     }
 
     void PropsRenderer::Update() {
+        using vd::collision::Detector;
+        using vd::collision::Relationship;
 
+        float cameraYaw = m_pCamera->Yaw() + 180.0f;
+        cameraYaw = (cameraYaw > 360.0f) ? cameraYaw - 360.0f : cameraYaw;
+
+        // int total = 0;
+        for (size_t i = 0; i < m_Units.Total; ++i) {
+            auto& Prop = m_Units.Props[i];
+            auto& Transform = m_Units.Transforms[i];
+
+            const float distanceToCamera = glm::length(m_pCamera->Position() - Transform.Translation());
+            const auto levelOfDetail = Prop->LevelOfDetailAtDistance(distanceToCamera);
+
+            m_Units.Levels[i] = levelOfDetail;
+
+            if (Prop->BillboardAtLevel(levelOfDetail)) {
+                Transform.YAxisRotationAngle() = cameraYaw;
+            } else {
+                Transform.YAxisRotationAngle() = 0.0f;
+            }
+
+            // TODO: This is a hack, this shouldn't work, but it works... wtf?
+            const auto& boundingBoxes = Prop->BoundingBoxes(levelOfDetail);
+            const auto& fBounds =  m_pFrustumCullingManager->FrustumBounds();
+            // const auto& frustum =  m_pFrustumCullingManager->Frustum();
+
+            bool found = false;
+            for (const auto& bounds : boundingBoxes) {
+                if (Detector::Bounds3AgainstBounds3(bounds.WithTransform(Transform), fBounds) != Relationship::eOutside) {
+                // if (Detector::Bounds3AgainstFrustum(bounds.WithTransform(Transform), frustum) != Relationship::eOutside) {
+                    found = true;
+                    break;
+                }
+            }
+            m_Units.Culled[i] = !found;
+
+            // total = (!found) ? total + 1 : total;
+        }
+
+        // vd::Logger::log("Total culled: " + std::to_string(total));
     }
 
     void PropsRenderer::Render(const params_t& params) {
@@ -47,22 +109,29 @@ namespace mod::props {
 
             pShader->Bind();
 
-            for (const auto &placement : m_pPropGenerator->Placements()) {
-                const PropPtr &pProp = placement.Prop;
+            for (size_t i = 0; i < m_Units.Total; ++i) {
+                if (!m_Units.Culled[i]) {
+                    auto& Prop = m_Units.Props[i];
+                    auto& Level = m_Units.Levels[i];
+                    auto& Transform = m_Units.Transforms[i];
 
-                pProp->WorldTransform().Translation() = placement.Location;
+                    Prop->WorldTransform() = Transform;
 
-                if (Detector::IsAnyTransformedBounds3InsideFrustum(pProp->BoundingBoxes(),
-                                                                   pProp->WorldTransform(),
-                                                                   m_pFrustumCullingManager->Frustum())) {
-                    for (int mId = 0; mId < pProp->Buffers().size(); ++mId) {
-                        pShader->UpdateUniforms(pProp, mId);
+                    auto& meshes = Prop->Meshes(Level);
+                    auto& bufferIndices = Prop->BufferIndices(Level);
+                    auto& buffers = Prop->Buffers();
 
-                        const int count = pProp->Meshes()[mId]->Indices().size();
-                        pProp->Buffers()[mId]->DrawElements(vd::gl::eTriangles, count, vd::gl::eUnsignedInt);
+                    for (int meshIndex = 0; meshIndex < meshes.size(); ++meshIndex) {
+                        pShader->UpdateUniforms(Prop, Level, meshIndex);
+                        const int count = meshes[meshIndex]->Indices().size();
+                        buffers[bufferIndices[meshIndex]]->DrawElements(vd::gl::eTriangles,
+                                                                        count,
+                                                                        vd::gl::eUnsignedInt);
                     }
                 }
             }
+
+            pShader->Unbind();
 
             Finish();
         }

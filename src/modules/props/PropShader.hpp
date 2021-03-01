@@ -15,6 +15,8 @@
 #include <engine/light/LightManager.hpp>
 #include <engine/fog/FogManager.hpp>
 
+#include "Prop.hpp"
+
 namespace mod::props {
     class PropShader
             : public vd::component::IEntity3DShader
@@ -27,7 +29,7 @@ namespace mod::props {
         void Link() override;
 
         void InitUniforms(vd::object::Entity3DPtr pEntity) override;
-        void UpdateUniforms(vd::object::Entity3DPtr pEntity, uint32_t meshIndex) override;
+        void UpdateUniforms(vd::object::Entity3DPtr pEntity, uint64_t levelOfDetail, uint32_t meshIndex) override;
     private:
         void AddUniforms() override;
 

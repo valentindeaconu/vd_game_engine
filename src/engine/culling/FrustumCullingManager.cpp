@@ -28,6 +28,22 @@ namespace vd::culling {
         if (m_pCamera->CameraRotated() || m_pCamera->CameraMoved() || m_pWindow->PerspectiveChanged()) {
             UpdateVertices();
             UpdatePlanes();
+
+            auto& vertices = m_Frustum.Vertices();
+            glm::vec3 min = vertices[0];
+            glm::vec3 max = vertices[0];
+
+            for (auto& v : vertices) {
+                min.x = std::min(min.x, v.x);
+                min.y = std::min(min.y, v.y);
+                min.z = std::min(min.z, v.z);
+
+                max.x = std::max(max.x, v.x);
+                max.y = std::max(max.y, v.y);
+                max.z = std::max(max.z, v.z);
+            }
+
+            m_FrustumBounds = math::Bounds3(min, max);
         }
     }
 
@@ -37,6 +53,10 @@ namespace vd::culling {
 
     const vd::math::Frustum& FrustumCullingManager::Frustum() const {
         return m_Frustum;
+    }
+
+    const vd::math::Bounds3& FrustumCullingManager::FrustumBounds() const {
+        return m_FrustumBounds;
     }
 
     void FrustumCullingManager::UpdateVertices() {
@@ -76,7 +96,7 @@ namespace vd::culling {
         using vd::math::Plane;
         using vd::math::PlaneVec;
 
-        auto &vertices = m_Frustum.Vertices();
+        auto& vertices = m_Frustum.Vertices();
 
         PlaneVec planes(Frustum::kPlaneCount);
 

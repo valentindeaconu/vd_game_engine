@@ -51,12 +51,12 @@ namespace mod::player {
         m_pLightManager->SetUniforms(shared_from_this());
     }
 
-    void PlayerShader::UpdateUniforms(vd::object::Entity3DPtr pEntity, uint32_t meshIndex) {
+    void PlayerShader::UpdateUniforms(vd::object::Entity3DPtr pEntity, uint64_t levelOfDetail, uint32_t meshIndex) {
         SetUniform("model", pEntity->WorldTransform().Get());
         SetUniform("view", m_pCamera->ViewMatrix());
         SetUniform("projection", m_pWindow->ProjectionMatrix());
 
-        vd::model::Mesh3DPtr& pMesh = pEntity->Meshes()[meshIndex];
+        const vd::model::Mesh3DPtr& pMesh = pEntity->Meshes(levelOfDetail)[meshIndex];
 
         SetUniform("transparency", 0);
 

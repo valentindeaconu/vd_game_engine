@@ -8,7 +8,10 @@
 #include <engine/component/IRenderer.hpp>
 
 #include <engine/injector/Injectable.hpp>
+#include <engine/camera/Camera.hpp>
 #include <modules/shadow/ShadowShader.hpp>
+
+#include <engine/collision/Detector.hpp>
 
 #include <string>
 
@@ -35,7 +38,8 @@ namespace mod::player {
 
         PlayerPtr m_pPlayer;
 
-        mod::shadow::ShadowShaderPtr m_pShadowShader;
+        vd::camera::CameraPtr           m_pCamera;
+        mod::shadow::ShadowShaderPtr    m_pShadowShader;
     };
     typedef std::shared_ptr<PlayerRenderer>	PlayerRendererPtr;
 }

@@ -34,9 +34,7 @@ namespace mod::props {
 
             Placement placement;
 
-            placement.Location.x = location.x;
-            placement.Location.z = location.y;
-            placement.Location.y = m_pTerrain->HeightAt(location.x, location.y);
+            placement.Location = glm::vec3(location.x, m_pTerrain->HeightAt(location.x, location.y), location.y);
 
             std::vector<PropPtr> propsAtLocation;
             auto biomesAtLocation = m_pTerrain->BiomesAt(location.x, location.y);

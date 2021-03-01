@@ -45,15 +45,20 @@ namespace mod::sky {
             renderingPass == "Main") {
             Prepare();
 
-            const vd::component::IEntityShaderPtr &shaderPtr = (renderingPass == "Shadow") ? m_pShadowShader
+            const vd::component::IEntityShaderPtr& shaderPtr = (renderingPass == "Shadow") ? m_pShadowShader
                                                                                            : m_pShader;
 
             shaderPtr->Bind();
 
-            vd::gl::BufferPtrVec &buffers = m_pSky->Buffers();
-            for (size_t meshIndex = 0; meshIndex < buffers.size(); ++meshIndex) {
-                shaderPtr->UpdateUniforms(m_pSky, meshIndex);
-                buffers[meshIndex]->DrawElements(vd::gl::eTriangles, 36, vd::gl::eUnsignedInt);
+            const auto levelOfDetail = m_pSky->LevelOfDetailAtDistance(.0f);
+
+            auto& meshes = m_pSky->Meshes(levelOfDetail);
+            auto& bufferIndices = m_pSky->BufferIndices(levelOfDetail);
+
+            vd::gl::BufferPtrVec& buffers = m_pSky->Buffers();
+            for (size_t meshIndex = 0; meshIndex < meshes.size(); ++meshIndex) {
+                shaderPtr->UpdateUniforms(m_pSky, levelOfDetail, meshIndex);
+                buffers[ bufferIndices[meshIndex] ]->DrawElements(vd::gl::eTriangles, 36, vd::gl::eUnsignedInt);
             }
 
             Finish();

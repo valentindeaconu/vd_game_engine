@@ -1,16 +1,33 @@
 #include "Prop.hpp"
 
 namespace mod::props {
-    Prop::Prop(std::string path, std::string file)
-        : m_kPath(std::move(path))
-        , m_kFile(std::move(file))
+    Prop::Prop(std::vector<Details> details)
+        : m_kDetails(std::move(details))
     {
     }
 
     void Prop::Setup() {
-        // TODO: Solve for cross-platform paths
-        Meshes() = vd::loader::ObjectLoader::Load(m_kPath + '/' + m_kFile);
+        for (const auto& lodDetails : m_kDetails) {
+            // TODO: Solve for cross-platform paths
+            auto meshes = vd::loader::ObjectLoader::Load(lodDetails.Path + '/' + lodDetails.File);
+
+            if (lodDetails.Billboard) {
+                for (auto& mesh : meshes) {
+                    for (auto& material : mesh->Materials()) {
+                        material.DiffuseMap()->Bind();
+                        material.DiffuseMap()->BilinearFilter();
+                        material.DiffuseMap()->Unbind();
+                    }
+                }
+            }
+
+            this->PushMesh(meshes, lodDetails.Distance);
+        }
     }
 
     void Prop::Update() { }
+
+    bool Prop::BillboardAtLevel(size_t level) {
+        return m_kDetails[level].Billboard;
+    }
 }

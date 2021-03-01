@@ -27,12 +27,14 @@ namespace vd::culling {
         void CleanUp() override;
 
         [[nodiscard]] const vd::math::Frustum& Frustum() const;
+        [[nodiscard]] const vd::math::Bounds3& FrustumBounds() const;
     private:
         void UpdateVertices();
         void UpdatePlanes();
         void UpdateWidthsAndHeights();
 
         vd::math::Frustum m_Frustum;
+        vd::math::Bounds3 m_FrustumBounds;
 
         struct { float width, height; } m_Near, m_Far;
 

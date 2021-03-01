@@ -11,7 +11,7 @@ namespace mod::player {
     }
 
     void Player::Setup() {
-        Meshes() = vd::loader::ObjectLoader::Load("./resources/objects/nanosuit/nanosuit.obj");
+        this->PushMesh(vd::loader::ObjectLoader::Load("./resources/assets/nanosuit/nanosuit.obj"), 1000.0f);
     }
 
     void Player::Link() {

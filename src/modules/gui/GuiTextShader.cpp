@@ -35,7 +35,7 @@ namespace mod::gui {
         SetUniform("textColor", glm::vec3(pEntity->Meshes()[0]->Materials()[0].Color()));
     }
 
-    void GuiTextShader::UpdateUniforms(vd::object::Entity2DPtr pEntity, uint32_t meshIndex) {
+    void GuiTextShader::UpdateUniforms(vd::object::Entity2DPtr pEntity, uint64_t levelOfDetail, uint32_t meshIndex) {
         mod::gui::GuiTextPtr pGuiText = std::dynamic_pointer_cast<mod::gui::GuiText>(pEntity);
 
         vd::gl::ActiveTexture(1);
