@@ -37,6 +37,14 @@ namespace mod::props {
     private:
         bool IsReady() override;
 
+        struct Props {
+            std::vector<vd::math::Transform>    Transforms;
+            std::vector<PropPtr>                Props;
+            std::vector<uint64_t>               Levels;
+            std::vector<bool>                   Culled;
+            size_t                              Total;
+        } m_Units;
+
         PropGeneratorPtr m_pPropGenerator;
 
         vd::event::EventHandlerPtr              m_pEventHandler;

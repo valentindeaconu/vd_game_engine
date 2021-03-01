@@ -27,11 +27,6 @@ namespace vd::math {
     Bounds<T>::~Bounds() = default;
 
     template<typename T>
-    void Bounds<T>::Flip() {
-        std::swap(m_Left, m_Right);
-    }
-
-    template<typename T>
     bool Bounds<T>::Empty() const {
         return m_Left == m_Right;
     }
@@ -44,6 +39,33 @@ namespace vd::math {
     template<>
     bool Bounds<glm::vec3>::Valid() const {
         return m_Left.x <= m_Right.x && m_Left.y <= m_Right.y && m_Left.z <= m_Right.z;
+    }
+
+    template<>
+    void Bounds<glm::vec2>::Validate() {
+        float x_min = std::min(m_Left.x, m_Right.x);
+        float x_max = std::max(m_Left.x, m_Right.x);
+
+        float y_min = std::min(m_Left.y, m_Right.y);
+        float y_max = std::max(m_Left.y, m_Right.y);
+
+        m_Left = glm::vec2(x_min, y_min);
+        m_Right = glm::vec2(x_max, y_max);
+    }
+
+    template<>
+    void Bounds<glm::vec3>::Validate() {
+        float x_min = std::min(m_Left.x, m_Right.x);
+        float x_max = std::max(m_Left.x, m_Right.x);
+
+        float y_min = std::min(m_Left.y, m_Right.y);
+        float y_max = std::max(m_Left.y, m_Right.y);
+
+        float z_min = std::min(m_Left.z, m_Right.z);
+        float z_max = std::max(m_Left.z, m_Right.z);
+
+        m_Left = glm::vec3(x_min, y_min, z_min);
+        m_Right = glm::vec3(x_max, y_max, z_max);
     }
 
     template<typename T>
@@ -112,10 +134,13 @@ namespace vd::math {
     }
 
     Bounds3 Bounds3::WithTransform(const Transform& transform) const {
-        return Bounds3(
-            glm::vec3(transform.Get() * glm::vec4(m_Left, 1.0f)),
-            glm::vec3(transform.Get() * glm::vec4(m_Right, 1.0f))
-        );
+        Bounds3 transformedBounds(glm::vec3(transform.Get() * glm::vec4(m_Left, 1.0f)),
+                                  glm::vec3(transform.Get() * glm::vec4(m_Right, 1.0f)));
+        if (!transformedBounds.Valid()) {
+            transformedBounds.Validate();
+        }
+
+        return transformedBounds;
     }
 
 }

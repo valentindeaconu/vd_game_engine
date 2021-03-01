@@ -21,10 +21,17 @@ namespace vd::object {
         Buffers().clear();
         for (int i = 0; i < m_Count; ++i) {
             auto& meshes = m_DetailedMeshes.Meshes[i];
+
             auto& bufferIndices = m_DetailedMeshes.BufferIndices[i];
             auto& boundingBoxes = m_DetailedMeshes.BoundingBoxes[i];
 
-            for (auto & mesh : meshes) {
+            bufferIndices.clear();
+            bufferIndices.reserve(meshes.size());
+
+            boundingBoxes.clear();
+            boundingBoxes.reserve(meshes.size());
+
+            for (auto& mesh : meshes) {
                 bufferIndices.emplace_back(Buffers().size());
 
                 gl::BufferPtr pBuffer = std::make_shared<vd::gl::Buffer>();

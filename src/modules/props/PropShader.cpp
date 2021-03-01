@@ -37,6 +37,8 @@ namespace mod::props {
         m_pLightManager->AddUniforms(shared_from_this());
 
         AddUniform("clipPlane");
+
+        AddUniform("fakeLighting");
     }
 
     void PropShader::InitUniforms(vd::object::Entity3DPtr pEntity) {
@@ -72,5 +74,13 @@ namespace mod::props {
         }
 
         SetUniform("clipPlane", m_pContext->ClipPlane());
+
+        auto pProp = std::dynamic_pointer_cast<Prop>(pEntity);
+
+        if (pProp->BillboardAtLevel(levelOfDetail)) {
+            SetUniform("fakeLighting", 1);
+        } else {
+            SetUniform("fakeLighting", 0);
+        }
     }
 }

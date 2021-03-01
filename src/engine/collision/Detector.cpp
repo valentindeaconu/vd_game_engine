@@ -138,9 +138,9 @@ namespace vd::collision {
         return false;
     }
 
-    Relationship Detector::Bounds3AgainstBounds3(const math::Bounds3& bounds, const math::Bounds3& against) {
+    Relationship Detector::Bounds3AgainstBounds3(math::Bounds3 bounds, const math::Bounds3& against) {
         if (!bounds.Valid()) {
-            throw exception::CollisionError("Checking an invalid bound");
+            bounds.Validate();
         }
 
         if (!against.Valid()) {
@@ -178,7 +178,7 @@ namespace vd::collision {
      */
     Relationship Detector::Bounds3AgainstFrustum(vd::math::Bounds3 bounds, const vd::math::Frustum& frustum) {
         if (!bounds.Valid()) {
-            bounds.Flip();
+            bounds.Validate();
         }
 
         if (bounds.Empty()) {
@@ -227,25 +227,17 @@ namespace vd::collision {
 
     bool Detector::IsAnyBounds3InsideFrustum(const std::vector<vd::math::Bounds3>& boundsVec,
                                              const vd::math::Frustum& frustum) {
-        for (const auto& bounds : boundsVec) {
-            if (Bounds3AgainstFrustum(bounds, frustum) != eOutside) {
-                return true;
-            }
-        }
-
-        return false;
+        return std::ranges::any_of(boundsVec.begin(), boundsVec.end(), [&frustum](const math::Bounds3& bounds) {
+            return Bounds3AgainstFrustum(bounds, frustum) != eOutside;
+        });
     }
 
     bool Detector::IsAnyTransformedBounds3InsideFrustum(const std::vector<vd::math::Bounds3>& boundsVec,
                                                         const vd::math::Transform& transform,
                                                         const vd::math::Frustum& frustum) {
-        for (const auto& bounds : boundsVec) {
-            if (Bounds3AgainstFrustum(bounds.WithTransform(transform), frustum) != eOutside) {
-                return true;
-            }
-        }
-
-        return false;
+        return std::ranges::any_of(boundsVec.begin(), boundsVec.end(), [&frustum, &transform](const math::Bounds3& bounds) {
+            return Bounds3AgainstFrustum(bounds.WithTransform(transform), frustum) != eOutside;
+        });
     }
 
 }

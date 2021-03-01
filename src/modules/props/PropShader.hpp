@@ -15,6 +15,8 @@
 #include <engine/light/LightManager.hpp>
 #include <engine/fog/FogManager.hpp>
 
+#include "Prop.hpp"
+
 namespace mod::props {
     class PropShader
             : public vd::component::IEntity3DShader

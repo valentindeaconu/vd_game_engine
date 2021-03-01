@@ -41,7 +41,7 @@ namespace vd::collision {
 
         [[nodiscard]] static bool IsPointInsideBounds3(const glm::vec3& point, const vd::math::Bounds3& bounds);
 
-        [[nodiscard]] static Relationship Bounds3AgainstBounds3(const vd::math::Bounds3& bounds,
+        [[nodiscard]] static Relationship Bounds3AgainstBounds3(vd::math::Bounds3 bounds,
                                                                 const vd::math::Bounds3& against);
 
         [[nodiscard]] static Relationship Bounds3AgainstFrustum(vd::math::Bounds3 bounds,

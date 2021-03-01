@@ -9,8 +9,19 @@ namespace mod::props {
     void Prop::Setup() {
         for (const auto& lodDetails : m_kDetails) {
             // TODO: Solve for cross-platform paths
-            this->PushMesh(vd::loader::ObjectLoader::Load(lodDetails.Path + '/' + lodDetails.File),
-                           lodDetails.Distance);
+            auto meshes = vd::loader::ObjectLoader::Load(lodDetails.Path + '/' + lodDetails.File);
+
+            if (lodDetails.Billboard) {
+                for (auto& mesh : meshes) {
+                    for (auto& material : mesh->Materials()) {
+                        material.DiffuseMap()->Bind();
+                        material.DiffuseMap()->BilinearFilter();
+                        material.DiffuseMap()->Unbind();
+                    }
+                }
+            }
+
+            this->PushMesh(meshes, lodDetails.Distance);
         }
     }
 
