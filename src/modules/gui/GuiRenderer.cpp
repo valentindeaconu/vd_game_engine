@@ -54,7 +54,7 @@ namespace mod::gui {
 
         switch (m_Type) {
             case eQuad:
-                m_pShader->UpdateUniforms(m_pGuiEntity, 0);
+                m_pShader->UpdateUniforms(m_pGuiEntity, 0, 0);
                 m_pGuiEntity->Buffers()[0]->DrawElements(vd::gl::eTriangles, 6, vd::gl::eUnsignedInt);
                 break;
             case eText: {
@@ -67,7 +67,7 @@ namespace mod::gui {
                         glyph[j] = glm::vec4(vertices[i + j].Position, vertices[i + j].TexCoords);
                     }
 
-                    m_pShader->UpdateUniforms(m_pGuiEntity, i / 6);
+                    m_pShader->UpdateUniforms(m_pGuiEntity, 0, i / 6);
                     buffer->UpdateBufferData(vd::gl::buffer::eArrayBuffer, 96, &glyph[0]); // 96 = 6 vertices * 4 floats each * 4 bytes per float
                     buffer->DrawArrays(vd::gl::eTriangles, 6);
                 }

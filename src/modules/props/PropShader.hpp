@@ -27,7 +27,7 @@ namespace mod::props {
         void Link() override;
 
         void InitUniforms(vd::object::Entity3DPtr pEntity) override;
-        void UpdateUniforms(vd::object::Entity3DPtr pEntity, uint32_t meshIndex) override;
+        void UpdateUniforms(vd::object::Entity3DPtr pEntity, uint64_t levelOfDetail, uint32_t meshIndex) override;
     private:
         void AddUniforms() override;
 

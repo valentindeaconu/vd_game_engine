@@ -176,9 +176,9 @@ namespace vd::collision {
     /**
      * Based on https://stackoverflow.com/questions/52217233/check-if-an-axis-aligned-bounding-box-is-inside-view-frustum
      */
-    Relationship Detector::Bounds3AgainstFrustum(const vd::math::Bounds3& bounds, const vd::math::Frustum& frustum) {
+    Relationship Detector::Bounds3AgainstFrustum(vd::math::Bounds3 bounds, const vd::math::Frustum& frustum) {
         if (!bounds.Valid()) {
-            throw exception::CollisionError("Checking an invalid bound");
+            bounds.Flip();
         }
 
         if (bounds.Empty()) {

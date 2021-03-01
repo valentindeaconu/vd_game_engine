@@ -256,11 +256,26 @@ namespace mod::terrain {
             try {
                const std::string objectPrefix = biomePrefix + ".Object." + std::to_string(i);
 
-               const auto kLocation = m_pProperties->Get<std::string>(objectPrefix + ".Location");
-               const auto kFile = m_pProperties->Get<std::string>(objectPrefix + ".File");
                const auto kScale = m_pProperties->Get<float>(objectPrefix + ".Scale");
 
-                props::PropPtr pProp = std::make_shared<props::Prop>(kLocation, kFile);
+               std::vector<props::Prop::Details> propsDetails;
+               for (int j = 0; ; ++j) {
+                   try {
+                       const std::string lodObjectPrefix = objectPrefix + ".Level." + std::to_string(j);
+
+                       props::Prop::Details propDetails;
+                       propDetails.Path = m_pProperties->Get<std::string>(lodObjectPrefix + ".Location");
+                       propDetails.File = m_pProperties->Get<std::string>(lodObjectPrefix + ".File");
+                       propDetails.Distance = m_pProperties->Get<float>(lodObjectPrefix + ".Distance");
+                       propDetails.Billboard = m_pProperties->Get<bool>(lodObjectPrefix + ".Billboard");
+
+                       propsDetails.emplace_back(std::move(propDetails));
+                   } catch (std::invalid_argument& e) {
+                       break;
+                   }
+               }
+
+                props::PropPtr pProp = std::make_shared<props::Prop>(propsDetails);
                 pProp->WorldTransform().Scale() = glm::vec3(kScale, kScale, kScale);
                 pProp->Init();
 

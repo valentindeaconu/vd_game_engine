@@ -15,7 +15,7 @@ namespace mod::sky {
 
         pMesh->Indices() = kSkyboxIndices;
 
-        Meshes() = { pMesh };
+        this->PushMesh({ pMesh }, 1000.0f);
     }
 
     void Sky::Update() {

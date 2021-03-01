@@ -38,7 +38,7 @@ namespace mod::sky {
         m_pFogManager->SetUniforms(shared_from_this());
     }
 
-    void SkyShader::UpdateUniforms(vd::object::Entity3DPtr pEntity, uint32_t meshIndex) {
+    void SkyShader::UpdateUniforms(vd::object::Entity3DPtr pEntity, uint64_t levelOfDetail, uint32_t meshIndex) {
         SetUniform("view", glm::mat4(glm::mat3(m_pCamera->ViewMatrix())));
         SetUniform("projection", m_pWindow->ProjectionMatrix());
     }

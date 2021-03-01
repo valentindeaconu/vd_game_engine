@@ -95,7 +95,7 @@ namespace mod::terrain {
         m_pLightManager->SetUniforms(shared_from_this());
     }
 
-    void TerrainShader::UpdateUniforms(vd::object::Entity2DPtr pEntity, uint32_t meshIndex) {
+    void TerrainShader::UpdateUniforms(vd::object::Entity2DPtr pEntity, uint64_t levelOfDetail, uint32_t meshIndex) {
         SetUniform("worldModel", pEntity->WorldTransform().Get());
 
         SetUniform("view", m_pCamera->ViewMatrix());

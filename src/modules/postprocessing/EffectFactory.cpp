@@ -25,7 +25,7 @@ namespace mod::postprocessing {
             pFrameBuffer->Unbind();
         };
 
-        /// Horizontal Blur Stage 1 (No downscale)
+        /* /// Horizontal Blur Stage 1 (No downscale)
         auto pHBlur1 = std::make_shared<vd::component::ConcreteEffect>(
             "HorizontalBlur_1",
             0.5f,
@@ -77,13 +77,14 @@ namespace mod::postprocessing {
                 defaultConfigurator,
                 [ctx = CONTEXT_FINDER]() { return !ctx->WireframeMode(); }
         );
-        pRenderer->PushStage(pDepthOfField, std::make_shared<DepthOfFieldShader>());
+        pRenderer->PushStage(pDepthOfField, std::make_shared<DepthOfFieldShader>()); */
 
         /// At the end of the processing, send last result to the ToScreenPseudoEffect to display it
         auto pToScreenPseudoEffect = std::make_shared<ToScreenPseudoEffect>(
-                [c = pDepthOfField]() {
+                [ctx = CONTEXT_FINDER]() { return vd::gl::FrameBufferPtrVec({ ctx->SceneFrameBuffer() }); }
+                /*[c = pDepthOfField]() {
                     return vd::gl::FrameBufferPtrVec({ c->FrameBuffer() });
-                }
+                }*/
         );
         pRenderer->PushStage(pToScreenPseudoEffect, std::make_shared<ToScreenShader>());
 

@@ -44,7 +44,7 @@ namespace vd::collision {
         [[nodiscard]] static Relationship Bounds3AgainstBounds3(const vd::math::Bounds3& bounds,
                                                                 const vd::math::Bounds3& against);
 
-        [[nodiscard]] static Relationship Bounds3AgainstFrustum(const vd::math::Bounds3& bounds,
+        [[nodiscard]] static Relationship Bounds3AgainstFrustum(vd::math::Bounds3 bounds,
                                                                 const vd::math::Frustum& frustum);
 
         [[nodiscard]] static bool IsAnyBounds3InsideFrustum(const std::vector<vd::math::Bounds3>& boundsVec,

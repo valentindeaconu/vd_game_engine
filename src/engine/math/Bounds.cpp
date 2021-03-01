@@ -27,6 +27,11 @@ namespace vd::math {
     Bounds<T>::~Bounds() = default;
 
     template<typename T>
+    void Bounds<T>::Flip() {
+        std::swap(m_Left, m_Right);
+    }
+
+    template<typename T>
     bool Bounds<T>::Empty() const {
         return m_Left == m_Right;
     }

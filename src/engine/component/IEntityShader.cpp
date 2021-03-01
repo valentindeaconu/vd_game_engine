@@ -11,9 +11,9 @@ namespace vd::component {
         InitUniforms(p);
     }
 
-    void IEntity2DShader::UpdateUniforms(object::EntityPtr pEntity, uint32_t meshIndex) {
+    void IEntity2DShader::UpdateUniforms(object::EntityPtr pEntity, uint64_t levelOfDetail, uint32_t meshIndex) {
         object::Entity2DPtr p = std::dynamic_pointer_cast<object::Entity2D>(pEntity);
-        UpdateUniforms(p, meshIndex);
+        UpdateUniforms(p, levelOfDetail, meshIndex);
     }
 
     void IEntity3DShader::InitUniforms(object::EntityPtr pEntity) {
@@ -21,8 +21,8 @@ namespace vd::component {
         InitUniforms(p);
     }
 
-    void IEntity3DShader::UpdateUniforms(object::EntityPtr pEntity, uint32_t meshIndex) {
+    void IEntity3DShader::UpdateUniforms(object::EntityPtr pEntity, uint64_t levelOfDetail, uint32_t meshIndex) {
         object::Entity3DPtr p = std::dynamic_pointer_cast<object::Entity3D>(pEntity);
-        UpdateUniforms(p, meshIndex);
+        UpdateUniforms(p, levelOfDetail, meshIndex);
     }
 }

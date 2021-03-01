@@ -82,17 +82,13 @@ namespace vd::model {
 
         int half_height = m_Dimension.height >> 1;
 
+        // TODO: Duplicated code here & inside freetype loader. Maybe combine?
         T* image_data = &m_Data[0];
-
-        for (int row = 0; row < half_height; row++) {
-            top = image_data + row * width_in_bytes;
-            bottom = image_data + (m_Dimension.width - row - 1) * width_in_bytes;
-            for (int col = 0; col < width_in_bytes; col++) {
-                temp = *top;
-                *top = *bottom;
-                *bottom = temp;
-                top++;
-                bottom++;
+        for (size_t in = 0, iv = m_Dimension.height - 1; in < half_height; ++in, --iv) {
+            for (size_t jn = 0, jv = 0; jn < width_in_bytes; ++jn, ++jv) {
+                const size_t cn = in * width_in_bytes + jn;
+                const size_t cv = iv * width_in_bytes + jv;
+                std::swap(image_data[cn], image_data[cv]);
             }
         }
     }

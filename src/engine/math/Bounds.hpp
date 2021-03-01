@@ -19,6 +19,7 @@ namespace vd::math {
         Bounds(const T& left, const T& right);
         ~Bounds();
 
+        void Flip();
 
         [[nodiscard]] bool Empty() const;
         [[nodiscard]] bool Valid() const;

@@ -12,8 +12,12 @@ namespace mod::props {
     PropsRenderer::~PropsRenderer() = default;
 
     void PropsRenderer::Link() {
-        m_pShadowShader = vd::ObjectOfType<mod::shadow::ShadowShader>::Find();
+        // TODO: Remove dependency (used only for debugging)
+        m_pEventHandler = vd::ObjectOfType<vd::event::EventHandler>::Find();
+
+        m_pCamera = vd::ObjectOfType<vd::camera::Camera>::Find();
         m_pFrustumCullingManager = vd::ObjectOfType<vd::culling::FrustumCullingManager>::Find();
+        m_pShadowShader = vd::ObjectOfType<mod::shadow::ShadowShader>::Find();
     }
 
     void PropsRenderer::Init() {
@@ -24,7 +28,22 @@ namespace mod::props {
     }
 
     void PropsRenderer::Update() {
+        float cameraYaw = m_pCamera->Yaw() + 180.0f;
+        cameraYaw = (cameraYaw > 360.0f) ? cameraYaw - 360.0f : cameraYaw;
 
+        for (const auto& placement : m_pPropGenerator->Placements()) {
+            const PropPtr& pProp = placement.Prop;
+
+            const glm::vec3 toProp = placement.Location - m_pCamera->Position();
+            const float distanceToCamera = glm::length(toProp);
+            const auto levelOfDetail = pProp->LevelOfDetailAtDistance(distanceToCamera);
+
+            if (pProp->BillboardAtLevel(levelOfDetail)) {
+                pProp->WorldTransform().YAxisRotationAngle() = cameraYaw;
+            } else {
+                pProp->WorldTransform().YAxisRotationAngle() = 0.0f;
+            }
+        }
     }
 
     void PropsRenderer::Render(const params_t& params) {
@@ -47,19 +66,29 @@ namespace mod::props {
 
             pShader->Bind();
 
-            for (const auto &placement : m_pPropGenerator->Placements()) {
-                const PropPtr &pProp = placement.Prop;
+            for (const auto& placement : m_pPropGenerator->Placements()) {
+                const PropPtr& pProp = placement.Prop;
 
                 pProp->WorldTransform().Translation() = placement.Location;
 
-                if (Detector::IsAnyTransformedBounds3InsideFrustum(pProp->BoundingBoxes(),
+                const float distanceToCamera = glm::length(m_pCamera->Position() - placement.Location);
+                const auto levelOfDetail = pProp->LevelOfDetailAtDistance(distanceToCamera);
+
+                auto& boundingBoxes = pProp->BoundingBoxes(levelOfDetail);
+
+                if (Detector::IsAnyTransformedBounds3InsideFrustum(boundingBoxes,
                                                                    pProp->WorldTransform(),
                                                                    m_pFrustumCullingManager->Frustum())) {
-                    for (int mId = 0; mId < pProp->Buffers().size(); ++mId) {
-                        pShader->UpdateUniforms(pProp, mId);
+                    auto& meshes = pProp->Meshes(levelOfDetail);
+                    auto& bufferIndices = pProp->BufferIndices(levelOfDetail);
+                    auto& buffers = pProp->Buffers();
 
-                        const int count = pProp->Meshes()[mId]->Indices().size();
-                        pProp->Buffers()[mId]->DrawElements(vd::gl::eTriangles, count, vd::gl::eUnsignedInt);
+                    for (int meshIndex = 0; meshIndex < meshes.size(); ++meshIndex) {
+                        pShader->UpdateUniforms(pProp, levelOfDetail, meshIndex);
+
+                        const int count = meshes[meshIndex]->Indices().size();
+
+                        buffers[ bufferIndices[meshIndex] ]->DrawElements(vd::gl::eTriangles, count, vd::gl::eUnsignedInt);
                     }
                 }
             }

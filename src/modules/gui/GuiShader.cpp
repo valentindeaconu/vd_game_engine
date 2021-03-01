@@ -29,7 +29,7 @@ namespace mod::gui {
         AddUniforms();
     }
 
-    void GuiShader::UpdateUniforms(vd::object::Entity2DPtr pEntity, uint32_t meshIndex) {
+    void GuiShader::UpdateUniforms(vd::object::Entity2DPtr pEntity, uint64_t levelOfDetail, uint32_t meshIndex) {
         SetUniform("transform", pEntity->LocalTransform().Get());
 
         vd::gl::ActiveTexture(1);
