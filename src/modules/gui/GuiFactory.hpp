@@ -9,6 +9,7 @@
 
 #include <engine/loader/FontLoader.hpp>
 #include <engine/context/Context.hpp>
+#include <engine/time/TimeManager.hpp>
 
 #include "GuiQuad.hpp"
 #include "GuiText.hpp"

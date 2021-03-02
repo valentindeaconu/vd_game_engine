@@ -14,6 +14,8 @@
 #include "SkyShader.hpp"
 #include "SkyRenderer.hpp"
 
+#include "Sun.hpp"
+
 namespace mod::sky {
     class SkyFactory : public vd::component::IModuleFactory {
     public:

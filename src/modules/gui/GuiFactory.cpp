@@ -102,6 +102,35 @@ namespace mod::gui {
             1.0f,
             glm::vec3(0.0f, 0.0f, 0.0f) // glm::vec3(0.0039f, 0.4745f, 0.4353f)
         );
+
+        CreateUpdatableText(
+                pEngine,
+                "00:00",
+                [
+                        t = vd::ObjectOfType<vd::time::TimeManager>::Find(),
+                        w = vd::ObjectOfType<vd::window::Window>::Find()
+                ](UpdatableGuiText& el) {
+                    bool shouldRebuild = false;
+                    if (!el.Contains("U")) {
+                        el["U"] = "true";
+                        el.Position() = glm::vec2(w->Width() - 80.0f, w->Height() - 30.0f);
+                        shouldRebuild = true;
+                    }
+
+                    std::string now = t->CurrentTime()->ToString();
+                    if (now != el.Text()) {
+                        el.Text() = now;
+                        shouldRebuild = true;
+                    }
+
+                    if (shouldRebuild) {
+                        el.Rebuild();
+                    }
+                },
+                glm::vec2(200, 200),
+                1.0f,
+                glm::vec3(0.0f, 0.0f, 0.0f) // glm::vec3(0.0039f, 0.4745f, 0.4353f)
+        );
     }
 
     void GuiFactory::CreateGui(const vd::EnginePtr& pEngine,
