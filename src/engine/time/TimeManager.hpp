@@ -32,7 +32,6 @@ namespace vd::time {
         [[nodiscard]] const float& CurrentAngle() const;
         [[nodiscard]] const TimePtr& CurrentTime() const;
     private:
-        bool                m_AM;
         float               m_Speed;
         float               m_CurrentAngle;
         TimePtr             m_pTime;

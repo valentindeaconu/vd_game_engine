@@ -29,6 +29,9 @@ namespace mod::sky {
         AddUniform("view");
         AddUniform("projection");
 
+        AddUniform("color");
+        AddUniform("colorFactor");
+
         m_pFogManager->AddUniforms(shared_from_this());
     }
 
@@ -41,5 +44,9 @@ namespace mod::sky {
     void SkyShader::UpdateUniforms(vd::object::Entity3DPtr pEntity, uint64_t levelOfDetail, uint32_t meshIndex) {
         SetUniform("view", glm::mat4(glm::mat3(m_pCamera->ViewMatrix())));
         SetUniform("projection", m_pWindow->ProjectionMatrix());
+
+        auto pSky = std::dynamic_pointer_cast<Sky>(pEntity);
+        SetUniform("color", pSky->Color());
+        SetUniform("colorFactor", pSky->ColorFactor());
     }
 }

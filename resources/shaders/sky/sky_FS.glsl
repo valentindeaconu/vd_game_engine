@@ -5,15 +5,22 @@ in float fVisibility;
 
 layout(location = 0) out vec4 fColor;
 
-const vec3 baseColor = vec3(0.18f, 0.27f, 0.47f);
+uniform vec3 color;
+uniform vec3 colorFactor;
 
 #include <fog.glsl>
 
-void main() {
-	float red = -0.00022f * (abs(fPosition.y) - 2800.0f) + 0.18f;
-	float green = -0.00025f * (abs(fPosition.y) - 2800.0f) + 0.27f;
-	float blue = -0.00019f * (abs(fPosition.y) - 2800.0f) + 0.47f;
+vec3 ComputeColor(vec3 factor, vec3 color) {
+	float red = factor.r * (abs(fPosition.y) - 2800.0f) + color.r;
+	float green = factor.g * (abs(fPosition.y) - 2800.0f) + color.g;
+	float blue = factor.b * (abs(fPosition.y) - 2800.0f) + color.b;
 
-	fColor = vec4(red, green, blue, 1.0f);
+	return vec3(red, green, blue);
+}
+
+void main() {
+	vec3 color = ComputeColor(colorFactor, color);
+
+	fColor = vec4(color, 1.0f);
 	fColor = mix(vec4(fog.Color, 1.0f), fColor, fog.SkyDensity);
 }

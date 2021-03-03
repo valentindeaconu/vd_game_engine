@@ -22,14 +22,13 @@ namespace vd::time {
         // An hour has 30 degrees, a minute is 1/60 of an hour so 0.5 degrees for each minute
         m_Speed = 0.5f * speed;
 
-        // Compute current angle
-        m_AM = (initHour < 12);
+        m_CurrentAngle = m_pTime->ToAngle();
 
-        if ((initHour == 0 || initHour == 12) && initMinute == 0) {
+        /*if ((initHour == 0 || initHour == 12) && initMinute == 0) {
             m_CurrentAngle = .0f;
         } else {
             m_CurrentAngle = float(initHour) * 30.0f + float(initMinute) * 0.5f;
-        }
+        }*/
 
         if (m_CurrentAngle < 0.0f || m_CurrentAngle >= 360.0f) {
             throw exception::TimeError("invalid computed angle");
@@ -46,35 +45,27 @@ namespace vd::time {
         m_CurrentAngle += m_Speed * m_pContext->FrameTime();
         m_CurrentAngle = (m_CurrentAngle >= 360.0f) ? (m_CurrentAngle - 360.0f) : m_CurrentAngle;
 
-        uint8_t hour = 0;
-        uint8_t minute = 0;
-        float angle = m_CurrentAngle;
-        while (angle >= 30.0f) {
-            hour++;
-            angle -= 30.0f;
+        Time aux(m_CurrentAngle);
+
+        if ((!m_pTime->AM() && m_pTime->Hour() == 11) && aux.Hour() == 0) {
+            // from 23 to 0
+            m_pTime->Hour(0);
+        } else if ((m_pTime->AM() && m_pTime->Hour() == 11) && aux.Hour() == 0) {
+            // from 11 to 12
+            m_pTime->Hour(12);
+        } else if (!m_pTime->AM()) {
+            m_pTime->Hour(aux.Hour() + 12);
+        } else {
+            m_pTime->Hour(aux.Hour());
         }
 
-        if (angle > 0.0f) {
-            while (angle >= 0.5f) {
-                minute++;
-                angle -= 0.5f;
-            }
-        }
-
-        if (m_pTime->Hour() == 23 && hour == 0) {
-            m_AM = true;
-        } else if (m_pTime->Hour() == 11 && hour == 0) {
-            m_AM = false;
-        }
-
-        m_pTime->Hour() = hour + (m_AM ? 0 : 12);
-        m_pTime->Minute() = minute;
+        m_pTime->Minute(aux.Minute());
     }
 
     void TimeManager::CleanUp() { }
 
     bool TimeManager::AM() const {
-        return m_AM;
+        return m_pTime->AM();
     }
 
     const float& TimeManager::CurrentAngle() const {

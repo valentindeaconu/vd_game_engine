@@ -7,16 +7,50 @@
 
 #include <engine/object/Entity3D.hpp>
 
+#include <engine/loader/PropertiesLoader.hpp>
+#include <engine/time/Time.hpp>
+
+#include <engine/injector/Injectable.hpp>
+#include <engine/time/TimeManager.hpp>
+
 #include <memory>
 
 namespace mod::sky {
-    class Sky : public vd::object::Entity3D {
+    class Sky : public vd::object::Entity3D, public vd::injector::Injectable {
     public:
-        void Setup() override;
+        explicit Sky(const std::string& propsFilePath);
 
+        void Link() override;
+        void Setup() override;
         void Update() override;
 
+        [[nodiscard]] const glm::vec3& Color() const;
+        [[nodiscard]] const glm::vec3& ColorFactor() const;
     private:
+        size_t StateAtAngle(float angle);
+
+        glm::vec3   m_CurrentColor;
+        glm::vec3   m_CurrentFactor;
+        size_t      m_CurrentState;
+        float       m_NextSwitch;
+        float       m_LastAngle;
+        bool        m_WaitReset;
+
+        struct State {
+            std::string Name;
+            glm::vec3   Color;
+            glm::vec3   ColorFactor;
+            float       StartAtAngle;
+            float       EndAtAngle;
+            struct {
+                bool    Enable;
+                float   StartAtAngle;
+                float   MidAtAngle;
+                float   EndAtAngle;
+            } Mixable;
+        };
+        std::vector<State>      m_States;
+
         const std::vector<float> kSkyboxVertices = {
             -1.0f, -1.0f, -1.0f,    // 0
             -1.0f, -1.0f, 1.0f,     // 1
@@ -36,6 +70,8 @@ namespace mod::sky {
             2, 6, 7, 7, 3, 2,
             0, 1, 4, 4, 1, 5
         };
+
+        vd::time::TimeManagerPtr    m_pTimeManager;
 
     };
     typedef std::shared_ptr<Sky>	SkyPtr;

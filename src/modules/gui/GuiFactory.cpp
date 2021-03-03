@@ -42,13 +42,13 @@ namespace mod::gui {
                   glm::vec2(-0.75f, -0.75f),
                   glm::vec2(0.250f, 0.250f)); */
 
-        /// Shadow Texture
+        /*/// Shadow Texture
         CreateGui(pEngine,
                   [s = vd::ObjectOfType<mod::shadow::ShadowManager>::Find()]() {
                       return s->ShadowTexture();
                   },
                   glm::vec2(-0.75f, -0.75f),
-                  glm::vec2(0.250f, 0.250f)); /**/
+                  glm::vec2(0.250f, 0.250f)); */
 
         /// Terrain Height Map
         /* CreateGui(pEngine,

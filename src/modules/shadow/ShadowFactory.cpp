@@ -20,7 +20,8 @@ namespace mod::shadow {
                 return false;
             }
 
-            if (tm->CurrentTime()->Hour() >= 18 || tm->CurrentTime()->Hour() < 6) {
+            if ((!tm->CurrentTime()->AM() && tm->CurrentTime()->Hour() >= 6) ||
+                (tm->CurrentTime()->AM() && tm->CurrentTime()->Hour() < 6)) {
                 return false;
             }
 

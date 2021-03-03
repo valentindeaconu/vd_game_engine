@@ -17,7 +17,7 @@ namespace mod::sky {
             glFrontFace(GL_CW);
         };
 
-        SkyPtr pSky = std::make_shared<Sky>();
+        SkyPtr pSky = std::make_shared<Sky>("./resources/properties/sky.properties");
         SkyShaderPtr pSkyShader = std::make_shared<SkyShader>();
 
         SkyRendererPtr pSkyRenderer = std::make_shared<mod::sky::SkyRenderer>(pSky, pSkyShader, before, after);
