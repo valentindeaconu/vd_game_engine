@@ -7,6 +7,7 @@
 namespace mod::sky {
     Sun::Sun()
         : m_Radius(1000.0f) // TODO: This value should be computed based on terrain size
+        , m_SunLightDistance(9000.0f) // TODO: This value should be read from a properties file
     {
     }
 
@@ -56,10 +57,15 @@ namespace mod::sky {
     void Sun::Update() {
         float angle = glm::radians(m_pTimeManager->CurrentAngle() * 0.5f + (m_pTimeManager->AM() ? 180.0f : 0));
 
-        float x = glm::sin(angle) * m_Radius;
-        float y = glm::cos(angle) * m_Radius;
+        glm::vec3 sunPosition(glm::sin(angle), glm::cos(angle), 0.0f);
+        sunPosition *= m_Radius;
 
-        WorldTransform().Translation() = glm::vec3(x, y, 0.0f);
+        WorldTransform().Translation() = sunPosition;
+
+        glm::vec3 toSun = glm::normalize(-sunPosition);
+        glm::vec3 sunLightPosition = toSun * m_SunLightDistance;
+
+        m_pLightManager->Sun()->Position() = sunLightPosition;
     }
 
     SunRenderer::SunRenderer(SunPtr sun,

@@ -92,7 +92,7 @@ namespace mod::shadow {
 
     void ShadowManager::UpdateView() {
         const glm::vec3 center = -m_pShadowBox->Center();
-        const glm::vec3 lightDirection = glm::normalize(-m_pSun->Direction());
+        const glm::vec3 lightDirection = glm::normalize(m_pSun->Direction());
 
         const glm::vec3 x_unit = glm::vec3(1.0f, 0.0f, 0.0f);
         const glm::vec3 y_unit = glm::vec3(0.0f, 1.0f, 0.0f);

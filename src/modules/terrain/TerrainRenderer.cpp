@@ -47,7 +47,7 @@ namespace mod::terrain {
 
             m_pShader->Bind();
 
-            const auto &rootNodes = m_pTerrain->RootNodes();
+            const auto& rootNodes = m_pTerrain->RootNodes();
 
             for (auto &rootNode : rootNodes) {
                 RenderNode(rootNode);

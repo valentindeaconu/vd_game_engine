@@ -34,6 +34,7 @@ namespace mod::sky {
 
         void Update() override;
     private:
+        const float m_SunLightDistance;
         const float m_Radius;
 
         vd::light::LightManagerPtr  m_pLightManager;
