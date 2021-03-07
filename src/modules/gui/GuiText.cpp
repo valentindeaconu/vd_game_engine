@@ -90,8 +90,9 @@ namespace mod::gui {
         return m_Position;
     }
 
-    glm::vec3& GuiText::Color() {
-        return m_Color;
+    void GuiText::Color(const glm::vec3& color) {
+        Meshes()[0]->Materials()[0].Color() = glm::vec4(color, 1.0f);
+        m_Color = color;
     }
 
     void GuiText::Rebuild() {

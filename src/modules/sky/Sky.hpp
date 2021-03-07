@@ -8,48 +8,64 @@
 #include <engine/object/Entity3D.hpp>
 
 #include <engine/loader/PropertiesLoader.hpp>
+#include <engine/service/TextureService.hpp>
 #include <engine/time/Time.hpp>
 
 #include <engine/injector/Injectable.hpp>
 #include <engine/time/TimeManager.hpp>
+
+#include <engine/math/Utils.hpp>
 
 #include <memory>
 
 namespace mod::sky {
     class Sky : public vd::object::Entity3D, public vd::injector::Injectable {
     public:
+        struct RenderDetails {
+            struct Factor {
+                bool                        UseColor;
+                glm::vec3                   Color;
+                glm::vec3                   Factor;
+                vd::gl::TextureCubeMapPtr   Texture;
+            };
+            Factor      First;
+            Factor      Second;
+            bool        Mixable;
+            float       Percentage;
+        };
+
         explicit Sky(const std::string& propsFilePath);
 
         void Link() override;
         void Setup() override;
         void Update() override;
 
-        [[nodiscard]] const glm::vec3& Color() const;
-        [[nodiscard]] const glm::vec3& ColorFactor() const;
+        [[nodiscard]] const RenderDetails& Details() const;
     private:
-        size_t StateAtAngle(float angle);
-
-        glm::vec3   m_CurrentColor;
-        glm::vec3   m_CurrentFactor;
-        size_t      m_CurrentState;
-        float       m_NextSwitch;
-        float       m_LastAngle;
-        bool        m_WaitReset;
-
+        typedef vd::service::TextureService::CubeMapFacesPathVec    PathVec;
+        typedef vd::service::TextureService::CubeMapFaceType        FaceType;
         struct State {
-            std::string Name;
-            glm::vec3   Color;
-            glm::vec3   ColorFactor;
-            float       StartAtAngle;
-            float       EndAtAngle;
-            struct {
-                bool    Enable;
-                float   StartAtAngle;
-                float   MidAtAngle;
-                float   EndAtAngle;
-            } Mixable;
+            std::string                 Name;
+            bool                        UseColor;
+            glm::vec3                   Color;
+            glm::vec3                   ColorFactor;
+            PathVec                     CubePaths;
+            vd::gl::TextureCubeMapPtr   Texture;
+            float                       StartAtAngle;
+            float                       MidAtAngle;
+            float                       EndAtAngle;
         };
+
+        static void SetDetailsFactor(RenderDetails::Factor& factor, const State& source);
+        static void ClearDetailsFactor(RenderDetails::Factor& factor);
+        static float AngleTransform(float angle, bool shift);
+
+        size_t                  m_CurrentState;
+        float                   m_NextSwitch;
+        float                   m_LastAngle;
+        bool                    m_WaitReset;
         std::vector<State>      m_States;
+        RenderDetails           m_Details;
 
         const std::vector<float> kSkyboxVertices = {
             -1.0f, -1.0f, -1.0f,    // 0

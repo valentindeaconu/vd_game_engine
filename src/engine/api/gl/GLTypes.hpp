@@ -161,6 +161,17 @@ namespace vd::gl {
         eTextureMaxAnisotropy = GL_TEXTURE_MAX_ANISOTROPY_EXT,
         eTextureBorderColor = GL_TEXTURE_BORDER_COLOR
     };
+
+    enum CubeMapTextureFace {
+        eRight = GL_TEXTURE_CUBE_MAP_POSITIVE_X,
+        eLeft = GL_TEXTURE_CUBE_MAP_NEGATIVE_X,
+        eTop = GL_TEXTURE_CUBE_MAP_POSITIVE_Y,
+        eBottom = GL_TEXTURE_CUBE_MAP_NEGATIVE_Y,
+        eBack = GL_TEXTURE_CUBE_MAP_POSITIVE_Z,
+        eFront = GL_TEXTURE_CUBE_MAP_NEGATIVE_Z
+    };
+
+    const uint8_t g_kCubeMapFaceCount = 6;
 }
 
 #endif //VD_GAME_ENGINE_GLTYPES_HPP

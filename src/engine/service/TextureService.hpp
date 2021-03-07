@@ -20,9 +20,14 @@ namespace vd::service {
 
     class TextureService {
     public:
-        enum Attachment {
-            eDepth = 0,
-            eColor
+        typedef std::array<std::string, gl::g_kCubeMapFaceCount> CubeMapFacesPathVec;
+        enum CubeMapFaceType {
+            eRight = 0,
+            eLeft,
+            eTop,
+            eBottom,
+            eBack,
+            eFront
         };
 
         ~TextureService();
@@ -45,6 +50,8 @@ namespace vd::service {
                                        const void* data = nullptr);
 
         static gl::Texture2DPtr CreateFromFile(const std::string& path);
+
+        static gl::TextureCubeMapPtr CubeMapFromFiles(const CubeMapFacesPathVec& paths);
 
         static void Remove(gl::Texture2DPtr& texture);
 

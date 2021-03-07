@@ -90,6 +90,35 @@ namespace vd::service {
         return texture;
     }
 
+    gl::TextureCubeMapPtr TextureService::CubeMapFromFiles(const CubeMapFacesPathVec& paths) {
+        gl::TextureCubeMapPtr texture = std::make_shared<gl::TextureCubeMap>();
+
+        texture->Generate();
+        texture->Bind();
+
+        for (size_t i = 0; i < gl::g_kCubeMapFaceCount; ++i) {
+            auto imagePtr = loader::ImageLoader::Load<uint8_t, vd::model::ImageFormat::eRGB>(paths[i], false);
+
+            glTexImage2D(gl::CubeMapTextureFace::eRight + i,
+                         0,
+                         gl::eRGB,
+                         imagePtr->Width(),
+                         imagePtr->Height(),
+                         0,
+                         gl::eRGB,
+                         gl::eUnsignedByte,
+                         &(imagePtr->Data()[0]));
+        }
+
+        texture->BilinearFilter();
+        texture->WrapClampToEdge();
+        texture->Parameter(gl::TextureParameter::eTextureWrapR, GL_CLAMP_TO_EDGE);
+
+        texture->Unbind();
+
+        return texture;
+    }
+
     void TextureService::Remove(gl::Texture2DPtr& texture) {
         TextureService& instance = getInstance();
 

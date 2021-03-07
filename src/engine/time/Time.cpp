@@ -41,24 +41,55 @@ namespace vd::time {
         }
     }
 
+    Time::Time(const std::string& time) {
+        hour_t h = std::stoi(time.substr(0, 2));
+        minute_t m = std::stoi(time.substr(3, 2));
+
+        if (h < 12) {
+            m_Hour = h;
+            m_Minute = m;
+            m_AM = true;
+        } else {
+            m_Hour = h - 12;
+            m_Minute = m;
+            m_AM = false;
+        }
+
+        if (!Valid()) {
+            throw exception::TimeError("invalid time from string " + time);
+        }
+    }
+
     bool Time::operator==(const Time& other) const {
         return m_AM == other.m_AM && m_Hour == other.m_Hour && m_Minute == other.m_Minute;
     }
 
     bool Time::operator>(const Time& other) const {
-        return (m_Hour > other.m_Hour) || (m_Minute > other.m_Minute);
+        if (m_AM == other.m_AM) {
+            if (m_Hour == other.m_Hour) {
+                return m_Minute > other.m_Minute;
+            }
+
+            return (m_Hour > other.m_Hour);
+        }
+
+        return !m_AM;
     }
 
     bool Time::operator<(const Time& other) const {
-        return (m_Hour < other.m_Hour) || (m_Minute < other.m_Minute);
+        return !operator>(other) && !operator==(other);
     }
 
     bool Time::operator>=(const Time& other) const {
-        return (m_Hour >= other.m_Hour) || (m_Minute >= other.m_Minute);
+        return operator>(other) || operator==(other);
     }
 
     bool Time::operator<=(const Time& other) const {
-        return (m_Hour <= other.m_Hour) || (m_Minute <= other.m_Minute);
+        return operator<(other) || operator==(other);
+    }
+
+    bool Time::Between(const Time& lhs, const Time& rhs) const {
+        return operator>=(lhs) && operator<=(rhs);
     }
 
     bool Time::Valid() const {
@@ -100,10 +131,10 @@ namespace vd::time {
         m_Minute = m;
     }
 
+
     [[nodiscard]] minute_t Time::Minute() const {
         return m_Minute;
     }
-
 
     std::string Time::ToString() const {
         hour_t h = (m_AM) ? m_Hour : (m_Hour + 12);

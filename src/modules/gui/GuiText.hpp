@@ -27,7 +27,7 @@ namespace mod::gui {
         vd::model::FontPtr& Font();
         float& Scale();
         glm::vec2& Position();
-        glm::vec3& Color();
+        void Color(const glm::vec3& color);
 
         void Rebuild();
     private:

@@ -4,8 +4,9 @@ namespace mod::sky {
 
     Sky::Sky(const std::string& propsFilePath)
         : m_CurrentState(0)
-        , m_CurrentColor(0.0f)
-        , m_CurrentFactor(0.0f)
+        , m_NextSwitch(0.0f)
+        , m_WaitReset(false)
+        , m_LastAngle(0.0f)
     {
         auto pProps = vd::loader::PropertiesLoader::Load(propsFilePath);
 
@@ -15,29 +16,34 @@ namespace mod::sky {
                 State s;
 
                 s.Name = pProps->Get<std::string>(prefix + ".Name");
-                s.Color = pProps->Get<glm::vec3>(prefix + ".Color");
-                s.ColorFactor = pProps->Get<glm::vec3>(prefix + ".ColorFactor");
+
+                auto type = pProps->Get<std::string>(prefix + ".Type");
+                if (type == "Color") {
+                    s.UseColor = true;
+
+                    s.Color = pProps->Get<glm::vec3>(prefix + ".Color");
+                    s.ColorFactor = pProps->Get<glm::vec3>(prefix + ".ColorFactor");
+                } else if (type == "Texture") {
+                    s.UseColor = false;
+
+                    const std::string cubePrefix = prefix + ".Cube";
+
+                    s.CubePaths[FaceType::eRight] = pProps->Get<std::string>(cubePrefix + ".Right");
+                    s.CubePaths[FaceType::eLeft] = pProps->Get<std::string>(cubePrefix + ".Left");
+                    s.CubePaths[FaceType::eTop] = pProps->Get<std::string>(cubePrefix + ".Top");
+                    s.CubePaths[FaceType::eBottom] = pProps->Get<std::string>(cubePrefix + ".Bottom");
+                    s.CubePaths[FaceType::eBack] = pProps->Get<std::string>(cubePrefix + ".Back");
+                    s.CubePaths[FaceType::eFront] = pProps->Get<std::string>(cubePrefix + ".Front");
+                }
 
                 vd::time::Time startAt(uint8_t(pProps->Get<int>(prefix + ".StartAt")), 0);
-                s.StartAtAngle = (startAt.ToAngle() * 0.5f) + (startAt.AM() ? 0.0f : 180.0f);
+                s.StartAtAngle = AngleTransform(startAt.ToAngle(), startAt.AM());
+
+                vd::time::Time midAt(uint8_t(pProps->Get<int>(prefix + ".MidAt")), 0);
+                s.MidAtAngle = AngleTransform(midAt.ToAngle(), midAt.AM());
 
                 vd::time::Time endAt(uint8_t(pProps->Get<int>(prefix + ".EndAt")), 0);
-                s.EndAtAngle = (endAt.ToAngle() * 0.5f) + (endAt.AM() ? 0.0f : 180.0f);
-
-                s.Mixable.Enable = pProps->Get<int>(prefix + ".Mixable");
-
-                if (s.Mixable.Enable) {
-                    const std::string mixablePrefix = prefix + ".Mixable";
-
-                    vd::time::Time mStartAt(uint8_t(pProps->Get<int>(mixablePrefix + ".StartAt")), 0);
-                    s.Mixable.StartAtAngle = (mStartAt.ToAngle() * 0.5f) + (mStartAt.AM() ? 0.0f : 180.0f);
-
-                    vd::time::Time mMidAt(uint8_t(pProps->Get<int>(mixablePrefix + ".MidAt")), 0);
-                    s.Mixable.MidAtAngle = (mMidAt.ToAngle() * 0.5f) + (mMidAt.AM() ? 0.0f : 180.0f);
-
-                    vd::time::Time mEndAt(uint8_t(pProps->Get<int>(mixablePrefix + ".EndAt")), 0);
-                    s.Mixable.EndAtAngle = (mEndAt.ToAngle() * 0.5f) + + (mEndAt.AM() ? 0.0f : 180.0f);
-                }
+                s.EndAtAngle = AngleTransform(endAt.ToAngle(), endAt.AM());
 
                 m_States.emplace_back(s);
             } catch (std::invalid_argument& e) {
@@ -51,6 +57,7 @@ namespace mod::sky {
     }
 
     void Sky::Setup() {
+        // Build mesh
         vd::model::Mesh3DPtr pMesh = std::make_shared<vd::model::Mesh3D>();
 
         for (int i = 0; i < 24; i += 3) {
@@ -65,32 +72,45 @@ namespace mod::sky {
 
         this->PushMesh({ pMesh }, 1000.0f);
 
-        for (int i = 0; i < m_States.size(); ++i) {
-            auto& s = m_States[i];
-            vd::Logger::log(std::to_string(i) + " " + s.Name + " " + std::to_string(s.StartAtAngle) + " " + std::to_string(s.EndAtAngle));
+        // Fetch textures
+        for (auto& state : m_States) {
+            if (!state.UseColor) {
+                state.Texture = vd::service::TextureService::CubeMapFromFiles(state.CubePaths);
+            } else {
+                state.Texture = nullptr;
+            }
         }
 
         // Compute current state
-        float angle = (m_pTimeManager->CurrentAngle() * 0.5f) + (m_pTimeManager->AM() ? 0.0f : 180.0f);
+        float angle = AngleTransform(m_pTimeManager->CurrentAngle(), m_pTimeManager->AM());
         for (int i = 0; i < m_States.size(); ++i) {
             auto& s = m_States[i];
 
-            if (angle >= std::min(s.StartAtAngle, s.EndAtAngle) && angle < std::max(s.StartAtAngle, s.EndAtAngle)) {
-                m_CurrentState = i;
-
-                if (m_States[m_CurrentState].StartAtAngle > m_States[m_CurrentState].EndAtAngle) {
-                    m_WaitReset = true;
+            if (s.StartAtAngle < s.EndAtAngle) {
+                if (angle >= s.StartAtAngle && angle < s.EndAtAngle) {
+                    m_WaitReset = false;
+                } else {
+                    continue;
                 }
-
-                m_NextSwitch = m_States[m_CurrentState].EndAtAngle;
-                m_LastAngle = angle;
-                break;
+            } else {
+                if (angle < s.EndAtAngle) {
+                    m_WaitReset = false;
+                } else if (angle > s.StartAtAngle) {
+                    m_WaitReset = true;
+                } else {
+                    continue;
+                }
             }
+
+            m_CurrentState = i;
+            m_NextSwitch = s.EndAtAngle;
+            m_LastAngle = angle;
+            break;
         }
     }
 
     void Sky::Update() {
-        float angle = (m_pTimeManager->CurrentAngle() * 0.5f) + (m_pTimeManager->AM() ? 0.0f : 180.0f);
+        float angle = AngleTransform(m_pTimeManager->CurrentAngle(), m_pTimeManager->AM());
         if (m_WaitReset && angle < 180.0f && m_LastAngle >= 180.0f) {
             m_WaitReset = false;
         }
@@ -105,51 +125,102 @@ namespace mod::sky {
         }
 
         auto& state = m_States[m_CurrentState];
-        if (state.Mixable.Enable) {
-            size_t stateBeforeId = (m_CurrentState == 0) ? (m_States.size() - 1) : (m_CurrentState - 1);
-            size_t stateAfterId = (m_CurrentState == m_States.size() - 1) ? 0 : (m_CurrentState + 1);
+        auto& stateAfter = m_States[(m_CurrentState == m_States.size() - 1) ? 0 : (m_CurrentState + 1)];
 
-            auto& stateBefore = m_States[stateBeforeId];
-            auto& stateAfter = m_States[stateAfterId];
+        if (m_WaitReset) {
+            // mid after 0 and angle before reset, so angle is less than mid
+            bool midAfter0AngleBefore = (state.MidAtAngle < 180.0f && angle > 180.0f);
+            // mid before 0 and angle before mid, so angle is less than mid
+            bool midBefore0 = (state.MidAtAngle > 180.0f && angle < state.MidAtAngle);
 
-            float left, right;
-            if (angle < state.Mixable.MidAtAngle) {
-                left = state.Mixable.StartAtAngle;
-                right = state.Mixable.MidAtAngle;
+            // basically check if angle is less than mid angle
+            if (midAfter0AngleBefore || midBefore0) {
+                m_Details.Mixable = false;
+                m_Details.Percentage = 100.0f;
+                SetDetailsFactor(m_Details.First, state);
+                ClearDetailsFactor(m_Details.Second);
             } else {
-                left = state.Mixable.MidAtAngle;
-                right = state.Mixable.EndAtAngle;
-            }
+                // if wait reset is true, it means end angle has to be after 0 and current angle before 0, so we need to
+                // shift values with 2 dials (180 degrees) to perform proper computations
+                // if current angle is before 0, mid angle has to be before 0 and before current angle
 
-            float percentage = (angle - left) / (right - left);
+                // if end angle + 180.0f will pass 360.0f it will not be a problem mathematically speaking because
+                // computations will return the same value (in order to work this formula we need that left < value < right)
+                float shLeft = vd::math::ReduceAngle(state.MidAtAngle + 180.0f);
+                float shAngle = vd::math::ReduceAngle(angle + 180.0f);
+                float shRight = state.EndAtAngle + 180.0f;
 
-            if (angle < state.Mixable.MidAtAngle) {
-                m_CurrentColor = glm::mix(stateBefore.Color, state.Color, percentage);
-                m_CurrentFactor = glm::mix(stateBefore.ColorFactor, state.ColorFactor, percentage);
-            } else {
-                m_CurrentColor = glm::mix(state.Color, stateAfter.Color, percentage);
-                m_CurrentFactor = glm::mix(state.ColorFactor, stateAfter.ColorFactor, percentage);
+                m_Details.Percentage = glm::abs(shAngle - shLeft) / (shRight - shLeft);
+                m_Details.Mixable = true;
+                SetDetailsFactor(m_Details.First, state);
+                SetDetailsFactor(m_Details.Second, stateAfter);
             }
         } else {
-            m_CurrentColor = state.Color;
-            m_CurrentFactor = state.ColorFactor;
+            if (angle < state.MidAtAngle) {
+                m_Details.Mixable = false;
+                m_Details.Percentage = 100.0f;
+                SetDetailsFactor(m_Details.First, state);
+                ClearDetailsFactor(m_Details.Second);
+            } else {
+                m_Details.Percentage = glm::abs(angle - state.MidAtAngle) / (state.EndAtAngle - state.MidAtAngle);
+                m_Details.Mixable = true;
+                SetDetailsFactor(m_Details.First, state);
+                SetDetailsFactor(m_Details.Second, stateAfter);
+            }
         }
+
+        /*if (angle < state.MidAtAngle) {
+            m_Details.Mixable = false;
+            m_Details.Percentage = 100.0f;
+            SetDetailsFactor(m_Details.First, state);
+            ClearDetailsFactor(m_Details.Second);
+        } else {
+            if (m_WaitReset) {
+                float shLeft = state.MidAtAngle + 180.0f;
+                shLeft = (shLeft >= 360.0f) ? (shLeft - 360.0f) : shLeft;
+                float shRight = state.EndAtAngle + 180.0f;
+                float shAngle = angle + 180.0f;
+                shAngle = (shAngle >= 360.0f) ? (shAngle - 360.0f) : shAngle;
+
+                m_Details.Percentage = glm::abs(shAngle - shLeft) / (shRight - shLeft);
+            } else {
+                m_Details.Percentage = glm::abs(angle - state.MidAtAngle) / (state.EndAtAngle - state.MidAtAngle);
+            }
+
+            m_Details.Mixable = true;
+            SetDetailsFactor(m_Details.First, state);
+            SetDetailsFactor(m_Details.Second, stateAfter);
+        }*/
 
         m_LastAngle = angle;
     }
 
-    const glm::vec3& Sky::Color() const {
-        return m_CurrentColor;
+    const Sky::RenderDetails& Sky::Details() const {
+        return m_Details;
     }
 
-    const glm::vec3& Sky::ColorFactor() const {
-        return m_CurrentFactor;
+    void Sky::SetDetailsFactor(RenderDetails::Factor& factor, const Sky::State& source) {
+        factor.UseColor = source.UseColor;
+        if (source.UseColor) {
+            factor.Color = source.Color;
+            factor.Factor = source.ColorFactor;
+            factor.Texture = nullptr;
+        } else {
+            factor.Color = glm::vec3(0.0f);
+            factor.Factor = glm::vec3(0.0f);
+            factor.Texture = source.Texture;
+        }
     }
 
-    size_t Sky::StateAtAngle(float angle) {
+    void Sky::ClearDetailsFactor(Sky::RenderDetails::Factor& factor) {
+        factor.UseColor = true;
+        factor.Color = glm::vec3(0.0f);
+        factor.Factor = glm::vec3(0.0f);
+        factor.Texture = nullptr;
+    }
 
-
-        return 0;
+    float Sky::AngleTransform(float angle, bool shift) {
+        return (angle * 0.5f) + (shift ? 0.0f : 180.0f);
     }
 
 }

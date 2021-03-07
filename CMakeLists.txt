@@ -111,6 +111,8 @@ set(SOURCES
         src/engine/math/Plane.cpp
         src/engine/math/Transform.cpp
         src/engine/math/Transform.hpp
+        src/engine/math/Utils.cpp
+        src/engine/math/Utils.hpp
         src/engine/misc/Types.hpp
         src/engine/model/Font.cpp
         src/engine/model/Font.hpp

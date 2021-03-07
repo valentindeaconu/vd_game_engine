@@ -25,12 +25,15 @@ namespace vd::time {
     public:
         explicit Time(uint8_t hour = 0, uint8_t minute = 0);
         explicit Time(float angle, bool AM = true);
+        explicit Time(const std::string& time = "00:00");
 
         bool operator==(const Time& other) const;
         bool operator>(const Time& other) const;
         bool operator<(const Time& other) const;
         bool operator>=(const Time& other) const;
         bool operator<=(const Time& other) const;
+
+        [[nodiscard]] bool Between(const Time& lhs, const Time& rhs) const;
 
         [[nodiscard]] bool  Valid() const;
         [[nodiscard]] float ToAngle() const;

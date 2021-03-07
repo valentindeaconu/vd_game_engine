@@ -28,7 +28,7 @@ namespace vd::loader {
     class ImageLoader {
     public:
         template <typename T, model::ImageFormat F = model::ImageFormat::eRGBA>
-        static model::ImagePtr<T, F> Load(const std::string& path);
+        static model::ImagePtr<T, F> Load(const std::string& path, bool verticalFlip = true);
     };
 }
 

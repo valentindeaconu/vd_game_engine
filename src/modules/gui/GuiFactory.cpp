@@ -74,12 +74,19 @@ namespace mod::gui {
                   glm::vec2(0.75f, -0.75f),
                   glm::vec2(0.250f, 0.250f));*/
 
+        /// Texts
+        vd::time::Time morning6(uint8_t(6));
+        vd::time::Time noon6(uint8_t(18));
+
         CreateUpdatableText(
             pEngine,
             "0",
             [
                 ctx = vd::ObjectOfType<vd::context::Context>::Find(),
-                w = vd::ObjectOfType<vd::window::Window>::Find()
+                w = vd::ObjectOfType<vd::window::Window>::Find(),
+                t = vd::ObjectOfType<vd::time::TimeManager>::Find()->CurrentTime(),
+                morning6 = morning6,
+                noon6 = noon6
             ](UpdatableGuiText& el) {
                 bool shouldRebuild = false;
                 if (!el.Contains("U")) {
@@ -88,10 +95,28 @@ namespace mod::gui {
                     shouldRebuild = true;
                 }
 
+                if (!el.Contains("T")) {
+                    el["T"] = (t->Between(morning6, noon6)) ? "0" : "1";
+                }
+
                 std::string now = std::to_string(ctx->FPS());
                 if (now != el.Text()) {
                     el.Text() = now;
                     shouldRebuild = true;
+                }
+
+                if (t->Between(morning6, noon6)) {
+                    if (el["T"] != "0") {
+                        el.Color(glm::vec3(0.0f));
+                        el["T"] = "0";
+                        //shouldRebuild = true;
+                    }
+                } else {
+                    if (el["T"] != "1") {
+                        el.Color(glm::vec3(1.0f));
+                        el["T"] = "1";
+                        //shouldRebuild = true;
+                    }
                 }
 
                 if (shouldRebuild) {
@@ -107,8 +132,10 @@ namespace mod::gui {
                 pEngine,
                 "00:00",
                 [
-                        t = vd::ObjectOfType<vd::time::TimeManager>::Find(),
-                        w = vd::ObjectOfType<vd::window::Window>::Find()
+                        t = vd::ObjectOfType<vd::time::TimeManager>::Find()->CurrentTime(),
+                        w = vd::ObjectOfType<vd::window::Window>::Find(),
+                        morning6 = morning6,
+                        noon6 = noon6
                 ](UpdatableGuiText& el) {
                     bool shouldRebuild = false;
                     if (!el.Contains("U")) {
@@ -117,10 +144,28 @@ namespace mod::gui {
                         shouldRebuild = true;
                     }
 
-                    std::string now = t->CurrentTime()->ToString();
+                    if (!el.Contains("T")) {
+                        el["T"] = (t->Between(morning6, noon6)) ? "0" : "1";
+                    }
+
+                    std::string now = t->ToString();
                     if (now != el.Text()) {
                         el.Text() = now;
                         shouldRebuild = true;
+                    }
+
+                    if (t->Between(morning6, noon6)) {
+                        if (el["T"] != "0") {
+                            el.Color(glm::vec3(0.0f));
+                            el["T"] = "0";
+                            //shouldRebuild = true;
+                        }
+                    } else {
+                        if (el["T"] != "1") {
+                            el.Color(glm::vec3(1.0f));
+                            el["T"] = "1";
+                            //shouldRebuild = true;
+                        }
                     }
 
                     if (shouldRebuild) {
