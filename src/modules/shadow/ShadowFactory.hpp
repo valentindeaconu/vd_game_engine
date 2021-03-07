@@ -7,8 +7,11 @@
 
 #include <engine/component/IModuleFactory.hpp>
 
-#include <engine/injector/CreateAndStore.hpp>
 #include <engine/misc/Types.hpp>
+
+#include <engine/injector/CreateAndStore.hpp>
+#include <engine/context/Context.hpp>
+#include <engine/time/TimeManager.hpp>
 
 #include "ShadowShader.hpp"
 #include "ShadowManager.hpp"

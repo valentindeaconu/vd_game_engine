@@ -111,6 +111,8 @@ set(SOURCES
         src/engine/math/Plane.cpp
         src/engine/math/Transform.cpp
         src/engine/math/Transform.hpp
+        src/engine/math/Utils.cpp
+        src/engine/math/Utils.hpp
         src/engine/misc/Types.hpp
         src/engine/model/Font.cpp
         src/engine/model/Font.hpp
@@ -134,6 +136,10 @@ set(SOURCES
         src/engine/property/Properties.hpp
         src/engine/service/TextureService.cpp
         src/engine/service/TextureService.hpp
+        src/engine/time/Time.cpp
+        src/engine/time/Time.hpp
+        src/engine/time/TimeManager.cpp
+        src/engine/time/TimeManager.hpp
         src/engine/window/Window.cpp
         src/engine/window/Window.hpp
         src/modules/gui/GuiQuad.cpp
@@ -196,6 +202,8 @@ set(SOURCES
         src/modules/sky/SkyRenderer.hpp
         src/modules/sky/SkyFactory.cpp
         src/modules/sky/SkyFactory.hpp
+        src/modules/sky/Sun.cpp
+        src/modules/sky/Sun.hpp
         src/modules/terrain/TerrainShader.cpp
         src/modules/terrain/TerrainShader.hpp
         src/modules/terrain/Terrain.cpp

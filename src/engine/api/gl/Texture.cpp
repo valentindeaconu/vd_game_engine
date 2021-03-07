@@ -7,6 +7,7 @@ namespace vd::gl {
     }
 
     template class Texture<GL_TEXTURE_2D>;
+    template class Texture<GL_TEXTURE_CUBE_MAP>;
 
     template<GLuint type>
     Texture<type>::Texture()

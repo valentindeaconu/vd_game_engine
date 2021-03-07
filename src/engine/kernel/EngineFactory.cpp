@@ -72,6 +72,9 @@ namespace vd {
 
         // FogManager creation
         pEngine->Subscribe(injector::CreateAndStore<fog::FogManager>("./resources/properties/fog.properties"), component::IManager::kDefaultPriority);
+
+        // TimeManager creation
+        pEngine->Subscribe(injector::CreateAndStore<time::TimeManager>("./resources/properties/time.properties"), component::IManager::kDefaultPriority);
     }
 
     void EngineFactory::CreateModules(EnginePtr& pEngine) {

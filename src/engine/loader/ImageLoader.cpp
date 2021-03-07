@@ -7,7 +7,7 @@
 namespace vd::loader {
     /// Float data, RGBA format (4 channels)
     template<>
-    model::ImagePtr<float, model::ImageFormat::eRGBA> ImageLoader::Load(const std::string& path) {
+    model::ImagePtr<float, model::ImageFormat::eRGBA> ImageLoader::Load(const std::string& path, bool verticalFlip) {
         impl::IImageLoaderPtr impl = vd::ObjectOfType<impl::IImageLoader>::Find();
 
         impl::IImageLoader::LoadedImage loadedImage = impl->Load(path);
@@ -28,7 +28,9 @@ namespace vd::loader {
             imagePtr->Data().emplace_back((float)loadedImage.data[i + 3] / 255.0f);   // A
         }
 
-        imagePtr->Reverse();
+        if (verticalFlip) {
+            imagePtr->Reverse();
+        }
 
         impl->Release(loadedImage);
 
@@ -37,7 +39,7 @@ namespace vd::loader {
 
     /// Float data, BGRA format (4 channels)
     template<>
-    model::ImagePtr<float, model::ImageFormat::eBGRA> ImageLoader::Load(const std::string& path) {
+    model::ImagePtr<float, model::ImageFormat::eBGRA> ImageLoader::Load(const std::string& path, bool verticalFlip) {
         impl::IImageLoaderPtr impl = vd::ObjectOfType<impl::IImageLoader>::Find();
 
         impl::IImageLoader::LoadedImage loadedImage = impl->Load(path);
@@ -58,7 +60,9 @@ namespace vd::loader {
             imagePtr->Data().emplace_back((float)loadedImage.data[i + 3] / 255.0f);   // A
         }
 
-        imagePtr->Reverse();
+        if (verticalFlip) {
+            imagePtr->Reverse();
+        }
 
         impl->Release(loadedImage);
 
@@ -67,7 +71,7 @@ namespace vd::loader {
 
     /// Float data, RGB format (3 channels)
     template<>
-    model::ImagePtr<float, model::ImageFormat::eRGB> ImageLoader::Load(const std::string& path) {
+    model::ImagePtr<float, model::ImageFormat::eRGB> ImageLoader::Load(const std::string& path, bool verticalFlip) {
         impl::IImageLoaderPtr impl = vd::ObjectOfType<impl::IImageLoader>::Find();
 
         impl::IImageLoader::LoadedImage loadedImage = impl->Load(path);
@@ -86,7 +90,9 @@ namespace vd::loader {
             imagePtr->Data().emplace_back((float)loadedImage.data[i + 2] / 255.0f);   // B
         }
 
-        imagePtr->Reverse();
+        if (verticalFlip) {
+            imagePtr->Reverse();
+        }
 
         impl->Release(loadedImage);
 
@@ -95,7 +101,7 @@ namespace vd::loader {
 
     /// Float data, BGR format (3 channels)
     template<>
-    model::ImagePtr<float, model::ImageFormat::eBGR> ImageLoader::Load(const std::string& path) {
+    model::ImagePtr<float, model::ImageFormat::eBGR> ImageLoader::Load(const std::string& path, bool verticalFlip) {
         impl::IImageLoaderPtr impl = vd::ObjectOfType<impl::IImageLoader>::Find();
 
         impl::IImageLoader::LoadedImage loadedImage = impl->Load(path);
@@ -114,7 +120,9 @@ namespace vd::loader {
             imagePtr->Data().emplace_back((float)loadedImage.data[i] / 255.0f);       // R
         }
 
-        imagePtr->Reverse();
+        if (verticalFlip) {
+            imagePtr->Reverse();
+        }
 
         impl->Release(loadedImage);
 
@@ -123,7 +131,7 @@ namespace vd::loader {
 
     /// Float data, R format (1 channel)
     template<>
-    model::ImagePtr<float, model::ImageFormat::eR> ImageLoader::Load(const std::string& path) {
+    model::ImagePtr<float, model::ImageFormat::eR> ImageLoader::Load(const std::string& path, bool verticalFlip) {
         impl::IImageLoaderPtr impl = vd::ObjectOfType<impl::IImageLoader>::Find();
 
         impl::IImageLoader::LoadedImage loadedImage = impl->Load(path);
@@ -140,7 +148,9 @@ namespace vd::loader {
             imagePtr->Data().emplace_back((float)loadedImage.data[i] / 255.0f);       // R
         }
 
-        imagePtr->Reverse();
+        if (verticalFlip) {
+            imagePtr->Reverse();
+        }
 
         impl->Release(loadedImage);
 
@@ -149,7 +159,7 @@ namespace vd::loader {
 
     /// Byte data, RGBA format (4 channels)
     template<>
-    model::ImagePtr<uint8_t, model::ImageFormat::eRGBA> ImageLoader::Load(const std::string& path) {
+    model::ImagePtr<uint8_t, model::ImageFormat::eRGBA> ImageLoader::Load(const std::string& path, bool verticalFlip) {
         impl::IImageLoaderPtr impl = vd::ObjectOfType<impl::IImageLoader>::Find();
 
         impl::IImageLoader::LoadedImage loadedImage = impl->Load(path);
@@ -169,7 +179,9 @@ namespace vd::loader {
             imagePtr->Data().emplace_back(loadedImage.data[i + 3]);   // A
         }
 
-        imagePtr->Reverse();
+        if (verticalFlip) {
+            imagePtr->Reverse();
+        }
 
         impl->Release(loadedImage);
 
@@ -178,7 +190,7 @@ namespace vd::loader {
 
     /// Byte data, BGRA format (4 channels)
     template<>
-    model::ImagePtr<uint8_t, model::ImageFormat::eBGRA> ImageLoader::Load(const std::string& path) {
+    model::ImagePtr<uint8_t, model::ImageFormat::eBGRA> ImageLoader::Load(const std::string& path, bool verticalFlip) {
         impl::IImageLoaderPtr impl = vd::ObjectOfType<impl::IImageLoader>::Find();
 
         impl::IImageLoader::LoadedImage loadedImage = impl->Load(path);
@@ -198,7 +210,9 @@ namespace vd::loader {
             imagePtr->Data().emplace_back(loadedImage.data[i + 3]);   // A
         }
 
-        imagePtr->Reverse();
+        if (verticalFlip) {
+            imagePtr->Reverse();
+        }
 
         impl->Release(loadedImage);
 
@@ -207,7 +221,7 @@ namespace vd::loader {
 
     /// Byte data, RGB format (3 channels)
     template<>
-    model::ImagePtr<uint8_t, model::ImageFormat::eRGB> ImageLoader::Load(const std::string& path) {
+    model::ImagePtr<uint8_t, model::ImageFormat::eRGB> ImageLoader::Load(const std::string& path, bool verticalFlip) {
         impl::IImageLoaderPtr impl = vd::ObjectOfType<impl::IImageLoader>::Find();
 
         impl::IImageLoader::LoadedImage loadedImage = impl->Load(path);
@@ -226,7 +240,9 @@ namespace vd::loader {
             imagePtr->Data().emplace_back(loadedImage.data[i + 2]);   // B
         }
 
-        imagePtr->Reverse();
+        if (verticalFlip) {
+            imagePtr->Reverse();
+        }
 
         impl->Release(loadedImage);
 
@@ -235,7 +251,7 @@ namespace vd::loader {
 
     /// Byte data, BGR format (3 channels)
     template<>
-    model::ImagePtr<uint8_t, model::ImageFormat::eBGR> ImageLoader::Load(const std::string& path) {
+    model::ImagePtr<uint8_t, model::ImageFormat::eBGR> ImageLoader::Load(const std::string& path, bool verticalFlip) {
         impl::IImageLoaderPtr impl = vd::ObjectOfType<impl::IImageLoader>::Find();
 
         impl::IImageLoader::LoadedImage loadedImage = impl->Load(path);
@@ -254,7 +270,9 @@ namespace vd::loader {
             imagePtr->Data().emplace_back(loadedImage.data[i]);       // R
         }
 
-        imagePtr->Reverse();
+        if (verticalFlip) {
+            imagePtr->Reverse();
+        }
 
         impl->Release(loadedImage);
 
@@ -263,7 +281,7 @@ namespace vd::loader {
 
     /// Byte data, R format (1 channel)
     template<>
-    model::ImagePtr<uint8_t, model::ImageFormat::eR> ImageLoader::Load(const std::string& path) {
+    model::ImagePtr<uint8_t, model::ImageFormat::eR> ImageLoader::Load(const std::string& path, bool verticalFlip) {
         impl::IImageLoaderPtr impl = vd::ObjectOfType<impl::IImageLoader>::Find();
 
         impl::IImageLoader::LoadedImage loadedImage = impl->Load(path);
@@ -280,7 +298,9 @@ namespace vd::loader {
             imagePtr->Data().emplace_back(loadedImage.data[i]);       // R
         }
 
-        imagePtr->Reverse();
+        if (verticalFlip) {
+            imagePtr->Reverse();
+        }
 
         impl->Release(loadedImage);
 

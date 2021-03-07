@@ -59,8 +59,11 @@ namespace vd::gl {
         vd::Dimension m_Dimension;
     };
 
-    typedef	Texture<GL_TEXTURE_2D>		Texture2D;
-    typedef std::shared_ptr<Texture2D>	Texture2DPtr;
+    typedef	Texture<GL_TEXTURE_2D>		    Texture2D;
+    typedef std::shared_ptr<Texture2D>	    Texture2DPtr;
+    typedef Texture<GL_TEXTURE_CUBE_MAP>    TextureCubeMap;
+    typedef std::shared_ptr<TextureCubeMap> TextureCubeMapPtr;
+
 }
 
 #endif // !__TEXTURE_HPP_

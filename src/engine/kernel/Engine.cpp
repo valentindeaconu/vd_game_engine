@@ -174,6 +174,10 @@ namespace vd {
                 this->Broadcast(BroadcastType::eRender, params);
 
                 renderingPass.Finish();
+            } else {
+                renderingPass.FrameBuffer()->Bind();
+                renderingPass.FrameBuffer()->Clear();
+                renderingPass.FrameBuffer()->Unbind();
             }
         }
 

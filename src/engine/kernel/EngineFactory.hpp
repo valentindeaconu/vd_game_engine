@@ -21,6 +21,7 @@
 #include <engine/culling/FrustumCullingManager.hpp>
 #include <engine/light/LightManager.hpp>
 #include <engine/fog/FogManager.hpp>
+#include <engine/time/TimeManager.hpp>
 
 // Injection
 #include <engine/loader/impl/TinyObjLoaderImpl.hpp>

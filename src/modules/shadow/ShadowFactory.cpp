@@ -12,11 +12,27 @@ namespace mod::shadow {
 
         pEngine->Subscribe(pShadowManager, ShadowManager::kDefaultPriority);
 
+        auto preconditionFn = [
+                ctx = vd::ObjectOfType<vd::context::Context>::Find(),
+                tm = vd::ObjectOfType<vd::time::TimeManager>::Find()
+        ]() {
+            if (ctx->WireframeMode()) {
+                return false;
+            }
+
+            if ((!tm->CurrentTime()->AM() && tm->CurrentTime()->Hour() >= 6) ||
+                (tm->CurrentTime()->AM() && tm->CurrentTime()->Hour() < 6)) {
+                return false;
+            }
+
+            return true;
+        };
+
         vd::component::RenderingPass shadowRenderingPass(
                 "Shadow",
                 10,
                 pShadowManager->FrameBuffer(),
-                [ctx = vd::ObjectOfType<vd::context::Context>::Find()]() { return !ctx->WireframeMode(); },
+                preconditionFn,
                 []() { glDisable(GL_CULL_FACE); },
                 []() { glEnable(GL_CULL_FACE); }
         );

@@ -32,11 +32,12 @@ namespace mod::gui {
         AddUniforms();
 
         SetUniform("projection", m_pWindow->OrthoProjectionMatrix());
-        SetUniform("textColor", glm::vec3(pEntity->Meshes()[0]->Materials()[0].Color()));
     }
 
     void GuiTextShader::UpdateUniforms(vd::object::Entity2DPtr pEntity, uint64_t levelOfDetail, uint32_t meshIndex) {
         mod::gui::GuiTextPtr pGuiText = std::dynamic_pointer_cast<mod::gui::GuiText>(pEntity);
+
+        SetUniform("textColor", glm::vec3(pEntity->Meshes()[0]->Materials()[0].Color()));
 
         vd::gl::ActiveTexture(1);
         pGuiText->Font()->Characters()[pGuiText->Text()[meshIndex]].Texture->Bind();
