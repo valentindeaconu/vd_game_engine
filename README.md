@@ -32,15 +32,18 @@ Steps for the installation:
 * [SOLID](https://en.wikipedia.org/wiki/SOLID) architecture written with [PascalCase](https://wiki.c2.com/?PascalCase) and [Hungarian notation](https://en.wikipedia.org/wiki/Hungarian_notation).
 * Quad-tree terrain with dynamic tessellation, multi-texturing, heights, normals, displacement and bump normals. 
 * Biome System (up to 32 biomes, with possibility to combine multiple biome)
-* Props and Prop generator with possibility to spawn a certain object in a certain biome
+* Props and Prop generator with possibility to spawn a certain object in a certain biome and multiple level of details
 * Skybox
 * Free Camera and 3rd Person Camera (switchable at run-time)
 * Player object with following basic movement: forward, backward, left, right, jumping with gravity and collision with the terrain
 * Multiple lights (point lights and directional lights)
 * Shadows (Shadow Mapping)
-* Support for GUI Textures
+* Support for GUI Textures and Texts
 * Water with DuDv and Normal maps and Fresnel effect
 * Frustum Culling
+* Wireframe Mode
+* Post-Rendering Effects (Depth of Field effect)
+* Day-night cycle with an amazing [texture pack](https://assetstore.unity.com/packages/2d/textures-materials/sky/10-skyboxes-pack-day-night-32236#description)
 
 ## Project Board
 
