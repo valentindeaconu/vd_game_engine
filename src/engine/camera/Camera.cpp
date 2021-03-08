@@ -53,15 +53,6 @@ namespace vd::camera {
     }
 
     float Camera::Pitch() const {
-        // TODO: Compute pitch from position vectors
-
-        // cos(pitch) = dot(up, forward) / (len(up) * len(forward))
-        // up, forward - normalised => len(up) = len(forward) = 1
-        // => pitch = acos(dot(up, forward))
-        // acos returns radians
-        // return glm::degrees(std::acos(glm::dot(up, forward)));
-
-
         return glm::degrees(-asin(dot(m_Forward, glm::vec3(0.0f, 1.0f, 0.0f))));
     }
 
@@ -79,8 +70,6 @@ namespace vd::camera {
     }
 
     float Camera::Roll() const {
-        // TODO: Compute roll from position vectors
-
         // cos(yaw) = dot(up, right) / (len(up) * len(right))
         // up, right - normalised => len(up) = len(right) = 1
         // => roll = acos(dot(up, right))

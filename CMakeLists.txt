@@ -241,6 +241,10 @@ else()
             COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/resources/ $<TARGET_FILE_DIR:VDGE>/resources/)
 endif()
 
+target_compile_definitions(VDGE PUBLIC
+        $<$<CONFIG:Debug>:VDGE_DEBUG>
+        $<$<CONFIG:Release>:VDGE_RELEASE>)
+
 find_package(OpenGL REQUIRED)
 
 if (WIN32)

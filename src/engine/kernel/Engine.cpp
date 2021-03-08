@@ -181,8 +181,9 @@ namespace vd {
             }
         }
 
-        // TODO: Remove this check when it's not needed
+#ifdef VDGE_DEBUG
         glCheckError();
+#endif
     }
 
     void Engine::CleanUp() {

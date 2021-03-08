@@ -12,9 +12,6 @@ namespace mod::props {
     PropsRenderer::~PropsRenderer() = default;
 
     void PropsRenderer::Link() {
-        // TODO: Remove dependency (used only for debugging)
-        m_pEventHandler = vd::ObjectOfType<vd::event::EventHandler>::Find();
-
         m_pCamera = vd::ObjectOfType<vd::camera::Camera>::Find();
         m_pFrustumCullingManager = vd::ObjectOfType<vd::culling::FrustumCullingManager>::Find();
         m_pShadowShader = vd::ObjectOfType<mod::shadow::ShadowShader>::Find();
@@ -68,7 +65,7 @@ namespace mod::props {
                 Transform.YAxisRotationAngle() = 0.0f;
             }
 
-            // TODO: This is a hack, this shouldn't work, but it works... wtf?
+            // TODO: This is a hack, we're checking against frustum's bounding box
             const auto& boundingBoxes = Prop->BoundingBoxes(levelOfDetail);
             const auto& fBounds =  m_pFrustumCullingManager->FrustumBounds();
             // const auto& frustum =  m_pFrustumCullingManager->Frustum();

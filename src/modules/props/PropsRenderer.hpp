@@ -47,7 +47,6 @@ namespace mod::props {
 
         PropGeneratorPtr m_pPropGenerator;
 
-        vd::event::EventHandlerPtr              m_pEventHandler;
         vd::camera::CameraPtr                   m_pCamera;
         vd::culling::FrustumCullingManagerPtr   m_pFrustumCullingManager;
         mod::shadow::ShadowShaderPtr            m_pShadowShader;
