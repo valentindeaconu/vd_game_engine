@@ -19,18 +19,14 @@ namespace vd::gl {
     }
 
     void FrameBuffer::Create() {
-        if (m_Type == eDefault) {
-            m_Type = eReadWrite;
-        } else {
-            glGenFramebuffers(1, &m_Id);
+        glGenFramebuffers(1, &m_Id);
 
-            glBindFramebuffer(m_Type, m_Id);
-            glDepthFunc(GL_LEQUAL);
-            glEnable(GL_DEPTH_TEST);
-            glDrawBuffer(GL_NONE);
-            glReadBuffer(GL_NONE);
-            glBindFramebuffer(m_Type, 0);
-        }
+        glBindFramebuffer(m_Type, m_Id);
+        glDepthFunc(GL_LEQUAL);
+        glEnable(GL_DEPTH_TEST);
+        glDrawBuffer(GL_NONE);
+        glReadBuffer(GL_NONE);
+        glBindFramebuffer(m_Type, 0);
     }
 
     void FrameBuffer::CleanUp() {
