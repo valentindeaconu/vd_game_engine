@@ -47,8 +47,10 @@ set(SOURCES
         src/engine/component/RenderingPass.cpp
         src/engine/context/Context.cpp
         src/engine/context/Context.hpp
-        src/engine/core/AsyncWorker.cpp
-        src/engine/core/AsyncWorker.hpp
+        src/engine/core/ThreadPool.cpp
+        src/engine/core/ThreadPool.hpp
+        src/engine/core/Job.cpp
+        src/engine/core/Job.hpp
         src/engine/culling/FrustumCullingManager.cpp
         src/engine/culling/FrustumCullingManager.hpp
         src/engine/datastruct/Tree.cpp

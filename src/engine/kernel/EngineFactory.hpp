@@ -16,6 +16,7 @@
 #include <engine/window/Window.hpp>
 #include <engine/camera/Camera.hpp>
 #include <engine/context/Context.hpp>
+#include <engine/core/ThreadPool.hpp>
 
 // Required managers
 #include <engine/culling/FrustumCullingManager.hpp>

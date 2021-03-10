@@ -13,14 +13,21 @@ namespace vd {
         /// Linker creation
         injector::LinkerPtr pLinker = injector::CreateAndStore<injector::Linker>();
 
+        /// Thread Pool
+        auto pThreadPool = injector::CreateAndStore<core::ThreadPool>(std::vector<std::string>({"Update", "Render"}));
+
         /// Loaders
         CreateLoaders();
 
-        /// Included Managers
-        CreateManagers(pEngine);
+        auto createJob = pThreadPool->CreateJobFor([&]() {
+            /// Included Managers
+            CreateManagers(pEngine);
 
-        /// Modules
-        CreateModules(pEngine);
+            /// Modules
+            CreateModules(pEngine);
+        }, "Render");
+        createJob->Run();
+        createJob->Join();
 
         /// Linking Stage
         pEngine->Link();

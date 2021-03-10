@@ -93,10 +93,8 @@ namespace vd::gl {
         uint32_t id = m_Buffers[type];
 
         Bind();
-
         glBindBuffer(type, id);
         glBufferSubData(type, 0, count, data);
-
         Unbind();
     }
 
@@ -126,9 +124,7 @@ namespace vd::gl {
 
     void Buffer::DrawArrays(PrimitiveType type, size_t count) {
         Bind();
-
         glDrawArrays(type, 0, count);
-
         Unbind();
     }
 
