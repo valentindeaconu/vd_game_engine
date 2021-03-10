@@ -110,7 +110,7 @@ namespace vd::loader::impl {
                                 vd::service::TextureService::CreateFromFile(dirname + ambientTexturePath);
                         currentTexture->Bind();
                         currentTexture->WrapRepeat();
-                        currentTexture->TrilinearFilter();
+                        currentTexture->MipmapLinearFilter();
                         material.AmbientMap() = currentTexture;
                     }
 
@@ -121,7 +121,7 @@ namespace vd::loader::impl {
                                 vd::service::TextureService::CreateFromFile(dirname + diffuseTexturePath);
                         currentTexture->Bind();
                         currentTexture->WrapRepeat();
-                        currentTexture->TrilinearFilter();
+                        currentTexture->MipmapLinearFilter();
                         material.DiffuseMap() = currentTexture;
                     }
 
@@ -132,7 +132,7 @@ namespace vd::loader::impl {
                                 vd::service::TextureService::CreateFromFile(dirname + specularTexturePath);
                         currentTexture->Bind();
                         currentTexture->WrapRepeat();
-                        currentTexture->TrilinearFilter();
+                        currentTexture->MipmapLinearFilter();
                         material.SpecularMap() = currentTexture;
                     }
 
@@ -143,7 +143,7 @@ namespace vd::loader::impl {
                                 vd::service::TextureService::CreateFromFile(dirname + normalTexturePath);
                         currentTexture->Bind();
                         currentTexture->WrapRepeat();
-                        currentTexture->TrilinearFilter();
+                        currentTexture->MipmapLinearFilter();
                         material.NormalMap() = currentTexture;
                     }
 
@@ -154,7 +154,7 @@ namespace vd::loader::impl {
                                 vd::service::TextureService::CreateFromFile(dirname + displaceTexturePath);
                         currentTexture->Bind();
                         currentTexture->WrapRepeat();
-                        currentTexture->TrilinearFilter();
+                        currentTexture->MipmapLinearFilter();
                         material.DisplaceMap() = currentTexture;
                     }
 
@@ -165,7 +165,7 @@ namespace vd::loader::impl {
                                 vd::service::TextureService::CreateFromFile(dirname + alphaTexturePath);
                         currentTexture->Bind();
                         currentTexture->WrapRepeat();
-                        currentTexture->TrilinearFilter();
+                        currentTexture->MipmapLinearFilter();
                         material.AlphaMap() = currentTexture;
                     }
 
@@ -176,7 +176,7 @@ namespace vd::loader::impl {
                                 vd::service::TextureService::CreateFromFile(dirname + bumpTexturePath);
                         currentTexture->Bind();
                         currentTexture->WrapRepeat();
-                        currentTexture->TrilinearFilter();
+                        currentTexture->MipmapLinearFilter();
                         material.BumpMap() = currentTexture;
                     }
                 }

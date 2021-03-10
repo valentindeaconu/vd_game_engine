@@ -7,6 +7,8 @@
 namespace mod::water {
 
     WaterShader::WaterShader() : vd::component::IEntity3DShader() {
+        Create();
+
         std::string vsSource;
         vd::loader::ShaderLoader::Load("./resources/shaders/water/water_VS.glsl", vsSource);
         AddShader(vsSource, vd::gl::Shader::eVertexShader);

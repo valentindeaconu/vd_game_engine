@@ -17,7 +17,7 @@ namespace mod::shadow {
 
         m_pView = std::make_shared<glm::mat4>(1.0f);
         m_pProjection = std::make_shared<glm::mat4>(1.0f);
-        m_pFrameBuffer = std::make_shared<vd::gl::FrameBuffer>();
+        m_pFrameBuffer = std::make_shared<vd::gl::FrameBuffer>(m_MapSize, m_MapSize);
     }
 
     ShadowManager::~ShadowManager() = default;
@@ -28,13 +28,13 @@ namespace mod::shadow {
     }
 
     void ShadowManager::Init() {
+        m_pFrameBuffer->Create();
         m_pFrameBuffer->Bind();
-        m_pFrameBuffer->Resize(m_MapSize, m_MapSize);
 
         m_pFrameBuffer->PushAttachment(vd::gl::FrameBuffer::eDepthTexture, [](vd::gl::Texture2DPtr& pTex) {
             pTex->Bind();
 
-            pTex->BilinearFilter();
+            pTex->LinearFilter();
 
             pTex->WrapClampToBorder();
             float border[] = {1.0f, 1.0f, 1.0f, 1.0f};
@@ -63,7 +63,7 @@ namespace mod::shadow {
     }
 
     void ShadowManager::CleanUp() {
-        m_pFrameBuffer = nullptr;
+        m_pFrameBuffer->CleanUp();
     }
 
     float ShadowManager::Distance() const {

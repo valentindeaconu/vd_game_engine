@@ -17,6 +17,7 @@
 
 #include <engine/injector/Injectable.hpp>
 #include <engine/event/EventHandler.hpp>
+#include <engine/core/ThreadPool.hpp>
 
 #include <engine/component/IManager.hpp>
 
@@ -77,8 +78,9 @@ namespace vd::window {
         void Update() override;
         void CleanUp() override;
     private:
-        WindowPtr m_WindowPtr;
-        event::EventHandlerPtr m_pEventHandler;
+        WindowPtr               m_pWindow;
+        event::EventHandlerPtr  m_pEventHandler;
+        core::ThreadPoolPtr     m_pThreadPool;
     };
     typedef std::shared_ptr<WindowManager>  WindowManagerPtr;
 }

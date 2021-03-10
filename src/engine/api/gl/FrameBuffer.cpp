@@ -6,28 +6,6 @@
 
 namespace vd::gl {
 
-    FrameBuffer::FrameBuffer(const Type& type)
-        : m_Type(type)
-        , m_Id(0)
-        , m_Dimension(0, 0)
-        , m_DepthBufferId(0)
-        , m_Bound(false)
-        , m_HasDepthBuffer(false)
-        , m_HasDepthTexture(false)
-        , m_ColorAttachments(0)
-    {
-        if (type == eDefault) {
-            m_Type = eReadWrite;
-        } else {
-            glGenFramebuffers(1, &m_Id);
-
-            glBindFramebuffer(m_Type, m_Id);
-            glDrawBuffer(GL_NONE);
-            glReadBuffer(GL_NONE);
-            glBindFramebuffer(m_Type, 0);
-        }
-    }
-
     FrameBuffer::FrameBuffer(size_t width, size_t height, const Type& type)
         : m_Type(type)
         , m_Id(0)
@@ -38,7 +16,10 @@ namespace vd::gl {
         , m_HasDepthTexture(false)
         , m_ColorAttachments(0)
     {
-        if (type == eDefault) {
+    }
+
+    void FrameBuffer::Create() {
+        if (m_Type == eDefault) {
             m_Type = eReadWrite;
         } else {
             glGenFramebuffers(1, &m_Id);
@@ -50,10 +31,9 @@ namespace vd::gl {
             glReadBuffer(GL_NONE);
             glBindFramebuffer(m_Type, 0);
         }
-
     }
 
-    FrameBuffer::~FrameBuffer() {
+    void FrameBuffer::CleanUp() {
         glBindFramebuffer(m_Type, m_Id);
 
         if (m_HasDepthBuffer) {

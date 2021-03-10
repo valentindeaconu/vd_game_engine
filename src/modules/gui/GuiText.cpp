@@ -22,6 +22,7 @@ namespace mod::gui {
     void GuiText::Setup() {
         vd::gl::BufferPtr pBuffer = std::make_shared<vd::gl::Buffer>();
 
+        pBuffer->Create();
         pBuffer->Bind();
 
         pBuffer->AddBuffer(vd::gl::buffer::eArrayBuffer, sizeof(float) * 6 * 4, nullptr, vd::gl::buffer::eDynamicDraw);

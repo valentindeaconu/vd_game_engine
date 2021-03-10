@@ -6,6 +6,8 @@
 
 namespace mod::player {
     PlayerShader::PlayerShader() : vd::component::IEntity3DShader() {
+        Create();
+
         std::string vsSource;
         vd::loader::ShaderLoader::Load("./resources/shaders/entity/entity_VS.glsl", vsSource);
         AddShader(vsSource, vd::gl::Shader::eVertexShader);

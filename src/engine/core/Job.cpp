@@ -6,19 +6,11 @@
 
 namespace vd::core {
 
-    Job::Job()
-        : m_Action(vd::g_kEmptyConsumer)
-        , m_OnFinish(vd::g_kEmptyConsumer)
-        , m_Done(false)
-        , m_Running(false)
-    {
-    }
-
-    Job::Job(Consumer action)
+    Job::Job(Consumer action, bool autoRun)
         : m_Action(std::move(action))
         , m_OnFinish(vd::g_kEmptyConsumer)
         , m_Done(false)
-        , m_Running(false)
+        , m_Running(autoRun)
     {
     }
 
@@ -53,6 +45,10 @@ namespace vd::core {
     }
 
     void Job::Run() {
+        if (m_Running) {
+            return;
+        }
+
         std::unique_lock<std::mutex> lock(m_RLock);
         m_Running = true;
         lock.unlock();

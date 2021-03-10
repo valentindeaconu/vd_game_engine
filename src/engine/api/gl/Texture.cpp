@@ -9,7 +9,7 @@ namespace vd::gl {
     template class Texture<GL_TEXTURE_2D>;
     template class Texture<GL_TEXTURE_CUBE_MAP>;
 
-    template<GLuint type>
+    /*template<GLuint type>
     Texture<type>::Texture()
         : m_Id(0)
         , m_Dimension(0, 0)
@@ -101,7 +101,7 @@ namespace vd::gl {
         BilinearFilter();
         WrapRepeat();
         Unbind();
-    }
+    }*/
 
     template<GLuint type>
     Texture<type>::Texture(size_t width, size_t height)
@@ -110,22 +110,14 @@ namespace vd::gl {
     {
     }
 
-    template<GLuint type>
-    Texture<type>& Texture<type>::operator=(const Texture<type>& other) {
-        this->m_Id = other.m_Id;
-        this->m_Dimension = other.m_Dimension;
-
-        return *this;
-    }
-
-    template<GLuint type>
-    Texture<type>::~Texture() {
-        glDeleteTextures(1, &m_Id);
-    }
-
-    template<GLuint type>
-    void Texture<type>::Generate() {
+    template<GLuint T>
+    void Texture<T>::Create() {
         glGenTextures(1, &m_Id);
+    }
+
+    template<GLuint T>
+    void Texture<T>::CleanUp() {
+        glDeleteTextures(1, &m_Id);
     }
 
     template<GLuint type>
@@ -162,30 +154,23 @@ namespace vd::gl {
     void Texture<type>::NoFilter() {
         this->Parameter(TextureParameter::eTextureMinFilter, GL_NEAREST);
         this->Parameter(TextureParameter::eTextureMagFilter, GL_NEAREST);
-        // glTexParameteri(type, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-        // glTexParameteri(type, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     }
 
     template<GLuint type>
-    void Texture<type>::BilinearFilter() {
+    void Texture<type>::LinearFilter() {
         this->Parameter(TextureParameter::eTextureMinFilter, GL_LINEAR);
         this->Parameter(TextureParameter::eTextureMagFilter, GL_LINEAR);
-        // glTexParameteri(type, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        // glTexParameteri(type, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     }
 
     template<GLuint type>
-    void Texture<type>::TrilinearFilter() {
+    void Texture<type>::MipmapLinearFilter() {
         glGenerateMipmap(type);
         this->Parameter(TextureParameter::eTextureMinFilter, GL_LINEAR_MIPMAP_LINEAR);
         this->Parameter(TextureParameter::eTextureMagFilter, GL_LINEAR);
-
-        //glTexParameteri(type, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-        //glTexParameteri(type, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     }
 
     template<GLuint type>
-    void Texture<type>::TrilinearFilterWithAnisotropy() {
+    void Texture<type>::AnisotropyMipmapLinearFilter() {
         const GLfloat kMaxAnisotropy = 8.0f;
         GLfloat value;
 
@@ -193,24 +178,21 @@ namespace vd::gl {
         value = std::min(kMaxAnisotropy, value);
 
         this->Parameter(TextureParameter::eTextureLodBias, 0);
-        // glTexParameterf(type, GL_TEXTURE_LOD_BIAS, 0);
 
         glGenerateMipmap(type);
         this->Parameter(TextureParameter::eTextureMinFilter, GL_LINEAR_MIPMAP_LINEAR);
         this->Parameter(TextureParameter::eTextureMaxAnisotropy, value);
-        //glTexParameteri(type, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-        //glTexParameterf(type, GL_TEXTURE_MAX_ANISOTROPY_EXT, value);
     }
 
 
     template<GLuint type>
     void Texture<type>::WrapRepeat() {
-        //glTexParameteri(type, GL_TEXTURE_WRAP_S, GL_REPEAT);
-        //glTexParameteri(type, GL_TEXTURE_WRAP_T, GL_REPEAT);
         this->Parameter(TextureParameter::eTextureWrapS, GL_REPEAT);
         this->Parameter(TextureParameter::eTextureWrapT, GL_REPEAT);
 
-        //glTexParameteri(type, GL_TEXTURE_WRAP_R, GL_REPEAT);
+        if (GetDimension() == e3D) {
+            this->Parameter(TextureParameter::eTextureWrapR, GL_REPEAT);
+        }
     }
 
     template<GLuint type>
@@ -218,27 +200,29 @@ namespace vd::gl {
         this->Parameter(TextureParameter::eTextureWrapS, GL_MIRRORED_REPEAT);
         this->Parameter(TextureParameter::eTextureWrapT, GL_MIRRORED_REPEAT);
 
-        //glTexParameteri(type, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
-        //glTexParameteri(type, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
-        //glTexParameteri(type, GL_TEXTURE_WRAP_R, GL_MIRRORED_REPEAT);
+        if (GetDimension() == e3D) {
+            this->Parameter(TextureParameter::eTextureWrapR, GL_MIRRORED_REPEAT);
+        }
     }
 
     template<GLuint type>
     void Texture<type>::WrapClampToEdge() {
         this->Parameter(TextureParameter::eTextureWrapS, GL_CLAMP_TO_EDGE);
         this->Parameter(TextureParameter::eTextureWrapT, GL_CLAMP_TO_EDGE);
-        //glTexParameteri(type, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        //glTexParameteri(type, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-        //glTexParameteri(type, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+
+        if (GetDimension() == e3D) {
+            this->Parameter(TextureParameter::eTextureWrapR, GL_CLAMP_TO_EDGE);
+        }
     }
 
     template<GLuint type>
     void Texture<type>::WrapClampToBorder() {
         this->Parameter(TextureParameter::eTextureWrapS, GL_CLAMP_TO_BORDER);
         this->Parameter(TextureParameter::eTextureWrapT, GL_CLAMP_TO_BORDER);
-        //glTexParameteri(type, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-        //glTexParameteri(type, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
-        //glTexParameteri(type, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_BORDER);
+
+        if (GetDimension() == e3D) {
+            this->Parameter(TextureParameter::eTextureWrapR, GL_CLAMP_TO_BORDER);
+        }
     }
 
     template<GLuint type>
@@ -254,6 +238,18 @@ namespace vd::gl {
     template<GLuint type>
     size_t Texture<type>::Height() const {
         return m_Dimension.height;
+    }
+
+    template<GLuint type>
+    typename Texture<type>::DimensionType Texture<type>::GetDimension() const {
+        switch (type) {
+            case GL_TEXTURE_2D:
+                return e2D;
+            case GL_TEXTURE_CUBE_MAP:
+                return e3D;
+            default:
+                return eNone;
+        }
     }
 
 }

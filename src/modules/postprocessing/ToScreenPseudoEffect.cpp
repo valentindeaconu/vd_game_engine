@@ -24,6 +24,8 @@ namespace mod::postprocessing {
     }
 
     ToScreenShader::ToScreenShader() {
+        Create();
+
         std::string vsSource;
         vd::loader::ShaderLoader::Load("./resources/shaders/postprocessing/pp_VS.glsl", vsSource);
         AddShader(vsSource, vd::gl::Shader::eVertexShader);

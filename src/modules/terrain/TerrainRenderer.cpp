@@ -84,6 +84,7 @@ namespace mod::terrain {
 
     void TerrainRenderer::CleanUp() {
         m_pTerrain->CleanUp();
+        m_pShader->CleanUp();
     }
 
     bool TerrainRenderer::IsReady() {

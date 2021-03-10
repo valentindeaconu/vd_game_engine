@@ -10,6 +10,7 @@
 #include <unordered_map>
 
 #include "GLTypes.hpp"
+#include "GLComponent.hpp"
 
 namespace vd::gl {
     namespace buffer {
@@ -53,10 +54,12 @@ namespace vd::gl {
         ePatches = GL_PATCHES
     };
 
-    class Buffer {
+    class Buffer : public GLComponent {
     public:
         Buffer();
-        ~Buffer();
+
+        void Create() override;
+        void CleanUp() override;
 
         void Bind();
         void Unbind();

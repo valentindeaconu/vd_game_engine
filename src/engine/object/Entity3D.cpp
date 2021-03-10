@@ -35,6 +35,7 @@ namespace vd::object {
                 bufferIndices.emplace_back(Buffers().size());
 
                 gl::BufferPtr pBuffer = std::make_shared<vd::gl::Buffer>();
+                pBuffer->Create();
                 pBuffer->Bind();
                 pBuffer->AddBuffer(
                         gl::buffer::eArrayBuffer,
@@ -61,12 +62,16 @@ namespace vd::object {
     }
 
     void Entity3D::CleanUp() {
+        for (auto& b : Buffers()) {
+            b->CleanUp();
+        }
+        Buffers().clear();
+
         m_DetailedMeshes.Distances.clear();
         m_DetailedMeshes.Meshes.clear();
         m_DetailedMeshes.BoundingBoxes.clear();
         m_DetailedMeshes.BufferIndices.clear();
 
-        Buffers().clear();
     }
 
     uint64_t Entity3D::LevelOfDetailAtDistance(float distance) {

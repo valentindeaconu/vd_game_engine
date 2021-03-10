@@ -6,6 +6,8 @@
 
 namespace mod::shadow {
     ShadowShader::ShadowShader() : vd::component::IEntity3DShader() {
+        Create();
+
         std::string vsSource;
         vd::loader::ShaderLoader::Load("./resources/shaders/shadow/shadow_VS.glsl", vsSource);
         AddShader(vsSource, vd::gl::Shader::eVertexShader);
@@ -14,7 +16,7 @@ namespace mod::shadow {
         vd::loader::ShaderLoader::Load("./resources/shaders/shadow/shadow_FS.glsl", fsSource);
         AddShader(fsSource, vd::gl::Shader::eFragmentShader);
 
-        Compile();;
+        Compile();
     }
 
     ShadowShader::~ShadowShader() = default;

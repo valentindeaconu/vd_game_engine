@@ -30,10 +30,11 @@ namespace vd::core {
     class ThreadPool {
     public:
         explicit ThreadPool(const std::vector<std::string>& specializations = {});
-        ~ThreadPool();
 
-        JobPtr  CreateJob(vd::Consumer action);
-        JobPtr  CreateJobFor(vd::Consumer action, const std::string& workerName);
+        void Release();
+
+        JobPtr  CreateJob(vd::Consumer action, bool autoRun = false);
+        JobPtr  CreateJobFor(vd::Consumer action, const std::string& workerName, bool autoRun = false);
         void    PushJobFor(const JobPtr& pJob, const std::string& workerName);
     private:
         typedef uint16_t index_t;

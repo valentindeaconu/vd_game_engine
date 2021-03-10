@@ -9,13 +9,14 @@
 #include <unordered_map>
 
 #include "GL.hpp"
+#include "GLComponent.hpp"
 #include "Texture.hpp"
 
 #include <engine/service/TextureService.hpp>
 
 namespace vd::gl {
 
-    class FrameBuffer {
+    class FrameBuffer : public GLComponent {
     public:
         typedef std::function<void(Texture2DPtr& t)>    TextureConfigurator;
         static inline const TextureConfigurator g_kDefaultConfigurator = [](Texture2DPtr&) { };
@@ -45,9 +46,10 @@ namespace vd::gl {
             eComplete = GL_FRAMEBUFFER_COMPLETE,
         };
 
-        explicit FrameBuffer(const Type& type = eReadWrite);
         FrameBuffer(size_t width, size_t height, const Type& type = eReadWrite);
-        ~FrameBuffer();
+
+        void Create() override;
+        void CleanUp() override;
 
         void Bind();
         void Unbind();

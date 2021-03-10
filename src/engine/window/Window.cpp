@@ -156,41 +156,49 @@ namespace vd::window {
 
     WindowManager::WindowManager() {
         try {
-            m_WindowPtr = std::make_shared<Window>(1280, 720, "VDGE");
+            m_pWindow = std::make_shared<Window>(1280, 720, "VDGE");
         } catch (std::runtime_error& e) {
             vd::Logger::terminate(e.what(), 1);
         }
 
-        m_WindowPtr->NearPlane() = 0.01f;
-        m_WindowPtr->FarPlane() = 10000.0f;
-        m_WindowPtr->FieldOfView() = 45.0f;
+        m_pWindow->NearPlane() = 0.01f;
+        m_pWindow->FarPlane() = 10000.0f;
+        m_pWindow->FieldOfView() = 45.0f;
 
-        vd::ObjectOfType<Window>::Provide(m_WindowPtr);
+        vd::ObjectOfType<Window>::Provide(m_pWindow);
     }
 
     WindowManager::~WindowManager() = default;
 
     void WindowManager::Link() {
         m_pEventHandler = vd::ObjectOfType<event::EventHandler>::Find();
+        m_pThreadPool = vd::ObjectOfType<core::ThreadPool>::Find();
     }
 
     void WindowManager::Init() {
     }
 
     void WindowManager::Update() {
-        if (m_WindowPtr->m_Changed) {
-            m_WindowPtr->m_Changed = false;
-        }
+        m_pThreadPool->CreateJobFor([&]() {
+            glfwSwapBuffers(m_pWindow->m_Window);
+            glfwPollEvents();
+        }, "Render", true);
 
-        glfwSwapBuffers(m_WindowPtr->m_Window);
+        if (m_pWindow->m_Changed) {
+            m_pWindow->m_Changed = false;
+        }
 
         if (m_pEventHandler->WindowResized()) {
             auto info = m_pEventHandler->WindowSize();
-            m_WindowPtr->Resize(info.width, info.height);
+            m_pWindow->Resize(info.width, info.height);
         }
     }
 
     void WindowManager::CleanUp() {
-        m_WindowPtr->Dispose();
+        m_pWindow->Dispose();
+
+        m_pThreadPool->CreateJobFor([&]() {
+            glfwTerminate();
+        }, "Render", true);
     }
 }

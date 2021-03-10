@@ -7,6 +7,8 @@
 namespace mod::gui {
 
     GuiTextShader::GuiTextShader() : vd::component::IEntity2DShader() {
+        Create();
+
         std::string vsSource;
         vd::loader::ShaderLoader::Load("./resources/shaders/gui/text_VS.glsl", vsSource);
         AddShader(vsSource, vd::gl::Shader::eVertexShader);

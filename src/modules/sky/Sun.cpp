@@ -40,6 +40,7 @@ namespace mod::sky {
         material.DiffuseMap()->Unbind();
 
         vd::gl::BufferPtr pBuffer = std::make_shared<vd::gl::Buffer>();
+        pBuffer->Create();
         pBuffer->Bind();
         pBuffer->AddBuffer(
                 vd::gl::buffer::eArrayBuffer,
@@ -113,7 +114,7 @@ namespace mod::sky {
 
     void SunRenderer::CleanUp() {
         m_pSun->CleanUp();
-        m_pSun = nullptr;
+        m_pShader->CleanUp();
     }
 
     bool SunRenderer::IsReady() {
@@ -121,6 +122,8 @@ namespace mod::sky {
     }
 
     SunShader::SunShader() : vd::component::IEntity2DShader() {
+        Create();
+
         std::string vsSource;
         vd::loader::ShaderLoader::Load("./resources/shaders/sun/sun_VS.glsl", vsSource);
         AddShader(vsSource, vd::gl::Shader::eVertexShader);

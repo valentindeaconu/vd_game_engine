@@ -52,7 +52,16 @@ namespace vd::gl {
     {
     }
 
-    Shader::~Shader() = default;
+    void Shader::Create() {
+        m_Program = glCreateProgram();
+        if (m_Program == 0) {
+            throw exception::ShaderError("Program Creation", "Could not create a new program");
+        }
+    }
+
+    void Shader::CleanUp() {
+        glDeleteProgram(m_Program);
+    }
 
     void Shader::Bind() const {
         glUseProgram(m_Program);
@@ -62,7 +71,7 @@ namespace vd::gl {
         glUseProgram(0);
     }
 
-    void Shader::AddShader(const std::string &source, const Shader::Type &type) {
+    void Shader::AddShader(const std::string& source, const Shader::Type& type) {
         uint32_t shader = glCreateShader(type);
 
         if (shader == 0) {
@@ -86,11 +95,8 @@ namespace vd::gl {
         }
 
         if (m_Program == 0) {
-            m_Program = glCreateProgram();
-            if (m_Program == 0) {
-                glDeleteShader(shader);
-                throw exception::ShaderError("Program Creation", "Could not create a new program");
-            }
+            glDeleteShader(shader);
+            throw exception::ShaderError("Shader Attach @" + ToString(type), "There's no program to attach to");
         }
 
         glAttachShader(m_Program, shader);

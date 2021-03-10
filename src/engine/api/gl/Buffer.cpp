@@ -32,10 +32,13 @@ namespace vd::gl {
         : m_VaoId(0)
         , m_Bound(true)
     {
+    }
+
+    void Buffer::Create() {
         glGenVertexArrays(1, &m_VaoId);
     }
 
-    Buffer::~Buffer() {
+    void Buffer::CleanUp() {
         Bind();
 
         std::vector<uint32_t> v;

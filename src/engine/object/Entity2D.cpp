@@ -16,6 +16,7 @@ namespace vd::object {
             Buffers().emplace_back(std::move(std::make_shared<vd::gl::Buffer>()));
             vd::gl::BufferPtr pBuffer = Buffers().back();
 
+            pBuffer->Create();
             pBuffer->Bind();
 
             pBuffer->AddBuffer(
@@ -43,6 +44,10 @@ namespace vd::object {
     }
 
     void Entity2D::CleanUp() {
+        for (auto& b : Buffers()) {
+            b->CleanUp();
+        }
+
         m_Meshes.clear();
         m_BoundingBoxes.clear();
     }

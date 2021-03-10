@@ -16,8 +16,7 @@ namespace vd::core {
 
     class Job {
     public:
-        Job();
-        explicit Job(vd::Consumer action);
+        explicit Job(vd::Consumer action = vd::g_kEmptyConsumer, bool autoRun = false);
 
         void DoJob();
 

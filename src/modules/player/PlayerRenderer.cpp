@@ -66,6 +66,7 @@ namespace mod::player {
 
     void PlayerRenderer::CleanUp() {
         m_pPlayer->CleanUp();
+        m_pShader->CleanUp();
     }
 
     bool PlayerRenderer::IsReady() {

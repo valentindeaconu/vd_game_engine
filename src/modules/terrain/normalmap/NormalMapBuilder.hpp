@@ -20,6 +20,7 @@ namespace mod::terrain::normalmap {
         ~NormalMapBuilder();
 
         void Create(const vd::gl::Texture2DPtr& heightMap, int size, float strength, vd::gl::Texture2DPtr& outNormalMap);
+        void CleanUp();
     private:
         vd::gl::ShaderPtr m_pShader;
     };

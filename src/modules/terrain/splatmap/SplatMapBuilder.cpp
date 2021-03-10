@@ -9,6 +9,8 @@ namespace mod::terrain::splatmap {
     SplatMapBuilder::SplatMapBuilder() {
         m_pShader = std::make_shared<vd::gl::Shader>();
 
+        m_pShader->Create();
+
         std::string csSource;
         vd::loader::ShaderLoader::Load("./resources/shaders/terrain/cs/SplatMap.glsl", csSource);
         m_pShader->AddShader(csSource, vd::gl::Shader::eComputeShader);
@@ -69,6 +71,10 @@ namespace mod::terrain::splatmap {
         glGetTexImage(GL_TEXTURE_2D, 0, GL_RED_INTEGER, GL_UNSIGNED_INT, &outData->Data()[0]);
 
         outSplatMap->Unbind();
+    }
+
+    void SplatMapBuilder::CleanUp() {
+        m_pShader->CleanUp();
     }
 
 }

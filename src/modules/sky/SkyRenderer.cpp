@@ -39,6 +39,7 @@ namespace mod::sky {
 
         const auto& renderingPass = params.at("RenderingPass");
 
+        // TODO: Is sky necessary to be drawn on Shadow Rendering Pass?
         if (renderingPass == "Shadow" ||
             renderingPass == "Reflection" ||
             renderingPass == "Refraction" ||
@@ -67,6 +68,7 @@ namespace mod::sky {
 
     void SkyRenderer::CleanUp() {
         m_pSky->CleanUp();
+        m_pShader->CleanUp();
     }
 
     bool SkyRenderer::IsReady() {

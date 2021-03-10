@@ -27,12 +27,13 @@ namespace vd {
         m_pUpdateJob->OnFinish([&]() {
             m_pRenderJob->Run();
             m_pUpdateJob->Reset();
+
             m_pThreadPool->PushJobFor(m_pUpdateJob, "Update");
         });
 
         m_pRenderJob->OnFinish([&]() {
-            m_pRenderJob->Reset();
             m_Frames++;
+
             m_pThreadPool->PushJobFor(m_pRenderJob, "Render");
         });
 
@@ -102,32 +103,45 @@ namespace vd {
                 renderFrame = true;
                 unprocessedTime -= m_FrameTime;
 
-                if (m_pWindow->CloseRequested())
+                if (m_pWindow->CloseRequested()) {
                     Stop();
+                    return;
+                }
 
                 if (frameCounter >= 1000000000.0) {
                     m_pContext->FPS() = m_Frames.load(std::memory_order_relaxed);
-
-                    vd::Logger::log(std::to_string(m_pContext->FPS()));
 
                     m_Frames.store(0, std::memory_order_relaxed);
                     frameCounter = 0;
                 }
             }
             if (renderFrame) {
-                m_pUpdateJob->Run();
+                static bool firstFrame = true;
+                if (firstFrame || m_pRenderJob->Done()) {
+                    firstFrame = false;
+                    m_pUpdateJob->Run();
+                    m_pRenderJob->Reset();
+                }
             } else {
                 std::this_thread::sleep_for(10ms);
             }
         }
-
-        m_pThreadPool->CreateJobFor([&]() { CleanUp(); }, "Render");
     }
 
     void Engine::Stop() {
         if (!m_Running)
             return;
         m_Running = false;
+
+        m_pUpdateJob->OnFinish(vd::g_kEmptyConsumer);
+        m_pRenderJob->OnFinish(vd::g_kEmptyConsumer);
+
+        m_pUpdateJob->Run();
+        m_pRenderJob->Run();
+
+        auto cleanUpJob = m_pThreadPool->CreateJobFor([&]() { CleanUp(); }, "Render", true);
+
+        m_pThreadPool->Release();
     }
 
     void Engine::Init() {
@@ -142,15 +156,16 @@ namespace vd {
 
         // Create main rendering pass (3d scene rendering pass)
         gl::FrameBufferPtr pSceneFbo = std::make_shared<gl::FrameBuffer>(m_pWindow->Width(), m_pWindow->Height());
+        pSceneFbo->Create();
         pSceneFbo->Bind();
         pSceneFbo->PushAttachment(gl::FrameBuffer::eColorTexture, [](gl::Texture2DPtr &pTex) {
             pTex->Bind();
-            pTex->BilinearFilter();
+            pTex->LinearFilter();
             pTex->Unbind();
         });
         pSceneFbo->PushAttachment(gl::FrameBuffer::eDepthTexture, [](gl::Texture2DPtr &pTex) {
             pTex->Bind();
-            pTex->BilinearFilter();
+            pTex->LinearFilter();
             pTex->Unbind();
         });
         if (pSceneFbo->Status() != gl::FrameBuffer::eComplete) {
@@ -209,9 +224,10 @@ namespace vd {
     }
 
     void Engine::CleanUp() {
-        this->Broadcast(BroadcastType::eCleanUp);
+        m_pContext->SceneFrameBuffer()->CleanUp();
+        service::TextureService::CleanUp();
 
-        glfwTerminate();
+        this->Broadcast(BroadcastType::eCleanUp);
     }
 
     void Engine::Summary() {

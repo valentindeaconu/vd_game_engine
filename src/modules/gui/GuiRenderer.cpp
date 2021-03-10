@@ -83,6 +83,7 @@ namespace mod::gui {
 
     void GuiRenderer::CleanUp() {
         m_pGuiEntity->CleanUp();
+        m_pShader->CleanUp();
     }
 
     bool GuiRenderer::IsReady() {

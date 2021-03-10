@@ -6,6 +6,8 @@
 
 namespace mod::sky {
     SkyShader::SkyShader() : vd::component::IEntity3DShader() {
+        Create();
+
         std::string vsSource;
         vd::loader::ShaderLoader::Load("./resources/shaders/sky/sky_VS.glsl", vsSource);
         AddShader(vsSource, vd::gl::Shader::eVertexShader);

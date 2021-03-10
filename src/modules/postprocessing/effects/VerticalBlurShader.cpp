@@ -7,6 +7,8 @@
 namespace mod::postprocessing {
 
     VerticalBlurShader::VerticalBlurShader() {
+        Create();
+
         std::string vsSource;
         vd::loader::ShaderLoader::Load("./resources/shaders/postprocessing/verticalBlur_VS.glsl", vsSource);
         AddShader(vsSource, vd::gl::Shader::eVertexShader);

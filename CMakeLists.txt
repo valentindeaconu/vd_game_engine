@@ -11,6 +11,7 @@ include_directories(include/)
 
 set(SOURCES
         src/engine/api/gl/GL.hpp
+        src/engine/api/gl/GLComponent.hpp
         src/engine/api/gl/GLTypes.hpp
         src/engine/api/gl/Buffer.cpp
         src/engine/api/gl/Buffer.hpp

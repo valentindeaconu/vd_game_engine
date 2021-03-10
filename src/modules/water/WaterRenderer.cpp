@@ -50,6 +50,7 @@ namespace mod::water {
 
     void WaterRenderer::CleanUp() {
         m_pWater->CleanUp();
+        m_pShader->CleanUp();
     }
 
     WaterPtr& WaterRenderer::Water() {

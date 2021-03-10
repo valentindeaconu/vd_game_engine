@@ -7,6 +7,8 @@
 namespace mod::postprocessing {
 
     ContrastShader::ContrastShader() {
+        Create();
+
         std::string vsSource;
         vd::loader::ShaderLoader::Load("./resources/shaders/postprocessing/pp_VS.glsl", vsSource);
         AddShader(vsSource, vd::gl::Shader::eVertexShader);

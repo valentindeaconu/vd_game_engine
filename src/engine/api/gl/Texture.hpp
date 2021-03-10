@@ -13,24 +13,19 @@
 #include <algorithm>
 
 #include "GLTypes.hpp"
+#include "GLComponent.hpp"
 
 namespace vd::gl {
     void ActiveTexture(GLuint index);
 
     template<GLuint T>
-    class Texture {
+    class Texture : public GLComponent {
     public:
-        Texture();
-        Texture(const Texture& other);
-        explicit Texture(const vd::model::ImagePtr<uint8_t>& imagePtr);
-        explicit Texture(const vd::model::ImagePtr<float>& imagePtr);
-        explicit Texture(const vd::model::ImagePtr<float, vd::model::ImageFormat::eR>& imagePtr);
-        Texture(size_t width, size_t height);
-        ~Texture();
+        explicit Texture(size_t width = 0, size_t height = 0);
 
-        Texture& operator=(const Texture& other);
+        void Create() override;
+        void CleanUp() override;
 
-        void Generate();
         void Bind() const;
         void Unbind() const;
 
@@ -40,9 +35,9 @@ namespace vd::gl {
         void Parameter(const TextureParameter& parameter, const float* value);
 
         void NoFilter();
-        void BilinearFilter();
-        void TrilinearFilter();
-        void TrilinearFilterWithAnisotropy();
+        void LinearFilter();
+        void MipmapLinearFilter();
+        void AnisotropyMipmapLinearFilter();
 
         void WrapRepeat();
         void WrapMirroredRepeat();
@@ -54,6 +49,14 @@ namespace vd::gl {
         [[nodiscard]] size_t Width() const;
         [[nodiscard]] size_t Height() const;
     private:
+        enum DimensionType {
+            e1D = 0,
+            e2D,
+            e3D,
+            eNone
+        };
+        DimensionType GetDimension() const;
+
         GLuint m_Id;
 
         vd::Dimension m_Dimension;

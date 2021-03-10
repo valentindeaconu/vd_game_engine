@@ -51,6 +51,7 @@ namespace mod::terrain {
         Buffers().emplace_back(std::move(std::make_shared<vd::gl::Buffer>()));
         vd::gl::BufferPtr pBuffer = Buffers().back();
 
+        pBuffer->Create();
         pBuffer->Bind();
 
         pBuffer->AddBuffer(
@@ -87,6 +88,12 @@ namespace mod::terrain {
         m_ImaginaryRootNodes.clear();
 
         m_RootNode = nullptr;
+
+        for (auto& biome : m_Biomes) {
+            for (auto& prop : biome->Props()) {
+                prop->CleanUp();
+            }
+        }
 
         Entity2D::CleanUp();
     }
@@ -196,19 +203,19 @@ namespace mod::terrain {
                 biomePtr->Material().DiffuseMap() =
                         vd::service::TextureService::CreateFromFile(m_pProperties->Get<std::string>(materialPrefix + ".Diffuse"));
                 biomePtr->Material().DiffuseMap()->Bind();
-                biomePtr->Material().DiffuseMap()->TrilinearFilter();
+                biomePtr->Material().DiffuseMap()->MipmapLinearFilter();
                 biomePtr->Material().DiffuseMap()->Unbind();
 
                 biomePtr->Material().NormalMap() =
                         vd::service::TextureService::CreateFromFile(m_pProperties->Get<std::string>(materialPrefix + ".Normal"));
                 biomePtr->Material().NormalMap()->Bind();
-                biomePtr->Material().NormalMap()->BilinearFilter();
+                biomePtr->Material().NormalMap()->MipmapLinearFilter();
                 biomePtr->Material().NormalMap()->Unbind();
 
                 biomePtr->Material().DisplaceMap() =
                         vd::service::TextureService::CreateFromFile(m_pProperties->Get<std::string>(materialPrefix + ".Displace"));
                 biomePtr->Material().DisplaceMap()->Bind();
-                biomePtr->Material().DisplaceMap()->BilinearFilter();
+                biomePtr->Material().DisplaceMap()->MipmapLinearFilter();
                 biomePtr->Material().DisplaceMap()->Unbind();
 
                 biomePtr->Material().DisplaceScale() = m_pProperties->Get<float>(materialPrefix + ".HeightScaling");
@@ -237,7 +244,7 @@ namespace mod::terrain {
         );
 
         m_pHeightMap->Bind();
-        m_pHeightMap->BilinearFilter();
+        m_pHeightMap->LinearFilter();
         m_pHeightMap->Unbind();
 
         const int size = int(m_pHeightMap->Width());
@@ -246,9 +253,11 @@ namespace mod::terrain {
 
         normalmap::NormalMapBuilder NMBuilder;
         NMBuilder.Create(m_pHeightMap, size, strength, m_pNormalMap);
+        NMBuilder.CleanUp();
 
         splatmap::SplatMapBuilder SMBuilder;
         SMBuilder.Create(m_pHeightMap, size, scaleY, m_Biomes, m_pSplatMap, m_pSplatImg);
+        SMBuilder.CleanUp();
     }
 
     void Terrain::PopulateBiomeWithProps(BiomePtr& pBiome, const std::string& biomePrefix) {

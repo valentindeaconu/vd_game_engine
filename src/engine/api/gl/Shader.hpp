@@ -6,6 +6,7 @@
 #define VD_GAME_ENGINE_SHADER_HPP
 
 #include "GL.hpp"
+#include "GLComponent.hpp"
 
 #include <unordered_map>
 #include <memory>
@@ -33,7 +34,7 @@ namespace vd::gl {
         };
     }
 
-    class Shader {
+    class Shader : public GLComponent {
     public:
         enum Type {
             eVertexShader = GL_VERTEX_SHADER,
@@ -47,7 +48,9 @@ namespace vd::gl {
         static std::string ToString(const Type& type);
 
         Shader();
-        ~Shader();
+
+        void Create() override;
+        void CleanUp() override;
 
         void Bind() const;
         static void Unbind();

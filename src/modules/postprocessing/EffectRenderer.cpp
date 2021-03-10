@@ -69,6 +69,12 @@ namespace mod::postprocessing {
 
     void EffectRenderer::CleanUp() {
         m_pQuad->CleanUp();
+
+        for (auto& s : m_Stages) {
+            s.Effect->CleanUp();
+            s.Shader->CleanUp();
+        }
+
         m_Stages.clear();
     }
 

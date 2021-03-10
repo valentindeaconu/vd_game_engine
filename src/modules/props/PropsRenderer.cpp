@@ -135,7 +135,7 @@ namespace mod::props {
     }
 
     void PropsRenderer::CleanUp() {
-
+        m_pShader->CleanUp();
     }
 
     bool PropsRenderer::IsReady() {

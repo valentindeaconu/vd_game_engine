@@ -43,7 +43,7 @@ namespace vd::core {
         }
     }
 
-    ThreadPool::~ThreadPool() {
+    void ThreadPool::Release() {
         for (auto& w : m_Workers) {
             w.Closing.store(true, std::memory_order_relaxed);
         }
@@ -53,6 +53,8 @@ namespace vd::core {
                 w.Thread.join();
             }
         }
+
+        m_Workers.clear();
     }
 
     void ThreadPool::Routine(ThreadPool* pool, uint16_t workerIndex) {
@@ -83,8 +85,8 @@ namespace vd::core {
         }
     }
 
-    JobPtr ThreadPool::CreateJob(vd::Consumer action) {
-        JobPtr job = std::make_shared<Job>(std::move(action));
+    JobPtr ThreadPool::CreateJob(vd::Consumer action, bool autoRun) {
+        JobPtr job = std::make_shared<Job>(std::move(action), autoRun);
 
         std::unique_lock<std::mutex> lock(m_JobQueue.Lock);
         m_JobQueue.Queue.push(job);
@@ -92,9 +94,9 @@ namespace vd::core {
         return job;
     }
 
-    JobPtr ThreadPool::CreateJobFor(vd::Consumer action, const std::string& workerName) {
+    JobPtr ThreadPool::CreateJobFor(vd::Consumer action, const std::string& workerName, bool autoRun) {
         if (m_NameToIndex.contains(workerName)) {
-            JobPtr job = std::make_shared<Job>(std::move(action));
+            JobPtr job = std::make_shared<Job>(std::move(action), autoRun);
 
             index_t workerIndex = m_NameToIndex[workerName];
 

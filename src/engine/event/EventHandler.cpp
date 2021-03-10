@@ -124,6 +124,7 @@ namespace vd::event {
     EventHandlerManager::EventHandlerManager() {
         m_EventHandlerPtr = std::make_shared<EventHandler>();
 
+        // TODO: Set this in a property file
         m_EventHandlerPtr->MouseSensitivity() = 0.03f;
 
         vd::ObjectOfType<EventHandler>::Provide(m_EventHandlerPtr);
@@ -136,8 +137,6 @@ namespace vd::event {
     }
 
     void EventHandlerManager::Update() {
-        glfwPollEvents();
-
         for (size_t i = 0; i < m_EventHandlerPtr->kKeyCount; ++i) {
             switch (m_EventHandlerPtr->m_KeysStatus[i]) {
                 case EventHandler::KeyStatus::eKeyPressed:
