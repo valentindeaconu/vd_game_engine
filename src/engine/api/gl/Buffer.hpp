@@ -54,6 +54,12 @@ namespace vd::gl {
         ePatches = GL_PATCHES
     };
 
+    enum PatchParameterType {
+        ePatchVertices = GL_PATCH_VERTICES,
+        ePatchDefaultOuterLevel = GL_PATCH_DEFAULT_OUTER_LEVEL,
+        ePatchDefaultInnerLevel = GL_PATCH_DEFAULT_INNER_LEVEL
+    };
+
     class Buffer : public GLComponent {
     public:
         Buffer();
@@ -69,6 +75,9 @@ namespace vd::gl {
         void RemoveBuffer(buffer::BufferType type);
 
         void AttributeArray(uint32_t index, int32_t size, DataType type, uint32_t stride, const void* ptr);
+
+        void PatchParameter(const PatchParameterType& parameter, int value);
+        void PatchParameter(const PatchParameterType& parameter, const float* values);
 
         void DrawArrays(PrimitiveType type, size_t count);
         void DrawElements(PrimitiveType type, size_t count, DataType dataType);

@@ -63,8 +63,7 @@ namespace mod::terrain {
 
         pBuffer->AttributeArray(0, 2, vd::gl::eFloat, sizeof(glm::vec2), (GLvoid*)0);
 
-        // TODO: Do something with this call (move it from this layer)
-        glPatchParameteri(GL_PATCH_VERTICES, vertices.size());
+        pBuffer->PatchParameter(vd::gl::ePatchVertices, vertices.size());
 
         pBuffer->Unbind();
     }
@@ -237,7 +236,7 @@ namespace mod::terrain {
         m_pHeightMap = vd::service::TextureService::Create(
                 kHeightMapPath,
                 m_pHeightImg->Dimension(),
-                vd::gl::TextureFormat::eR16F,
+                vd::gl::TextureFormat::eR8,
                 vd::gl::TextureFormat::eR,
                 vd::gl::DataType::eFloat,
                 &m_pHeightImg->Data()[0]

@@ -125,6 +125,14 @@ namespace vd::gl {
         Unbind();
     }
 
+    void Buffer::PatchParameter(const PatchParameterType& parameter, int value) {
+        glPatchParameteri(parameter, value);
+    }
+
+    void Buffer::PatchParameter(const PatchParameterType& parameter, const float *values) {
+        glPatchParameterfv(parameter, values);
+    }
+
     void Buffer::DrawArrays(PrimitiveType type, size_t count) {
         Bind();
         glDrawArrays(type, 0, count);
