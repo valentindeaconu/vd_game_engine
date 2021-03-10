@@ -4,7 +4,10 @@
     "PLATFORM": {
         "ANY": {
             "LINK": "https://raw.githubusercontent.com/nothings/stb/master/stb_image.h",
-            "METHODS": ["DOWNLOAD stb_image.h", "HEADER"]
+            "METHODS": [
+                "DOWNLOAD stb_image.h",
+                "HEADER"
+            ]
         }
     }
 },
@@ -13,7 +16,10 @@
     "PLATFORM": {
         "ANY": {
             "LINK": "https://raw.githubusercontent.com/tinyobjloader/tinyobjloader/master/tiny_obj_loader.h",
-            "METHODS": ["DOWNLOAD tiny_obj_loader.h", "HEADER"]
+            "METHODS": [
+                "DOWNLOAD tiny_obj_loader.h",
+                "HEADER"
+            ]
         }
     }
 },
@@ -22,11 +28,24 @@
     "PLATFORM": {
         "WIN": {
             "LINK": "https://github.com/glfw/glfw/releases/download/3.3.2/glfw-3.3.2.bin.WIN64.zip",
-            "METHODS": ["DOWNLOAD glfw.zip", "UNZIP glfw", "LIBRARY */lib-mingw-w64/* /", "HEADER */include/* /"]
+            "METHODS": [
+                "DOWNLOAD glfw.zip",
+                "UNZIP glfw",
+                "LIBRARY */lib-mingw-w64/* /",
+                "HEADER */include/* /"
+            ]
         },
         "UNIX": {
             "LINK": "https://github.com/glfw/glfw/releases/download/3.3.2/glfw-3.3.2.zip",
-            "METHODS": ["DOWNLOAD glfw.zip", "UNZIP glfw", "MAKE", "TODO"]
+            "METHODS": [
+                "DOWNLOAD glfw.zip",
+                "UNZIP glfw",
+                "CTX *",
+                "CMAKE -DBUILD_SHARED_LIBS=ON .",
+                "MAKE",
+                "LIBRARY src/libglfw.so /",
+                "HEADER include/* /"
+            ]
         }
     }
 },
@@ -35,11 +54,25 @@
     "PLATFORM": {
         "WIN": {
             "LINK": "https://sourceforge.net/projects/glew/files/glew/2.2.0/glew-2.2.0-win32.zip/download",
-            "METHODS": ["DOWNLOAD glew.zip", "UNZIP glew", "LIBRARY */lib/Release/x64/* /", "HEADER */include/* /"]
+            "METHODS": [
+                "DOWNLOAD glew.zip",
+                "UNZIP glew",
+                "LIBRARY */lib/Release/x64/* /",
+                "HEADER */include/* /"
+            ]
         },
         "UNIX": {
             "LINK": "https://sourceforge.net/projects/glew/files/glew/2.1.0/glew-2.1.0.zip/download",
-            "METHODS": ["DOWNLOAD glew.zip", "UNZIP glew", "MAKE", "TODO"]
+            "METHODS": [
+                "DOWNLOAD glew.zip",
+                "UNZIP glew",
+                "CTX /*/build",
+                "CMAKE ./cmake",
+                "MAKE -j4",
+                "LIBRARY /lib/libGLEW.so /",
+                "CTX /*",
+                "HEADER include/* /"
+            ]
         }
     }
 },
@@ -48,7 +81,11 @@
     "PLATFORM": {
         "ANY": {
             "LINK": "https://github.com/g-truc/glm/releases/download/0.9.9.8/glm-0.9.9.8.zip",
-            "METHODS": ["DOWNLOAD glm.zip", "UNZIP glm", "HEADER glm/glm/* glm"]
+            "METHODS": [
+                "DOWNLOAD glm.zip",
+                "UNZIP glm",
+                "HEADER glm/glm /"
+            ]
         }
     }
 },
@@ -57,11 +94,47 @@
     "PLATFORM": {
         "WIN": {
             "LINK": "https://dl.bintray.com/boostorg/release/1.75.0/source/boost_1_75_0.zip",
-            "METHODS": ["DOWNLOAD boost.zip", "UNZIP boost", "HEADER */boost/* boost"]
+            "METHODS": [
+                "DOWNLOAD boost.zip",
+                "UNZIP boost",
+                "HEADER */boost /"
+            ]
         },
         "UNIX": {
             "LINK": "https://dl.bintray.com/boostorg/release/1.75.0/source/boost_1_75_0.tar.gz",
-            "METHODS": ["DOWNLOAD boost.tar.gz", "UNZIP boost", "HEADER */boost boost", "TODO"]
+            "METHODS": [
+                "DOWNLOAD boost.tar.gz",
+                "UNTAR boost",
+                "HEADER */boost /"
+            ]
+        }
+    }
+},
+{
+    "LIB": "FREETYPE",
+    "PLATFORM": {
+        "WIN": {
+            "LINK": "https://dl.bintray.com/boostorg/release/1.75.0/source/boost_1_75_0.zip",
+            "METHODS": [
+                "DOWNLOAD boost.zip",
+                "UNZIP boost",
+                "HEADER */boost /",
+                "TODO"
+            ]
+        },
+        "UNIX": {
+            "LINK": "https://download.savannah.gnu.org/releases/freetype/freetype-2.10.4.tar.gz",
+            "METHODS": [
+                "DOWNLOAD freetype.tar.gz",
+                "UNTAR freetype",
+                "CTX /*",
+                "CMAKE -Bbuild -DBUILD_SHARED_LIBS=true -DCMAKE_BUILD_TYPE=Release .",
+                "CTX build",
+                "MAKE",
+                "LIBRARY /libfreetype.so /",
+                "CTX /*",
+                "HEADER /include/* /"
+            ]
         }
     }
 }
