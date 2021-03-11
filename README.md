@@ -10,11 +10,11 @@ Requirements:
 2. C++20 (VC++ >= 2012 or GCC >= 9)
 
 Updater requirements:
-1. python >= 3.8
+* python >= 3.8
 
 For UNIX users:
-2. cmake >= 3.0
-3. xorg-dev libglu1-mesa-dev build-essential libXmu-dev libXi-dev libgl-dev
+* cmake >= 3.0
+* xorg-dev libglu1-mesa-dev build-essential libXmu-dev libXi-dev libgl-dev
 
 Steps for the installation:
 1. Clone the repository.
