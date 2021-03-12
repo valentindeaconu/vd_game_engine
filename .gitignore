@@ -1,16 +1,14 @@
-/.idea
-/.vscode
-/.cache-vdge
+**/.idea
+**/.vscode
+**/.cache-vdge
+**/meta/__pycache__
 
-cmake-build-release
-cmake-build-debug
+**/cmake-build-release
+**/cmake-build-debug
 
 CMakeLists.txt.user
 bin
 include
 lib
-
-postbuild.cmd
-postbuild.sh
 
 **/__pycache__

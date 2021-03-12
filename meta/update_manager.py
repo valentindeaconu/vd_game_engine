@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 """
     VDGE Updater is a cross-platform script used to automatically download and move in place all 
     the libraries and headers used by the engine.
@@ -17,14 +15,6 @@ import tarfile
 import time
 import subprocess
 
-# Configs
-PACKAGE_FILE    = 'archive.json'
-CACHE_DIR       = '.cache_vdge'
-INCLUDE_DIR     = 'include'
-LIB_DIR         = 'lib'
-WIN_LIB_SUBDIR  = 'win'
-UNIX_LIB_SUBDIR = 'unix'
-
 # Tools
 def join_with_any(base, rel, create_if_not_exists=False):
     path = base
@@ -41,38 +31,36 @@ def join_with_any(base, rel, create_if_not_exists=False):
     return path
 
 # Executable
-if __name__ == '__main__':
-    with open(PACKAGE_FILE, 'r') as f:
+def update(package_file_location, cache_dir_location, include_dir_location, lib_dir_location):
+    with open(package_file_location, 'r') as f:
         # Read package file
         packageJson = f.read()
         packages = json.loads(packageJson)['data']
 
         # Remove cache directory if it already exists
-        if os.path.isdir(CACHE_DIR):
-            shutil.rmtree(CACHE_DIR)
+        if os.path.isdir(cache_dir_location):
+            shutil.rmtree(cache_dir_location)
 
         # Compute cachedir path
-        cache_dir_path = os.path.join(os.getcwd(), CACHE_DIR)
+        cache_dir_path = os.path.join(os.getcwd(), cache_dir_location)
         
         # Create a new cache directory
         os.mkdir(cache_dir_path)
 
         # Library Directory
-        if os.path.isdir(LIB_DIR):
-            shutil.rmtree(LIB_DIR)
+        if os.path.isdir(lib_dir_location):
+            shutil.rmtree(lib_dir_location)
 
         # Compute local lib dir path & create dir
-        local_lib_dir_base_path = LIB_DIR
-        os.mkdir(local_lib_dir_base_path)
-        local_lib_dir_path = os.path.join(local_lib_dir_base_path, WIN_LIB_SUBDIR if platform == 'win32' else UNIX_LIB_SUBDIR)
+        local_lib_dir_path = lib_dir_location
         os.mkdir(local_lib_dir_path)
 
         # Include Directory
-        if os.path.isdir(INCLUDE_DIR):
-            shutil.rmtree(INCLUDE_DIR)
+        if os.path.isdir(include_dir_location):
+            shutil.rmtree(include_dir_location)
 
         # Compute local include dir path & create dir
-        local_include_dir_path = INCLUDE_DIR
+        local_include_dir_path = include_dir_location
         os.mkdir(local_include_dir_path)
 
         # Total packages counter
@@ -120,7 +108,7 @@ if __name__ == '__main__':
                     dn = method.split(' ')[1]
                     print ('\t[>] Unzipping {} to {}:'.format(ctx, dn), flush=True, end=' ')
                     with zipfile.ZipFile(ctx, 'r') as zr:
-                        ctx = os.path.join(CACHE_DIR, dn)
+                        ctx = os.path.join(cache_dir_location, dn)
                         base_ctx = ctx
                         zr.extractall(ctx)
                         zr.close()
@@ -130,7 +118,7 @@ if __name__ == '__main__':
                     dn = method.split(' ')[1]
                     print ('\t[>] Tar extract {} to {}:'.format(ctx, dn), flush=True, end=' ')
                     with tarfile.open(ctx) as tr:
-                        ctx = os.path.join(CACHE_DIR, dn)
+                        ctx = os.path.join(cache_dir_location, dn)
                         base_ctx = ctx
                         tr.extractall(ctx)
                         tr.close()
@@ -274,7 +262,7 @@ if __name__ == '__main__':
         # Cleaning up cache
         print ('[>] Cleaning up...', flush=True, end=' ')
         time.sleep(3)       
-        shutil.rmtree(CACHE_DIR)
+        shutil.rmtree(cache_dir_location)
         print ('Done!')
 
         f.close()

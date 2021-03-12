@@ -1,0 +1,41 @@
+{
+    "BUILD_DEBUG_OUTPUT_DIR": "cmake-build-debug",
+    "BUILD_RELEASE_OUTPUT_DIR": "cmake-build-release",
+    "PACKAGE_FILE": "meta/archive.json",
+    "UPDATE_CACHE_DIR": ".cache_vdge",
+    "INCLUDE_DIR": "include",
+    "LIB_DIR": "lib",
+    
+    "COMMANDS": [
+        {
+            "NAME": "build",
+            "SHORT": "b",
+            "VALUES": [ "release", "debug" ],
+            "DESCRIPTION": "Builds application using the selected type; default is release (if no value is given)"
+        },
+        {
+            "NAME": "update",
+            "SHORT": "u",
+            "VALUES": [ ],
+            "DESCRIPTION": "Updates application libraries and includes"
+        },
+        {
+            "NAME": "resource-update",
+            "SHORT": "ru",
+            "VALUES": [ "release", "debug" ],
+            "DESCRIPTION": "Manually updates resource folder on target directory; if no value is given, both targets will be updated"
+        },
+        {
+            "NAME": "clean",
+            "SHORT": "cl",
+            "VALUES": [ "target", "all" ],
+            "DESCRIPTION": "Removes target directories if target value is given or target, lib and include directories if all value is given; default is target (if no value is given)"
+        },
+        {
+            "NAME": "help",
+            "SHORT": "h",
+            "VALUES": [ ],
+            "DESCRIPTION": "Lists all the available commands"
+        }
+    ]
+}

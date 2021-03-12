@@ -251,15 +251,15 @@ target_compile_definitions(VDGE PUBLIC
 find_package(OpenGL REQUIRED)
 
 if (WIN32)
-    find_library(GLEW_LIBRARY glew32s HINTS ${CMAKE_SOURCE_DIR}/lib/win)
-    find_library(GLFW_LIBRARY glfw3 HINTS ${CMAKE_SOURCE_DIR}/lib/win)
-    find_library(FREETYPE_LIBRARY freetype HINTS ${CMAKE_SOURCE_DIR}/lib/win)
+    find_library(GLEW_LIBRARY glew32s HINTS ${CMAKE_SOURCE_DIR}/lib)
+    find_library(GLFW_LIBRARY glfw3 HINTS ${CMAKE_SOURCE_DIR}/lib)
+    find_library(FREETYPE_LIBRARY freetype HINTS ${CMAKE_SOURCE_DIR}/lib)
 
     target_link_libraries(VDGE PRIVATE ${GLEW_LIBRARY} ${GLFW_LIBRARY} ${FREETYPE_LIBRARY} opengl32 pthread)
 elseif(UNIX)
-    find_library(GLEW_LIBRARY GLEW HINTS ${CMAKE_SOURCE_DIR}/lib/unix)
-    find_library(GLFW_LIBRARY glfw HINTS ${CMAKE_SOURCE_DIR}/lib/unix)
-    find_library(FREETYPE_LIBRARY freetype HINTS ${CMAKE_SOURCE_DIR}/lib/unix)
+    find_library(GLEW_LIBRARY GLEW HINTS ${CMAKE_SOURCE_DIR}/lib)
+    find_library(GLFW_LIBRARY glfw HINTS ${CMAKE_SOURCE_DIR}/lib)
+    find_library(FREETYPE_LIBRARY freetype HINTS ${CMAKE_SOURCE_DIR}/lib)
 
     target_link_libraries(VDGE PRIVATE ${GLFW_LIBRARY} ${GLEW_LIBRARY} ${FREETYPE_LIBRARY} GL dl X11 pthread)
 
@@ -271,11 +271,6 @@ if (WIN32)
         file(REMOVE ${CMAKE_CURRENT_BINARY_DIR}/glfw3.dll )
     endif()
     configure_file(${CMAKE_CURRENT_SOURCE_DIR}/lib/win/glfw3.dll ${CMAKE_CURRENT_BINARY_DIR}/glfw3.dll COPYONLY)
-elseif (UNIX)
-    if (EXISTS ${CMAKE_CURRENT_BINARY_DIR}/libGLEW.a)
-        file(REMOVE ${CMAKE_CURRENT_BINARY_DIR}/libGLEW.a)
-    endif()
-    # configure_file(${CMAKE_CURRENT_SOURCE_DIR}/lib/unix/libGLEW.a ${CMAKE_CURRENT_BINARY_DIR}/libGLEW.a COPYONLY)
 endif()
 
 if (EXISTS ${CMAKE_CURRENT_BINARY_DIR}/resources)

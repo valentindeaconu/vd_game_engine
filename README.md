@@ -3,23 +3,18 @@
 C++ 3D Open World Game Engine using OpenGL.
 
 ## Installation
-Note*: Project is developed (respectively tested) under Windows 10 and Ubuntu 20.04.
+Note*: Project is developed (respectively tested) under Windows 10 and Ubuntu 20.04 LTS. 
 
 Requirements:
 1. cmake >= 3.13
 2. C++20 (VC++ >= 2012 or GCC >= 9)
-
-Updater requirements:
-1. python >= 3.8
-
-For UNIX users:
-2. cmake >= 3.0
-3. xorg-dev libglu1-mesa-dev build-essential libXmu-dev libXi-dev libgl-dev
+3. python >= 3.8
+4. (UNIX) xorg-dev libglu1-mesa-dev build-essential libXmu-dev libXi-dev libgl-dev
 
 Steps for the installation:
 1. Clone the repository.
 2. Open a command line and navigate to the repository root folder.
-3. Run `./update.py` (this process may take a while)
+3. Run `./build.py --update` (this process may take a while)
     * On Windows you have to select proper library for your compiler from `LIBRARY glfw/*/<compiler library>/* /` instruction in `archive.json`. Choose one of the following supported by GLFW library: `lib-mingw-w64 lib-vc2012 lib-vc2013 lib-vc2015 lib-vc2017 lib-vc2019`.
 
 ## Libraries used
