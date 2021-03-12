@@ -24,8 +24,7 @@ namespace vd::gl {
         enum Type {
             eRead = GL_READ_FRAMEBUFFER,
             eDraw = GL_DRAW_FRAMEBUFFER,
-            eReadWrite = GL_FRAMEBUFFER,
-            eDefault = 0
+            eReadWrite = GL_FRAMEBUFFER
         };
 
         enum Attachment {

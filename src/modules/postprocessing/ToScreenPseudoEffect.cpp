@@ -20,7 +20,7 @@ namespace mod::postprocessing {
     void ToScreenPseudoEffect::Init(vd::Dimension dimension) {
         ConcreteEffect::Init(dimension);
 
-        FrameBuffer() = std::make_shared<vd::gl::FrameBuffer>(dimension.width, dimension.height, vd::gl::FrameBuffer::eDefault);
+        FrameBuffer() = std::make_shared<vd::gl::FrameBuffer>(dimension.width, dimension.height);
     }
 
     ToScreenShader::ToScreenShader() {
