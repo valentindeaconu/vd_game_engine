@@ -104,13 +104,16 @@ namespace vd::camera {
         void UpdateFirstPersonCamera();
         void UpdateThirdPersonCamera();
 
-        impl::FreeCameraPtr m_pFreeCamera;
-        impl::FirstPersonCameraPtr m_pFirstPersonCamera;
-        impl::ThirdPersonCameraPtr m_pThirdPersonCamera;
+        impl::FreeCameraPtr         m_pFreeCamera;
+        impl::FreeCameraPtr         m_pSnapshotFreeCamera;
+        impl::FirstPersonCameraPtr  m_pFirstPersonCamera;
+        impl::FirstPersonCameraPtr  m_pSnapshotFirstPersonCamera;
+        impl::ThirdPersonCameraPtr  m_pThirdPersonCamera;
+        impl::ThirdPersonCameraPtr  m_pSnapshotThirdPersonCamera;
 
-        wrapper::CameraWrapperPtr m_pCameraWrapper;
+        wrapper::CameraWrapperPtr   m_pCameraWrapper;
 
-        event::EventHandlerPtr m_pEventHandler;
+        event::EventHandlerPtr      m_pEventHandler;
 
         CameraMode m_CameraMode;
     };

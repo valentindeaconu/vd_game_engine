@@ -18,7 +18,6 @@ namespace vd::culling {
     class FrustumCullingManager : public vd::component::IManager, public vd::injector::Injectable {
     public:
         FrustumCullingManager();
-        ~FrustumCullingManager();
 
         void Link() override;
 
@@ -35,6 +34,9 @@ namespace vd::culling {
 
         vd::math::Frustum m_Frustum;
         vd::math::Bounds3 m_FrustumBounds;
+
+        vd::math::Frustum m_SnapshotFrustum;
+        vd::math::Bounds3 m_SnapshotFrustumBounds;
 
         struct { float width, height; } m_Near, m_Far;
 

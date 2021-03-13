@@ -36,6 +36,9 @@ namespace vd::time {
         float               m_CurrentAngle;
         TimePtr             m_pTime;
 
+        float               m_SnapshotCurrentAngle;
+        TimePtr             m_pSnapshotTime;
+
         context::ContextPtr m_pContext;
     };
     typedef std::shared_ptr<TimeManager>    TimeManagerPtr;

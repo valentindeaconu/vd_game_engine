@@ -39,7 +39,6 @@ namespace mod::shadow {
         [[nodiscard]] float TransitionDistance() const;
 
         [[nodiscard]] const vd::gl::FrameBufferPtr& FrameBuffer() const;
-
         [[nodiscard]] const vd::gl::Texture2DPtr& ShadowTexture() const;
 
         [[nodiscard]] const glm::mat4& ViewMatrix() const;
@@ -62,6 +61,9 @@ namespace mod::shadow {
 
         std::shared_ptr<glm::mat4> m_pView;
         std::shared_ptr<glm::mat4> m_pProjection;
+
+        glm::mat4 m_SnapshotView;
+        glm::mat4 m_SnapshotProjection;
     };
     typedef std::shared_ptr<ShadowManager>  ShadowManagerPtr;
 }

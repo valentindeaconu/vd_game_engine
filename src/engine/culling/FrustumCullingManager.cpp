@@ -12,8 +12,6 @@ namespace vd::culling {
     {
     }
 
-    FrustumCullingManager::~FrustumCullingManager() = default;
-
     void FrustumCullingManager::Link() {
         m_pCamera = ObjectOfType<camera::Camera>::Find();
         m_pWindow = ObjectOfType<window::Window>::Find();
@@ -45,6 +43,9 @@ namespace vd::culling {
 
             m_FrustumBounds = math::Bounds3(min, max);
         }
+
+        m_SnapshotFrustum = m_Frustum;
+        m_SnapshotFrustumBounds = m_FrustumBounds;
     }
 
     void FrustumCullingManager::CleanUp() {
@@ -52,11 +53,11 @@ namespace vd::culling {
     }
 
     const vd::math::Frustum& FrustumCullingManager::Frustum() const {
-        return m_Frustum;
+        return m_SnapshotFrustum;
     }
 
     const vd::math::Bounds3& FrustumCullingManager::FrustumBounds() const {
-        return m_FrustumBounds;
+        return m_SnapshotFrustumBounds;
     }
 
     void FrustumCullingManager::UpdateVertices() {

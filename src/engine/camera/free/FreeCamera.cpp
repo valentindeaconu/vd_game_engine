@@ -37,8 +37,6 @@ namespace vd::camera::impl {
         }
     }
 
-    FreeCamera::~FreeCamera() = default;
-
     void FreeCamera::Reflect(const Axis& axis, float amount) {
         switch (axis) {
             case eX: {

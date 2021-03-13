@@ -9,8 +9,6 @@ namespace vd {
     {
     }
 
-    Engine::~Engine() = default;
-
     void Engine::Link() {
         m_pWindow = vd::ObjectOfType<window::Window>::Find();
         m_pContext = vd::ObjectOfType<context::Context>::Find();
@@ -25,15 +23,13 @@ namespace vd {
         m_pRenderJob = m_pThreadPool->CreateJobFor([&]() { Render(); }, "Render");
 
         m_pUpdateJob->OnFinish([&]() {
-            m_pRenderJob->Run();
             m_pUpdateJob->Reset();
-
             m_pThreadPool->PushJobFor(m_pUpdateJob, "Update");
+            m_pUpdateJob->Run();
         });
 
         m_pRenderJob->OnFinish([&]() {
             m_Frames++;
-
             m_pThreadPool->PushJobFor(m_pRenderJob, "Render");
         });
 
@@ -87,6 +83,9 @@ namespace vd {
         auto lastTime = std::chrono::high_resolution_clock::now();
         double unprocessedTime = 0;
 
+        m_pUpdateJob->Run();
+        m_pRenderJob->Run();
+
         // Rendering Loop
         while (m_Running) {
             bool renderFrame = false;
@@ -116,11 +115,9 @@ namespace vd {
                 }
             }
             if (renderFrame) {
-                static bool firstFrame = true;
-                if (firstFrame || m_pRenderJob->Done()) {
-                    firstFrame = false;
-                    m_pUpdateJob->Run();
+                if (m_pRenderJob->Done()) {
                     m_pRenderJob->Reset();
+                    m_pRenderJob->Run();
                 }
             } else {
                 std::this_thread::sleep_for(10ms);

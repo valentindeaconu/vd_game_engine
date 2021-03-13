@@ -20,7 +20,6 @@ namespace vd::camera::wrapper {
         [[nodiscard]] bool CameraRotated() const override;
 
         glm::vec3& Position() override;
-
         glm::vec3& Target() override;
 
         [[nodiscard]] const glm::vec3& Forward() const override;

@@ -7,8 +7,8 @@
 namespace vd::event {
     EventHandler::EventHandler()
         : m_MouseSensitivity(0.03f)
-        , m_KeysStatus(kKeyCount)
-        , m_ButtonsStatus(kButtonCount)
+        , m_KeysStatus(s_kKeyCount)
+        , m_ButtonsStatus(s_kButtonCount)
     {
     }
 
@@ -87,7 +87,7 @@ namespace vd::event {
         if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
             glfwSetWindowShouldClose(window, GL_TRUE);
 
-        if (key >= 0 && key < 1024) {
+        if (key >= 0 && key < s_kKeyCount) {
             if (action == GLFW_PRESS) {
                 if (this->m_KeysStatus[key] != eKeyHolding)
                     this->m_KeysStatus[key] = eKeyPressed;
@@ -106,7 +106,7 @@ namespace vd::event {
     }
 
     void EventHandler::MouseClickCallback(GLFWwindow* window, int button, int action, int mods) {
-        if (button >= 0 && button < 8) {
+        if (button >= 0 && button < s_kButtonCount) {
             if (action == GLFW_PRESS) {
                 if (this->m_ButtonsStatus[button] != eButtonHolding)
                     this->m_ButtonsStatus[button] = eButtonPressed;
@@ -122,12 +122,18 @@ namespace vd::event {
     }
 
     EventHandlerManager::EventHandlerManager() {
-        m_EventHandlerPtr = std::make_shared<EventHandler>();
+        auto handler = std::make_shared<EventHandlerWrapper>();
+        vd::ObjectOfType<EventHandlerWrapper>::Provide(handler);
+
+        m_pEventHandler = handler;
+        m_pSnapshotEventHandler = std::make_shared<EventHandler>();
 
         // TODO: Set this in a property file
-        m_EventHandlerPtr->MouseSensitivity() = 0.03f;
+        m_pEventHandler->MouseSensitivity() = 0.03f;
 
-        vd::ObjectOfType<EventHandler>::Provide(m_EventHandlerPtr);
+        *m_pSnapshotEventHandler = *m_pEventHandler;
+
+        vd::ObjectOfType<EventHandler>::Provide(m_pSnapshotEventHandler);
     }
 
     EventHandlerManager::~EventHandlerManager() = default;
@@ -137,65 +143,65 @@ namespace vd::event {
     }
 
     void EventHandlerManager::Update() {
-        for (size_t i = 0; i < m_EventHandlerPtr->kKeyCount; ++i) {
-            switch (m_EventHandlerPtr->m_KeysStatus[i]) {
+        for (size_t i = 0; i < m_pEventHandler->s_kKeyCount; ++i) {
+            switch (m_pEventHandler->m_KeysStatus[i]) {
                 case EventHandler::KeyStatus::eKeyPressed:
-                    m_EventHandlerPtr->m_KeysStatus[i] = EventHandler::KeyStatus::eKeyPostPressed;
+                    m_pEventHandler->m_KeysStatus[i] = EventHandler::KeyStatus::eKeyPostPressed;
                     break;
                 case EventHandler::KeyStatus::eKeyPostPressed:
-                    m_EventHandlerPtr->m_KeysStatus[i] = EventHandler::KeyStatus::eKeyHolding;
+                    m_pEventHandler->m_KeysStatus[i] = EventHandler::KeyStatus::eKeyHolding;
                     break;
                 case EventHandler::KeyStatus::eKeyReleased:
-                    m_EventHandlerPtr->m_KeysStatus[i] = EventHandler::KeyStatus::eKeyPostReleased;
+                    m_pEventHandler->m_KeysStatus[i] = EventHandler::KeyStatus::eKeyPostReleased;
                     break;
                 case EventHandler::KeyStatus::eKeyPostReleased:
-                    m_EventHandlerPtr->m_KeysStatus[i] = EventHandler::KeyStatus::eKeyFree;
+                    m_pEventHandler->m_KeysStatus[i] = EventHandler::KeyStatus::eKeyFree;
                     break;
                 default:
                     break;
             }
         }
 
-        for (size_t i = 0; i < m_EventHandlerPtr->kButtonCount; ++i) {
-            switch (m_EventHandlerPtr->m_ButtonsStatus[i]) {
+        for (size_t i = 0; i < m_pEventHandler->s_kButtonCount; ++i) {
+            switch (m_pEventHandler->m_ButtonsStatus[i]) {
                 case EventHandler::ButtonStatus::eButtonPressed:
-                    m_EventHandlerPtr->m_ButtonsStatus[i] = EventHandler::ButtonStatus::eButtonPostPressed;
+                    m_pEventHandler->m_ButtonsStatus[i] = EventHandler::ButtonStatus::eButtonPostPressed;
                     break;
                 case EventHandler::ButtonStatus::eButtonPostPressed:
-                    m_EventHandlerPtr->m_ButtonsStatus[i] = EventHandler::ButtonStatus::eButtonHolding;
+                    m_pEventHandler->m_ButtonsStatus[i] = EventHandler::ButtonStatus::eButtonHolding;
                     break;
                 case EventHandler::ButtonStatus::eButtonReleased:
-                    m_EventHandlerPtr->m_ButtonsStatus[i] = EventHandler::ButtonStatus::eButtonPostReleased;
+                    m_pEventHandler->m_ButtonsStatus[i] = EventHandler::ButtonStatus::eButtonPostReleased;
                     break;
                 case EventHandler::ButtonStatus::eButtonPostReleased:
-                    m_EventHandlerPtr->m_ButtonsStatus[i] = EventHandler::ButtonStatus::eButtonFree;
+                    m_pEventHandler->m_ButtonsStatus[i] = EventHandler::ButtonStatus::eButtonFree;
                     break;
                 default:
                     break;
             }
         }
 
-        if (m_EventHandlerPtr->m_MouseMovement.status == EventHandler::MouseMoveStatus::eMovePreUpdated) {
-            m_EventHandlerPtr->m_MouseMovement.status = EventHandler::MouseMoveStatus::eMovePostUpdated;
-        } else if (m_EventHandlerPtr->m_MouseMovement.status == EventHandler::MouseMoveStatus::eMovePostUpdated) {
-            m_EventHandlerPtr->m_MouseMovement.status = EventHandler::MouseMoveStatus::eMoveFree;
+        if (m_pEventHandler->m_MouseMovement.status == EventHandler::MouseMoveStatus::eMovePreUpdated) {
+            m_pEventHandler->m_MouseMovement.status = EventHandler::MouseMoveStatus::eMovePostUpdated;
+        } else if (m_pEventHandler->m_MouseMovement.status == EventHandler::MouseMoveStatus::eMovePostUpdated) {
+            m_pEventHandler->m_MouseMovement.status = EventHandler::MouseMoveStatus::eMoveFree;
         }
 
-        if (m_EventHandlerPtr->m_MouseScroll.status == EventHandler::MouseWheelStatus::eWheelPreUpdated) {
-            m_EventHandlerPtr->m_MouseScroll.status = EventHandler::MouseWheelStatus::eWheelPostUpdated;
-        } else if (m_EventHandlerPtr->m_MouseScroll.status == EventHandler::MouseWheelStatus::eWheelPostUpdated) {
-            m_EventHandlerPtr->m_MouseScroll.status = EventHandler::MouseWheelStatus::eWheelFree;
+        if (m_pEventHandler->m_MouseScroll.status == EventHandler::MouseWheelStatus::eWheelPreUpdated) {
+            m_pEventHandler->m_MouseScroll.status = EventHandler::MouseWheelStatus::eWheelPostUpdated;
+        } else if (m_pEventHandler->m_MouseScroll.status == EventHandler::MouseWheelStatus::eWheelPostUpdated) {
+            m_pEventHandler->m_MouseScroll.status = EventHandler::MouseWheelStatus::eWheelFree;
         }
 
-        if (m_EventHandlerPtr->m_WindowInfo.status == EventHandler::WindowStatus::eWindowPreResize) {
-            m_EventHandlerPtr->m_WindowInfo.status = EventHandler::WindowStatus::eWindowPostResize;
-        } else if (m_EventHandlerPtr->m_WindowInfo.status == EventHandler::WindowStatus::eWindowPostResize) {
-            m_EventHandlerPtr->m_WindowInfo.status = EventHandler::WindowStatus::eWindowFree;
+        if (m_pEventHandler->m_WindowInfo.status == EventHandler::WindowStatus::eWindowPreResize) {
+            m_pEventHandler->m_WindowInfo.status = EventHandler::WindowStatus::eWindowPostResize;
+        } else if (m_pEventHandler->m_WindowInfo.status == EventHandler::WindowStatus::eWindowPostResize) {
+            m_pEventHandler->m_WindowInfo.status = EventHandler::WindowStatus::eWindowFree;
         }
+
+        *m_pSnapshotEventHandler = *m_pEventHandler;
     }
 
-    void EventHandlerManager::CleanUp() {
-
-    }
+    void EventHandlerManager::CleanUp() { }
 }
 

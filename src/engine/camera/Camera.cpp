@@ -86,21 +86,27 @@ namespace vd::camera {
         : m_CameraMode(eThirdPerson)
     {
         m_pFreeCamera = std::make_shared<impl::FreeCamera>("./resources/properties/camera.properties");
-
         m_pFreeCamera->Speed() = 4.0f;
         m_pFreeCamera->RotationSensitivity() = 0.5f;
 
-        m_pThirdPersonCamera = std::make_shared<impl::ThirdPersonCamera>();
+        m_pSnapshotFreeCamera = std::make_shared<impl::FreeCamera>("./resources/properties/camera.properties");
+        m_pSnapshotFreeCamera->Speed() = 4.0f;
+        m_pSnapshotFreeCamera->RotationSensitivity() = 0.5f;
 
+        m_pThirdPersonCamera = std::make_shared<impl::ThirdPersonCamera>();
         m_pThirdPersonCamera->Pitch() = 20.0f;
         m_pThirdPersonCamera->DistanceFromPlayer() = 8.5f;
         m_pThirdPersonCamera->AngleAroundPlayer() = 180.0f;
 
+        m_pSnapshotThirdPersonCamera = std::make_shared<impl::ThirdPersonCamera>();
+        m_pSnapshotThirdPersonCamera->Pitch() = 20.0f;
+        m_pSnapshotThirdPersonCamera->DistanceFromPlayer() = 8.5f;
+        m_pSnapshotThirdPersonCamera->AngleAroundPlayer() = 180.0f;
+
         m_pCameraWrapper = std::make_shared<wrapper::CameraWrapper>();
+        m_pCameraWrapper->Camera() = m_pSnapshotThirdPersonCamera;
 
-        m_pCameraWrapper->Camera() = m_pThirdPersonCamera;
-
-        vd::ObjectOfType<camera::Camera>::Provide(m_pCameraWrapper);
+        ObjectOfType<camera::Camera>::Provide(m_pCameraWrapper);
     }
 
     CameraManager::~CameraManager() = default;
@@ -117,21 +123,13 @@ namespace vd::camera {
         if (m_pEventHandler->KeyDown(GLFW_KEY_C)) {
             if (m_CameraMode == eFree) {
                 m_CameraMode = eThirdPerson;
-                m_pCameraWrapper->Camera() = m_pThirdPersonCamera;
+                m_pCameraWrapper->Camera() = m_pSnapshotThirdPersonCamera;
                 Logger::log("3rd Person Camera Mode");
             } else {
                 m_CameraMode = eFree;
                 m_pCameraWrapper->Camera() = m_pFreeCamera;
                 Logger::log("Free Camera Mode");
             }
-        }
-
-        if (m_pEventHandler->KeyDown(GLFW_KEY_K)) {
-            const auto& p = m_pCameraWrapper->Position();
-
-            const auto str = "(" + std::to_string(p.x) + ", " + std::to_string(p.y) + ", " + std::to_string(p.z) + ")";
-
-            Logger::log("Camera Position: " + str);
         }
 
         switch (m_CameraMode) {
@@ -195,6 +193,8 @@ namespace vd::camera {
                         std::to_string(m_pFreeCamera->m_Position.z) + ")"
             );
         }
+
+        *m_pSnapshotFreeCamera = *m_pFreeCamera;
     }
 
     void CameraManager::UpdateFirstPersonCamera() {
@@ -229,6 +229,8 @@ namespace vd::camera {
         }
 
         m_pThirdPersonCamera->Update();
+
+        *m_pSnapshotThirdPersonCamera = *m_pThirdPersonCamera;
     }
 
 }

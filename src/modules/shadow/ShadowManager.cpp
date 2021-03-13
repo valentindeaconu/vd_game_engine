@@ -60,6 +60,9 @@ namespace mod::shadow {
 
         UpdateView();
         UpdateProjection();
+
+        m_SnapshotView = *m_pView;
+        m_SnapshotProjection = *m_pProjection;
     }
 
     void ShadowManager::CleanUp() {
@@ -83,11 +86,11 @@ namespace mod::shadow {
     }
 
     const glm::mat4& ShadowManager::ViewMatrix() const {
-        return *m_pView;
+        return m_SnapshotView;
     }
 
     const glm::mat4& ShadowManager::ProjectionMatrix() const {
-        return *m_pProjection;
+        return m_SnapshotProjection;
     }
 
     void ShadowManager::UpdateView() {

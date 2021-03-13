@@ -19,7 +19,7 @@ namespace vd::camera::impl {
         typedef std::function<float(float, float)> HeightGetter;
 
         ThirdPersonCamera();
-        ~ThirdPersonCamera();
+        ThirdPersonCamera(const ThirdPersonCamera& other);
 
         void Link() override;
 

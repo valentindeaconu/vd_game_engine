@@ -27,7 +27,6 @@ namespace vd {
     class Engine : public datastruct::Observable {
     public:
         Engine();
-        ~Engine();
 
         void Link();
 

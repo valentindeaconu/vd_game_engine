@@ -26,9 +26,9 @@ namespace vd::window {
 
     class Window {
     public:
-        Window(uint32_t width, uint32_t height, const std::string& title);
-        ~Window();
+        Window(uint32_t width, uint32_t height, std::string title);
 
+        void Build();
         void Dispose();
         void Resize(uint32_t width, uint32_t height);
 
@@ -49,6 +49,8 @@ namespace vd::window {
     private:
         friend class WindowManager;
 
+        Window();
+
         static void WindowResizeCallback(GLFWwindow* window, int32_t width, int32_t height);
         static void KeyboardCallback(GLFWwindow* window, int key, int scancode, int action, int mode);
         static void MouseCallback(GLFWwindow* window, double x_pos, double y_pos);
@@ -62,6 +64,7 @@ namespace vd::window {
         GLFWwindow* m_Window;
 
         vd::Dimension m_Dimension;
+        std::string m_Title;
 
         bool m_Changed;
     };
@@ -79,6 +82,7 @@ namespace vd::window {
         void CleanUp() override;
     private:
         WindowPtr               m_pWindow;
+        WindowPtr               m_pSnapshotWindow;
         event::EventHandlerPtr  m_pEventHandler;
         core::ThreadPoolPtr     m_pThreadPool;
     };

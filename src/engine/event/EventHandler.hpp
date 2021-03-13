@@ -55,8 +55,8 @@ namespace vd::event {
         void MouseScrollCallback(GLFWwindow* window, double x_offset, double y_offset);
 
     private:
-        const int kKeyCount = 1024;
-        const int kButtonCount = 8;
+        static const int s_kKeyCount = 1024;
+        static const int s_kButtonCount = 8;
 
         friend class EventHandlerManager;
 
@@ -119,6 +119,8 @@ namespace vd::event {
     };
     typedef std::shared_ptr<EventHandler>	EventHandlerPtr;
 
+    class EventHandlerWrapper : public EventHandler { };
+
     class EventHandlerManager : public vd::component::IManager {
     public:
         EventHandlerManager();
@@ -128,7 +130,8 @@ namespace vd::event {
         void Update() override;
         void CleanUp() override;
     private:
-        EventHandlerPtr m_EventHandlerPtr;
+        EventHandlerPtr m_pEventHandler;
+        EventHandlerPtr m_pSnapshotEventHandler;
     };
     typedef std::shared_ptr<EventHandlerManager>    EventHandlerManagerPtr;
 

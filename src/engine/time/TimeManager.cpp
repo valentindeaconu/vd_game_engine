@@ -13,6 +13,7 @@ namespace vd::time {
         uint8_t initMinute = pProperties->Get<int>("Init.Minute");
 
         m_pTime = std::make_shared<Time>(initHour, initMinute);
+        m_pSnapshotTime = std::make_shared<Time>(initHour, initMinute);
         if (!m_pTime->Valid()) {
             throw exception::TimeError("invalid initial time");
         }
@@ -23,12 +24,6 @@ namespace vd::time {
         m_Speed = 0.5f * speed;
 
         m_CurrentAngle = m_pTime->ToAngle();
-
-        /*if ((initHour == 0 || initHour == 12) && initMinute == 0) {
-            m_CurrentAngle = .0f;
-        } else {
-            m_CurrentAngle = float(initHour) * 30.0f + float(initMinute) * 0.5f;
-        }*/
 
         if (m_CurrentAngle < 0.0f || m_CurrentAngle >= 360.0f) {
             throw exception::TimeError("invalid computed angle");
@@ -60,19 +55,22 @@ namespace vd::time {
         }
 
         m_pTime->Minute(aux.Minute());
+
+        *m_pSnapshotTime = *m_pTime;
+        m_SnapshotCurrentAngle = m_CurrentAngle;
     }
 
     void TimeManager::CleanUp() { }
 
     bool TimeManager::AM() const {
-        return m_pTime->AM();
+        return m_pSnapshotTime->AM();
     }
 
     const float& TimeManager::CurrentAngle() const {
-        return m_CurrentAngle;
+        return m_SnapshotCurrentAngle;
     }
 
     const TimePtr& TimeManager::CurrentTime() const {
-        return m_pTime;
+        return m_pSnapshotTime;
     }
 }

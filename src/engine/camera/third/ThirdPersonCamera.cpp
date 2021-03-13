@@ -13,7 +13,16 @@ namespace vd::camera::impl {
     {
     }
 
-    ThirdPersonCamera::~ThirdPersonCamera() = default;
+    ThirdPersonCamera::ThirdPersonCamera(const ThirdPersonCamera& other)
+        : Camera(other)
+        , m_Pitch(other.m_Pitch)
+        , m_DistanceFromPlayer(other.m_DistanceFromPlayer)
+        , m_AngleAroundPlayer(other.m_AngleAroundPlayer)
+        , m_PlayerTransformGetter(other.m_PlayerTransformGetter)
+        , m_HeightGetter(other.m_HeightGetter)
+        , m_Offset(other.m_Offset)
+    {
+    }
 
     void ThirdPersonCamera::Link() {
          auto pPlayer = vd::ObjectOfType<mod::player::Player>::Find();

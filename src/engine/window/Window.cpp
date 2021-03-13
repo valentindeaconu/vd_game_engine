@@ -5,13 +5,18 @@
 #include "Window.hpp"
 
 namespace vd::window {
-    Window::Window(uint32_t width, uint32_t height, const std::string& title)
+    Window::Window(uint32_t width, uint32_t height, std::string title)
         : m_Window(nullptr)
         , m_Dimension(width, height)
         , m_Changed(false)
         , m_NearPlane(0.1f)
         , m_FarPlane(10000.0f)
         , m_FieldOfView(45.0f)
+        , m_Title(std::move(title))
+    {
+    }
+
+    void Window::Build()
     {
         glfwInit();
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
@@ -21,7 +26,7 @@ namespace vd::window {
         //glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
         glfwWindowHint(GLFW_SAMPLES, 4);
 
-        m_Window = glfwCreateWindow(width, height, title.c_str(), nullptr, nullptr);
+        m_Window = glfwCreateWindow(m_Dimension.width, m_Dimension.height, m_Title.c_str(), nullptr, nullptr);
 
         if (nullptr == m_Window) {
             glfwTerminate();
@@ -42,7 +47,7 @@ namespace vd::window {
         glfwGetFramebufferSize(m_Window, &screenWidth, &screenHeight);
 
         glViewport(0, 0, screenWidth, screenHeight);
-        this->m_Dimension = vd::Dimension(width, height);
+        this->m_Dimension = vd::Dimension(m_Dimension.width, m_Dimension.height);
 
         glfwSetKeyCallback(m_Window, Window::KeyboardCallback);
         glfwSetCursorPosCallback(m_Window, Window::MouseCallback);
@@ -63,8 +68,6 @@ namespace vd::window {
 
         m_Changed = true;
     }
-
-    Window::~Window() = default;
 
     void Window::Dispose() {
         glfwDestroyWindow(m_Window);
@@ -130,33 +133,34 @@ namespace vd::window {
     }
 
     void Window::WindowResizeCallback(GLFWwindow* window, int32_t width, int32_t height) {
-        auto& inputHandler = vd::ObjectOfType<event::EventHandler>::Find();
+        auto& inputHandler = vd::ObjectOfType<event::EventHandlerWrapper>::Find();
         inputHandler->WindowResizeCallback(window, width, height);
     }
 
     void Window::KeyboardCallback(GLFWwindow* window, int key, int scancode, int action, int mode) {
-        auto& inputHandler = vd::ObjectOfType<event::EventHandler>::Find();
+        auto& inputHandler = vd::ObjectOfType<event::EventHandlerWrapper>::Find();
         inputHandler->KeyboardCallback(window, key, scancode, action, mode);
     }
 
     void Window::MouseCallback(GLFWwindow* window, double x_pos, double y_pos) {
-        auto& inputHandler = vd::ObjectOfType<event::EventHandler>::Find();
+        auto& inputHandler = vd::ObjectOfType<event::EventHandlerWrapper>::Find();
         inputHandler->MouseCallback(window, x_pos, y_pos);
     }
 
     void Window::MouseClickCallback(GLFWwindow* window, int button, int action, int mods) {
-        auto& inputHandler = vd::ObjectOfType<event::EventHandler>::Find();
+        auto& inputHandler = vd::ObjectOfType<event::EventHandlerWrapper>::Find();
         inputHandler->MouseClickCallback(window, button, action, mods);
     }
 
     void Window::MouseScrollCallback(GLFWwindow* window, double x_offset, double y_offset) {
-        auto& inputHandler = vd::ObjectOfType<event::EventHandler>::Find();
+        auto& inputHandler = vd::ObjectOfType<event::EventHandlerWrapper>::Find();
         inputHandler->MouseScrollCallback(window, x_offset, y_offset);
     }
 
     WindowManager::WindowManager() {
+        m_pWindow = std::make_shared<Window>(1280, 720, "VDGE");
         try {
-            m_pWindow = std::make_shared<Window>(1280, 720, "VDGE");
+            m_pWindow->Build();
         } catch (std::runtime_error& e) {
             vd::Logger::terminate(e.what(), 1);
         }
@@ -165,7 +169,10 @@ namespace vd::window {
         m_pWindow->FarPlane() = 10000.0f;
         m_pWindow->FieldOfView() = 45.0f;
 
-        vd::ObjectOfType<Window>::Provide(m_pWindow);
+        m_pSnapshotWindow = std::make_shared<Window>(0, 0, "");
+        *m_pSnapshotWindow = *m_pWindow;
+
+        vd::ObjectOfType<Window>::Provide(m_pSnapshotWindow);
     }
 
     WindowManager::~WindowManager() = default;
@@ -192,6 +199,8 @@ namespace vd::window {
             auto info = m_pEventHandler->WindowSize();
             m_pWindow->Resize(info.width, info.height);
         }
+
+        *m_pSnapshotWindow = *m_pWindow;
     }
 
     void WindowManager::CleanUp() {

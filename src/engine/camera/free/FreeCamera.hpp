@@ -16,7 +16,6 @@ namespace vd::camera::impl {
     class FreeCamera : public camera::Camera {
     public:
         explicit FreeCamera(const std::string& propsFilePath);
-        ~FreeCamera();
 
         void Reflect(const Axis& axis, float amount) override;
 

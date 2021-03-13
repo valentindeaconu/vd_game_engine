@@ -17,11 +17,13 @@ namespace vd {
         static const std::shared_ptr<T>& Find() {
             if (m_Instance == nullptr)
                 throw MissingDependency(typeid(T).name());
+
             return m_Instance;
         }
+
         static void Provide(const std::shared_ptr<T>& object) { m_Instance = object; }
     private:
-        static inline std::shared_ptr<T> m_Instance;
+        static inline std::shared_ptr<T>    m_Instance;
     };
 }
 

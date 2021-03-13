@@ -35,13 +35,10 @@ namespace mod::gui {
     }
 
     void GuiRenderer::Update() {
-
+        m_pGuiEntity->Update();
     }
 
     void GuiRenderer::Render(const GuiRenderer::params_t& params) {
-        // TODO: This is a hack, because GuiText updates its buffer on update thread instead of rendering thread
-        m_pGuiEntity->Update();
-
         if (!IsReady()) {
             vd::Logger::warn("GuiRenderer was not ready to render");
             return;

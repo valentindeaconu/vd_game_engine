@@ -20,6 +20,8 @@ namespace mod::gui {
     }
 
     void GuiText::Setup() {
+        Buffers().clear();
+
         vd::gl::BufferPtr pBuffer = std::make_shared<vd::gl::Buffer>();
 
         pBuffer->Create();
@@ -34,10 +36,35 @@ namespace mod::gui {
     }
 
     void GuiText::Init() {
-        Buffers().clear();
-        Meshes().clear();
-
         Setup();
+        Rebuild();
+    }
+
+    void GuiText::Update() { }
+
+    std::string& GuiText::Text() {
+        return m_Text;
+    }
+
+    vd::model::FontPtr& GuiText::Font() {
+        return m_pFont;
+    }
+
+    float& GuiText::Scale() {
+        return m_Scale;
+    }
+
+    glm::vec2& GuiText::Position() {
+        return m_Position;
+    }
+
+    void GuiText::Color(const glm::vec3& color) {
+        Meshes()[0]->Materials()[0].Color() = glm::vec4(color, 1.0f);
+        m_Color = color;
+    }
+
+    void GuiText::Rebuild() {
+        Meshes().clear();
 
         float x = m_Position.x;
         float y = m_Position.y;
@@ -71,33 +98,6 @@ namespace mod::gui {
         pMesh->Materials().back().Color() = glm::vec4(m_Color, 1.0f);
 
         Meshes().emplace_back(std::move(pMesh));
-    }
-
-    void GuiText::Update() { }
-
-    std::string& GuiText::Text() {
-        return m_Text;
-    }
-
-    vd::model::FontPtr& GuiText::Font() {
-        return m_pFont;
-    }
-
-    float& GuiText::Scale() {
-        return m_Scale;
-    }
-
-    glm::vec2& GuiText::Position() {
-        return m_Position;
-    }
-
-    void GuiText::Color(const glm::vec3& color) {
-        Meshes()[0]->Materials()[0].Color() = glm::vec4(color, 1.0f);
-        m_Color = color;
-    }
-
-    void GuiText::Rebuild() {
-        Init();
     }
 
     UpdatableGuiText::UpdatableGuiText(std::string text,
