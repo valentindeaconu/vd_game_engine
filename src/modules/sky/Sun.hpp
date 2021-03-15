@@ -63,7 +63,7 @@ namespace mod::sky {
     };
     typedef std::shared_ptr<SunRenderer>	SunRendererPtr;
 
-class SunShader : public vd::component::IEntity2DShader, public vd::injector::Injectable {
+    class SunShader : public vd::component::IEntity2DShader, public vd::injector::Injectable {
     public:
         SunShader();
 

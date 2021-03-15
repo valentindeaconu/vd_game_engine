@@ -13,6 +13,7 @@ namespace vd::object::primitive {
     class Quad2D : public Entity2D {
     public:
         virtual void Setup();
+        virtual void Init();
         virtual void Update();
     };
     typedef std::shared_ptr<Quad2D> Quad2DPtr;

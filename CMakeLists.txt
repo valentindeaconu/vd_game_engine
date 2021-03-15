@@ -194,6 +194,8 @@ set(SOURCES
         src/modules/shadow/ShadowManager.hpp
         src/modules/shadow/ShadowFactory.cpp
         src/modules/shadow/ShadowFactory.hpp
+        src/modules/sky/LensFlare.cpp
+        src/modules/sky/LensFlare.hpp
         src/modules/sky/Sky.cpp
         src/modules/sky/Sky.hpp
         src/modules/sky/SkyShader.cpp
@@ -254,11 +256,11 @@ if (WIN32)
 
     target_link_libraries(VDGE PRIVATE ${GLEW_LIBRARY} ${GLFW_LIBRARY} ${FREETYPE_LIBRARY} opengl32 pthread)
 elseif(UNIX)
-    find_library(GLEW_LIBRARY GLEW HINTS ${CMAKE_SOURCE_DIR}/lib)
-    find_library(GLFW_LIBRARY glfw HINTS ${CMAKE_SOURCE_DIR}/lib)
-    find_library(FREETYPE_LIBRARY freetype HINTS ${CMAKE_SOURCE_DIR}/lib)
+    find_library(GLEW_LIBRARY GLEW HINTS ${CMAKE_SOURCE_DIR}/lib NO_DEFAULT_PATH)
+    find_library(GLFW_LIBRARY glfw HINTS ${CMAKE_SOURCE_DIR}/lib NO_DEFAULT_PATH)
+    find_library(FREETYPE_LIBRARY freetype HINTS ${CMAKE_SOURCE_DIR}/lib NO_DEFAULT_PATH)
 
-    target_link_libraries(VDGE PRIVATE ${GLFW_LIBRARY} ${GLEW_LIBRARY} ${FREETYPE_LIBRARY} GL dl X11 pthread)
+    target_link_libraries(VDGE PRIVATE ${GLFW_LIBRARY} ${GLEW_LIBRARY} ${FREETYPE_LIBRARY} GL pthread)
 
     add_definitions(-DGLEW_NO_GLU)
 endif()

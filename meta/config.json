@@ -32,6 +32,12 @@
             "DESCRIPTION": "Removes target directories if target value is given or target, lib and include directories if all value is given; default is target (if no value is given)"
         },
         {
+            "NAME": "configure",
+            "SHORT": "cfg",
+            "VALUES": [ "debug", "release" ],
+            "DESCRIPTION": "Removes target directory if they exists and generate new ones; if no value is given, both targets will be updated"
+        },
+        {
             "NAME": "help",
             "SHORT": "h",
             "VALUES": [ ],

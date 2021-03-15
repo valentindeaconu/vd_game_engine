@@ -34,7 +34,7 @@ namespace mod::sky {
         pMesh->Vertices() = { vd::model::Vertex2D(.5f, .5f) };
 
         auto& material = pMesh->Materials().emplace_back();
-        material.DiffuseMap() = vd::service::TextureService::CreateFromFile("./resources/sky/sun/sun.png");
+        material.DiffuseMap() = vd::service::TextureService::CreateFromFile("./resources/assets/sun/sun.png");
         material.DiffuseMap()->Bind();
         material.DiffuseMap()->NoFilter();
         material.DiffuseMap()->Unbind();

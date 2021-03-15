@@ -124,7 +124,8 @@ namespace vd::event {
     EventHandlerManager::EventHandlerManager() {
         m_EventHandlerPtr = std::make_shared<EventHandler>();
 
-        m_EventHandlerPtr->MouseSensitivity() = 0.03f;
+        // TODO: Read this from a property file
+        m_EventHandlerPtr->MouseSensitivity() = 0.15f;
 
         vd::ObjectOfType<EventHandler>::Provide(m_EventHandlerPtr);
     }

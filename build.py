@@ -37,6 +37,23 @@ def extract_params(argv):
 
     return params
 
+def configure(build_type, output_dir, verbose = True, clean_configure = False):
+    print ('[>] Building in {} mode. Binary will be created at {}.'.format(build_type, output_dir))
+
+    if clean_configure and os.path.isdir(output_dir):
+        shutil.rmtree(output_dir)
+
+    cmd = 'cmake -DCMAKE_BUILD_TYPE={} -B{}'.format(build_type, output_dir)
+
+    p = None
+    if verbose:
+        p = subprocess.run(cmd, shell=True)
+    else:
+        p = subprocess.run(cmd, shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    
+    return p.returncode
+
+
 def run(command_name, value, default, config):
     if command_name == 'build':
         if value == None:
@@ -45,12 +62,7 @@ def run(command_name, value, default, config):
         directory = config['BUILD_RELEASE_OUTPUT_DIR'] if value.startswith('r') else config['BUILD_DEBUG_OUTPUT_DIR']
         value = 'Release' if value.startswith('r') else 'Debug'
 
-        print ('[>] Building in {} mode. Binary will be created at {}.'.format(value, directory))
-
-        cmd = 'cmake -DCMAKE_BUILD_TYPE={} -B{}'.format(value, directory)
-        p = subprocess.run(cmd, shell=True)
-
-        if p.returncode == 0:
+        if configure(value, directory) == 0:
             cwd = os.getcwd()
             os.chdir(directory)
             p = subprocess.run('make')
@@ -106,6 +118,20 @@ def run(command_name, value, default, config):
 
         print ('[>] Done!')
 
+    elif command_name == 'configure':
+        if value == None or value == 'release':
+            btype = 'Release'
+            print ('[>] Loading CMakeLists for build type {}...'.format(btype))
+            configure(btype, config['BUILD_RELEASE_OUTPUT_DIR'], clean_configure=True)
+            print ('[>] Done!')
+        
+        if value == None or value == 'debug':
+            btype = 'Debug'
+            print ('[>] Loading CMakeLists for build type {}...'.format(btype))
+            configure(btype, config['BUILD_DEBUG_OUTPUT_DIR'], clean_configure=True)
+            print ('[>] Done!')
+
+
 
 if __name__ == '__main__':
     with open(CONFIG_PATH, 'r') as f:
@@ -124,7 +150,7 @@ if __name__ == '__main__':
                 value = params[param]
 
                 if not value == None and value not in cmd['VALUES']:
-                    print ('[#] Invalid parameter {} to argument "{}"'.format(value, name))
+                    print ('[#] Invalid parameter "{}" to argument "{}"'.format(value, name))
                     break
 
                 run (name, value, None if len(cmd['VALUES']) == 0 else cmd['VALUES'][0], config)

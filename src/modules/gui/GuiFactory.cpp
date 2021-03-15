@@ -30,7 +30,7 @@ namespace mod::gui {
         /// Refraction Texture
         /* CreateGui(pEngine,
                   [w = vd::ObjectOfType<mod::water::Water>::Find()]() {
-                    return w->RefractionFramebuffer()->GetColorTexture();
+                    return w->RefractionFramebuffer()->ColorTexture();
                   },
                   glm::vec2(0.75f, 0.75f),
                   glm::vec2(0.250f, 0.250f));

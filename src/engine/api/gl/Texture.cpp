@@ -134,6 +134,12 @@ namespace vd::gl {
     }
 
     template<GLuint type>
+    void Texture<type>::BindToUnit(GLuint index) const {
+        glActiveTexture(GL_TEXTURE0 + index);
+        glBindTexture(type, m_Id);
+    }
+
+    template<GLuint type>
     void Texture<type>::Unbind() const {
         glBindTexture(type, 0);
     }

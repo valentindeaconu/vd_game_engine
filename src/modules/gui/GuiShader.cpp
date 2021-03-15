@@ -22,7 +22,7 @@ namespace mod::gui {
 
     void GuiShader::AddUniforms() {
         AddUniform("transform");
-        AddUniform("guiTexture");
+        AddUniform("diffuseMap");
     }
 
     void GuiShader::InitUniforms(vd::object::Entity2DPtr pEntity) {
@@ -34,6 +34,6 @@ namespace mod::gui {
 
         vd::gl::ActiveTexture(1);
         pEntity->Meshes()[meshIndex]->Materials()[0].DiffuseMap()->Bind();
-        SetUniform("guiTexture", 1);
+        SetUniform("diffuseMap", 1);
     }
 }
