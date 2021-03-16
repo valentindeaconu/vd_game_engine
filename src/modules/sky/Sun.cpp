@@ -5,10 +5,17 @@
 #include "Sun.hpp"
 
 namespace mod::sky {
-    Sun::Sun()
-        : m_Radius(1000.0f) // TODO: This value should be computed based on terrain size
-        , m_SunLightDistance(9000.0f) // TODO: This value should be read from a properties file
-    {
+    Sun::Sun(const std::string& propsFilePath) {
+        auto pProps = vd::loader::PropertiesLoader::Load(propsFilePath);
+
+        try {
+            m_Radius = pProps->Get<float>("Radius");
+            m_SunLightDistance = pProps->Get<float>("LightDistance");
+            m_Scale = pProps->Get<float>("Scale");
+            m_TexPath = pProps->Get<std::string>("Texture");
+        } catch(std::invalid_argument& e) {
+            throw vd::RuntimeError("Sun property file does not provide radius, light distance or scale");
+        }
     }
 
     void Sun::Link() {
@@ -21,6 +28,9 @@ namespace mod::sky {
     void Sun::Setup() { }
 
     void Sun::Init() {
+        // Set scale to entity's local transform
+        LocalTransform().Scale() = glm::vec3(m_Scale);
+
         // In our scene, we assume that the earth is a perfect sphere, so the sun have to follow the same principles
         // as the clock, but a day is equivalent with 2 rotations of the clock, so we have to divide by 2 clock's angle
         // Furthermore, dividing by 2 will give us a degree interval of [0, 180], so we need to know which part of the
@@ -34,7 +44,7 @@ namespace mod::sky {
         pMesh->Vertices() = { vd::model::Vertex2D(.5f, .5f) };
 
         auto& material = pMesh->Materials().emplace_back();
-        material.DiffuseMap() = vd::service::TextureService::CreateFromFile("./resources/assets/sun/sun.png");
+        material.DiffuseMap() = vd::service::TextureService::CreateFromFile(m_TexPath);
         material.DiffuseMap()->Bind();
         material.DiffuseMap()->NoFilter();
         material.DiffuseMap()->Unbind();
@@ -148,6 +158,7 @@ namespace mod::sky {
 
         AddUniform("diffuseMap");
 
+        AddUniform("scale");
         AddUniform("cameraUp");
         AddUniform("cameraRight");
 
@@ -166,6 +177,9 @@ namespace mod::sky {
         SetUniform("cameraRight", m_pCamera->Right());
 
         const vd::model::Mesh2DPtr& pMesh = pEntity->Meshes()[meshIndex];
+
+        SetUniform("scale", pEntity->LocalTransform().Scale().x);
+
         auto& diffuseMap = pMesh->Materials()[0].DiffuseMap();
 
         vd::gl::ActiveTexture(0);

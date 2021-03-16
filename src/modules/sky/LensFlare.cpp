@@ -36,20 +36,25 @@ namespace mod::sky {
         }
 
         m_pQuad = std::make_shared<vd::object::primitive::Quad2D>();
+        m_pQuery = std::make_shared<vd::gl::Query>(vd::gl::Query::eSamplesPassed);
     }
 
     void FlareRenderer::Link() {
         m_pSun = vd::ObjectOfType<Sun>::Find();
         m_pCamera = vd::ObjectOfType<vd::camera::Camera>::Find();
         m_pWindow = vd::ObjectOfType<vd::window::Window>::Find();
+        m_pContext = vd::ObjectOfType<vd::context::Context>::Find();
     }
 
     void FlareRenderer::Init() {
         m_pQuad->Init();
-
         m_pQuad->Meshes()[0]->Materials().emplace_back();
 
+        m_pShader->Bind();
         m_pShader->InitUniforms(m_pQuad);
+        m_pShader->Unbind();
+
+        m_pQuery->Create();
 
         for (auto& pTex : m_Textures) {
             pTex->Bind();
@@ -60,6 +65,12 @@ namespace mod::sky {
         for (auto& posScale : m_TexturesPositionScale) {
             posScale.w *= m_pWindow->AspectRatio();
         }
+
+        // TODO: Compute quad width based on sun's scale
+        float quadWidth = 0.07f;
+        m_QueryQuadPositionScale = glm::vec4(.0f, .0f, quadWidth, quadWidth * m_pWindow->AspectRatio());
+
+        m_InvQueryQuadTotalSamples = 1.0f / (glm::pow(quadWidth * m_pWindow->Width() * 0.5f, 2) * m_pContext->SamplesPerPixel());
     }
 
     void FlareRenderer::Update() {
@@ -84,6 +95,9 @@ namespace mod::sky {
         }
 
         m_Visible = true;
+        m_QueryQuadPositionScale.x = screenCoords.x;
+        m_QueryQuadPositionScale.y = screenCoords.y;
+
         for (size_t i = 0; i < m_TextureCount; ++i) {
             glm::vec2 direction =  toCenter * (i * m_Spacing);
             glm::vec2 flarePosition = screenCoords + direction;
@@ -99,19 +113,45 @@ namespace mod::sky {
             return;
         }
 
-        if (params.at("RenderingPass") == "LensFlare") {
-            if (m_Visible) {
-                Prepare();
+        if (m_Visible) {
+            auto& material = m_pQuad->Meshes()[0]->Materials()[0];
 
-                auto& material = m_pQuad->Meshes()[0]->Materials()[0];
-                auto& transform = m_pQuad->WorldTransform();
+            if (params.at("RenderingPass") == "Main") {
+                material.DiffuseMap() = m_Textures[0];
+
+                // Test Occlusion Querry
+                if (m_pQuery->ResultReady()) {
+                    int samples = m_pQuery->GetResult();
+                    m_Brightness *= glm::min(samples * m_InvQueryQuadTotalSamples, 1.0f);
+                }
+
+                // Run Occlusion Querry
+                if (!m_pQuery->InUse()) {
+                    m_pQuery->Prepare();
+                    m_pQuery->Start();
+
+                    m_pShader->Bind();
+                    m_pShader->UpdateUniforms(m_pQuad, 0, 0);
+                    m_pShader->SetUniform("transform", m_QueryQuadPositionScale); 
+                    m_pShader->SetUniform("brightness", 1.0f);
+
+                    m_pQuad->Buffers()[0]->DrawArrays(vd::gl::eTriangleStrip, 4);
+
+                    m_pShader->Unbind();
+
+                    m_pQuery->End();
+                    m_pQuery->Finish();
+                }
+
+                // Render Flares
+                Prepare();
 
                 for (size_t i = 0; i < m_TextureCount; ++i) {
                     material.DiffuseMap() = m_Textures[i];
 
                     m_pShader->Bind();
                     m_pShader->UpdateUniforms(m_pQuad, 0, 0);
-                    m_pShader->SetUniform("transform", m_TexturesPositionScale[i]);
+                    m_pShader->SetUniform("transform", m_TexturesPositionScale[i]); 
                     m_pShader->SetUniform("brightness", m_Brightness);
 
                     m_pQuad->Buffers()[0]->DrawArrays(vd::gl::eTriangleStrip, 4);
@@ -126,6 +166,7 @@ namespace mod::sky {
 
     void FlareRenderer::CleanUp() {
         m_pQuad->CleanUp();
+        m_pQuery->CleanUp();
         m_Textures.clear();
     }
 

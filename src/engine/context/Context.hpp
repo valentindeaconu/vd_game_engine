@@ -25,6 +25,7 @@ namespace vd::context {
 
         bool& WireframeMode();
         int& FPS();
+        int& SamplesPerPixel();
         float& FrameTime();
         glm::vec4& ClipPlane();
         gl::FrameBufferPtr& SceneFrameBuffer();
@@ -33,6 +34,7 @@ namespace vd::context {
 
         bool                    m_WireframeMode;
         int                     m_FPS;
+        int                     m_SamplesPerPixel;
         float                   m_FrameTimeInSeconds;
         glm::vec4               m_ClipPlane;
         gl::FrameBufferPtr      m_pSceneFrameBuffer;

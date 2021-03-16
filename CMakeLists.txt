@@ -20,6 +20,8 @@ set(SOURCES
         src/engine/api/gl/Texture.hpp
         src/engine/api/gl/Shader.cpp
         src/engine/api/gl/Shader.hpp
+        src/engine/api/gl/Query.cpp
+        src/engine/api/gl/Query.hpp
         src/engine/camera/first/FirstPersonCamera.cpp
         src/engine/camera/first/FirstPersonCamera.hpp
         src/engine/camera/free/FreeCamera.cpp

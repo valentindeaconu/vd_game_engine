@@ -11,11 +11,13 @@ namespace mod::sky
     {
         vd::Consumer before = []() {
             glDepthFunc(GL_LEQUAL);
+            glDepthMask(GL_FALSE);
             glFrontFace(GL_CCW);
         };
 
         vd::Consumer after = []() {
             glDepthFunc(GL_LESS);
+            glDepthMask(GL_TRUE);
             glFrontFace(GL_CW);
         };
 
@@ -27,16 +29,18 @@ namespace mod::sky
         pEngine->Subscribe(pSkyRenderer, SkyRenderer::kDefaultPriority);
 
         // Required by Lens Flare
-        SunPtr pSun = vd::injector::CreateAndStore<Sun>();
+        SunPtr pSun = vd::injector::CreateAndStore<Sun>("./resources/properties/sun.properties");
         SunShaderPtr pSunShader = std::make_shared<SunShader>();
 
         before = []() {
+            glDepthMask(GL_FALSE);
             glFrontFace(GL_CCW);
             glEnable(GL_BLEND);
             glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         };
 
         after = []() {
+            glDepthMask(GL_TRUE);
             glFrontFace(GL_CW);
             glDisable(GL_BLEND);
         };
@@ -46,9 +50,6 @@ namespace mod::sky
         pEngine->Subscribe(pSunRenderer, SunRenderer::kDefaultPriority);
 
         /// Create & register rendering pass
-        vd::component::RenderingPass rpLensFlare("LensFlare", 750, nullptr);
-        pEngine->Add(rpLensFlare);
-
         before = []() {
             glFrontFace(GL_CCW);
 			glEnable(GL_BLEND);
@@ -67,7 +68,7 @@ namespace mod::sky
 
         FlareRendererPtr pFlareRenderer = std::make_shared<FlareRenderer>("./resources/properties/flare.properties", std::make_shared<FlareShader>(), before, after);
 
-        pEngine->Subscribe(pFlareRenderer, FlareRenderer::kDefaultPriority);
+        pEngine->Subscribe(pFlareRenderer, FlareRenderer::kPriority);
     }
 
 }
