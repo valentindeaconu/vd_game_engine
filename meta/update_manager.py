@@ -254,15 +254,16 @@ def update(package_file_location, cache_dir_location, include_dir_location, lib_
                 print ('[\033[92mOK\033[0m] {} installed successfully.'.format(package['LIB']))
                 total_count += 1
 
-        if total_count < len(packages):
-            print ('[\033[91mFAIL\033[0m] Updater failed after {}/{} packages.'.format(total_count, len(packages)))
-        else:
-            print ('[\033[92mOK\033[0m] Updater installed {}/{} packages.'.format(total_count, len(packages)))
-
         # Cleaning up cache
         print ('[>] Cleaning up...', flush=True, end=' ')
         time.sleep(3)       
         shutil.rmtree(cache_dir_location)
         print ('Done!')
-
         f.close()
+
+        if total_count < len(packages):
+            print ('[\033[91mFAIL\033[0m] Updater failed after {}/{} packages.'.format(total_count, len(packages)))
+            return 1
+
+        print ('[\033[92mOK\033[0m] Updater installed {}/{} packages.'.format(total_count, len(packages)))
+        return 0

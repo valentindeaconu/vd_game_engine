@@ -41,7 +41,7 @@
             "NAME": "help",
             "SHORT": "h",
             "VALUES": [ ],
-            "DESCRIPTION": "Lists all the available commands"
+            "DESCRIPTION": "Lists all the available commands (and shortcuts)"
         }
     ]
 }

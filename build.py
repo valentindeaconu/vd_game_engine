@@ -18,6 +18,18 @@ from meta.update_manager import update
 
 CONFIG_PATH = os.path.join('meta', 'config.json')
 
+def conclusion(module, rc):
+    if rc == 0:
+        print ('\n=====================================')
+        print ('{} SUCCESSFUL'.format(module))
+        print ('=====================================\n')
+    else:
+        print ('\n=====================================')
+        print ('{} FAILED'.format(module))
+        print ('=====================================\n')
+        exit (1)
+
+
 def extract_params(argv):
     params = {}
 
@@ -67,21 +79,15 @@ def run(command_name, value, default, config):
             os.chdir(directory)
             p = subprocess.run('make')
             os.chdir(cwd)
-            if p.returncode == 0:
-                print ('\n=====================================')
-                print ('BUILD SUCCESSFUL')
-                print ('=====================================\n')
-            else:
-                print ('\n=====================================')
-                print ('BUILD FAILED')
-                print ('=====================================\n')
+            conclusion("BUILD", p.returncode)
         else:
-            print ('\n=====================================')
-            print ('BUILD FAILED')
-            print ('=====================================\n')
+            conclusion("BUILD", 1)
 
     elif command_name == 'update':
-        update(config['PACKAGE_FILE'], config['UPDATE_CACHE_DIR'], config['INCLUDE_DIR'], config['LIB_DIR'])
+        rc = update(config['PACKAGE_FILE'], config['UPDATE_CACHE_DIR'], config['INCLUDE_DIR'], config['LIB_DIR'])
+
+        conclusion("UPDATE", rc)
+
 
     elif command_name == 'help':
         print ('[!] VDGE Build System Help Menu')
@@ -91,13 +97,20 @@ def run(command_name, value, default, config):
                 print ('\t[?] Possible values: {}'.format(cmd['VALUES']))
 
     elif command_name == 'resource-update':
+        rc = 1
         if value == None:
-            resource_update(os.getcwd(), config['BUILD_RELEASE_OUTPUT_DIR'])
-            resource_update(os.getcwd(), config['BUILD_DEBUG_OUTPUT_DIR'])
+            rc1 = resource_update(os.getcwd(), config['BUILD_RELEASE_OUTPUT_DIR'])
+            if rc1 == 0:
+                rc2 = resource_update(os.getcwd(), config['BUILD_DEBUG_OUTPUT_DIR'])
+
+            if rc2 == 0:
+                rc = 0
         elif value.startswith('r'):
-            resource_update(os.getcwd(), config['BUILD_RELEASE_OUTPUT_DIR'])
+            rc = resource_update(os.getcwd(), config['BUILD_RELEASE_OUTPUT_DIR'])
         elif value.startswith('d'):
-            resource_update(os.getcwd(), config['BUILD_DEBUG_OUTPUT_DIR'])
+            rc = resource_update(os.getcwd(), config['BUILD_DEBUG_OUTPUT_DIR'])
+
+        conclusion("RESOURCE UPDATE", rc)
 
     elif command_name == 'clean':
         if value == None:
@@ -118,20 +131,24 @@ def run(command_name, value, default, config):
 
         print ('[>] Done!')
 
+        conclusion("CLEAN", rc)
+
     elif command_name == 'configure':
+        rc = 0
         if value == None or value == 'release':
             btype = 'Release'
             print ('[>] Loading CMakeLists for build type {}...'.format(btype))
-            configure(btype, config['BUILD_RELEASE_OUTPUT_DIR'], clean_configure=True)
+            rc = configure(btype, config['BUILD_RELEASE_OUTPUT_DIR'], clean_configure=True)
             print ('[>] Done!')
         
-        if value == None or value == 'debug':
-            btype = 'Debug'
-            print ('[>] Loading CMakeLists for build type {}...'.format(btype))
-            configure(btype, config['BUILD_DEBUG_OUTPUT_DIR'], clean_configure=True)
-            print ('[>] Done!')
-
-
+        if rc == 0:
+            if value == None or value == 'debug':
+                btype = 'Debug'
+                print ('[>] Loading CMakeLists for build type {}...'.format(btype))
+                rc = configure(btype, config['BUILD_DEBUG_OUTPUT_DIR'], clean_configure=True)
+                print ('[>] Done!')
+        
+        conclusion("CONFIGURE", rc)
 
 if __name__ == '__main__':
     with open(CONFIG_PATH, 'r') as f:
