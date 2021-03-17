@@ -10,6 +10,7 @@ namespace vd::context {
         : m_WireframeMode(false)
         , m_FPS(0)
         , m_FrameTimeInSeconds(0.0f)
+        , m_SamplesPerPixel(1)
         , m_ClipPlane(0.0f)
         , m_pSceneFrameBuffer(nullptr)
     {
@@ -21,6 +22,10 @@ namespace vd::context {
 
     int& Context::FPS() {
         return m_FPS;
+    }
+
+    int& Context::SamplesPerPixel() {
+        return m_SamplesPerPixel;
     }
 
     float& Context::FrameTime() {

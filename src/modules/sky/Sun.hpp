@@ -24,7 +24,7 @@
 namespace mod::sky {
     class Sun : public vd::object::Entity2D, public vd::injector::Injectable {
     public:
-        Sun();
+        Sun(const std::string& propsFilePath);
 
         void Link() override;
 
@@ -34,8 +34,10 @@ namespace mod::sky {
 
         void Update() override;
     private:
-        const float m_SunLightDistance;
-        const float m_Radius;
+        float       m_SunLightDistance;
+        float       m_Radius;
+        float       m_Scale;
+        std::string m_TexPath;
 
         vd::light::LightManagerPtr  m_pLightManager;
         vd::time::TimeManagerPtr    m_pTimeManager;
@@ -63,7 +65,7 @@ namespace mod::sky {
     };
     typedef std::shared_ptr<SunRenderer>	SunRendererPtr;
 
-class SunShader : public vd::component::IEntity2DShader, public vd::injector::Injectable {
+    class SunShader : public vd::component::IEntity2DShader, public vd::injector::Injectable {
     public:
         SunShader();
 

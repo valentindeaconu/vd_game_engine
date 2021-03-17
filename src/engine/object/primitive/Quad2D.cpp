@@ -5,9 +5,10 @@
 #include "Quad2D.hpp"
 
 namespace vd::object::primitive {
-    void Quad2D::Setup() {
-        vd::model::Mesh2DPtr pMesh = std::make_shared<vd::model::Mesh2D>();
+    void Quad2D::Setup() { }
 
+    void Quad2D::Init() {
+        vd::model::Mesh2DPtr& pMesh = Meshes().emplace_back(std::move(std::make_shared<vd::model::Mesh2D>()));
         pMesh->Vertices() = {
                 vd::model::Vertex2D(-1.0f, 1.0f),
                 vd::model::Vertex2D(-1.0f, -1.0f),
@@ -15,9 +16,20 @@ namespace vd::object::primitive {
                 vd::model::Vertex2D(1.0f, -1.0f)
         };
 
-        pMesh->Indices() = {0, 1, 2, 2, 1, 3};
+        vd::gl::BufferPtr& pBuffer = Buffers().emplace_back(std::move(std::make_shared<vd::gl::Buffer>()));
+        pBuffer->Bind();
+        pBuffer->AddBuffer(
+                gl::buffer::eArrayBuffer,
+                pMesh->Vertices().size() * sizeof(vd::model::Vertex2D),
+                &pMesh->Vertices()[0],
+                gl::buffer::eStaticDraw
+        );
+        pBuffer->AttributeArray(0, 2, vd::gl::eFloat, sizeof(vd::model::Vertex2D), (GLvoid*)0);
+        pBuffer->AttributeArray(1, 2, vd::gl::eFloat, sizeof(vd::model::Vertex2D), (GLvoid*)offsetof(vd::model::Vertex2D, TexCoords));
+        pBuffer->Unbind();
 
-        Meshes().emplace_back(std::move(pMesh));
+        BoundingBoxes().emplace_back();
+        BoundingBoxes().back().WrapMesh(pMesh);
     }
 
     void Quad2D::Update() {

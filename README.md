@@ -45,10 +45,11 @@ Steps for the installation:
 * Wireframe Mode
 * Post-Rendering Effects (Depth of Field effect)
 * Day-night cycle with an amazing [texture pack](https://assetstore.unity.com/packages/2d/textures-materials/sky/10-skyboxes-pack-day-night-32236#description)
+* Lens Flare with Occlusion Culling
 
 ## Project Board
 
-Available on [Trello](https://trello.com/b/lx9Ny7u6/vdge)
+Available on [Trello](https://trello.com/b/lx9Ny7u6/vdge).
 
 ## Goals
 
@@ -58,3 +59,9 @@ Available on [Trello](https://trello.com/b/lx9Ny7u6/vdge)
 ## Authors
 
 * **Lucian-Valentin Deaconu**
+
+## Thanks to
+
+* [ThinMatrix](https://www.youtube.com/watch?v=VS8wlS9hF8E&list=PLRIWtICgwaX0u7Rf9zkZhLoLuZVfUksDP) - tutorials
+* [OreonEngine](https://github.com/fynnfluegge/oreon-engine) - terrain, some resources
+* [LearnOpenGL](https://learnopengl.com/) - tutorials

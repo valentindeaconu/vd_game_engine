@@ -27,6 +27,7 @@ namespace vd::gl {
         void CleanUp() override;
 
         void Bind() const;
+        void BindToUnit(GLuint index) const;
         void Unbind() const;
 
         void Parameter(const TextureParameter& parameter, int value);

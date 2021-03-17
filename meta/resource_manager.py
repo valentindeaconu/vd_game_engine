@@ -16,7 +16,10 @@ def resource_update(work_dir, build_dir_name):
         print ('\t[>] Cleaning old resources folder:', end=' ', flush=True)
         shutil.rmtree(build_resources_location)
         print ('Done!')
+    
     print ('\t[>] Copying new resources folder:', end=' ', flush=True)
     shutil.copytree(resources_location, build_resources_location)
     print ('Done!')
+
+    return 0
     

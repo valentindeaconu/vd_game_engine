@@ -4,9 +4,17 @@ in vec2 fTexCoords;
 
 out vec4 fColor;
 
-uniform sampler2D guiTexture;
+uniform int transparency = 0;
+
+uniform sampler2D diffuseMap;
 
 void main()
 {
-    fColor = texture(guiTexture, fTexCoords);
+    vec4 color = texture(diffuseMap, fTexCoords);
+
+    if (transparency == 1 && color.a < 0.1f) {
+        discard;
+    }
+
+    fColor = color;
 }

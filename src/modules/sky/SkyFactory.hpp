@@ -15,6 +15,7 @@
 #include "SkyRenderer.hpp"
 
 #include "Sun.hpp"
+#include "LensFlare.hpp"
 
 namespace mod::sky {
     class SkyFactory : public vd::component::IModuleFactory {
