@@ -5,14 +5,18 @@
 #include "Window.hpp"
 
 namespace vd::window {
-    Window::Window(uint32_t width, uint32_t height, const std::string& title)
+    Window::Window(uint32_t width, uint32_t height, std::string title)
         : m_Window(nullptr)
         , m_Dimension(width, height)
         , m_Changed(false)
         , m_NearPlane(0.1f)
         , m_FarPlane(10000.0f)
         , m_FieldOfView(45.0f)
+        , m_Title(std::move(title))
     {
+    }
+
+    void Window::Build() {
         glfwInit();
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
@@ -21,7 +25,7 @@ namespace vd::window {
         //glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
         glfwWindowHint(GLFW_SAMPLES, 4);
 
-        m_Window = glfwCreateWindow(width, height, title.c_str(), nullptr, nullptr);
+        m_Window = glfwCreateWindow(m_Dimension.width, m_Dimension.height, m_Title.c_str(), nullptr, nullptr);
 
         if (nullptr == m_Window) {
             glfwTerminate();
@@ -42,7 +46,6 @@ namespace vd::window {
         glfwGetFramebufferSize(m_Window, &screenWidth, &screenHeight);
 
         glViewport(0, 0, screenWidth, screenHeight);
-        this->m_Dimension = vd::Dimension(width, height);
 
         glfwSetKeyCallback(m_Window, Window::KeyboardCallback);
         glfwSetCursorPosCallback(m_Window, Window::MouseCallback);
@@ -64,10 +67,9 @@ namespace vd::window {
         m_Changed = true;
     }
 
-    Window::~Window() = default;
-
     void Window::Dispose() {
         glfwDestroyWindow(m_Window);
+        glfwTerminate();
     }
 
     void Window::Resize(uint32_t width, uint32_t height) {
@@ -157,6 +159,7 @@ namespace vd::window {
     WindowManager::WindowManager() {
         try {
             m_pWindow = std::make_shared<Window>(1280, 720, "VDGE");
+            m_pWindow->Build();
         } catch (std::runtime_error& e) {
             vd::Logger::terminate(e.what(), 1);
         }
@@ -168,14 +171,13 @@ namespace vd::window {
         vd::ObjectOfType<Window>::Provide(m_pWindow);
     }
 
-    WindowManager::~WindowManager() = default;
-
     void WindowManager::Link() {
         m_pEventHandler = vd::ObjectOfType<event::EventHandler>::Find();
         m_pThreadPool = vd::ObjectOfType<core::ThreadPool>::Find();
     }
 
     void WindowManager::Init() {
+
     }
 
     void WindowManager::Update() {
@@ -195,10 +197,8 @@ namespace vd::window {
     }
 
     void WindowManager::CleanUp() {
-        m_pWindow->Dispose();
-
         m_pThreadPool->CreateJobFor([&]() {
-            glfwTerminate();
+            m_pWindow->Dispose();
         }, "Render", true);
     }
 }

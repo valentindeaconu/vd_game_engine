@@ -24,7 +24,6 @@ namespace vd::event {
     class EventHandler {
     public:
         EventHandler();
-        ~EventHandler();
 
         [[nodiscard]] bool KeyDown(int key) const;
         [[nodiscard]] bool KeyReleased(int key) const;
@@ -122,7 +121,6 @@ namespace vd::event {
     class EventHandlerManager : public vd::component::IManager {
     public:
         EventHandlerManager();
-        ~EventHandlerManager();
 
         void Init() override;
         void Update() override;

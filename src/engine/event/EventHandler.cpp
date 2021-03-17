@@ -12,8 +12,6 @@ namespace vd::event {
     {
     }
 
-    EventHandler::~EventHandler() = default;
-
     bool EventHandler::KeyDown(int key) const {
         return m_KeysStatus[key] == eKeyPressed || m_KeysStatus[key] == eKeyPostPressed;
     }
@@ -124,18 +122,11 @@ namespace vd::event {
     EventHandlerManager::EventHandlerManager() {
         m_EventHandlerPtr = std::make_shared<EventHandler>();
 
-<<<<<<< HEAD
-        // TODO: Set this in a property file
-        m_EventHandlerPtr->MouseSensitivity() = 0.03f;
-=======
         // TODO: Read this from a property file
         m_EventHandlerPtr->MouseSensitivity() = 0.15f;
->>>>>>> master
 
         vd::ObjectOfType<EventHandler>::Provide(m_EventHandlerPtr);
     }
-
-    EventHandlerManager::~EventHandlerManager() = default;
 
     void EventHandlerManager::Init() {
 

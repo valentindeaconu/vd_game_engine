@@ -12,7 +12,7 @@
 
 namespace vd::gl {
 
-    Query::Query(const QueryType& type) 
+    Query::Query(const Type& type)
         : m_Id(0)
         , m_Allocated(false)
         , m_InUse(false)
@@ -61,6 +61,10 @@ namespace vd::gl {
 
     bool Query::ResultReady() {
         RT_Check();
+
+        if (!m_InUse) {
+            return false;
+        }
 
         int result = 0;
         glGetQueryObjectiv(m_Id, GL_QUERY_RESULT_AVAILABLE, &result);

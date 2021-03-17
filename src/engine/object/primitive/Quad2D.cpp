@@ -17,6 +17,7 @@ namespace vd::object::primitive {
         };
 
         vd::gl::BufferPtr& pBuffer = Buffers().emplace_back(std::move(std::make_shared<vd::gl::Buffer>()));
+        pBuffer->Create();
         pBuffer->Bind();
         pBuffer->AddBuffer(
                 gl::buffer::eArrayBuffer,

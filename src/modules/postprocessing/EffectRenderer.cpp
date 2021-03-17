@@ -55,7 +55,6 @@ namespace mod::postprocessing {
                     shader->Bind();
                     shader->UpdateUniforms(effect);
 
-                    //m_pQuad->Buffers()[0]->DrawElements(vd::gl::eTriangles, 6, vd::gl::eUnsignedInt);
                     m_pQuad->Buffers()[0]->DrawArrays(vd::gl::eTriangleStrip, 4);
 
                     shader->Unbind();

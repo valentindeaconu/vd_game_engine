@@ -58,7 +58,7 @@ namespace mod::sky {
 
         for (auto& pTex : m_Textures) {
             pTex->Bind();
-            pTex->BilinearFilter();
+            pTex->LinearFilter();
             pTex->Unbind();
         }
 
@@ -167,6 +167,7 @@ namespace mod::sky {
     void FlareRenderer::CleanUp() {
         m_pQuad->CleanUp();
         m_pQuery->CleanUp();
+        m_pShader->CleanUp();
         m_Textures.clear();
     }
 
@@ -177,6 +178,8 @@ namespace mod::sky {
     FlareShader::FlareShader()
         : vd::component::IEntity2DShader()
     {
+        Create();
+
         std::string vsSource;
         vd::loader::ShaderLoader::Load("./resources/shaders/sky/flare_VS.glsl", vsSource);
         AddShader(vsSource, vd::gl::Shader::eVertexShader);
@@ -205,8 +208,6 @@ namespace mod::sky {
     }
 
     void FlareShader::UpdateUniforms(vd::object::Entity2DPtr pEntity, uint64_t levelOfDetail, uint32_t meshIndex) {
-        // SetUniform("transform", pEntity->WorldTransform().Get());
-
         const vd::model::Mesh2DPtr& pMesh = pEntity->Meshes()[meshIndex];
         auto& diffuseMap = pMesh->Materials()[0].DiffuseMap();
 

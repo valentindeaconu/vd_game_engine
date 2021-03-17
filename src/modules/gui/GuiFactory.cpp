@@ -67,7 +67,7 @@ namespace mod::gui {
                   glm::vec2(0.250f, 0.250f)); */
 
         /// Scene FBO
-        /* CreateGui(pEngine,
+        /*CreateGui(pEngine,
                   [ctx = vd::ObjectOfType<vd::context::Context>::Find()]() {
                       return ctx->SceneFrameBuffer()->ColorTexture();
                   },

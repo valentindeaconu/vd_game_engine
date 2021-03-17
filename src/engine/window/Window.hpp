@@ -26,9 +26,9 @@ namespace vd::window {
 
     class Window {
     public:
-        Window(uint32_t width, uint32_t height, const std::string& title);
-        ~Window();
+        Window(uint32_t width, uint32_t height, std::string title);
 
+        void Build();
         void Dispose();
         void Resize(uint32_t width, uint32_t height);
 
@@ -61,7 +61,8 @@ namespace vd::window {
 
         GLFWwindow* m_Window;
 
-        vd::Dimension m_Dimension;
+        vd::Dimension   m_Dimension;
+        std::string     m_Title;
 
         bool m_Changed;
     };
@@ -70,7 +71,6 @@ namespace vd::window {
     class WindowManager : public vd::component::IManager, public vd::injector::Injectable {
     public:
         WindowManager();
-        ~WindowManager();
 
         void Link() override;
 
