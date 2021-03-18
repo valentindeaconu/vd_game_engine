@@ -9,23 +9,19 @@
 #include <engine/loader/ShaderLoader.hpp>
 
 #include <engine/injector/Injectable.hpp>
-#include <modules/shadow/ShadowManager.hpp>
+#include "ShadowManager.hpp"
 
 #include <memory>
 
 namespace mod::shadow {
     class ShadowShader : public vd::component::IEntity3DShader, public vd::injector::Injectable {
     public:
-        ShadowShader();
-        ~ShadowShader();
-
         void Link() override;
+        void Init() override;
 
         void InitUniforms(vd::object::Entity3DPtr pEntity) override;
         void UpdateUniforms(vd::object::Entity3DPtr pEntity, uint64_t levelOfDetail, uint32_t meshIndex) override;
     private:
-        void AddUniforms() override;
-
         ShadowManagerPtr m_pShadowManager;
     };
     typedef std::shared_ptr<ShadowShader> ShadowShaderPtr;

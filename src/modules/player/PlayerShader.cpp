@@ -5,7 +5,16 @@
 #include "PlayerShader.hpp"
 
 namespace mod::player {
-    PlayerShader::PlayerShader() : vd::component::IEntity3DShader() {
+
+    void PlayerShader::Link() {
+        m_pCamera = vd::ObjectOfType<vd::camera::Camera>::Find();
+        m_pWindow = vd::ObjectOfType<vd::window::Window>::Find();
+        m_pLightManager = vd::ObjectOfType<vd::light::LightManager>::Find();
+        m_pFogManager = vd::ObjectOfType<vd::fog::FogManager>::Find();
+        m_pContext = vd::ObjectOfType<vd::context::Context>::Find();
+    }
+
+    void PlayerShader::Init() {
         Create();
 
         std::string vsSource;
@@ -17,19 +26,7 @@ namespace mod::player {
         AddShader(fsSource, vd::gl::Shader::eFragmentShader);
 
         Compile();
-    }
 
-    PlayerShader::~PlayerShader() = default;
-
-    void PlayerShader::Link() {
-        m_pCamera = vd::ObjectOfType<vd::camera::Camera>::Find();
-        m_pWindow = vd::ObjectOfType<vd::window::Window>::Find();
-        m_pLightManager = vd::ObjectOfType<vd::light::LightManager>::Find();
-        m_pFogManager = vd::ObjectOfType<vd::fog::FogManager>::Find();
-        m_pContext = vd::ObjectOfType<vd::context::Context>::Find();
-    }
-
-    void PlayerShader::AddUniforms() {
         AddUniform("model");
         AddUniform("view");
         AddUniform("projection");
@@ -47,8 +44,6 @@ namespace mod::player {
     }
 
     void PlayerShader::InitUniforms(vd::object::Entity3DPtr pEntity) {
-        AddUniforms();
-
         m_pFogManager->SetUniforms(shared_from_this());
         m_pLightManager->SetUniforms(shared_from_this());
     }
@@ -66,14 +61,12 @@ namespace mod::player {
             vd::model::Material& meshMaterial = pMesh->Materials().front();
 
             if (meshMaterial.DiffuseMap() != nullptr) {
-                vd::gl::ActiveTexture(0);
-                meshMaterial.DiffuseMap()->Bind();
+                meshMaterial.DiffuseMap()->BindToUnit(0);
                 SetUniform("diffuseMap", 0);
             }
 
             if (meshMaterial.SpecularMap() != nullptr) {
-                vd::gl::ActiveTexture(1);
-                meshMaterial.SpecularMap()->Bind();
+                meshMaterial.SpecularMap()->BindToUnit(1);
                 SetUniform("specularMap", 1);
             }
         }

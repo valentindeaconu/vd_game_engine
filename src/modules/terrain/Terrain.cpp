@@ -54,10 +54,10 @@ namespace mod::terrain {
         pBuffer->Bind();
 
         pBuffer->AddBuffer(
-                vd::gl::buffer::eArrayBuffer,
+                vd::gl::eArrayBuffer,
                 vertices.size() * sizeof(glm::vec2),
                 &vertices[0],
-                vd::gl::buffer::eStaticDraw
+                vd::gl::eStaticDraw
         );
 
         pBuffer->AttributeArray(0, 2, vd::gl::eFloat, sizeof(glm::vec2), (GLvoid*)0);

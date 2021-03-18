@@ -78,23 +78,23 @@ namespace mod::player {
     }
 
     void Player::Input() {
-        if (m_pEventHandler->KeyHolding(GLFW_KEY_W)) {
+        if (m_pEventHandler->KeyHolding(vd::Key::eW)) {
             this->m_CurrentSpeed = m_kRunSpeed;
-        } else if (m_pEventHandler->KeyHolding(GLFW_KEY_S)) {
+        } else if (m_pEventHandler->KeyHolding(vd::Key::eS)) {
             this->m_CurrentSpeed = -m_kRunSpeed;
         } else {
             this->m_CurrentSpeed = 0.0f;
         }
 
-        if (m_pEventHandler->KeyHolding(GLFW_KEY_D)) {
+        if (m_pEventHandler->KeyHolding(vd::Key::eD)) {
             this->m_CurrentTurnSpeed = -m_kTurnSpeed;
-        } else if (m_pEventHandler->KeyHolding(GLFW_KEY_A)) {
+        } else if (m_pEventHandler->KeyHolding(vd::Key::eA)) {
             this->m_CurrentTurnSpeed = m_kTurnSpeed;
         } else {
             this->m_CurrentTurnSpeed = 0.0f;
         }
 
-        if (m_pEventHandler->KeyDown(GLFW_KEY_SPACE)) {
+        if (m_pEventHandler->KeyDown(vd::Key::eSpace)) {
             Jump();
         }
     }

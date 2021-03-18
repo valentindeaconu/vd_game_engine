@@ -23,16 +23,12 @@ namespace mod::water {
             , public vd::injector::Injectable
             , protected std::enable_shared_from_this<WaterShader> {
     public:
-        WaterShader();
-        ~WaterShader();
-
         void Link() override;
+        void Init() override;
 
         void InitUniforms(vd::object::Entity3DPtr pEntity) override;
         void UpdateUniforms(vd::object::Entity3DPtr pEntity, uint64_t levelOfDetail, uint32_t meshIndex) override;
     private:
-        void AddUniforms() override;
-
         vd::camera::CameraPtr m_pCamera;
         vd::window::WindowPtr m_pWindow;
         vd::light::LightManagerPtr m_pLightManager;

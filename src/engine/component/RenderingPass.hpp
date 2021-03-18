@@ -5,7 +5,7 @@
 #ifndef VD_GAME_ENGINE_RENDERINGPASS_HPP
 #define VD_GAME_ENGINE_RENDERINGPASS_HPP
 
-#include <engine/misc/Types.hpp>
+#include <engine/defines/Types.hpp>
 
 #include <engine/api/gl/FrameBuffer.hpp>
 

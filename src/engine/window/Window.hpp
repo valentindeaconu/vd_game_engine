@@ -9,17 +9,16 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <sstream>
 
-#include <engine/api/gl/GL.hpp>
-
-#include <engine/misc/Types.hpp>
+#include <engine/defines/Types.hpp>
 
 #include <engine/logger/Logger.hpp>
 
 #include <engine/injector/Injectable.hpp>
 #include <engine/event/EventHandler.hpp>
-#include <engine/core/ThreadPool.hpp>
 
 #include <engine/component/IManager.hpp>
+
+#include <GLFW/glfw3.h>
 
 namespace vd::window {
     class WindowManager;
@@ -48,6 +47,10 @@ namespace vd::window {
         [[nodiscard]] glm::mat4 OrthoProjectionMatrix() const;
     private:
         friend class WindowManager;
+
+        static Key::Code ToKey(int key);
+        static Action::Code ToAction(int action);
+        static Button::Code ToButton(int button);
 
         static void WindowResizeCallback(GLFWwindow* window, int32_t width, int32_t height);
         static void KeyboardCallback(GLFWwindow* window, int key, int scancode, int action, int mode);
@@ -80,7 +83,6 @@ namespace vd::window {
     private:
         WindowPtr               m_pWindow;
         event::EventHandlerPtr  m_pEventHandler;
-        core::ThreadPoolPtr     m_pThreadPool;
     };
     typedef std::shared_ptr<WindowManager>  WindowManagerPtr;
 }

@@ -42,16 +42,13 @@ namespace mod::postprocessing {
         SetUniform("near", m_pWindow->NearPlane());
         SetUniform("far", m_pWindow->FarPlane());
 
-        vd::gl::ActiveTexture(0);
-        pDepthOfField->InputFrameBuffer(0)->DepthTexture()->Bind();
+        pDepthOfField->InputFrameBuffer(0)->DepthTexture()->BindToUnit(0);
         SetUniform("depthMap", 0);
 
-        vd::gl::ActiveTexture(1);
-        pDepthOfField->InputFrameBuffer(0)->ColorTexture()->Bind();
+        pDepthOfField->InputFrameBuffer(0)->ColorTexture()->BindToUnit(1);
         SetUniform("colorMap", 1);
 
-        vd::gl::ActiveTexture(2);
-        pDepthOfField->InputFrameBuffer(1)->ColorTexture()->Bind();
+        pDepthOfField->InputFrameBuffer(1)->ColorTexture()->BindToUnit(2);
         SetUniform("blurMap", 2);
     }
 }

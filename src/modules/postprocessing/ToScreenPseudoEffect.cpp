@@ -52,11 +52,10 @@ namespace mod::postprocessing {
     void ToScreenShader::UpdateUniforms(vd::component::IRenderingEffectPtr pEffect) {
          auto pToScreenPseudoEffect = std::dynamic_pointer_cast<ToScreenPseudoEffect>(pEffect);
 
-        vd::gl::ActiveTexture(0);
         if (m_pContext->WireframeMode()) {
-            m_pContext->SceneFrameBuffer()->ColorTexture()->Bind();
+            m_pContext->SceneFrameBuffer()->ColorTexture()->BindToUnit(0);
         } else {
-            pToScreenPseudoEffect->InputFrameBuffer()->ColorTexture()->Bind();
+            pToScreenPseudoEffect->InputFrameBuffer()->ColorTexture()->BindToUnit(0);
         }
         SetUniform("colorMap", 0);
     }

@@ -5,7 +5,12 @@
 #include "ShadowShader.hpp"
 
 namespace mod::shadow {
-    ShadowShader::ShadowShader() : vd::component::IEntity3DShader() {
+
+    void ShadowShader::Link() {
+        m_pShadowManager = vd::ObjectOfType<ShadowManager>::Find();
+    }
+
+    void ShadowShader::Init() {
         Create();
 
         std::string vsSource;
@@ -17,15 +22,7 @@ namespace mod::shadow {
         AddShader(fsSource, vd::gl::Shader::eFragmentShader);
 
         Compile();
-    }
-
-    ShadowShader::~ShadowShader() = default;
-
-    void ShadowShader::Link() {
-        m_pShadowManager = vd::ObjectOfType<ShadowManager>::Find();
-    }
-
-    void ShadowShader::AddUniforms() {
+        
         AddUniform("model");
         AddUniform("view");
         AddUniform("projection");
@@ -34,7 +31,7 @@ namespace mod::shadow {
     }
 
     void ShadowShader::InitUniforms(vd::object::Entity3DPtr pEntity) {
-        AddUniforms();
+
     }
 
     void ShadowShader::UpdateUniforms(vd::object::Entity3DPtr pEntity, uint64_t levelOfDetail, uint32_t meshIndex) {
@@ -49,8 +46,7 @@ namespace mod::shadow {
             vd::model::Material& meshMaterial = pMesh->Materials().front();
 
             if (meshMaterial.DiffuseMap() != nullptr) {
-                vd::gl::ActiveTexture(0);
-                meshMaterial.DiffuseMap()->Bind();
+                meshMaterial.DiffuseMap()->BindToUnit(0);
                 SetUniform("diffuseMap", 0);
             }
         }

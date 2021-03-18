@@ -20,10 +20,10 @@ namespace vd::object::primitive {
         pBuffer->Create();
         pBuffer->Bind();
         pBuffer->AddBuffer(
-                gl::buffer::eArrayBuffer,
+                gl::eArrayBuffer,
                 pMesh->Vertices().size() * sizeof(vd::model::Vertex2D),
                 &pMesh->Vertices()[0],
-                gl::buffer::eStaticDraw
+                gl::eStaticDraw
         );
         pBuffer->AttributeArray(0, 2, vd::gl::eFloat, sizeof(vd::model::Vertex2D), (GLvoid*)0);
         pBuffer->AttributeArray(1, 2, vd::gl::eFloat, sizeof(vd::model::Vertex2D), (GLvoid*)offsetof(vd::model::Vertex2D, TexCoords));

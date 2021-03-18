@@ -8,17 +8,16 @@
 #include <memory>
 #include <unordered_map>
 
-#include "GL.hpp"
-#include "GLComponent.hpp"
+#include "Component.hpp"
 #include "Texture.hpp"
 
 #include <engine/service/TextureService.hpp>
 
 namespace vd::gl {
 
-    class FrameBuffer : public GLComponent {
+    class FrameBuffer : public Component {
     public:
-        typedef std::function<void(Texture2DPtr& t)>    TextureConfigurator;
+        typedef vd::Setter<Texture2DPtr>        TextureConfigurator;
         static inline const TextureConfigurator g_kDefaultConfigurator = [](Texture2DPtr&) { };
 
         enum Type {
@@ -47,9 +46,6 @@ namespace vd::gl {
 
         FrameBuffer(size_t width, size_t height, const Type& type = eReadWrite);
 
-        void Create() override;
-        void CleanUp() override;
-
         void Bind();
         void Unbind();
         void Clear() const;
@@ -74,6 +70,9 @@ namespace vd::gl {
 
         GLuint& DepthBuffer();
     private:
+        void OnCreate() override;
+        void OnCleanUp() override;
+
         const GLuint kDepthAttachment = GL_DEPTH_ATTACHMENT;
 
         Type            m_Type;

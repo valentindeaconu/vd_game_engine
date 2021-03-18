@@ -8,15 +8,15 @@
 #include <memory>
 #include <unordered_map>
 
-#include "GL.hpp"
-#include "GLComponent.hpp"
+#include "Component.hpp"
+#include "Context.hpp"
 #include "Texture.hpp"
 
 #include <engine/service/TextureService.hpp>
 
 namespace vd::gl {
 
-    class Query : public GLComponent {
+    class Query : public Component {
     public:
         enum Type {
             eSamplesPassed = GL_SAMPLES_PASSED,
@@ -24,9 +24,6 @@ namespace vd::gl {
         };
 
         explicit Query(const Type& type);
-
-        void Create() override;
-        void CleanUp() override;
 
         void Prepare();
         void Finish();
@@ -40,6 +37,9 @@ namespace vd::gl {
         int GetResult();
 
     private:
+        void OnCreate() override;
+        void OnCleanUp() override;
+
         uint32_t    m_Id;
         bool        m_Allocated;
         bool        m_InUse;

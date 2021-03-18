@@ -10,8 +10,6 @@ namespace mod::player {
     {
     }
 
-    PlayerRenderer::~PlayerRenderer() = default;
-
     void PlayerRenderer::Link() {
         m_pCamera = vd::ObjectOfType<vd::camera::Camera>::Find();
         m_pShadowShader = vd::ObjectOfType<mod::shadow::ShadowShader>::Find();
@@ -20,8 +18,10 @@ namespace mod::player {
     void PlayerRenderer::Init() {
         m_pPlayer->Init();
 
+        m_pShader->Init();
         m_pShader->Bind();
         m_pShader->InitUniforms(m_pPlayer);
+        m_pShader->Unbind();
     }
 
     void PlayerRenderer::Update() {
@@ -40,10 +40,9 @@ namespace mod::player {
         if (renderingPass == "Shadow" || renderingPass == "Main") {
             Prepare();
 
-            const vd::component::IEntityShaderPtr& shaderPtr = (renderingPass == "Shadow") ? m_pShadowShader
-                                                                                           : m_pShader;
+            const vd::component::IEntityShaderPtr& pShader = (renderingPass == "Shadow") ? m_pShadowShader : m_pShader;
 
-            shaderPtr->Bind();
+            pShader->Bind();
 
             vd::gl::BufferPtrVec& buffers = m_pPlayer->Buffers();
 
@@ -55,10 +54,12 @@ namespace mod::player {
             auto& bufferIndices = m_pPlayer->BufferIndices(levelOfDetail);
 
             for (size_t meshIndex = 0; meshIndex < meshes.size(); ++meshIndex) {
-                shaderPtr->UpdateUniforms(m_pPlayer, levelOfDetail, meshIndex);
+                pShader->UpdateUniforms(m_pPlayer, levelOfDetail, meshIndex);
                 const int count = meshes[meshIndex]->Indices().size();
                 buffers[ bufferIndices[meshIndex] ]->DrawElements(vd::gl::eTriangles, count, vd::gl::eUnsignedInt);
             }
+
+            pShader->Unbind();
 
             Finish();
         }

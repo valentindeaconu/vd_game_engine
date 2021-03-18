@@ -40,8 +40,7 @@ namespace mod::terrain::splatmap {
         /// Setup Shader
         m_pShader->Bind();
 
-        vd::gl::ActiveTexture(0);
-        heightMap->Bind();
+        heightMap->BindToUnit(0);
         m_pShader->PushUniform("heightMap", 0);
         m_pShader->PushUniform("size", size);
         m_pShader->PushUniform("scaleY", scaleY);
@@ -60,6 +59,7 @@ namespace mod::terrain::splatmap {
         glDispatchCompute(size/16, size/16, 1);
         glFinish();
 
+        m_pShader->Unbind();
         heightMap->Unbind();
 
         /// Extract Texture Data

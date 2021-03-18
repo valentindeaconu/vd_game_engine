@@ -11,7 +11,7 @@
 
 #include <engine/object/primitive/Quad2D.hpp>
 
-#include <engine/misc/Types.hpp>
+#include <engine/defines/Types.hpp>
 
 #include <engine/service/TextureService.hpp>
 
@@ -70,15 +70,12 @@ namespace mod::sky {
 
     class FlareShader : public vd::component::IEntity2DShader, public vd::injector::Injectable {
     public:
-        FlareShader();
-
         void Link() override;
+        void Init() override;
 
         void InitUniforms(vd::object::Entity2DPtr pEntity) override;
         void UpdateUniforms(vd::object::Entity2DPtr pEntity, uint64_t levelOfDetail, uint32_t meshIndex) override;
     private:
-        void AddUniforms() override;
-
         vd::camera::CameraPtr m_pCamera;
         vd::window::WindowPtr m_pWindow;
     };

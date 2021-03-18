@@ -5,8 +5,6 @@
 #ifndef VD_GAME_ENGINE_MESH_HPP
 #define VD_GAME_ENGINE_MESH_HPP
 
-#include <engine/api/gl/GL.hpp>
-
 #include <string>
 #include <vector>
 
@@ -17,11 +15,10 @@ namespace vd::model {
     class Mesh2D {
     public:
         typedef std::vector<Vertex2D>   VertexVec;
-        typedef std::vector<GLuint>     IndexVec;
+        typedef std::vector<uint32_t>   IndexVec;
         typedef std::vector<Material>   MaterialVec;
 
         Mesh2D();
-        ~Mesh2D();
 
         VertexVec&      Vertices();
         IndexVec&       Indices();
@@ -42,7 +39,6 @@ namespace vd::model {
         typedef std::vector<Material>   MaterialVec;
 
         Mesh3D();
-        ~Mesh3D();
 
         VertexVec&      Vertices();
         IndexVec&       Indices();

@@ -4,6 +4,8 @@
 
 #include "ShadowManager.hpp"
 
+#include "ShadowShader.hpp"
+
 namespace mod::shadow {
     ShadowManager::ShadowManager(const std::string& propsFilePath)
         : m_pFrameBuffer(nullptr)
@@ -18,9 +20,10 @@ namespace mod::shadow {
         m_pView = std::make_shared<glm::mat4>(1.0f);
         m_pProjection = std::make_shared<glm::mat4>(1.0f);
         m_pFrameBuffer = std::make_shared<vd::gl::FrameBuffer>(m_MapSize, m_MapSize);
-    }
 
-    ShadowManager::~ShadowManager() = default;
+    
+        m_pShader = vd::injector::CreateAndStore<ShadowShader>();
+    }
 
     void ShadowManager::Link() {
         auto& lightManagerPtr = vd::ObjectOfType<vd::light::LightManager>::Find();
@@ -28,6 +31,8 @@ namespace mod::shadow {
     }
 
     void ShadowManager::Init() {
+        m_pShader->Init();
+
         m_pFrameBuffer->Create();
         m_pFrameBuffer->Bind();
 
@@ -63,6 +68,7 @@ namespace mod::shadow {
     }
 
     void ShadowManager::CleanUp() {
+        m_pShader->CleanUp();
         m_pFrameBuffer->CleanUp();
     }
 

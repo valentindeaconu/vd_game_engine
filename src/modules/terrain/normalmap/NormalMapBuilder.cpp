@@ -38,8 +38,7 @@ namespace mod::terrain::normalmap {
         /// Setup Shader
         m_pShader->Bind();
 
-        vd::gl::ActiveTexture(0);
-        heightMap->Bind();
+        heightMap->BindToUnit(0);
         m_pShader->PushUniform("heightMap", 0);
         m_pShader->PushUniform("size", size);
         m_pShader->PushUniform("strength", strength);
@@ -48,6 +47,8 @@ namespace mod::terrain::normalmap {
         glBindImageTexture(0, outNormalMap->Id(), 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA32F);
         glDispatchCompute(size/16, size/16, 1);
         glFinish();
+
+        m_pShader->Unbind();
 
         heightMap->Unbind();
     }

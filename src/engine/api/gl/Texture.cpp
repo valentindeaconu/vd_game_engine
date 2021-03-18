@@ -1,10 +1,10 @@
-﻿#include "Texture.hpp"
+﻿//
+// Created by Vali on 11/11/2020.
+//
+
+#include "Texture.hpp"
 
 namespace vd::gl {
-
-    void ActiveTexture(GLuint index) {
-        glActiveTexture(GL_TEXTURE0 + index);
-    }
 
     template class Texture<GL_TEXTURE_2D>;
     template class Texture<GL_TEXTURE_CUBE_MAP>;
@@ -17,12 +17,12 @@ namespace vd::gl {
     }
 
     template<GLuint T>
-    void Texture<T>::Create() {
+    void Texture<T>::OnCreate() {
         glGenTextures(1, &m_Id);
     }
 
     template<GLuint T>
-    void Texture<T>::CleanUp() {
+    void Texture<T>::OnCleanUp() {
         glDeleteTextures(1, &m_Id);
     }
 

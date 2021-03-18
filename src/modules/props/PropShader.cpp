@@ -2,7 +2,16 @@
 
 namespace mod::props {
 
-    PropShader::PropShader() : vd::component::IEntity3DShader() {
+    void PropShader::Link() {
+        m_pContext = vd::ObjectOfType<vd::context::Context>::Find();
+        m_pCamera = vd::ObjectOfType<vd::camera::Camera>::Find();
+        m_pWindow = vd::ObjectOfType<vd::window::Window>::Find();
+
+        m_pLightManager = vd::ObjectOfType<vd::light::LightManager>::Find();
+        m_pFogManager = vd::ObjectOfType<vd::fog::FogManager>::Find();
+    }
+
+    void PropShader::Init() {
         Create();
 
         std::string vsSource;
@@ -14,20 +23,7 @@ namespace mod::props {
         AddShader(fsSource, vd::gl::Shader::eFragmentShader);
 
         Compile();
-    }
 
-    PropShader::~PropShader() = default;
-
-    void PropShader::Link() {
-        m_pContext = vd::ObjectOfType<vd::context::Context>::Find();
-        m_pCamera = vd::ObjectOfType<vd::camera::Camera>::Find();
-        m_pWindow = vd::ObjectOfType<vd::window::Window>::Find();
-
-        m_pLightManager = vd::ObjectOfType<vd::light::LightManager>::Find();
-        m_pFogManager = vd::ObjectOfType<vd::fog::FogManager>::Find();
-    }
-
-    void PropShader::AddUniforms() {
         AddUniform("model");
         AddUniform("view");
         AddUniform("projection");
@@ -44,8 +40,6 @@ namespace mod::props {
     }
 
     void PropShader::InitUniforms(vd::object::Entity3DPtr pEntity) {
-        AddUniforms();
-
         m_pFogManager->SetUniforms(shared_from_this());
         m_pLightManager->SetUniforms(shared_from_this());
     }
@@ -63,14 +57,12 @@ namespace mod::props {
             vd::model::Material& meshMaterial = pMesh->Materials().front();
 
             if (meshMaterial.DiffuseMap() != nullptr) {
-                vd::gl::ActiveTexture(0);
-                meshMaterial.DiffuseMap()->Bind();
+                meshMaterial.DiffuseMap()->BindToUnit(0);
                 SetUniform("diffuseMap", 0);
             }
 
             if (meshMaterial.SpecularMap() != nullptr) {
-                vd::gl::ActiveTexture(1);
-                meshMaterial.SpecularMap()->Bind();
+                meshMaterial.SpecularMap()->BindToUnit(1);
                 SetUniform("specularMap", 1);
             }
         }

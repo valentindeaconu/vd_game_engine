@@ -23,8 +23,10 @@ namespace mod::sky {
     void SkyRenderer::Init() {
         m_pSky->Init();
 
+        m_pShader->Init();
         m_pShader->Bind();
         m_pShader->InitUniforms(m_pSky);
+        m_pShader->Unbind();
     }
 
     void SkyRenderer::Update() {
@@ -46,10 +48,9 @@ namespace mod::sky {
             renderingPass == "Main") {
             Prepare();
 
-            const vd::component::IEntityShaderPtr& shaderPtr = (renderingPass == "Shadow") ? m_pShadowShader
-                                                                                           : m_pShader;
+            const vd::component::IEntityShaderPtr& pShader = (renderingPass == "Shadow") ? m_pShadowShader : m_pShader;
 
-            shaderPtr->Bind();
+            pShader->Bind();
 
             const auto levelOfDetail = m_pSky->LevelOfDetailAtDistance(.0f);
 
@@ -58,9 +59,11 @@ namespace mod::sky {
 
             vd::gl::BufferPtrVec& buffers = m_pSky->Buffers();
             for (size_t meshIndex = 0; meshIndex < meshes.size(); ++meshIndex) {
-                shaderPtr->UpdateUniforms(m_pSky, levelOfDetail, meshIndex);
+                pShader->UpdateUniforms(m_pSky, levelOfDetail, meshIndex);
                 buffers[ bufferIndices[meshIndex] ]->DrawElements(vd::gl::eTriangles, 36, vd::gl::eUnsignedInt);
             }
+
+            pShader->Unbind();
 
             Finish();
         }

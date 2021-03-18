@@ -38,16 +38,16 @@ namespace vd::object {
                 pBuffer->Create();
                 pBuffer->Bind();
                 pBuffer->AddBuffer(
-                        gl::buffer::eArrayBuffer,
+                        gl::eArrayBuffer,
                         mesh->Vertices().size() * sizeof(vd::model::Vertex3D),
                         &mesh->Vertices()[0],
-                        gl::buffer::eStaticDraw
+                        gl::eStaticDraw
                 );
                 pBuffer->AddBuffer(
-                        gl::buffer::eElementArrayBuffer,
+                        gl::eElementArrayBuffer,
                         mesh->Indices().size() * sizeof(GLuint),
                         &mesh->Indices()[0],
-                        gl::buffer::eStaticDraw
+                        gl::eStaticDraw
                 );
                 pBuffer->AttributeArray(0, 3, vd::gl::eFloat, sizeof(vd::model::Vertex3D), (GLvoid*)0);
                 pBuffer->AttributeArray(1, 3, vd::gl::eFloat, sizeof(vd::model::Vertex3D), (GLvoid*)offsetof(vd::model::Vertex3D, Normal));

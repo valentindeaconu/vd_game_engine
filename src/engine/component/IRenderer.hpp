@@ -6,7 +6,7 @@
 #define VD_GAME_ENGINE_IRENDERER_HPP
 
 #include <engine/datastruct/Observer.hpp>
-#include <engine/misc/Types.hpp>
+#include <engine/defines/Types.hpp>
 
 #include <string>
 

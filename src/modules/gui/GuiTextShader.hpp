@@ -20,15 +20,13 @@
 namespace mod::gui {
     class GuiTextShader : public vd::component::IEntity2DShader, public vd::injector::Injectable {
     public:
-        GuiTextShader();
-
         void Link() override;
+        void Init() override;
 
         void InitUniforms(vd::object::Entity2DPtr pEntity) override;
         void UpdateUniforms(vd::object::Entity2DPtr pEntity, uint64_t levelOfDetail, uint32_t meshIndex) override;
     private:
-        void AddUniforms() override;
-
+        bool m_Initialized;
         vd::window::WindowPtr m_pWindow;
     };
     typedef std::shared_ptr<GuiTextShader>  GuiTextShaderPtr;

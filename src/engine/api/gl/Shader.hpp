@@ -5,15 +5,15 @@
 #ifndef VD_GAME_ENGINE_SHADER_HPP
 #define VD_GAME_ENGINE_SHADER_HPP
 
-#include "GL.hpp"
-#include "GLComponent.hpp"
-
 #include <unordered_map>
 #include <memory>
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
 #include <engine/exception/Exceptions.hpp>
+
+#include "Context.hpp"
+#include "Component.hpp"
 
 namespace vd::gl {
     namespace exception {
@@ -34,7 +34,7 @@ namespace vd::gl {
         };
     }
 
-    class Shader : public GLComponent {
+    class Shader : public Component {
     public:
         enum Type {
             eVertexShader = GL_VERTEX_SHADER,
@@ -49,14 +49,11 @@ namespace vd::gl {
 
         Shader();
 
-        void Create() override;
-        void CleanUp() override;
-
-        void Bind() const;
-        static void Unbind();
+        void Bind();
+        void Unbind();
 
         void AddShader(const std::string& source, const Type& type);
-        void Compile() const;
+        void Compile();
 
         [[nodiscard]] uint32_t Program() const;
 
@@ -84,6 +81,11 @@ namespace vd::gl {
         void BindUniformBlock(const std::string& uniformBlockName, uint32_t uniformBlockBinding) const;
         void BindFragDataLocation(const std::string& name, uint32_t index) const;
     private:
+        void OnCreate() override;
+        void OnCleanUp() override;
+
+        bool m_Bound;
+
         uint32_t m_Program;
         std::unordered_map<std::string, uint32_t> m_UniformMap;
     };

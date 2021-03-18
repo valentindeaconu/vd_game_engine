@@ -16,7 +16,7 @@
 
 #include <engine/logger/Logger.hpp>
 #include <engine/exception/Exceptions.hpp>
-#include <engine/misc/Types.hpp>
+#include <engine/defines/Types.hpp>
 
 #include "Job.hpp"
 

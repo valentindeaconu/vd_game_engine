@@ -11,6 +11,9 @@
 #include <engine/injector/Injectable.hpp>
 #include <engine/event/EventHandler.hpp>
 
+#include <engine/defines/Keys.hpp>
+#include <engine/defines/Buttons.hpp>
+
 namespace vd::camera {
     class CameraManager;
 
@@ -25,7 +28,6 @@ namespace vd::camera {
         };
 
         Camera();
-        ~Camera();
 
         virtual void Reflect(const Axis& axis, float amount) = 0;
 
@@ -90,7 +92,6 @@ namespace vd::camera {
         };
 
         CameraManager();
-        ~CameraManager();
 
         void Link() override;
 

@@ -67,15 +67,12 @@ namespace mod::sky {
 
     class SunShader : public vd::component::IEntity2DShader, public vd::injector::Injectable {
     public:
-        SunShader();
-
         void Link() override;
+        void Init() override;
 
         void InitUniforms(vd::object::Entity2DPtr pEntity) override;
         void UpdateUniforms(vd::object::Entity2DPtr pEntity, uint64_t levelOfDetail, uint32_t meshIndex) override;
     private:
-        void AddUniforms() override;
-
         vd::camera::CameraPtr m_pCamera;
         vd::window::WindowPtr m_pWindow;
     };

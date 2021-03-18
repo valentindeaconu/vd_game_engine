@@ -17,7 +17,10 @@ namespace vd::window {
     }
 
     void Window::Build() {
-        glfwInit();
+        if (GLFW_TRUE != glfwInit()) {
+            throw RuntimeError("Failed to initalize GLFW");
+        }
+
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
@@ -29,40 +32,17 @@ namespace vd::window {
 
         if (nullptr == m_Window) {
             glfwTerminate();
-            throw std::runtime_error("failed to create GLFW window");
+            throw vd::RuntimeError("failed to create GLFW window");
         }
 
         glfwSetWindowUserPointer(m_Window, this);
         glfwSetWindowSizeCallback(m_Window, Window::WindowResizeCallback);
         glfwMakeContextCurrent(m_Window);
 
-        glewExperimental = GL_TRUE;
-
-        if (GLEW_OK != glewInit()) {
-            throw std::runtime_error("failed to initialize GLEW");
-        }
-
-        int screenWidth, screenHeight;
-        glfwGetFramebufferSize(m_Window, &screenWidth, &screenHeight);
-
-        glViewport(0, 0, screenWidth, screenHeight);
-
         glfwSetKeyCallback(m_Window, Window::KeyboardCallback);
         glfwSetCursorPosCallback(m_Window, Window::MouseCallback);
         glfwSetMouseButtonCallback(m_Window, Window::MouseClickCallback);
         glfwSetScrollCallback(m_Window, Window::MouseScrollCallback);
-
-        // get version info
-        const GLubyte *renderer = glGetString(GL_RENDERER); // get renderer string
-        auto version = glGetString(GL_VERSION); // version as a string
-
-        std::stringstream rendererStream;
-        rendererStream << "Renderer: " << renderer;
-        vd::Logger::log(rendererStream.str());
-
-        std::stringstream openGlVersionStream;
-        openGlVersionStream << "OpenGL version supported " << version;
-        vd::Logger::log(openGlVersionStream.str());
 
         m_Changed = true;
     }
@@ -83,8 +63,6 @@ namespace vd::window {
         this->m_Dimension = vd::Dimension(width, height);
 
         glfwSetWindowSize(m_Window, width, height);
-
-        glViewport(0, 0, width, height);
 
         vd::Logger::log("Window resized to " + std::to_string(width) + " x " + std::to_string(height));
 
@@ -131,29 +109,55 @@ namespace vd::window {
         return glm::ortho(0.0f, (float) m_Dimension.width, 0.0f, (float) m_Dimension.height);
     }
 
+    Key::Code Window::ToKey(int key) {
+        return Key::Code(key);
+    }
+
+    Action::Code Window::ToAction(int action) {
+        switch (action) {
+            case GLFW_PRESS: return Action::ePress;
+            case GLFW_REPEAT: return Action::eRepeat;
+            case GLFW_RELEASE: return Action::eRelease;
+
+            case GLFW_KEY_UNKNOWN: 
+            default:
+                return Action::eUnknown;
+        }
+    }
+
+    Button::Code Window::ToButton(int button) {
+        return Button::Code(button);
+    }
+
     void Window::WindowResizeCallback(GLFWwindow* window, int32_t width, int32_t height) {
+        int bufferWidth, bufferHeight;
+        glfwGetFramebufferSize(window, &bufferWidth, &bufferHeight);
+
         auto& inputHandler = vd::ObjectOfType<event::EventHandler>::Find();
-        inputHandler->WindowResizeCallback(window, width, height);
+        inputHandler->WindowResizeCallback(vd::Dimension(uint64_t(glm::abs(bufferWidth)), uint64_t(glm::abs(bufferHeight))));
     }
 
     void Window::KeyboardCallback(GLFWwindow* window, int key, int scancode, int action, int mode) {
+        if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
+            glfwSetWindowShouldClose(window, GL_TRUE);
+        
         auto& inputHandler = vd::ObjectOfType<event::EventHandler>::Find();
-        inputHandler->KeyboardCallback(window, key, scancode, action, mode);
+        inputHandler->KeyboardCallback(ToKey(key), ToAction(action));
     }
 
     void Window::MouseCallback(GLFWwindow* window, double x_pos, double y_pos) {
         auto& inputHandler = vd::ObjectOfType<event::EventHandler>::Find();
-        inputHandler->MouseCallback(window, x_pos, y_pos);
+        inputHandler->MouseCallback(x_pos, y_pos);
     }
 
     void Window::MouseClickCallback(GLFWwindow* window, int button, int action, int mods) {
         auto& inputHandler = vd::ObjectOfType<event::EventHandler>::Find();
-        inputHandler->MouseClickCallback(window, button, action, mods);
+        inputHandler->MouseClickCallback(ToButton(button), ToAction(action));
     }
 
     void Window::MouseScrollCallback(GLFWwindow* window, double x_offset, double y_offset) {
         auto& inputHandler = vd::ObjectOfType<event::EventHandler>::Find();
-        inputHandler->MouseScrollCallback(window, x_offset, y_offset);
+        inputHandler->MouseScrollCallback(x_offset, y_offset);
     }
 
     WindowManager::WindowManager() {
@@ -173,7 +177,6 @@ namespace vd::window {
 
     void WindowManager::Link() {
         m_pEventHandler = vd::ObjectOfType<event::EventHandler>::Find();
-        m_pThreadPool = vd::ObjectOfType<core::ThreadPool>::Find();
     }
 
     void WindowManager::Init() {
@@ -181,10 +184,8 @@ namespace vd::window {
     }
 
     void WindowManager::Update() {
-        m_pThreadPool->CreateJobFor([&]() {
-            glfwSwapBuffers(m_pWindow->m_Window);
-            glfwPollEvents();
-        }, "Render", true);
+        glfwSwapBuffers(m_pWindow->m_Window);
+        glfwPollEvents();
 
         if (m_pWindow->m_Changed) {
             m_pWindow->m_Changed = false;
@@ -197,8 +198,6 @@ namespace vd::window {
     }
 
     void WindowManager::CleanUp() {
-        m_pThreadPool->CreateJobFor([&]() {
-            m_pWindow->Dispose();
-        }, "Render", true);
+        m_pWindow->Dispose();
     }
 }

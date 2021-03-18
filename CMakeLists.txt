@@ -10,11 +10,13 @@ include_directories(src/)
 include_directories(include/)
 
 set(SOURCES
-        src/engine/api/gl/GL.hpp
-        src/engine/api/gl/GLComponent.hpp
-        src/engine/api/gl/GLTypes.hpp
+        src/engine/api/gl/Enums.hpp
         src/engine/api/gl/Buffer.cpp
         src/engine/api/gl/Buffer.hpp
+        src/engine/api/gl/Component.cpp
+        src/engine/api/gl/Component.hpp
+        src/engine/api/gl/Context.cpp
+        src/engine/api/gl/Context.hpp
         src/engine/api/gl/FrameBuffer.cpp
         src/engine/api/gl/FrameBuffer.hpp
         src/engine/api/gl/Texture.cpp
@@ -60,6 +62,10 @@ set(SOURCES
         src/engine/datastruct/Tree.hpp
         src/engine/datastruct/Observer.cpp
         src/engine/datastruct/Observer.hpp
+        src/engine/defines/Actions.hpp
+        src/engine/defines/Buttons.hpp
+        src/engine/defines/Keys.hpp
+        src/engine/defines/Types.hpp
         src/engine/event/EventHandler.cpp
         src/engine/event/EventHandler.hpp
         src/engine/exception/Exceptions.cpp
@@ -118,7 +124,6 @@ set(SOURCES
         src/engine/math/Transform.hpp
         src/engine/math/Utils.cpp
         src/engine/math/Utils.hpp
-        src/engine/misc/Types.hpp
         src/engine/model/Font.cpp
         src/engine/model/Font.hpp
         src/engine/model/Image.cpp

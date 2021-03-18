@@ -12,27 +12,27 @@ namespace vd::event {
     {
     }
 
-    bool EventHandler::KeyDown(int key) const {
+    bool EventHandler::KeyDown(Key::Code key) const {
         return m_KeysStatus[key] == eKeyPressed || m_KeysStatus[key] == eKeyPostPressed;
     }
 
-    bool EventHandler::KeyReleased(int key) const {
+    bool EventHandler::KeyReleased(Key::Code key) const {
         return m_KeysStatus[key] == eKeyReleased || m_KeysStatus[key] == eKeyPostReleased;
     }
 
-    bool EventHandler::KeyHolding(int key) const {
+    bool EventHandler::KeyHolding(Key::Code key) const {
         return m_KeysStatus[key] == eKeyHolding;
     }
 
-    bool EventHandler::ButtonDown(int button) const {
+    bool EventHandler::ButtonDown(Button::Code button) const {
         return m_ButtonsStatus[button] == eButtonPressed || m_ButtonsStatus[button] == eButtonPostPressed;
     }
 
-    bool EventHandler::ButtonReleased(int button) const {
+    bool EventHandler::ButtonReleased(Button::Code button) const {
         return m_ButtonsStatus[button] == eButtonReleased || m_ButtonsStatus[button] == eButtonPostReleased;
     }
 
-    bool EventHandler::ButtonHolding(int button) const {
+    bool EventHandler::ButtonHolding(Button::Code button) const {
         return m_ButtonsStatus[button] == eButtonHolding;
     }
 
@@ -72,49 +72,42 @@ namespace vd::event {
         return m_WindowInfo.info;
     }
 
-    void EventHandler::WindowResizeCallback(GLFWwindow* window, int width, int height) {
-        int bufferWidth, bufferHeight;
-        glfwGetFramebufferSize(window, &bufferWidth, &bufferHeight);
-
-        this->m_WindowInfo.info = vd::Dimension(uint64_t(glm::abs(bufferWidth)), uint64_t(glm::abs(bufferHeight)));
-
+    void EventHandler::WindowResizeCallback(vd::Dimension dimension) {
+        this->m_WindowInfo.info = dimension;
         this->m_WindowInfo.status = eWindowPreResize;
     }
 
-    void EventHandler::KeyboardCallback(GLFWwindow* window, int key, int scancode, int action, int mode) {
-        if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
-            glfwSetWindowShouldClose(window, GL_TRUE);
-
-        if (key >= 0 && key < 1024) {
-            if (action == GLFW_PRESS) {
+    void EventHandler::KeyboardCallback(Key::Code key, Action::Code action) {
+        if (key != Key::eUnknown) {
+            if (action == Action::ePress) {
                 if (this->m_KeysStatus[key] != eKeyHolding)
                     this->m_KeysStatus[key] = eKeyPressed;
-            } else if (action == GLFW_RELEASE) {
+            } else if (action == Action::eRelease) {
                 this->m_KeysStatus[key] = eKeyReleased;
             }
         }
     }
 
-    void EventHandler::MouseCallback(GLFWwindow* window, double x_pos, double y_pos) {
+    void EventHandler::MouseCallback(double x, double y) {
         this->m_MouseMovement.status = eMovePreUpdated;
-        this->m_MouseMovement.offset.x = float((x_pos - this->m_MouseMovement.curr.x) * this->m_MouseSensitivity);
-        this->m_MouseMovement.offset.y = float((this->m_MouseMovement.curr.y - y_pos) * this->m_MouseSensitivity);
+        this->m_MouseMovement.offset.x = float((x - this->m_MouseMovement.curr.x) * this->m_MouseSensitivity);
+        this->m_MouseMovement.offset.y = float((this->m_MouseMovement.curr.y - y) * this->m_MouseSensitivity);
 
-        this->m_MouseMovement.curr = glm::vec2(float(x_pos), float(y_pos));
+        this->m_MouseMovement.curr = glm::vec2(float(x), float(y));
     }
 
-    void EventHandler::MouseClickCallback(GLFWwindow* window, int button, int action, int mods) {
-        if (button >= 0 && button < 8) {
-            if (action == GLFW_PRESS) {
+    void EventHandler::MouseClickCallback(Button::Code button, Action::Code action) {
+        if (button != Button::eUnknown) {
+            if (action == Action::ePress) {
                 if (this->m_ButtonsStatus[button] != eButtonHolding)
                     this->m_ButtonsStatus[button] = eButtonPressed;
-            } else if (action == GLFW_RELEASE) {
+            } else if (action == Action::eRelease) {
                 this->m_ButtonsStatus[button] = eButtonReleased;
             }
         }
     }
 
-    void EventHandler::MouseScrollCallback(GLFWwindow* window, double x_offset, double y_offset) {
+    void EventHandler::MouseScrollCallback(double x_offset, double y_offset) {
         this->m_MouseScroll.status = eWheelPreUpdated;
         this->m_MouseScroll.offset = glm::vec2(float(x_offset), float(y_offset));
     }

@@ -5,8 +5,6 @@
 #ifndef VD_GAME_ENGINE_ENGINE_HPP
 #define VD_GAME_ENGINE_ENGINE_HPP
 
-#include <engine/api/gl/GL.hpp>
-
 #include <thread>
 #include <iostream>
 #include <string>
@@ -16,7 +14,7 @@
 #include <engine/datastruct/Observer.hpp>
 #include <engine/component/RenderingPass.hpp>
 
-#include <engine/misc/Types.hpp>
+#include <engine/defines/Types.hpp>
 
 #include <engine/window/Window.hpp>
 #include <engine/context/Context.hpp>
@@ -27,7 +25,6 @@ namespace vd {
     class Engine : public datastruct::Observable {
     public:
         Engine();
-        ~Engine();
 
         void Link();
 

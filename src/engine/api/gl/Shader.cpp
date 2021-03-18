@@ -48,30 +48,39 @@ namespace vd::gl {
     }
 
     Shader::Shader()
-        : m_Program(0), m_UniformMap()
+        : m_Program(0)
+        , m_Bound(false)
+        , m_UniformMap()
     {
     }
 
-    void Shader::Create() {
+    void Shader::OnCreate() {
         m_Program = glCreateProgram();
-        if (m_Program == 0) {
-            throw exception::ShaderError("Program Creation", "Could not create a new program");
-        }
     }
 
-    void Shader::CleanUp() {
+    void Shader::OnCleanUp() {
         glDeleteProgram(m_Program);
     }
 
-    void Shader::Bind() const {
-        glUseProgram(m_Program);
+    void Shader::Bind() {
+        PassIfCreated();
+
+        if (!m_Bound) {
+            glUseProgram(m_Program);
+            m_Bound = true;
+        }
     }
 
     void Shader::Unbind() {
-        glUseProgram(0);
+        if (m_Bound) {
+            glUseProgram(0);
+            m_Bound = false;
+        }
     }
 
     void Shader::AddShader(const std::string& source, const Shader::Type& type) {
+        PassIfCreated();
+
         uint32_t shader = glCreateShader(type);
 
         if (shader == 0) {
@@ -103,7 +112,9 @@ namespace vd::gl {
         glDeleteShader(shader);
     }
 
-    void Shader::Compile() const {
+    void Shader::Compile() {
+        PassIfCreated();
+
         glLinkProgram(m_Program);
 
         int linkStatus;
@@ -132,6 +143,8 @@ namespace vd::gl {
     }
 
     void Shader::AddUniform(const std::string& uniformName) {
+        PassIfCreated();
+
         uint32_t location = glGetUniformLocation(m_Program, uniformName.c_str());
 
         if (location == 0xFFFFFFFF) {
@@ -142,6 +155,8 @@ namespace vd::gl {
     }
 
     void Shader::AddUniformBlock(const std::string& uniformBlockName) {
+        PassIfCreated();
+
         uint32_t location = glGetUniformBlockIndex(m_Program, uniformBlockName.c_str());
 
         if (location == 0xFFFFFFFF) {
@@ -152,6 +167,8 @@ namespace vd::gl {
     }
 
     void Shader::SetUniform(const std::string& uniformName, int value) const {
+        PassIfCreated();
+
         auto it = m_UniformMap.find(uniformName);
         if (it != m_UniformMap.end()) {
             glUniform1i(it->second, value);
@@ -161,6 +178,8 @@ namespace vd::gl {
     }
 
     void Shader::SetUniform(const std::string& uniformName, float value) const {
+        PassIfCreated();
+
         auto it = m_UniformMap.find(uniformName);
         if (it != m_UniformMap.end()) {
             glUniform1f(it->second, value);
@@ -170,6 +189,8 @@ namespace vd::gl {
     }
 
     void Shader::SetUniform(const std::string& uniformName, const glm::vec2& value) const {
+        PassIfCreated();
+
         auto it = m_UniformMap.find(uniformName);
         if (it != m_UniformMap.end()) {
             glUniform2f(it->second, value.x, value.y);
@@ -179,6 +200,8 @@ namespace vd::gl {
     }
 
     void Shader::SetUniform(const std::string& uniformName, const glm::vec3& value) const {
+        PassIfCreated();
+
         auto it = m_UniformMap.find(uniformName);
         if (it != m_UniformMap.end()) {
             glUniform3f(it->second, value.x, value.y, value.z);
@@ -188,6 +211,8 @@ namespace vd::gl {
     }
 
     void Shader::SetUniform(const std::string& uniformName, const glm::vec4& value) const {
+        PassIfCreated();
+
         auto it = m_UniformMap.find(uniformName);
         if (it != m_UniformMap.end()) {
             glUniform4f(it->second, value.x, value.y, value.z, value.w);
@@ -197,6 +222,8 @@ namespace vd::gl {
     }
 
     void Shader::SetUniform(const std::string& uniformName, const glm::quat& value) const {
+        PassIfCreated();
+
         auto it = m_UniformMap.find(uniformName);
         if (it != m_UniformMap.end()) {
             glUniform4f(it->second, value.x, value.y, value.z, value.w);
@@ -206,6 +233,8 @@ namespace vd::gl {
     }
 
     void Shader::SetUniform(const std::string& uniformName, const glm::mat3& value) const {
+        PassIfCreated();
+        
         auto it = m_UniformMap.find(uniformName);
         if (it != m_UniformMap.end()) {
             glUniformMatrix3fv(it->second, 1, false, glm::value_ptr(value));
@@ -215,6 +244,8 @@ namespace vd::gl {
     }
 
     void Shader::SetUniform(const std::string& uniformName, const glm::mat4& value) const {
+        PassIfCreated();
+
         auto it = m_UniformMap.find(uniformName);
         if (it != m_UniformMap.end()) {
             glUniformMatrix4fv(it->second, 1, false, glm::value_ptr(value));
@@ -224,6 +255,8 @@ namespace vd::gl {
     }
 
     void Shader::PushUniform(const std::string& uniformName, int value) {
+        PassIfCreated();
+
         auto it = m_UniformMap.find(uniformName);
         if (it == m_UniformMap.end()) {
             AddUniform(uniformName);
@@ -233,6 +266,8 @@ namespace vd::gl {
     }
 
     void Shader::PushUniform(const std::string& uniformName, float value) {
+        PassIfCreated();
+
         auto it = m_UniformMap.find(uniformName);
         if (it == m_UniformMap.end()) {
             AddUniform(uniformName);
@@ -242,6 +277,8 @@ namespace vd::gl {
     }
 
     void Shader::PushUniform(const std::string& uniformName, const glm::vec2& value) {
+        PassIfCreated();
+
         auto it = m_UniformMap.find(uniformName);
         if (it == m_UniformMap.end()) {
             AddUniform(uniformName);
@@ -251,6 +288,8 @@ namespace vd::gl {
     }
 
     void Shader::PushUniform(const std::string& uniformName, const glm::vec3& value) {
+        PassIfCreated();
+
         auto it = m_UniformMap.find(uniformName);
         if (it == m_UniformMap.end()) {
             AddUniform(uniformName);
@@ -260,6 +299,8 @@ namespace vd::gl {
     }
 
     void Shader::PushUniform(const std::string& uniformName, const glm::vec4& value) {
+        PassIfCreated();
+
         auto it = m_UniformMap.find(uniformName);
         if (it == m_UniformMap.end()) {
             AddUniform(uniformName);
@@ -269,6 +310,8 @@ namespace vd::gl {
     }
 
     void Shader::PushUniform(const std::string& uniformName, const glm::quat& value) {
+        PassIfCreated();
+
         auto it = m_UniformMap.find(uniformName);
         if (it == m_UniformMap.end()) {
             AddUniform(uniformName);
@@ -278,6 +321,8 @@ namespace vd::gl {
     }
 
     void Shader::PushUniform(const std::string& uniformName, const glm::mat3& value) {
+        PassIfCreated();
+        
         auto it = m_UniformMap.find(uniformName);
         if (it == m_UniformMap.end()) {
             AddUniform(uniformName);
@@ -287,6 +332,8 @@ namespace vd::gl {
     }
 
     void Shader::PushUniform(const std::string& uniformName, const glm::mat4& value) {
+        PassIfCreated();
+
         auto it = m_UniformMap.find(uniformName);
         if (it == m_UniformMap.end()) {
             AddUniform(uniformName);
@@ -296,6 +343,8 @@ namespace vd::gl {
     }
 
     void Shader::BindUniformBlock(const std::string& uniformBlockName, uint32_t uniformBlockBinding) const {
+        PassIfCreated();
+
         auto it = m_UniformMap.find(uniformBlockName);
         if (it != m_UniformMap.end()) {
             glUniformBlockBinding(m_Program, it->second, uniformBlockBinding);
@@ -305,6 +354,8 @@ namespace vd::gl {
     }
 
     void Shader::BindFragDataLocation(const std::string& name, uint32_t index) const {
+        PassIfCreated();
+        
         glBindFragDataLocation(m_Program, index, name.c_str());
     }
 }

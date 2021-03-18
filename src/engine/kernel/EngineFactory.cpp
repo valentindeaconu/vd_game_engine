@@ -18,16 +18,28 @@ namespace vd {
 
         /// Loaders
         CreateLoaders();
+        
+        // Rendering Context (On Render Thread)
+        auto ctxJob = pThreadPool->CreateJobFor([&]() {
+            // Window creation
+            pEngine->Subscribe(std::make_shared<window::WindowManager>(), 2);
 
-        auto createJob = pThreadPool->CreateJobFor([&]() {
-            /// Included Managers
-            CreateManagers(pEngine);
+            // Graphic API Context
+            auto ctx = injector::CreateAndStore<gl::Context>();
+            ctx->Create();
+        }, "Render", true);
+        
+        /// Included Managers
+        CreateManagers(pEngine);
 
-            /// Modules
+        ctxJob->Join();
+
+        /// Modules
+        // TODO: This should not be created on Render thread, but because of Font Loader - GuiFactory
+        // (which uses textures to load a font), this is required at this step.
+        pThreadPool->CreateJobFor([&]() {
             CreateModules(pEngine);
-        }, "Render");
-        createJob->Run();
-        createJob->Join();
+        }, "Render", true)->Join();
 
         /// Linking Stage
         pEngine->Link();
@@ -61,9 +73,6 @@ namespace vd {
     void EngineFactory::CreateManagers(EnginePtr& pEngine) {
         // InputHandler creation
         pEngine->Subscribe(std::make_shared<event::EventHandlerManager>(), 1);
-
-        // Window creation, requirements: InputHandler
-        pEngine->Subscribe(std::make_shared<window::WindowManager>(), 2);
 
         // Camera creation
         pEngine->Subscribe(injector::CreateAndStore<camera::CameraManager>(), 3);

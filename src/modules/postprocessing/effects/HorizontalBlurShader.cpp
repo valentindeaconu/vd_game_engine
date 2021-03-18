@@ -33,8 +33,7 @@ namespace mod::postprocessing {
     void HorizontalBlurShader::UpdateUniforms(vd::component::IRenderingEffectPtr pEffect) {
         auto pHBlur = std::dynamic_pointer_cast<vd::component::ConcreteEffect>(pEffect);
 
-        vd::gl::ActiveTexture(0);
-        pHBlur->InputFrameBuffer()->ColorTexture()->Bind();
+        pHBlur->InputFrameBuffer()->ColorTexture()->BindToUnit(0);
         SetUniform("colorMap", 0);
 
         auto targetWidth = float(pHBlur->FrameBuffer()->Dimension().width);

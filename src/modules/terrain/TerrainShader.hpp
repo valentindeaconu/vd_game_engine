@@ -27,27 +27,21 @@ namespace mod::terrain {
             , public vd::injector::Injectable
             , public std::enable_shared_from_this<TerrainShader> {
     public:
-        TerrainShader();
-        ~TerrainShader();
-
         void Link() override;
+        void Init() override;
 
         void InitUniforms(vd::object::Entity2DPtr pEntity) override;
         void UpdateUniforms(vd::object::Entity2DPtr pEntity, uint64_t levelOfDetail, uint32_t meshIndex) override;
     private:
-        void AddUniforms() override;
-
         uint32_t m_BiomeCount;
 
-        vd::light::LightManagerPtr m_pLightManager;
-        vd::fog::FogManagerPtr m_pFogManager;
-
-        vd::window::WindowPtr m_pWindow;
-        vd::camera::CameraPtr m_pCamera;
-
-        vd::context::ContextPtr m_pContext;
-
-        mod::shadow::ShadowManagerPtr m_pShadowManager;
+        TerrainPtr                      m_pTerrain;
+        vd::light::LightManagerPtr      m_pLightManager;
+        vd::fog::FogManagerPtr          m_pFogManager;
+        vd::window::WindowPtr           m_pWindow;
+        vd::camera::CameraPtr           m_pCamera;
+        vd::context::ContextPtr         m_pContext;
+        mod::shadow::ShadowManagerPtr   m_pShadowManager;
     };
     typedef std::shared_ptr<TerrainShader>  TerrainShaderPtr;
 }

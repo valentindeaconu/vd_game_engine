@@ -9,8 +9,6 @@ namespace vd {
     {
     }
 
-    Engine::~Engine() = default;
-
     void Engine::Link() {
         m_pWindow = vd::ObjectOfType<window::Window>::Find();
         m_pContext = vd::ObjectOfType<context::Context>::Find();
@@ -218,9 +216,9 @@ namespace vd {
             }
         }
 
-#ifdef VDGE_DEBUG
+//#ifdef VDGE_DEBUG
         glCheckError();
-#endif
+//#endif
     }
 
     void Engine::CleanUp() {

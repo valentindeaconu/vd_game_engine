@@ -53,10 +53,10 @@ namespace mod::sky {
         pBuffer->Create();
         pBuffer->Bind();
         pBuffer->AddBuffer(
-                vd::gl::buffer::eArrayBuffer,
+                vd::gl::eArrayBuffer,
                 pMesh->Vertices().size() * sizeof(vd::model::Vertex3D),
                 &pMesh->Vertices()[0],
-                vd::gl::buffer::eStaticDraw
+                vd::gl::eStaticDraw
         );
         pBuffer->AttributeArray(0, 2, vd::gl::eFloat, sizeof(vd::model::Vertex2D), (GLvoid*)0);
         pBuffer->Unbind();
@@ -91,8 +91,10 @@ namespace mod::sky {
     void SunRenderer::Init() {
         m_pSun->Init();
 
+        m_pShader->Init();
         m_pShader->Bind();
         m_pShader->InitUniforms(m_pSun);
+        m_pShader->Unbind();
     }
 
     void SunRenderer::Update() {
@@ -114,9 +116,10 @@ namespace mod::sky {
             vd::gl::BufferPtrVec& buffers = m_pSun->Buffers();
 
             auto& meshes = m_pSun->Meshes();
-
             m_pShader->UpdateUniforms(m_pSun, 0, 0);
             buffers[0]->DrawArrays(vd::gl::ePoints, 1);
+
+            m_pShader->Unbind();
 
             Finish();
         }
@@ -131,7 +134,12 @@ namespace mod::sky {
         return IRenderer::IsReady() && m_pSun != nullptr;
     }
 
-    SunShader::SunShader() : vd::component::IEntity2DShader() {
+    void SunShader::Link() {
+        m_pCamera = vd::ObjectOfType<vd::camera::Camera>::Find();
+        m_pWindow = vd::ObjectOfType<vd::window::Window>::Find();
+    }
+
+    void SunShader::Init() {
         Create();
 
         std::string vsSource;
@@ -147,14 +155,7 @@ namespace mod::sky {
         AddShader(fsSource, vd::gl::Shader::eFragmentShader);
 
         Compile();
-    }
 
-    void SunShader::Link() {
-        m_pCamera = vd::ObjectOfType<vd::camera::Camera>::Find();
-        m_pWindow = vd::ObjectOfType<vd::window::Window>::Find();
-    }
-
-    void SunShader::AddUniforms() {
         AddUniform("model");
         AddUniform("view");
         AddUniform("projection");
@@ -164,11 +165,10 @@ namespace mod::sky {
         AddUniform("scale");
         AddUniform("cameraUp");
         AddUniform("cameraRight");
-
     }
 
     void SunShader::InitUniforms(vd::object::Entity2DPtr pEntity) {
-        AddUniforms();
+
     }
 
     void SunShader::UpdateUniforms(vd::object::Entity2DPtr pEntity, uint64_t levelOfDetail, uint32_t meshIndex) {
@@ -185,8 +185,7 @@ namespace mod::sky {
 
         auto& diffuseMap = pMesh->Materials()[0].DiffuseMap();
 
-        vd::gl::ActiveTexture(0);
-        diffuseMap->Bind();
+        diffuseMap->BindToUnit(0);
         SetUniform("diffuseMap", 0);
     }
 }

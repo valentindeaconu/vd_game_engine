@@ -10,7 +10,7 @@
 #include <mutex>
 #include <condition_variable>
 
-#include <engine/misc/Types.hpp>
+#include <engine/defines/Types.hpp>
 
 namespace vd::core {
 

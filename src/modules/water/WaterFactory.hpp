@@ -8,7 +8,7 @@
 #include <engine/component/IModuleFactory.hpp>
 
 #include <engine/injector/CreateAndStore.hpp>
-#include <engine/misc/Types.hpp>
+#include <engine/defines/Types.hpp>
 
 #include "Water.hpp"
 #include "WaterRenderer.hpp"

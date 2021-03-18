@@ -6,7 +6,7 @@
 #define VD_GAME_ENGINE_TEXTURESERVICE_HPP
 
 #include <engine/api/gl/Texture.hpp>
-#include <engine/api/gl/GLTypes.hpp>
+#include <engine/api/gl/Enums.hpp>
 #include <engine/exception/Exceptions.hpp>
 
 #include <algorithm>
