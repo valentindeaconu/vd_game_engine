@@ -58,6 +58,7 @@ namespace vd::window {
         static void MouseClickCallback(GLFWwindow* window, int button, int action, int mods);
         static void MouseScrollCallback(GLFWwindow* window, double x_offset, double y_offset);
 
+        bool  m_CloseRequested;
         float m_NearPlane;
         float m_FarPlane;
         float m_FieldOfView;
@@ -79,6 +80,7 @@ namespace vd::window {
 
         void Init() override;
         void Update() override;
+        void Render(const vd::datastruct::Observer::params_t& params) override;
         void CleanUp() override;
     private:
         WindowPtr               m_pWindow;

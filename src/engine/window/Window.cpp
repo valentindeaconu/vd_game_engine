@@ -98,7 +98,7 @@ namespace vd::window {
     }
 
     bool Window::CloseRequested() const {
-        return glfwWindowShouldClose(m_Window);
+        return m_CloseRequested;
     }
 
     glm::mat4 Window::ProjectionMatrix() const {
@@ -138,9 +138,6 @@ namespace vd::window {
     }
 
     void Window::KeyboardCallback(GLFWwindow* window, int key, int scancode, int action, int mode) {
-        if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
-            glfwSetWindowShouldClose(window, GL_TRUE);
-        
         auto& inputHandler = vd::ObjectOfType<event::EventHandler>::Find();
         inputHandler->KeyboardCallback(ToKey(key), ToAction(action));
     }
@@ -179,21 +176,27 @@ namespace vd::window {
         m_pEventHandler = vd::ObjectOfType<event::EventHandler>::Find();
     }
 
-    void WindowManager::Init() {
+    void WindowManager::Init() { }
 
-    }
+    void WindowManager::Update() { }
 
-    void WindowManager::Update() {
-        glfwSwapBuffers(m_pWindow->m_Window);
-        glfwPollEvents();
+    void WindowManager::Render(const vd::datastruct::Observer::params_t& params) {
+        if (params.at("RenderingPass") == "Update") {
+            glfwSwapBuffers(m_pWindow->m_Window);
+            glfwPollEvents();
 
-        if (m_pWindow->m_Changed) {
-            m_pWindow->m_Changed = false;
-        }
+            if (m_pWindow->m_Changed) {
+                m_pWindow->m_Changed = false;
+            }
 
-        if (m_pEventHandler->WindowResized()) {
-            auto info = m_pEventHandler->WindowSize();
-            m_pWindow->Resize(info.width, info.height);
+            if (m_pEventHandler->WindowResized()) {
+                auto info = m_pEventHandler->WindowSize();
+                m_pWindow->Resize(info.width, info.height);
+            }
+
+            if (m_pEventHandler->KeyDown(Key::eEscape)) {
+                m_pWindow->m_CloseRequested = true;
+            }
         }
     }
 

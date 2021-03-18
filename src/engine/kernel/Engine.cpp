@@ -185,8 +185,8 @@ namespace vd {
             }
         };
 
-        component::RenderingPass rpMain("Main", 100, pSceneFbo, g_kEmptyPredicate, beforeFn, afterFn);
-        this->Add(rpMain);
+        this->Add(component::RenderingPass("Update", 0, nullptr));
+        this->Add(component::RenderingPass("Main", 100, pSceneFbo, g_kEmptyPredicate, beforeFn, afterFn));
 
         // Initialise all subscribed components
         this->Broadcast(BroadcastType::eInit);
