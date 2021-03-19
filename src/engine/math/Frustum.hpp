@@ -5,9 +5,6 @@
 #ifndef VD_GAME_ENGINE_FRUSTUM_HPP
 #define VD_GAME_ENGINE_FRUSTUM_HPP
 
-#include <engine/window/Window.hpp>
-#include <engine/camera/Camera.hpp>
-
 #include <glm/glm.hpp>
 
 #include <memory>
@@ -43,7 +40,6 @@ namespace vd::math {
         typedef std::vector<glm::vec3>  VertexVec;
 
         Frustum();
-        ~Frustum();
 
         PlaneVec& Planes();
         [[nodiscard]] const PlaneVec& Planes() const;

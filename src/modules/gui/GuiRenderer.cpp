@@ -29,9 +29,10 @@ namespace mod::gui {
     void GuiRenderer::Init() {
         m_pGuiEntity->Init();
 
+        m_pShader->Init();
         m_pShader->Bind();
-
         m_pShader->InitUniforms(m_pGuiEntity);
+        m_pShader->Unbind();
     }
 
     void GuiRenderer::Update() {
@@ -68,18 +69,21 @@ namespace mod::gui {
                     }
 
                     m_pShader->UpdateUniforms(m_pGuiEntity, 0, i / 6);
-                    buffer->UpdateBufferData(vd::gl::buffer::eArrayBuffer, 96, &glyph[0]); // 96 = 6 vertices * 4 floats each * 4 bytes per float
+                    buffer->UpdateBufferData(vd::gl::eArrayBuffer, 96, &glyph[0]); // 96 = 6 vertices * 4 floats each * 4 bytes per float
                     buffer->DrawArrays(vd::gl::eTriangles, 6);
                 }
                 break;
             }
         }
 
+        m_pShader->Unbind();
+
         Finish();
     }
 
     void GuiRenderer::CleanUp() {
         m_pGuiEntity->CleanUp();
+        m_pShader->CleanUp();
     }
 
     bool GuiRenderer::IsReady() {

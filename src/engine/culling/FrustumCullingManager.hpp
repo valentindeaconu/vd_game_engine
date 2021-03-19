@@ -11,6 +11,8 @@
 #include <engine/math/Frustum.hpp>
 
 #include <engine/injector/Injectable.hpp>
+#include <engine/camera/Camera.hpp>
+#include <engine/window/Window.hpp>
 
 #include <memory>
 
@@ -18,7 +20,6 @@ namespace vd::culling {
     class FrustumCullingManager : public vd::component::IManager, public vd::injector::Injectable {
     public:
         FrustumCullingManager();
-        ~FrustumCullingManager();
 
         void Link() override;
 

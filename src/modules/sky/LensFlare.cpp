@@ -50,6 +50,7 @@ namespace mod::sky {
         m_pQuad->Init();
         m_pQuad->Meshes()[0]->Materials().emplace_back();
 
+        m_pShader->Init();
         m_pShader->Bind();
         m_pShader->InitUniforms(m_pQuad);
         m_pShader->Unbind();
@@ -58,7 +59,7 @@ namespace mod::sky {
 
         for (auto& pTex : m_Textures) {
             pTex->Bind();
-            pTex->BilinearFilter();
+            pTex->LinearFilter();
             pTex->Unbind();
         }
 
@@ -167,6 +168,7 @@ namespace mod::sky {
     void FlareRenderer::CleanUp() {
         m_pQuad->CleanUp();
         m_pQuery->CleanUp();
+        m_pShader->CleanUp();
         m_Textures.clear();
     }
 
@@ -174,9 +176,14 @@ namespace mod::sky {
         return IRenderer::IsReady() && m_pQuad != nullptr && !m_Textures.empty();
     }
 
-    FlareShader::FlareShader()
-        : vd::component::IEntity2DShader()
-    {
+    void FlareShader::Link() {
+        m_pCamera = vd::ObjectOfType<vd::camera::Camera>::Find();
+        m_pWindow = vd::ObjectOfType<vd::window::Window>::Find();
+    }
+    
+    void FlareShader::Init() {
+        Create();
+
         std::string vsSource;
         vd::loader::ShaderLoader::Load("./resources/shaders/sky/flare_VS.glsl", vsSource);
         AddShader(vsSource, vd::gl::Shader::eVertexShader);
@@ -186,14 +193,7 @@ namespace mod::sky {
         AddShader(fsSource, vd::gl::Shader::eFragmentShader);
 
         Compile();
-    }
 
-    void FlareShader::Link() {
-        m_pCamera = vd::ObjectOfType<vd::camera::Camera>::Find();
-        m_pWindow = vd::ObjectOfType<vd::window::Window>::Find();
-    }
-    
-    void FlareShader::AddUniforms() {
         AddUniform("transform");
         AddUniform("brightness");
 
@@ -201,12 +201,10 @@ namespace mod::sky {
     }
 
     void FlareShader::InitUniforms(vd::object::Entity2DPtr pEntity) {
-        AddUniforms();        
+              
     }
 
     void FlareShader::UpdateUniforms(vd::object::Entity2DPtr pEntity, uint64_t levelOfDetail, uint32_t meshIndex) {
-        // SetUniform("transform", pEntity->WorldTransform().Get());
-
         const vd::model::Mesh2DPtr& pMesh = pEntity->Meshes()[meshIndex];
         auto& diffuseMap = pMesh->Materials()[0].DiffuseMap();
 

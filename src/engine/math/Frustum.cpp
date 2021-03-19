@@ -12,8 +12,6 @@ namespace vd::math {
     {
     }
 
-    Frustum::~Frustum() = default;
-
     PlaneVec& Frustum::Planes() {
         return m_Planes;
     }

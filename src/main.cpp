@@ -11,12 +11,12 @@ int main(int argc, char ** argv) {
 
     try {
         pEngine = vd::EngineFactory::Create();
-    } catch (std::exception& e) {
+    } catch (std::exception &e) {
         vd::Logger::terminate("Could not create engine, error: " + std::string(e.what()), 1);
     }
 
-    /// Engine Init
-    pEngine->Init();
+    /// Engine Prepare
+    pEngine->Prepare();
 
     /// Starting Main Loop
     pEngine->Start();

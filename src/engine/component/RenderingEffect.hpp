@@ -15,6 +15,7 @@ namespace vd::component {
         explicit IRenderingEffect(std::string name);
 
         virtual void Init(vd::Dimension dimension) = 0;
+        virtual void CleanUp() = 0;
 
         virtual bool Precondition() = 0;
         virtual void Prepare() = 0;
@@ -44,6 +45,7 @@ namespace vd::component {
                                 Consumer afterExecution = vd::g_kEmptyConsumer);
 
         virtual void Init(vd::Dimension dimension);
+        virtual void CleanUp();
 
         bool Precondition() override;
         void Prepare() override;

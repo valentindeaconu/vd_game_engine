@@ -24,7 +24,6 @@ namespace mod::player {
                        vd::component::IEntityShaderPtr shaderPtr,
                        vd::Consumer beforeExecution = vd::g_kEmptyConsumer,
                        vd::Consumer afterExecution = vd::g_kEmptyConsumer);
-        ~PlayerRenderer();
 
         void Link() override;
 

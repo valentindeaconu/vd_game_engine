@@ -19,7 +19,7 @@ namespace mod::postprocessing {
             pFrameBuffer->Bind();
             pFrameBuffer->PushAttachment(vd::gl::FrameBuffer::eColorTexture, [](vd::gl::Texture2DPtr& pTex) {
                 pTex->Bind();
-                pTex->BilinearFilter();
+                pTex->LinearFilter();
                 pTex->Unbind();
             });
             pFrameBuffer->Unbind();

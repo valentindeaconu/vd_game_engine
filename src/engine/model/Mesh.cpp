@@ -13,8 +13,6 @@ namespace vd::model {
     {
     }
 
-    Mesh2D::~Mesh2D() = default;
-
     Mesh2D::VertexVec& Mesh2D::Vertices() {
         return m_Vertices;
     }
@@ -33,8 +31,6 @@ namespace vd::model {
         , m_Materials()
     {
     }
-
-    Mesh3D::~Mesh3D() = default;
 
     Mesh3D::VertexVec& Mesh3D::Vertices() {
         return m_Vertices;

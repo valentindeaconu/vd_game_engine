@@ -20,8 +20,10 @@ namespace mod::water {
     void WaterRenderer::Init() {
         m_pWater->Init();
 
+        m_pShader->Init();
         m_pShader->Bind();
         m_pShader->InitUniforms(m_pWater);
+        m_pShader->Unbind();
     }
 
     void WaterRenderer::Update() {
@@ -44,12 +46,15 @@ namespace mod::water {
 
             m_pWater->Buffers()[0]->DrawElements(vd::gl::eTriangles, 6, vd::gl::eUnsignedInt);
 
+            m_pShader->Unbind();
+
             Finish();
         }
     }
 
     void WaterRenderer::CleanUp() {
         m_pWater->CleanUp();
+        m_pShader->CleanUp();
     }
 
     WaterPtr& WaterRenderer::Water() {

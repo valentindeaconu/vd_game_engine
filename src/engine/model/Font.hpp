@@ -10,7 +10,7 @@
 #include <map>
 
 #include <glm/glm.hpp>
-#include <engine/misc/Types.hpp>
+#include <engine/defines/Types.hpp>
 #include <engine/api/gl/Texture.hpp>
 
 namespace vd::model {

@@ -12,9 +12,9 @@
 
 namespace vd::component {
     class IEntityShader : public gl::Shader {
-    protected:
-        virtual void AddUniforms() = 0;
     public:
+        virtual void Init() = 0;
+
         virtual void InitUniforms(object::EntityPtr pEntity) = 0;
         virtual void UpdateUniforms(object::EntityPtr pEntity, uint64_t levelOfDetail, uint32_t meshIndex) = 0;
     };

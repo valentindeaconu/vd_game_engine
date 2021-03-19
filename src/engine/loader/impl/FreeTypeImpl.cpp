@@ -53,7 +53,7 @@ namespace vd::loader::impl {
             );
 
             texture->Bind();
-            texture->BilinearFilter();
+            texture->MipmapLinearFilter();
             texture->WrapClampToBorder();
             texture->Unbind();
 

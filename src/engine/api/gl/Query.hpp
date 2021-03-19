@@ -8,24 +8,22 @@
 #include <memory>
 #include <unordered_map>
 
-#include "GL.hpp"
+#include "Component.hpp"
+#include "Context.hpp"
 #include "Texture.hpp"
 
 #include <engine/service/TextureService.hpp>
 
 namespace vd::gl {
 
-    class Query {
+    class Query : public Component {
     public:
-        enum QueryType {
+        enum Type {
             eSamplesPassed = GL_SAMPLES_PASSED,
             eAnySamplesPassed = GL_ANY_SAMPLES_PASSED
         };
 
-        explicit Query(const QueryType& type);
-
-        void Create();
-        void CleanUp();
+        explicit Query(const Type& type);
 
         void Prepare();
         void Finish();
@@ -39,10 +37,13 @@ namespace vd::gl {
         int GetResult();
 
     private:
+        void OnCreate() override;
+        void OnCleanUp() override;
+
         uint32_t    m_Id;
         bool        m_Allocated;
         bool        m_InUse;
-        QueryType   m_Type;
+        Type        m_Type;
 
     };
     typedef std::shared_ptr<Query>  QueryPtr;

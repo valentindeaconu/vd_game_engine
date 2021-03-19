@@ -4,11 +4,9 @@
 
 #include "SkyFactory.hpp"
 
-namespace mod::sky
-{
+namespace mod::sky {
 
-    void SkyFactory::Create(const vd::EnginePtr &pEngine)
-    {
+    void SkyFactory::Create(const vd::EnginePtr& pEngine) {
         vd::Consumer before = []() {
             glDepthFunc(GL_LEQUAL);
             glDepthMask(GL_FALSE);
@@ -49,7 +47,6 @@ namespace mod::sky
 
         pEngine->Subscribe(pSunRenderer, SunRenderer::kDefaultPriority);
 
-        /// Create & register rendering pass
         before = []() {
             glFrontFace(GL_CCW);
 			glEnable(GL_BLEND);

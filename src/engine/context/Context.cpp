@@ -55,7 +55,7 @@ namespace vd::context {
     }
 
     void ContextManager::Update() {
-        if (m_pEventHandler->KeyDown(GLFW_KEY_M)) {
+        if (m_pEventHandler->KeyDown(Key::eM)) {
             m_pContext->m_WireframeMode = !m_pContext->m_WireframeMode;
         }
     }

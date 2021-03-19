@@ -5,7 +5,16 @@
 #include "SkyShader.hpp"
 
 namespace mod::sky {
-    SkyShader::SkyShader() : vd::component::IEntity3DShader() {
+
+    void SkyShader::Link() {
+        m_pCamera = vd::ObjectOfType<vd::camera::Camera>::Find();
+        m_pWindow = vd::ObjectOfType<vd::window::Window>::Find();
+        m_pFogManager = vd::ObjectOfType<vd::fog::FogManager>::Find();
+    }
+
+    void SkyShader::Init() {
+        Create();
+
         std::string vsSource;
         vd::loader::ShaderLoader::Load("./resources/shaders/sky/sky_VS.glsl", vsSource);
         AddShader(vsSource, vd::gl::Shader::eVertexShader);
@@ -15,17 +24,7 @@ namespace mod::sky {
         AddShader(fsSource, vd::gl::Shader::eFragmentShader);
 
         Compile();
-    }
 
-    SkyShader::~SkyShader() = default;
-
-    void SkyShader::Link() {
-        m_pCamera = vd::ObjectOfType<vd::camera::Camera>::Find();
-        m_pWindow = vd::ObjectOfType<vd::window::Window>::Find();
-        m_pFogManager = vd::ObjectOfType<vd::fog::FogManager>::Find();
-    }
-
-    void SkyShader::AddUniforms() {
         AddUniform("view");
         AddUniform("projection");
 
@@ -46,8 +45,6 @@ namespace mod::sky {
     }
 
     void SkyShader::InitUniforms(vd::object::Entity3DPtr pEntity) {
-        AddUniforms();
-
         m_pFogManager->SetUniforms(shared_from_this());
     }
 
@@ -63,8 +60,7 @@ namespace mod::sky {
         SetUniform("leftFactor", details.First.Factor);
 
         if (details.First.Texture != nullptr) {
-            vd::gl::ActiveTexture(0);
-            details.First.Texture->Bind();
+            details.First.Texture->BindToUnit(0);
             SetUniform("leftCubeMap", 0);
         }
 
@@ -73,8 +69,7 @@ namespace mod::sky {
         SetUniform("rightFactor", details.Second.Factor);
 
         if (details.Second.Texture != nullptr) {
-            vd::gl::ActiveTexture(1);
-            details.Second.Texture->Bind();
+            details.Second.Texture->BindToUnit(1);
             SetUniform("rightCubeMap", 1);
         }
 

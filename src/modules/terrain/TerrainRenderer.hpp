@@ -24,7 +24,6 @@ namespace mod::terrain {
                         vd::component::IEntityShaderPtr shaderPtr,
                         vd::Consumer beforeExecution = vd::g_kEmptyConsumer,
                         vd::Consumer afterExecution = vd::g_kEmptyConsumer);
-        ~TerrainRenderer();
 
         void Link() override;
 

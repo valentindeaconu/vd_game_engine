@@ -2,10 +2,10 @@
 // Created by Vali on 11/25/2020.
 //
 
-#ifndef VD_GAME_ENGINE_GLTYPES_HPP
-#define VD_GAME_ENGINE_GLTYPES_HPP
+#ifndef VDGE_GLTYPES_HPP
+#define VDGE_GLTYPES_HPP
 
-#include "GL.hpp"
+#include "Context.hpp"
 
 namespace vd::gl {
 
@@ -121,24 +121,6 @@ namespace vd::gl {
         eRGBA32UI = GL_RGBA32UI
     };
 
-    enum DataType {
-        eUnsignedByte = GL_UNSIGNED_BYTE,
-        eByte = GL_BYTE,
-        eUnsignedShort = GL_UNSIGNED_SHORT,
-        eShort = GL_SHORT,
-        eUnsignedInt = GL_UNSIGNED_INT,
-        eInt = GL_INT,
-        eHalfFloat = GL_HALF_FLOAT,
-        eFloat = GL_FLOAT,
-        eUnsignedShort565 = GL_UNSIGNED_SHORT_5_6_5,
-        eUnsignedShort4444 = GL_UNSIGNED_SHORT_4_4_4_4,
-        eUnsignedShort5551 = GL_UNSIGNED_SHORT_5_5_5_1,
-        eUnsignedInt2101010Rev = GL_UNSIGNED_INT_2_10_10_10_REV,
-        eUnsignedInt10F11F11FRev = GL_UNSIGNED_INT_10F_11F_11F_REV,
-        eUnsignedInt5999Rev = GL_UNSIGNED_INT_5_9_9_9_REV,
-        eUnsignedInt248 = GL_UNSIGNED_INT_24_8,
-        eUnsignedFloat32UnsignedInt248Rev = GL_FLOAT_32_UNSIGNED_INT_24_8_REV
-    };
 
     enum TextureParameter {
         eDepthStencilTextureMode = GL_DEPTH_STENCIL_TEXTURE_MODE,
@@ -172,6 +154,68 @@ namespace vd::gl {
     };
 
     const uint8_t g_kCubeMapFaceCount = 6;
+
+    enum DataType {
+        eUnsignedByte = GL_UNSIGNED_BYTE,
+        eByte = GL_BYTE,
+        eUnsignedShort = GL_UNSIGNED_SHORT,
+        eShort = GL_SHORT,
+        eUnsignedInt = GL_UNSIGNED_INT,
+        eInt = GL_INT,
+        eHalfFloat = GL_HALF_FLOAT,
+        eFloat = GL_FLOAT,
+        eUnsignedShort565 = GL_UNSIGNED_SHORT_5_6_5,
+        eUnsignedShort4444 = GL_UNSIGNED_SHORT_4_4_4_4,
+        eUnsignedShort5551 = GL_UNSIGNED_SHORT_5_5_5_1,
+        eUnsignedInt2101010Rev = GL_UNSIGNED_INT_2_10_10_10_REV,
+        eUnsignedInt10F11F11FRev = GL_UNSIGNED_INT_10F_11F_11F_REV,
+        eUnsignedInt5999Rev = GL_UNSIGNED_INT_5_9_9_9_REV,
+        eUnsignedInt248 = GL_UNSIGNED_INT_24_8,
+        eUnsignedFloat32UnsignedInt248Rev = GL_FLOAT_32_UNSIGNED_INT_24_8_REV
+    };
+
+    enum BufferType {
+        eArrayBuffer = GL_ARRAY_BUFFER,
+        eAtomicCounterBuffer = GL_ATOMIC_COUNTER_BUFFER,
+        eCopyReadBuffer = GL_COPY_READ_BUFFER,
+        eCopyWriteBuffer = GL_COPY_WRITE_BUFFER,
+        eDispatchIndirectBuffer = GL_DISPATCH_INDIRECT_BUFFER,
+        eDrawIndirectBuffer = GL_DRAW_INDIRECT_BUFFER,
+        eElementArrayBuffer = GL_ELEMENT_ARRAY_BUFFER,
+        ePixelPackBuffer = GL_PIXEL_PACK_BUFFER,
+        ePixelUnpackBuffer = GL_PIXEL_UNPACK_BUFFER,
+        eQueryBuffer = GL_QUERY_BUFFER,
+        eShaderStorageBuffer = GL_SHADER_STORAGE_BUFFER,
+        eTextureBuffer = GL_TEXTURE_BUFFER,
+        eTransformFeedbackBuffer = GL_TRANSFORM_FEEDBACK_BUFFER,
+        eUniformBuffer = GL_UNIFORM_BUFFER
+    };
+
+    enum BufferUsageType {
+        eStaticDraw = GL_STATIC_DRAW,
+        eDynamicDraw = GL_DYNAMIC_DRAW
+    };
+
+    enum PrimitiveType {
+        ePoints = GL_POINTS,
+        eLineStrip = GL_LINE_STRIP,
+        eLineLoop = GL_LINE_LOOP,
+        eLines = GL_LINES,
+        eLineStripAdjacency = GL_LINE_STRIP_ADJACENCY,
+        eLinesAdjacency = GL_LINES_ADJACENCY,
+        eTriangleStrip = GL_TRIANGLE_STRIP,
+        eTriangleFan = GL_TRIANGLE_FAN,
+        eTriangles = GL_TRIANGLES,
+        eTriangleStripAdjacency = GL_TRIANGLE_STRIP_ADJACENCY,
+        eTrianglesAdjacency = GL_TRIANGLES_ADJACENCY,
+        ePatches = GL_PATCHES
+    };
+
+    enum PatchParameterType {
+        ePatchVertices = GL_PATCH_VERTICES,
+        ePatchDefaultOuterLevel = GL_PATCH_DEFAULT_OUTER_LEVEL,
+        ePatchDefaultInnerLevel = GL_PATCH_DEFAULT_INNER_LEVEL
+    };
 }
 
-#endif //VD_GAME_ENGINE_GLTYPES_HPP
+#endif //VDGE_GLTYPES_HPP

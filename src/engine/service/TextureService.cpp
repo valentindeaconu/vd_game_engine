@@ -12,15 +12,14 @@ namespace vd::service {
         }
     }
 
-    TextureService::TextureService() = default;
+    void TextureService::CleanUp() {
+        for (auto& t : s_2D_Collector) {
+            t->CleanUp();
+        }
 
-    TextureService& TextureService::getInstance() {
-        static TextureService instance;
-        return instance;
-    }
-
-    TextureService::~TextureService() {
-        m_Cache.clear();
+        for (auto& t : s_CM_Collector) {
+            t->CleanUp();
+        }
     }
 
     gl::Texture2DPtr TextureService::UncachedCreateStorage(const Dimension& dimension,
@@ -28,12 +27,14 @@ namespace vd::service {
                                                            int level) {
         gl::Texture2DPtr pTexture = std::make_shared<gl::Texture2D>(dimension.width, dimension.height);
 
-        pTexture->Generate();
+        pTexture->Create();
         pTexture->Bind();
 
         glTexStorage2D(GL_TEXTURE_2D, level, internalFormat, dimension.width, dimension.height);
 
         pTexture->Unbind();
+
+        s_2D_Collector.emplace_back(pTexture);
 
         return pTexture;
     }
@@ -45,12 +46,14 @@ namespace vd::service {
                                                     const void *data) {
         gl::Texture2DPtr pTexture = std::make_shared<gl::Texture2D>(dimension.width, dimension.height);
 
-        pTexture->Generate();
+        pTexture->Create();
         pTexture->Bind();
 
         glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, dimension.width, dimension.height, 0, format, type, data);
 
         pTexture->Unbind();
+
+        s_2D_Collector.emplace_back(pTexture);
 
         return pTexture;
     }
@@ -61,40 +64,57 @@ namespace vd::service {
                                          const gl::TextureFormat& format,
                                          const gl::DataType& type,
                                          const void *data) {
-        TextureService& instance = getInstance();
-
-        if (instance.m_Cache.find(name) != instance.m_Cache.end()) {
+        if (s_2D_Cache.find(name) != s_2D_Cache.end()) {
             throw exception::TextureNameUsedException(name);
         }
 
         gl::Texture2DPtr pTexture = UncachedCreate(dimension, internalFormat, format, type, data);
 
-        instance.m_Cache[name] = pTexture;
+        auto index = s_2D_Collector.size() - 1;
+
+        s_2D_Cache[name] = index;
 
         return pTexture;
     }
 
     gl::Texture2DPtr TextureService::CreateFromFile(const std::string& path) {
-        TextureService& instance = getInstance();
-
-        if (instance.m_Cache.find(path) != instance.m_Cache.end()) {
-            return instance.m_Cache[path];
+        if (s_2D_Cache.find(path) != s_2D_Cache.end()) {
+            return s_2D_Collector[s_2D_Cache[path]];
         }
 
         vd::model::ImagePtr<uint8_t> imagePtr = loader::ImageLoader::Load<uint8_t>(path);
 
-        gl::Texture2DPtr texture = std::make_shared<gl::Texture2D>(imagePtr);
+        gl::Texture2DPtr pTexture = std::make_shared<gl::Texture2D>(imagePtr->Width(), imagePtr->Height());
 
-        instance.m_Cache[path] = texture;
+        pTexture->Create();
+        pTexture->Bind();
 
-        return texture;
+        // GL_SRGB, GL_RGBA
+        glTexImage2D(GL_TEXTURE_2D,
+                     0,
+                     GL_SRGB_ALPHA,
+                     GLsizei(imagePtr->Width()),
+                     GLsizei(imagePtr->Height()),
+                     0,
+                     GL_RGBA,
+                     GL_UNSIGNED_BYTE,
+                     &(imagePtr->Data()[0]));
+
+        pTexture->NoFilter();
+        pTexture->WrapRepeat();
+        pTexture->Unbind();
+
+        s_2D_Collector.emplace_back(pTexture);
+        s_2D_Cache[path] = s_2D_Collector.size() - 1;
+
+        return pTexture;
     }
 
     gl::TextureCubeMapPtr TextureService::CubeMapFromFiles(const CubeMapFacesPathVec& paths) {
-        gl::TextureCubeMapPtr texture = std::make_shared<gl::TextureCubeMap>();
+        gl::TextureCubeMapPtr pTexture = std::make_shared<gl::TextureCubeMap>();
 
-        texture->Generate();
-        texture->Bind();
+        pTexture->Create();
+        pTexture->Bind();
 
         for (size_t i = 0; i < gl::g_kCubeMapFaceCount; ++i) {
             auto imagePtr = loader::ImageLoader::Load<uint8_t, vd::model::ImageFormat::eRGB>(paths[i], false);
@@ -110,24 +130,24 @@ namespace vd::service {
                          &(imagePtr->Data()[0]));
         }
 
-        texture->BilinearFilter();
-        texture->WrapClampToEdge();
-        texture->Parameter(gl::TextureParameter::eTextureWrapR, GL_CLAMP_TO_EDGE);
+        pTexture->LinearFilter();
+        pTexture->WrapClampToEdge();
+        pTexture->Parameter(gl::TextureParameter::eTextureWrapR, GL_CLAMP_TO_EDGE);
 
-        texture->Unbind();
+        pTexture->Unbind();
 
-        return texture;
+        s_CM_Collector.emplace_back(pTexture);
+
+        return pTexture;
     }
 
     void TextureService::Remove(gl::Texture2DPtr& texture) {
-        TextureService& instance = getInstance();
-
-        auto it = std::find_if(instance.m_Cache.begin(), instance.m_Cache.end(), [&](const auto& pair) {
-            return pair.second->Id() == texture->Id();
+        auto it = std::find_if(s_2D_Cache.begin(), s_2D_Cache.end(), [&](const auto& pair) {
+            return s_2D_Collector[pair.second]->Id() == texture->Id();
         });
 
-        if (it != instance.m_Cache.end()) {
-            instance.m_Cache.erase(it);
+        if (it != s_2D_Cache.end()) {
+            s_2D_Cache.erase(it);
         }
 
         texture = nullptr;

@@ -4,6 +4,8 @@
 
 #include "Observer.hpp"
 
+#include <engine/api/gl/Context.hpp>
+
 namespace vd::datastruct {
 
     void Observable::Subscribe(const ObserverPtr& observer, uint64_t priority) {

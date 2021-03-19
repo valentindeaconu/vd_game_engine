@@ -29,6 +29,7 @@ namespace mod::terrain::splatmap {
                     const BiomePtrVec& biomes,
                     vd::gl::Texture2DPtr& outSplatMap,
                     data_t& outData);
+        void CleanUp();
     private:
         vd::gl::ShaderPtr m_pShader;
     };

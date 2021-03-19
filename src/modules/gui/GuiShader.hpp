@@ -14,13 +14,12 @@
 namespace mod::gui {
     class GuiShader : public vd::component::IEntity2DShader {
     public:
-        GuiShader();
-        ~GuiShader();
+        void Init() override;
 
         void InitUniforms(vd::object::Entity2DPtr pEntity) override;
         void UpdateUniforms(vd::object::Entity2DPtr pEntity, uint64_t levelOfDetail, uint32_t meshIndex) override;
     private:
-        void AddUniforms() override;
+        bool m_Initialized;
     };
     typedef std::shared_ptr<GuiShader>  GuiShaderPtr;
 }

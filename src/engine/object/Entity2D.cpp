@@ -16,20 +16,21 @@ namespace vd::object {
             Buffers().emplace_back(std::move(std::make_shared<vd::gl::Buffer>()));
             vd::gl::BufferPtr pBuffer = Buffers().back();
 
+            pBuffer->Create();
             pBuffer->Bind();
 
             pBuffer->AddBuffer(
-                    gl::buffer::eArrayBuffer,
+                    gl::eArrayBuffer,
                     mesh->Vertices().size() * sizeof(vd::model::Vertex2D),
                     &mesh->Vertices()[0],
-                    gl::buffer::eStaticDraw
+                    gl::eStaticDraw
             );
 
             pBuffer->AddBuffer(
-                    gl::buffer::eElementArrayBuffer,
+                    gl::eElementArrayBuffer,
                     mesh->Indices().size() * sizeof(GLuint),
                     &mesh->Indices()[0],
-                    gl::buffer::eStaticDraw
+                    gl::eStaticDraw
             );
 
             pBuffer->AttributeArray(0, 2, vd::gl::eFloat, sizeof(vd::model::Vertex2D), (GLvoid*)0);
@@ -43,6 +44,10 @@ namespace vd::object {
     }
 
     void Entity2D::CleanUp() {
+        for (auto& b : Buffers()) {
+            b->CleanUp();
+        }
+
         m_Meshes.clear();
         m_BoundingBoxes.clear();
     }

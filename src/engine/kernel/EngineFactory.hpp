@@ -5,7 +5,8 @@
 #ifndef VD_GAME_ENGINE_ENGINEFACTORY_HPP
 #define VD_GAME_ENGINE_ENGINEFACTORY_HPP
 
-#include "Engine.hpp"
+// Graphic API Context
+#include <engine/api/gl/Context.hpp>
 
 // Injector
 #include <engine/injector/CreateAndStore.hpp>
@@ -16,6 +17,7 @@
 #include <engine/window/Window.hpp>
 #include <engine/camera/Camera.hpp>
 #include <engine/context/Context.hpp>
+#include <engine/core/ThreadPool.hpp>
 
 // Required managers
 #include <engine/culling/FrustumCullingManager.hpp>
@@ -33,6 +35,8 @@
 
 // Modules
 #include <modules/ModuleFactory.hpp>
+
+#include "Engine.hpp"
 
 #include <string>
 

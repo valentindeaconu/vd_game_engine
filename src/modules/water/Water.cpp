@@ -8,9 +8,11 @@ namespace mod::water {
     Water::Water(const std::string& propsFilePath)
         : m_pProperties(vd::loader::PropertiesLoader::Load(propsFilePath))
         , m_MoveFactor(0.0f)
-        , m_pReflectionFBO(std::make_shared<vd::gl::FrameBuffer>())
-        , m_pRefractionFBO(std::make_shared<vd::gl::FrameBuffer>())
     {
+        m_pReflectionFBO = std::make_shared<vd::gl::FrameBuffer>(m_pProperties->Get<int>("Reflection.Width"),
+                                                                 m_pProperties->Get<int>("Reflection.Height"));
+        m_pRefractionFBO = std::make_shared<vd::gl::FrameBuffer>(m_pProperties->Get<int>("Refraction.Width"),
+                                                                 m_pProperties->Get<int>("Refraction.Height"));
     }
 
     Water::~Water() = default;
@@ -27,30 +29,28 @@ namespace mod::water {
 
         GeneratePatch();
 
+        m_pReflectionFBO->Create();
         m_pReflectionFBO->Bind();
-        m_pReflectionFBO->Resize(m_pProperties->Get<int>("Reflection.Width"),
-                                 m_pProperties->Get<int>("Reflection.Height"));
 
         m_pReflectionFBO->PushAttachment(vd::gl::FrameBuffer::eColorTexture, [](vd::gl::Texture2DPtr& pTex) {
             pTex->Bind();
-            pTex->BilinearFilter();
+            pTex->LinearFilter();
             pTex->Unbind();
         });
         m_pReflectionFBO->PushAttachment(vd::gl::FrameBuffer::eDepthBuffer);
         m_pReflectionFBO->Unbind();
 
+        m_pRefractionFBO->Create();
         m_pRefractionFBO->Bind();
-        m_pRefractionFBO->Resize(m_pProperties->Get<int>("Refraction.Width"),
-                                 m_pProperties->Get<int>("Refraction.Height"));
 
         m_pRefractionFBO->PushAttachment(vd::gl::FrameBuffer::eColorTexture, [](vd::gl::Texture2DPtr& pTex) {
             pTex->Bind();
-            pTex->BilinearFilter();
+            pTex->LinearFilter();
             pTex->Unbind();
         });
         m_pRefractionFBO->PushAttachment(vd::gl::FrameBuffer::eDepthTexture, [](vd::gl::Texture2DPtr& pTex) {
             pTex->Bind();
-            pTex->BilinearFilter();
+            pTex->LinearFilter();
             pTex->Unbind();
         });
         m_pRefractionFBO->Unbind();
@@ -65,8 +65,8 @@ namespace mod::water {
     }
 
     void Water::CleanUp() {
-        m_pReflectionFBO = nullptr;
-        m_pRefractionFBO = nullptr;
+        m_pReflectionFBO->CleanUp();
+        m_pRefractionFBO->CleanUp();
 
         Entity3D::CleanUp();
     }
@@ -111,13 +111,13 @@ namespace mod::water {
                 material.DisplaceMap() =
                         vd::service::TextureService::CreateFromFile(m_pProperties->Get<std::string>(prefix + ".DuDv"));
                 material.DisplaceMap()->Bind();
-                material.DisplaceMap()->BilinearFilter();
+                material.DisplaceMap()->LinearFilter();
                 material.DisplaceMap()->Unbind();
 
                 material.NormalMap() =
                         vd::service::TextureService::CreateFromFile(m_pProperties->Get<std::string>(prefix + ".Normal"));
                 material.NormalMap()->Bind();
-                material.NormalMap()->BilinearFilter();
+                material.NormalMap()->LinearFilter();
                 material.NormalMap()->Unbind();
 
                 m_PacksMap[material.Name()] = material;

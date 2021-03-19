@@ -2,10 +2,8 @@
 // Created by Vali on 11/12/2020.
 //
 
-#ifndef VD_GAME_ENGINE_EVENT_HPP
-#define VD_GAME_ENGINE_EVENT_HPP
-
-#include <engine/api/gl/GL.hpp>
+#ifndef VDGE_EVENT_HPP
+#define VDGE_EVENT_HPP
 
 #include <glm/glm.hpp>
 
@@ -13,10 +11,14 @@
 #include <algorithm>
 #include <memory>
 
-#include <engine/misc/Types.hpp>
+#include <engine/defines/Types.hpp>
 #include <engine/component/IManager.hpp>
 
 #include <engine/injector/ObjectOfType.hpp>
+
+#include <engine/defines/Keys.hpp>
+#include <engine/defines/Buttons.hpp>
+#include <engine/defines/Actions.hpp>
 
 namespace vd::event {
     class EventHandlerManager;
@@ -24,15 +26,14 @@ namespace vd::event {
     class EventHandler {
     public:
         EventHandler();
-        ~EventHandler();
 
-        [[nodiscard]] bool KeyDown(int key) const;
-        [[nodiscard]] bool KeyReleased(int key) const;
-        [[nodiscard]] bool KeyHolding(int key) const;
+        [[nodiscard]] bool KeyDown(Key::Code key) const;
+        [[nodiscard]] bool KeyReleased(Key::Code key) const;
+        [[nodiscard]] bool KeyHolding(Key::Code key) const;
 
-        [[nodiscard]] bool ButtonReleased(int button) const;
-        [[nodiscard]] bool ButtonDown(int button) const;
-        [[nodiscard]] bool ButtonHolding(int button) const;
+        [[nodiscard]] bool ButtonReleased(Button::Code button) const;
+        [[nodiscard]] bool ButtonDown(Button::Code button) const;
+        [[nodiscard]] bool ButtonHolding(Button::Code button) const;
 
         float& MouseSensitivity();
 
@@ -48,14 +49,14 @@ namespace vd::event {
         [[nodiscard]] bool WindowResized() const;
         [[nodiscard]] vd::Dimension WindowSize() const;
 
-        void WindowResizeCallback(GLFWwindow* window, int32_t width, int32_t height);
-        void KeyboardCallback(GLFWwindow* window, int key, int scancode, int action, int mode);
-        void MouseCallback(GLFWwindow* window, double x_pos, double y_pos);
-        void MouseClickCallback(GLFWwindow* window, int button, int action, int mods);
-        void MouseScrollCallback(GLFWwindow* window, double x_offset, double y_offset);
+        void WindowResizeCallback(vd::Dimension dimension);
+        void KeyboardCallback(Key::Code key, Action::Code action);
+        void MouseCallback(double x, double y);
+        void MouseClickCallback(Button::Code button, Action::Code action);
+        void MouseScrollCallback(double x, double y);
 
     private:
-        const int kKeyCount = 1024;
+        const int kKeyCount = 350;
         const int kButtonCount = 8;
 
         friend class EventHandlerManager;
@@ -122,7 +123,6 @@ namespace vd::event {
     class EventHandlerManager : public vd::component::IManager {
     public:
         EventHandlerManager();
-        ~EventHandlerManager();
 
         void Init() override;
         void Update() override;
@@ -134,4 +134,4 @@ namespace vd::event {
 
 }
 
-#endif //VD_GAME_ENGINE_EVENT_HPP
+#endif //VDGE_EVENT_HPP

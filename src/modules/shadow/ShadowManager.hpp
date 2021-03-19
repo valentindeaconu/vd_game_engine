@@ -5,12 +5,11 @@
 #ifndef VD_GAME_ENGINE_SHADOWMANAGER_HPP
 #define VD_GAME_ENGINE_SHADOWMANAGER_HPP
 
-#include <engine/api/gl/GL.hpp>
-
 #include <engine/component/IManager.hpp>
 
 #include <engine/api/gl/Texture.hpp>
 
+#include <engine/injector/CreateAndStore.hpp>
 #include <engine/injector/Injectable.hpp>
 #include <engine/light/LightManager.hpp>
 
@@ -24,10 +23,12 @@
 #include "ShadowBox.hpp"
 
 namespace mod::shadow {
+    class ShadowShader;
+    typedef std::shared_ptr<ShadowShader>   ShadowShaderPtr;
+
     class ShadowManager : public vd::component::IManager, public vd::injector::Injectable {
     public:
         explicit ShadowManager(const std::string& propsFilePath);
-        ~ShadowManager();
 
         void Link() override;
 
@@ -56,7 +57,8 @@ namespace mod::shadow {
 
         vd::gl::FrameBufferPtr m_pFrameBuffer;
 
-        ShadowBoxPtr m_pShadowBox;
+        ShadowBoxPtr    m_pShadowBox;
+        ShadowShaderPtr m_pShader;    
 
         vd::light::LightPtr m_pSun;
 

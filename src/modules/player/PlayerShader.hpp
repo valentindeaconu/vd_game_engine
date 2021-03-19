@@ -23,16 +23,12 @@ namespace mod::player {
             , public vd::injector::Injectable
             , public std::enable_shared_from_this<PlayerShader> {
     public:
-        PlayerShader();
-        ~PlayerShader();
-
         void Link() override;
+        void Init() override;
 
         void InitUniforms(vd::object::Entity3DPtr pEntity) override;
         void UpdateUniforms(vd::object::Entity3DPtr pEntity, uint64_t levelOfDetail, uint32_t meshIndex) override;
     private:
-        void AddUniforms() override;
-
         vd::light::LightManagerPtr  m_pLightManager;
         vd::fog::FogManagerPtr      m_pFogManager;
 

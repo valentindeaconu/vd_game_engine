@@ -12,7 +12,7 @@ namespace vd::component {
     public:
         static const vd::datastruct::Observable::priority_t kDefaultPriority = 100;
 
-        void Render(const vd::datastruct::Observer::params_t& params) override;
+        virtual void Render(const vd::datastruct::Observer::params_t& params);
     };
 }
 

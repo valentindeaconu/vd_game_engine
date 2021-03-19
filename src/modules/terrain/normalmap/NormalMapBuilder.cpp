@@ -9,6 +9,8 @@ namespace mod::terrain::normalmap {
     NormalMapBuilder::NormalMapBuilder() {
         m_pShader = std::make_shared<vd::gl::Shader>();
 
+        m_pShader->Create();
+
         std::string csSource;
         vd::loader::ShaderLoader::Load("./resources/shaders/terrain/cs/NormalMap.glsl", csSource);
         m_pShader->AddShader(csSource, vd::gl::Shader::eComputeShader);
@@ -30,14 +32,13 @@ namespace mod::terrain::normalmap {
         );
 
         outNormalMap->Bind();
-        outNormalMap->BilinearFilter();
+        outNormalMap->LinearFilter();
         outNormalMap->Unbind();
 
         /// Setup Shader
         m_pShader->Bind();
 
-        vd::gl::ActiveTexture(0);
-        heightMap->Bind();
+        heightMap->BindToUnit(0);
         m_pShader->PushUniform("heightMap", 0);
         m_pShader->PushUniform("size", size);
         m_pShader->PushUniform("strength", strength);
@@ -47,7 +48,13 @@ namespace mod::terrain::normalmap {
         glDispatchCompute(size/16, size/16, 1);
         glFinish();
 
+        m_pShader->Unbind();
+
         heightMap->Unbind();
+    }
+
+    void NormalMapBuilder::CleanUp() {
+        m_pShader->CleanUp();
     }
 
 }

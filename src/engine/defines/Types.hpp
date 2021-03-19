@@ -19,15 +19,18 @@ namespace vd {
             NumericDimension(T width, T height) : width(width), height(height) {}
         };
     }
+
     typedef internal::NumericDimension<uint64_t> Dimension;
     typedef internal::NumericDimension<float>    FloatDimension;
 
-    typedef std::function<void()>   Consumer;
-    inline Consumer g_kEmptyConsumer = []() { };
-    typedef std::function<bool()>   Predicate;
-    inline Predicate g_kEmptyPredicate = []() { return true; };
-
     template <typename T> using Getter = std::function<T()>;
+    template <typename T> using Setter = std::function<void(T&)>;
+
+    typedef Getter<void>   Consumer;
+    typedef Getter<bool>   Predicate;
+
+    inline Consumer     g_kEmptyConsumer    = []() { };
+    inline Predicate    g_kEmptyPredicate   = []() { return true; };
 }
 
 #endif //VD_GAME_ENGINE_TYPES_HPP

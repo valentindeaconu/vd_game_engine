@@ -9,62 +9,33 @@ namespace vd {
     {
     }
 
-    Engine::~Engine() = default;
-
     void Engine::Link() {
         m_pWindow = vd::ObjectOfType<window::Window>::Find();
         m_pContext = vd::ObjectOfType<context::Context>::Find();
+        m_pThreadPool = vd::ObjectOfType<core::ThreadPool>::Find();
     }
 
-    void Engine::Init() {
-        // GL Init configs
-        glClearColor(0.3f, 0.3f, 0.3f, 1.0f);
-        glEnable(GL_FRAMEBUFFER_SRGB);
-        glEnable(GL_DEPTH_TEST); // enable depth-testing
-        glDepthFunc(GL_LESS); // depth-testing interprets a smaller value as "closer"
-        glEnable(GL_CULL_FACE); // cull face
-        glCullFace(GL_BACK); // cull back face
-        glFrontFace(GL_CCW); // GL_CCW for counter clock-wise
+    void Engine::Prepare() {
+        auto initJob = m_pThreadPool->CreateJobFor([&]() { Init(); }, "Render");
+        initJob->Run();
 
-        // Create main rendering pass (3d scene rendering pass)
-        gl::FrameBufferPtr pSceneFbo = std::make_shared<gl::FrameBuffer>(m_pWindow->Width(), m_pWindow->Height());
-        pSceneFbo->Bind();
-        pSceneFbo->PushAttachment(gl::FrameBuffer::eColorTexture, [](gl::Texture2DPtr& pTex) {
-            pTex->Bind();
-            pTex->BilinearFilter();
-            pTex->Unbind();
+        m_pUpdateJob = m_pThreadPool->CreateJobFor([&]() { Update(); }, "Update");
+        m_pRenderJob = m_pThreadPool->CreateJobFor([&]() { Render(); }, "Render");
+
+        m_pUpdateJob->OnFinish([&]() {
+            m_pRenderJob->Run();
+            m_pUpdateJob->Reset();
+
+            m_pThreadPool->PushJobFor(m_pUpdateJob, "Update");
         });
-        pSceneFbo->PushAttachment(gl::FrameBuffer::eDepthTexture, [](gl::Texture2DPtr& pTex) {
-            pTex->Bind();
-            pTex->BilinearFilter();
-            pTex->Unbind();
+
+        m_pRenderJob->OnFinish([&]() {
+            m_Frames++;
+
+            m_pThreadPool->PushJobFor(m_pRenderJob, "Render");
         });
-        if (pSceneFbo->Status() != gl::FrameBuffer::eComplete) {
-            throw RuntimeError("framebuffer is incomplete or has errors");
-        }
-        pSceneFbo->Unbind();
 
-        m_pContext->SceneFrameBuffer() = pSceneFbo;
-
-        // Main rendering pass will render the scene
-        auto beforeFn = [ctx = m_pContext]() {
-            if (ctx->WireframeMode()) {
-                glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-            }
-        };
-        auto afterFn = [ctx = m_pContext]() {
-            if (ctx->WireframeMode()) {
-                glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-            }
-        };
-
-        component::RenderingPass rpMain("Main", 100, pSceneFbo, g_kEmptyPredicate, beforeFn, afterFn);
-        this->Add(rpMain);
-
-        // Initialise all subscribed components
-        this->Broadcast(BroadcastType::eInit);
-
-        Summary();
+        initJob->Join();
     }
 
     void Engine::Start() {
@@ -109,7 +80,6 @@ namespace vd {
     void Engine::Run() {
         m_Running = true;
 
-        int frames = 0;
         long frameCounter = 0;
 
         auto lastTime = std::chrono::high_resolution_clock::now();
@@ -131,32 +101,97 @@ namespace vd {
                 renderFrame = true;
                 unprocessedTime -= m_FrameTime;
 
-                if (m_pWindow->CloseRequested())
+                if (m_pWindow->CloseRequested()) {
                     Stop();
+                    return;
+                }
 
                 if (frameCounter >= 1000000000.0) {
-                    m_pContext->FPS() = frames;
+                    m_pContext->FPS() = m_Frames.load(std::memory_order_relaxed);
 
-                    frames = 0;
+                    m_Frames.store(0, std::memory_order_relaxed);
                     frameCounter = 0;
                 }
             }
             if (renderFrame) {
-                this->Update();
-                this->Render();
-                frames++;
+                static bool firstFrame = true;
+                if (firstFrame || m_pRenderJob->Done()) {
+                    firstFrame = false;
+                    m_pUpdateJob->Run();
+                    m_pRenderJob->Reset();
+                }
             } else {
                 std::this_thread::sleep_for(10ms);
             }
         }
-
-        CleanUp();
     }
 
     void Engine::Stop() {
         if (!m_Running)
             return;
         m_Running = false;
+
+        m_pUpdateJob->OnFinish(vd::g_kEmptyConsumer);
+        m_pRenderJob->OnFinish(vd::g_kEmptyConsumer);
+
+        m_pUpdateJob->Run();
+        m_pRenderJob->Run();
+
+        auto cleanUpJob = m_pThreadPool->CreateJobFor([&]() { CleanUp(); }, "Render", true);
+
+        m_pThreadPool->Release();
+    }
+
+    void Engine::Init() {
+        // GL Init configs
+        glClearColor(0.3f, 0.3f, 0.3f, 1.0f);
+        glEnable(GL_FRAMEBUFFER_SRGB);
+        glEnable(GL_DEPTH_TEST); // enable depth-testing
+        glDepthFunc(GL_LESS); // depth-testing interprets a smaller value as "closer"
+        glEnable(GL_CULL_FACE); // cull face
+        glCullFace(GL_BACK); // cull back face
+        glFrontFace(GL_CCW); // GL_CCW for counter clock-wise
+
+        // Create main rendering pass (3d scene rendering pass)
+        gl::FrameBufferPtr pSceneFbo = std::make_shared<gl::FrameBuffer>(m_pWindow->Width(), m_pWindow->Height());
+        pSceneFbo->Create();
+        pSceneFbo->Bind();
+        pSceneFbo->PushAttachment(gl::FrameBuffer::eColorTexture, [](gl::Texture2DPtr &pTex) {
+            pTex->Bind();
+            pTex->LinearFilter();
+            pTex->Unbind();
+        });
+        pSceneFbo->PushAttachment(gl::FrameBuffer::eDepthTexture, [](gl::Texture2DPtr &pTex) {
+            pTex->Bind();
+            pTex->LinearFilter();
+            pTex->Unbind();
+        });
+        if (pSceneFbo->Status() != gl::FrameBuffer::eComplete) {
+            throw RuntimeError("framebuffer is incomplete or has errors");
+        }
+        pSceneFbo->Unbind();
+
+        m_pContext->SceneFrameBuffer() = pSceneFbo;
+
+        // Main rendering pass will render the scene
+        auto beforeFn = [ctx = m_pContext]() {
+            if (ctx->WireframeMode()) {
+                glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+            }
+        };
+        auto afterFn = [ctx = m_pContext]() {
+            if (ctx->WireframeMode()) {
+                glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+            }
+        };
+
+        this->Add(component::RenderingPass("Update", 0, nullptr));
+        this->Add(component::RenderingPass("Main", 100, pSceneFbo, g_kEmptyPredicate, beforeFn, afterFn));
+
+        // Initialise all subscribed components
+        this->Broadcast(BroadcastType::eInit);
+
+        Summary();
     }
 
     void Engine::Update() {
@@ -181,15 +216,16 @@ namespace vd {
             }
         }
 
-#ifdef VDGE_DEBUG
+//#ifdef VDGE_DEBUG
         glCheckError();
-#endif
+//#endif
     }
 
     void Engine::CleanUp() {
-        this->Broadcast(BroadcastType::eCleanUp);
+        m_pContext->SceneFrameBuffer()->CleanUp();
+        service::TextureService::CleanUp();
 
-        glfwTerminate();
+        this->Broadcast(BroadcastType::eCleanUp);
     }
 
     void Engine::Summary() {

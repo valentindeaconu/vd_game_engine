@@ -6,7 +6,15 @@
 
 namespace mod::water {
 
-    WaterShader::WaterShader() : vd::component::IEntity3DShader() {
+    void WaterShader::Link() {
+        m_pCamera = vd::ObjectOfType<vd::camera::Camera>::Find();
+        m_pWindow = vd::ObjectOfType<vd::window::Window>::Find();
+        m_pLightManager = vd::ObjectOfType<vd::light::LightManager>::Find();
+    }
+
+    void WaterShader::Init() {
+        Create();
+
         std::string vsSource;
         vd::loader::ShaderLoader::Load("./resources/shaders/water/water_VS.glsl", vsSource);
         AddShader(vsSource, vd::gl::Shader::eVertexShader);
@@ -16,17 +24,7 @@ namespace mod::water {
         AddShader(fsSource, vd::gl::Shader::eFragmentShader);
 
         Compile();
-    }
 
-    WaterShader::~WaterShader() = default;
-
-    void WaterShader::Link() {
-        m_pCamera = vd::ObjectOfType<vd::camera::Camera>::Find();
-        m_pWindow = vd::ObjectOfType<vd::window::Window>::Find();
-        m_pLightManager = vd::ObjectOfType<vd::light::LightManager>::Find();
-    }
-
-    void WaterShader::AddUniforms() {
         AddUniform("model");
         AddUniform("view");
         AddUniform("projection");
@@ -55,8 +53,6 @@ namespace mod::water {
     }
 
     void WaterShader::InitUniforms(vd::object::Entity3DPtr pEntity) {
-        AddUniforms();
-
         WaterPtr pWater = std::dynamic_pointer_cast<Water>(pEntity);
         auto& pProperties = pWater->Properties();
 
@@ -81,16 +77,13 @@ namespace mod::water {
         SetUniform("nearPlane", m_pWindow->NearPlane());
         SetUniform("farPlane", m_pWindow->FarPlane());
 
-        vd::gl::ActiveTexture(0);
-        pWater->ReflectionFramebuffer()->ColorTexture()->Bind();
+        pWater->ReflectionFramebuffer()->ColorTexture()->BindToUnit(0);
         SetUniform("reflectionTexture", 0);
 
-        vd::gl::ActiveTexture(1);
-        pWater->RefractionFramebuffer()->ColorTexture()->Bind();
+        pWater->RefractionFramebuffer()->ColorTexture()->BindToUnit(1);
         SetUniform("refractionTexture", 1);
 
-        vd::gl::ActiveTexture(2);
-        pWater->RefractionFramebuffer()->DepthTexture()->Bind();
+        pWater->RefractionFramebuffer()->DepthTexture()->BindToUnit(2);
         SetUniform("depthMap", 2);
 
         auto& pSun = m_pLightManager->Sun();
@@ -101,12 +94,10 @@ namespace mod::water {
         SetUniform("moveFactor", pWater->GetMoveFactor());
 
         auto& waterMaterial = pWater->Material();
-        vd::gl::ActiveTexture(3);
-        waterMaterial.DisplaceMap()->Bind();
+        waterMaterial.DisplaceMap()->BindToUnit(3);
         SetUniform("dudvMap", 3);
 
-        vd::gl::ActiveTexture(4);
-        waterMaterial.NormalMap()->Bind();
+        waterMaterial.NormalMap()->BindToUnit(4);
         SetUniform("normalMap", 4);
     }
 

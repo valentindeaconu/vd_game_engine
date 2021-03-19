@@ -6,31 +6,33 @@
 
 namespace mod::gui {
 
-    GuiTextShader::GuiTextShader() : vd::component::IEntity2DShader() {
-        std::string vsSource;
-        vd::loader::ShaderLoader::Load("./resources/shaders/gui/text_VS.glsl", vsSource);
-        AddShader(vsSource, vd::gl::Shader::eVertexShader);
+    void GuiTextShader::Init() {
+        if (!m_Initialized) {
+            Create();
 
-        std::string fsSource;
-        vd::loader::ShaderLoader::Load("./resources/shaders/gui/text_FS.glsl", fsSource);
-        AddShader(fsSource, vd::gl::Shader::eFragmentShader);
+            std::string vsSource;
+            vd::loader::ShaderLoader::Load("./resources/shaders/gui/text_VS.glsl", vsSource);
+            AddShader(vsSource, vd::gl::Shader::eVertexShader);
 
-        Compile();
+            std::string fsSource;
+            vd::loader::ShaderLoader::Load("./resources/shaders/gui/text_FS.glsl", fsSource);
+            AddShader(fsSource, vd::gl::Shader::eFragmentShader);
+
+            Compile();
+
+            AddUniform("projection");
+            AddUniform("text");
+            AddUniform("textColor");
+            
+            m_Initialized = true;
+        }
     }
 
     void GuiTextShader::Link() {
         m_pWindow = vd::ObjectOfType<vd::window::Window>::Find();
     }
 
-    void GuiTextShader::AddUniforms() {
-        AddUniform("projection");
-        AddUniform("text");
-        AddUniform("textColor");
-    }
-
     void GuiTextShader::InitUniforms(vd::object::Entity2DPtr pEntity) {
-        AddUniforms();
-
         SetUniform("projection", m_pWindow->OrthoProjectionMatrix());
     }
 
@@ -39,8 +41,7 @@ namespace mod::gui {
 
         SetUniform("textColor", glm::vec3(pEntity->Meshes()[0]->Materials()[0].Color()));
 
-        vd::gl::ActiveTexture(1);
-        pGuiText->Font()->Characters()[pGuiText->Text()[meshIndex]].Texture->Bind();
+        pGuiText->Font()->Characters()[pGuiText->Text()[meshIndex]].Texture->BindToUnit(1);
         SetUniform("text", 1);
     }
 }

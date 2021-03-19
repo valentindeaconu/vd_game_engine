@@ -40,10 +40,15 @@ namespace vd::component {
         m_pInputFrameBuffers = m_fnResolver();
 
         auto pFrameBuffer = std::make_shared<vd::gl::FrameBuffer>(dimension.width * m_Scale, dimension.height * m_Scale);
+        pFrameBuffer->Create();
 
         m_fnConfigurator(pFrameBuffer);
 
         FrameBuffer() = std::move(pFrameBuffer);
+    }
+
+    void ConcreteEffect::CleanUp() {
+        FrameBuffer()->CleanUp();
     }
 
     bool ConcreteEffect::Precondition() {

@@ -12,7 +12,7 @@
 
 #include <glm/glm.hpp>
 
-#include <engine/misc/Types.hpp>
+#include <engine/defines/Types.hpp>
 #include <engine/math/Interpolator.hpp>
 
 #include <engine/logger/Logger.hpp>

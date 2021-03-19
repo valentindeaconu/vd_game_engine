@@ -15,8 +15,6 @@ namespace mod::terrain {
     {
     }
 
-    TerrainRenderer::~TerrainRenderer() = default;
-
     void TerrainRenderer::Link() {
         m_pFrustumCullingManager = vd::ObjectOfType<vd::culling::FrustumCullingManager>::Find();
     }
@@ -24,8 +22,10 @@ namespace mod::terrain {
     void TerrainRenderer::Init() {
         m_pTerrain->Init();
 
+        m_pShader->Init();
         m_pShader->Bind();
         m_pShader->InitUniforms(m_pTerrain);
+        m_pShader->Unbind();
     }
 
     void TerrainRenderer::Update() {
@@ -53,6 +53,8 @@ namespace mod::terrain {
                 RenderNode(rootNode);
             }
 
+            m_pShader->Unbind();
+
             Finish();
         }
      }
@@ -63,11 +65,8 @@ namespace mod::terrain {
 
             if (Detector::Bounds3AgainstFrustum(pNode->Bounds(), m_pFrustumCullingManager->Frustum()) != eOutside) {
                 if (pNode->Leaf()) {
-                    m_pShader->Bind();
-
                     m_pShader->SetUniform("localModel", pNode->Transform().Get());
                     m_pShader->SetUniform("tessFactor", pNode->TessFactors());
-
                     m_pShader->UpdateUniforms(m_pTerrain, 0, 0);
 
                     vd::gl::BufferPtr& buffer = m_pTerrain->Buffers()[0];
@@ -84,6 +83,7 @@ namespace mod::terrain {
 
     void TerrainRenderer::CleanUp() {
         m_pTerrain->CleanUp();
+        m_pShader->CleanUp();
     }
 
     bool TerrainRenderer::IsReady() {

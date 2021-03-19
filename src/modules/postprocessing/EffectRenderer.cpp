@@ -55,7 +55,6 @@ namespace mod::postprocessing {
                     shader->Bind();
                     shader->UpdateUniforms(effect);
 
-                    //m_pQuad->Buffers()[0]->DrawElements(vd::gl::eTriangles, 6, vd::gl::eUnsignedInt);
                     m_pQuad->Buffers()[0]->DrawArrays(vd::gl::eTriangleStrip, 4);
 
                     shader->Unbind();
@@ -70,6 +69,12 @@ namespace mod::postprocessing {
 
     void EffectRenderer::CleanUp() {
         m_pQuad->CleanUp();
+
+        for (auto& s : m_Stages) {
+            s.Effect->CleanUp();
+            s.Shader->CleanUp();
+        }
+
         m_Stages.clear();
     }
 

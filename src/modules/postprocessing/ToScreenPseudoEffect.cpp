@@ -20,10 +20,12 @@ namespace mod::postprocessing {
     void ToScreenPseudoEffect::Init(vd::Dimension dimension) {
         ConcreteEffect::Init(dimension);
 
-        FrameBuffer() = std::make_shared<vd::gl::FrameBuffer>(dimension.width, dimension.height, vd::gl::FrameBuffer::eDefault);
+        FrameBuffer() = std::make_shared<vd::gl::FrameBuffer>(dimension.width, dimension.height);
     }
 
     ToScreenShader::ToScreenShader() {
+        Create();
+
         std::string vsSource;
         vd::loader::ShaderLoader::Load("./resources/shaders/postprocessing/pp_VS.glsl", vsSource);
         AddShader(vsSource, vd::gl::Shader::eVertexShader);
@@ -50,11 +52,10 @@ namespace mod::postprocessing {
     void ToScreenShader::UpdateUniforms(vd::component::IRenderingEffectPtr pEffect) {
          auto pToScreenPseudoEffect = std::dynamic_pointer_cast<ToScreenPseudoEffect>(pEffect);
 
-        vd::gl::ActiveTexture(0);
         if (m_pContext->WireframeMode()) {
-            m_pContext->SceneFrameBuffer()->ColorTexture()->Bind();
+            m_pContext->SceneFrameBuffer()->ColorTexture()->BindToUnit(0);
         } else {
-            pToScreenPseudoEffect->InputFrameBuffer()->ColorTexture()->Bind();
+            pToScreenPseudoEffect->InputFrameBuffer()->ColorTexture()->BindToUnit(0);
         }
         SetUniform("colorMap", 0);
     }

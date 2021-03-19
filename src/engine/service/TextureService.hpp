@@ -6,7 +6,7 @@
 #define VD_GAME_ENGINE_TEXTURESERVICE_HPP
 
 #include <engine/api/gl/Texture.hpp>
-#include <engine/api/gl/GLTypes.hpp>
+#include <engine/api/gl/Enums.hpp>
 #include <engine/exception/Exceptions.hpp>
 
 #include <algorithm>
@@ -30,7 +30,7 @@ namespace vd::service {
             eFront
         };
 
-        ~TextureService();
+        static void CleanUp();
 
         static gl::Texture2DPtr UncachedCreateStorage(const vd::Dimension& dimension,
                                                       const gl::TextureFormat& internalFormat,
@@ -56,11 +56,10 @@ namespace vd::service {
         static void Remove(gl::Texture2DPtr& texture);
 
     private:
-        TextureService();
+        inline static std::unordered_map<std::string, size_t>  s_2D_Cache;
+        inline static std::vector<gl::Texture2DPtr>            s_2D_Collector;
 
-        static TextureService& getInstance();
-
-        std::unordered_map<std::string, gl::Texture2DPtr> m_Cache;
+        inline static std::vector<gl::TextureCubeMapPtr>       s_CM_Collector;
     };
 }
 

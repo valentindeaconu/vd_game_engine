@@ -38,10 +38,6 @@ namespace mod::shadow {
         );
 
         pEngine->Add(shadowRenderingPass);
-
-        ShadowShaderPtr pShadowShader = vd::injector::CreateAndStore<mod::shadow::ShadowShader>();
-
-        pShadowShader->InitUniforms(nullptr);
     }
 
 }

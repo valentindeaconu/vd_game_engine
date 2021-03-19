@@ -6,28 +6,6 @@
 
 namespace vd::gl {
 
-    FrameBuffer::FrameBuffer(const Type& type)
-        : m_Type(type)
-        , m_Id(0)
-        , m_Dimension(0, 0)
-        , m_DepthBufferId(0)
-        , m_Bound(false)
-        , m_HasDepthBuffer(false)
-        , m_HasDepthTexture(false)
-        , m_ColorAttachments(0)
-    {
-        if (type == eDefault) {
-            m_Type = eReadWrite;
-        } else {
-            glGenFramebuffers(1, &m_Id);
-
-            glBindFramebuffer(m_Type, m_Id);
-            glDrawBuffer(GL_NONE);
-            glReadBuffer(GL_NONE);
-            glBindFramebuffer(m_Type, 0);
-        }
-    }
-
     FrameBuffer::FrameBuffer(size_t width, size_t height, const Type& type)
         : m_Type(type)
         , m_Id(0)
@@ -38,22 +16,20 @@ namespace vd::gl {
         , m_HasDepthTexture(false)
         , m_ColorAttachments(0)
     {
-        if (type == eDefault) {
-            m_Type = eReadWrite;
-        } else {
-            glGenFramebuffers(1, &m_Id);
-
-            glBindFramebuffer(m_Type, m_Id);
-            glDepthFunc(GL_LEQUAL);
-            glEnable(GL_DEPTH_TEST);
-            glDrawBuffer(GL_NONE);
-            glReadBuffer(GL_NONE);
-            glBindFramebuffer(m_Type, 0);
-        }
-
     }
 
-    FrameBuffer::~FrameBuffer() {
+    void FrameBuffer::OnCreate() {
+        glGenFramebuffers(1, &m_Id);
+
+        glBindFramebuffer(m_Type, m_Id);
+        glDepthFunc(GL_LEQUAL);
+        glEnable(GL_DEPTH_TEST);
+        glDrawBuffer(GL_NONE);
+        glReadBuffer(GL_NONE);
+        glBindFramebuffer(m_Type, 0);
+    }
+
+    void FrameBuffer::OnCleanUp() {
         glBindFramebuffer(m_Type, m_Id);
 
         if (m_HasDepthBuffer) {
@@ -108,6 +84,8 @@ namespace vd::gl {
     }
 
     void FrameBuffer::PushAttachment(const FrameBuffer::Attachment& attachment, const TextureConfigurator& configurator) {
+        PassIfCreated();
+
         if (m_Id == 0) {
             throw RuntimeError("cannot push attachment into the default framebuffer (id 0)");
         }
@@ -168,9 +146,7 @@ namespace vd::gl {
     }
 
     bool FrameBuffer::Commit() const {
-        if (m_Id == 0) {
-            return true;
-        }
+        PassIfCreated();
 
         StatusType status = Status();
 
@@ -230,9 +206,7 @@ namespace vd::gl {
     }
 
     Texture2DPtr& FrameBuffer::ColorTexture(GLuint index) {
-        if (m_Id == 0) {
-            throw RuntimeError("cannot fetch any color texture from the default framebuffer (id 0)");
-        }
+        PassIfCreated();
 
         const GLuint key = GL_COLOR_ATTACHMENT0 + index;
         if (m_ColorAttachments == 0 || !m_Textures.contains(key)) {
@@ -243,9 +217,7 @@ namespace vd::gl {
     }
 
     Texture2DPtr& FrameBuffer::DepthTexture() {
-        if (m_Id == 0) {
-            throw RuntimeError("cannot fetch depth texture from the default framebuffer (id 0)");
-        }
+        PassIfCreated();
 
         if (!m_HasDepthTexture || !m_Textures.contains(kDepthAttachment)) {
             throw RuntimeError("depth texture attachment is not allocated");
@@ -255,9 +227,7 @@ namespace vd::gl {
     }
 
     GLuint& FrameBuffer::DepthBuffer() {
-        if (m_Id == 0) {
-            throw RuntimeError("cannot fetch depth buffer from the default framebuffer (id 0)");
-        }
+        PassIfCreated();
 
         if (!m_HasDepthBuffer) {
             throw RuntimeError("depth buffer attachment is not allocated");
@@ -272,6 +242,7 @@ namespace vd::gl {
             return;
         }
 
+        // TODO: This needs rework, FN, attachments are resized, but their configuration is not kept
         bool revert = false;
         if (!m_Bound) {
             glBindFramebuffer(m_Type, m_Id);

@@ -38,8 +38,10 @@ namespace mod::props {
         }
         // TODO: Now that we saved generator's data, we can release it from memory
 
+        m_pShader->Init();
         m_pShader->Bind();
         m_pShader->InitUniforms(nullptr);
+        m_pShader->Unbind();
     }
 
     void PropsRenderer::Update() {
@@ -135,7 +137,7 @@ namespace mod::props {
     }
 
     void PropsRenderer::CleanUp() {
-
+        m_pShader->CleanUp();
     }
 
     bool PropsRenderer::IsReady() {

@@ -12,8 +12,6 @@ namespace vd::culling {
     {
     }
 
-    FrustumCullingManager::~FrustumCullingManager() = default;
-
     void FrustumCullingManager::Link() {
         m_pCamera = ObjectOfType<camera::Camera>::Find();
         m_pWindow = ObjectOfType<window::Window>::Find();

@@ -15,7 +15,7 @@ namespace mod::props {
                 for (auto& mesh : meshes) {
                     for (auto& material : mesh->Materials()) {
                         material.DiffuseMap()->Bind();
-                        material.DiffuseMap()->BilinearFilter();
+                        material.DiffuseMap()->LinearFilter();
                         material.DiffuseMap()->Unbind();
                     }
                 }

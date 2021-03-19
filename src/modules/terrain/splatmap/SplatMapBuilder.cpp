@@ -9,6 +9,8 @@ namespace mod::terrain::splatmap {
     SplatMapBuilder::SplatMapBuilder() {
         m_pShader = std::make_shared<vd::gl::Shader>();
 
+        m_pShader->Create();
+
         std::string csSource;
         vd::loader::ShaderLoader::Load("./resources/shaders/terrain/cs/SplatMap.glsl", csSource);
         m_pShader->AddShader(csSource, vd::gl::Shader::eComputeShader);
@@ -38,8 +40,7 @@ namespace mod::terrain::splatmap {
         /// Setup Shader
         m_pShader->Bind();
 
-        vd::gl::ActiveTexture(0);
-        heightMap->Bind();
+        heightMap->BindToUnit(0);
         m_pShader->PushUniform("heightMap", 0);
         m_pShader->PushUniform("size", size);
         m_pShader->PushUniform("scaleY", scaleY);
@@ -58,6 +59,7 @@ namespace mod::terrain::splatmap {
         glDispatchCompute(size/16, size/16, 1);
         glFinish();
 
+        m_pShader->Unbind();
         heightMap->Unbind();
 
         /// Extract Texture Data
@@ -69,6 +71,10 @@ namespace mod::terrain::splatmap {
         glGetTexImage(GL_TEXTURE_2D, 0, GL_RED_INTEGER, GL_UNSIGNED_INT, &outData->Data()[0]);
 
         outSplatMap->Unbind();
+    }
+
+    void SplatMapBuilder::CleanUp() {
+        m_pShader->CleanUp();
     }
 
 }
