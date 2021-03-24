@@ -4,7 +4,6 @@
 layout (location = 0) in vec3 vPosition;
 
 out vec3 fPosition;
-out float fVisibility;
 
 uniform mat4 model;
 uniform mat4 view;
@@ -18,6 +17,3 @@ void main()
 
 	fPosition = vPosition;
 }
-
-
-

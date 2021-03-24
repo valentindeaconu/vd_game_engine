@@ -36,6 +36,9 @@ namespace mod::terrain {
         void Update() override;
         void CleanUp() override;
 
+        [[nodiscard]] glm::vec2 Radius() const;
+        [[nodiscard]] const glm::vec2& Center() const;
+
         [[nodiscard]] const vd::property::PropertiesPtr& Properties() const;
 
         [[nodiscard]] const std::vector<TerrainNode::ptr_type_t>& RootNodes() const;
@@ -49,6 +52,7 @@ namespace mod::terrain {
         [[nodiscard]] float HeightAt(float x, float z) const;
         [[nodiscard]] BiomePtrVec BiomesAt(float x, float z) const;
     private:
+        void ComputeCenterAndRadius();
         void CreateProps();
         void PopulateBiomes();
         void ComputeMaps();
@@ -58,6 +62,10 @@ namespace mod::terrain {
         void PopulateTree(const TerrainNode::ptr_type_t& root);
 
         vd::property::PropertiesPtr m_pProperties;
+
+        // Circular Shape
+        glm::vec2   m_Radius;
+        glm::vec2   m_Center;
 
         // Camera required for update optimization
         vd::camera::CameraPtr m_pCamera;

@@ -24,15 +24,14 @@ namespace mod::props {
         typedef std::vector<Placement>  PlacementVec;
 
         explicit PropGenerator(int propCount);
-        ~PropGenerator();
-
+        
         void Link() override;
 
         void GenerateLocations();
 
         [[nodiscard]] const PlacementVec& Placements() const;
     private:
-        [[nodiscard]] bool OnSurface(float x, float y) const;
+        [[nodiscard]] bool ValidLocation(float x, float y) const;
         glm::vec2 NextLocation(std::mt19937& gen, std::uniform_real_distribution<float>& d) const;
 
         const int m_kCount;

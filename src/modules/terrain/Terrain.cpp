@@ -26,6 +26,9 @@ namespace mod::terrain {
         WorldTransform().Scale() = glm::vec3(scaleXZ, scaleY, scaleXZ);
         WorldTransform().Translation() = glm::vec3(-scaleXZ / 2.0f, 0.0f, -scaleXZ / 2.0f);
 
+        // Compute radius & center
+        ComputeCenterAndRadius();
+
         PopulateBiomes();
 
         ComputeMaps();
@@ -96,6 +99,14 @@ namespace mod::terrain {
         Entity2D::CleanUp();
     }
 
+    glm::vec2 Terrain::Radius() const {
+        return m_Radius;
+    }
+
+    const glm::vec2& Terrain::Center() const {
+        return m_Center;
+    }
+
     const vd::property::PropertiesPtr& Terrain::Properties() const {
         return m_pProperties;
     }
@@ -163,6 +174,21 @@ namespace mod::terrain {
         }
 
         return output;
+    }
+
+    void Terrain::ComputeCenterAndRadius() {
+        const auto scaleXZ = m_pProperties->Get<float>("ScaleXZ");
+
+        const auto lowerPerc = m_pProperties->Get<float>("Fade.LowerPercentage");
+        const auto upperPerc = m_pProperties->Get<float>("Fade.UpperPercentage");
+
+        const auto halfUnit = scaleXZ * 0.5f;
+
+        m_Radius.y = upperPerc * halfUnit;
+        m_Radius.x = lowerPerc * halfUnit;
+
+        glm::vec3 center = WorldTransform().Translation() + glm::vec3(scaleXZ * .5f, 0.0f, scaleXZ * .5f);
+        m_Center = glm::vec2(center.x, center.z);
     }
 
     void Terrain::CreateProps() {

@@ -13,8 +13,6 @@ namespace mod::props {
     {
     }
 
-    PropGenerator::~PropGenerator() = default;
-
     void PropGenerator::Link() {
         m_pTerrain = vd::ObjectOfType<terrain::Terrain>::Find();
     }
@@ -55,8 +53,13 @@ namespace mod::props {
         return m_Placements;
     }
 
-    bool PropGenerator::OnSurface(float x, float y) const {
-        return (x > -m_TerrainSize && y > -m_TerrainSize && x < m_TerrainSize && y < m_TerrainSize);
+    bool PropGenerator::ValidLocation(float x, float y) const {
+        if (x > -m_TerrainSize && y > -m_TerrainSize && x < m_TerrainSize && y < m_TerrainSize) {
+            float dist = glm::length(glm::vec2(x, y) - m_pTerrain->Center());
+            return dist < m_pTerrain->Radius().x;
+        }
+
+        return false;
     }
 
     glm::vec2 PropGenerator::NextLocation(std::mt19937& gen, std::uniform_real_distribution<float>& d) const {
@@ -64,7 +67,7 @@ namespace mod::props {
 
         bool foundSomethingToPlace = false;
         do {
-            do { location = glm::vec2(d(gen), d(gen)); } while (!OnSurface(location.x, location.y));
+            do { location = glm::vec2(d(gen), d(gen)); } while (!ValidLocation(location.x, location.y));
 
             auto biomesAtLocation = m_pTerrain->BiomesAt(location.x, location.y);
 

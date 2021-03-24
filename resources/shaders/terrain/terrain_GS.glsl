@@ -12,6 +12,8 @@ out vec4 fPosition_ls;
 
 out mat3 fNormalMatrix;
 
+out float fRadiusClip;
+
 uniform mat4 view;
 uniform mat4 projection;
 uniform mat4 localModel;
@@ -29,6 +31,9 @@ uniform usampler2D splatMap;
 #include "material_lib.glsl"
 
 uniform vec4 clipPlane;
+
+uniform vec2 radius;
+uniform vec2 center;
 
 vec2 getTexCoords(int i) {
     if (i == 0) {
@@ -52,6 +57,21 @@ vec3 computeTangent(vec3 v0, vec3 v1, vec3 v2, vec2 uv0, vec2 uv1, vec2 uv2) {
     float r = 1.0f / (deltaUV1.x * deltaUV2.y - deltaUV1.y * deltaUV2.x);
 
     return normalize((e1 * deltaUV2.y - e2 * deltaUV1.y) * r);
+}
+
+float computeRadiusClip(vec4 worldCoords) {
+    vec4 zeroWC = vec4(worldCoords.x, .0f, worldCoords.z, worldCoords.w);
+    vec4 center4 = vec4(center.x, .0f, center.y, .0f);
+
+    float dist = length(zeroWC - center4);
+
+    if (dist > radius.x) {
+        float factor = (dist - radius.x) / (radius.y - radius.x);
+        factor = clamp(factor, 0.0f, 1.0f);
+        return factor;
+    } else {
+        return .0f;
+    }
 }
 
 void main() {
@@ -89,6 +109,7 @@ void main() {
 
     for (int i = 0; i < gl_in.length(); ++i) {
         vec4 worldCoords = gl_in[i].gl_Position + vec4(0.0f, displacement[i], 0.0f, 0.0f);
+
         vec4 eyeSpaceCoords = view * worldCoords;
         gl_Position = projection * eyeSpaceCoords;
 
@@ -102,6 +123,8 @@ void main() {
         fPosition_ls = lightProjection * lightView * worldCoords;
 
         fNormalMatrix = transpose(inverse(mat3(view * (worldModel + localModel))));
+
+        fRadiusClip = computeRadiusClip(worldCoords);
 
         EmitVertex();
     }

@@ -11,16 +11,13 @@
 namespace vd::fog {
     class Fog {
     public:
-        explicit Fog(float density, float skyDensity, float gradient, const glm::vec3& color);
-        ~Fog();
+        explicit Fog(float density, float gradient, const glm::vec3& color);
 
         float& Density();
-        float& SkyDensity();
         float& Gradient();
         glm::vec3& Color();
     private:
         float m_Density;
-        float m_SkyDensity;
         float m_Gradient;
 
         glm::vec3 m_Color;

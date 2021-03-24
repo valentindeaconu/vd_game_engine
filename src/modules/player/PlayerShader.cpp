@@ -72,5 +72,7 @@ namespace mod::player {
         }
 
         SetUniform("clipPlane", m_pContext->ClipPlane());
+
+        m_pFogManager->SetUniforms(shared_from_this());
     }
 }

@@ -80,6 +80,9 @@ namespace mod::terrain {
         AddUniform("isWireframe");
         AddUniform("wireframeColor");
 
+        AddUniform("center");
+        AddUniform("radius");
+
         m_pFogManager->AddUniforms(shared_from_this());
         m_pLightManager->AddUniforms(shared_from_this());
     }
@@ -144,6 +147,11 @@ namespace mod::terrain {
 
         SetUniform("isWireframe", m_pContext->WireframeMode());
         SetUniform("wireframeColor", glm::vec4(0.1f, 1.0f, 0.1f, 1.0f));
+        
+        SetUniform("center", m_pTerrain->Center());
+        SetUniform("radius", m_pTerrain->Radius());
+        
+        m_pFogManager->SetUniforms(shared_from_this());
     }
 
 }

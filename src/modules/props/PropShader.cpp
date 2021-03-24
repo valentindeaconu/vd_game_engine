@@ -76,5 +76,7 @@ namespace mod::props {
         } else {
             SetUniform("fakeLighting", 0);
         }
+        
+        m_pFogManager->SetUniforms(shared_from_this());
     }
 }

@@ -16,6 +16,8 @@
 
 #include "Sky.hpp"
 
+#include <glm/gtc/matrix_transform.hpp>
+
 namespace mod::sky {
     class SkyShader
             : public vd::component::IEntity3DShader

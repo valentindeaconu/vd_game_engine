@@ -7,6 +7,7 @@ in vec3 fPosition;
 in vec3 fTangent;
 in vec4 fPosition_ls;
 in mat3 fNormalMatrix;
+in float fRadiusClip;
 
 // terrain material color
 uniform sampler2D shadowMap;
@@ -74,80 +75,79 @@ void main() {
     if (isWireframe == 1) {
         fColor = wireframeColor;
     } else {
-        // compute visibility factor
-        float visibility = GetVisibilityThruFog(fPosition, fog.Density, fog.Gradient);
+        vec3 normal = normalize(2.0f * texture(normalMap, fTexCoords).rbg - 1.0f);
 
-        // if the fragment is completely inside fog, set its color to fog color without other computations
-        if (visibility <= 0.025f) {
-            fColor = vec4(fog.Color, 1.0f);
-        } else {
-            vec3 normal = normalize(2.0f * texture(normalMap, fTexCoords).rbg - 1.0f);
+        // compute material color
+        uint splatMask = texture(splatMap, fTexCoords).r;
 
-            // compute material color
-            uint splatMask = texture(splatMap, fTexCoords).r;
+        vec4 materialColor = vec4(0.0f);
+        float total = 0.0f;
+        for (uint i = 0; i < MAX_MATERIALS; ++i) {
+            uint msk = (1 << i);
+            if ((splatMask & msk) > 0) {
+                materialColor += texture(materials[i].diffuseMap, fTexCoords * materials[i].horizontalScaling);
+                total = total + 1.0f;
+            }
+        }
+        materialColor /= total;
 
-            vec4 materialColor = vec4(0.0f);
-            float total = 0.0f;
+        // compute normal
+        vec3 normalEye = normal;
+
+        float dist = length(cameraPosition - fPosition);
+        if (dist < highDetailRange - 50) {
+            float attenuation = clamp(-dist/(highDetailRange - 50) + 1.0f, 0.0f, 1.0f);
+
+            vec3 bitangent = normalize(cross(fTangent, normal));
+
+            mat3 TBN = mat3(fTangent, bitangent, normal);
+
+            vec3 bumpNormal = vec3(0.0f);
             for (uint i = 0; i < MAX_MATERIALS; ++i) {
                 uint msk = (1 << i);
                 if ((splatMask & msk) > 0) {
-                    materialColor += texture(materials[i].diffuseMap, fTexCoords * materials[i].horizontalScaling);
-                    total = total + 1.0f;
+                    vec3 materialNormal = texture(materials[i].normalMap, fTexCoords * materials[i].horizontalScaling).rbg;
+                    bumpNormal += (2.0f * materialNormal - 1.0f);
                 }
             }
-            materialColor /= total;
+            bumpNormal = normalize(bumpNormal);
+            bumpNormal.xz *= attenuation;
+            normal = normalize(TBN * bumpNormal);
 
-            // compute normal
-            vec3 normalEye = normal;
-
-            float dist = length(cameraPosition - fPosition);
-            if (dist < highDetailRange - 50) {
-                float attenuation = clamp(-dist/(highDetailRange - 50) + 1.0f, 0.0f, 1.0f);
-
-                vec3 bitangent = normalize(cross(fTangent, normal));
-
-                mat3 TBN = mat3(fTangent, bitangent, normal);
-
-                vec3 bumpNormal = vec3(0.0f);
-                for (uint i = 0; i < MAX_MATERIALS; ++i) {
-                    uint msk = (1 << i);
-                    if ((splatMask & msk) > 0) {
-                        vec3 materialNormal = texture(materials[i].normalMap, fTexCoords * materials[i].horizontalScaling).rbg;
-                        bumpNormal += (2.0f * materialNormal - 1.0f);
-                    }
-                }
-                bumpNormal = normalize(bumpNormal);
-                bumpNormal.xz *= attenuation;
-                normal = normalize(TBN * bumpNormal);
-
-                // from tangent space to world space
-                normalEye = normalize(transpose(TBN) * normal);
-            }
-
-            // compute lights
-            // in eye coordinates, the viewer is situated at the origin
-            vec3 cameraPosEye = vec3(0.0f);
-            // from world space to light space
-            normalEye = normalize(fNormalMatrix * normalEye);
-            // compute view direction
-            vec3 viewDirN = normalize(cameraPosition - fPosition);
-            // compute light direction matrix
-            mat3 lightDirectionMatrix = mat3(transpose(inverse(view)));
-
-            // compute shadow
-            float distance = (length(fPosition) - (shadowDistance - shadowTransitionDistance)) / shadowTransitionDistance;
-            float shadowDistanceFactor = clamp(1.0f - distance, 0.0f, 1.0f);
-            float shadow = computeShadow(fPosition_ls, normal, sun.Direction, shadowDistanceFactor);
-
-            // modulate with lights
-            Material material;
-            material.Ambient = materialColor.xyz;
-            material.Diffuse = materialColor.xyz;
-
-            vec3 lighting = modulateWithLightsAndShadow(sun, lights, normalEye, viewDirN, lightDirectionMatrix, fPosition.xyz, material, shadow);
-
-            // modulate with fog
-            fColor = mix(vec4(fog.Color, 1.0f), vec4(lighting, 1.0f), visibility);
+            // from tangent space to world space
+            normalEye = normalize(transpose(TBN) * normal);
         }
+
+        // compute lights
+        // in eye coordinates, the viewer is situated at the origin
+        vec3 cameraPosEye = vec3(0.0f);
+        // from world space to light space
+        normalEye = normalize(fNormalMatrix * normalEye);
+        // compute view direction
+        vec3 viewDirN = normalize(cameraPosition - fPosition);
+        // compute light direction matrix
+        mat3 lightDirectionMatrix = mat3(transpose(inverse(view)));
+
+        // compute shadow
+        float distance = (length(fPosition) - (shadowDistance - shadowTransitionDistance)) / shadowTransitionDistance;
+        float shadowDistanceFactor = clamp(1.0f - distance, 0.0f, 1.0f);
+        float shadow = computeShadow(fPosition_ls, normal, sun.Direction, shadowDistanceFactor);
+
+        // modulate with lights
+        Material material;
+        material.Ambient = materialColor.xyz;
+        material.Diffuse = materialColor.xyz;
+
+        vec3 lighting = modulateWithLightsAndShadow(sun, lights, normalEye, viewDirN, lightDirectionMatrix, fPosition.xyz, material, shadow);
+
+        // compute visibility factor
+        float visibility = GetVisibilityThruFog(fPosition, fog.Density, fog.Gradient);
+
+        // modulate with fog (based on distance from camera)
+        vec4 fogColor = vec4(fog.Color, 1.0f);
+        vec4 withFog = mix(fogColor, vec4(lighting, 1.0f), visibility);
+
+        // modulate with fog (based on circular shaped terrain)
+        fColor = mix(withFog, fogColor, fRadiusClip);
     }
 }
