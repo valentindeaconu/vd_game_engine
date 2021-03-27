@@ -47,13 +47,9 @@ namespace mod::props {
     private:
         void GenerateLocations();
         
-        [[nodiscard]] bool ValidLocation(float x, float y, float mapSize) const;
-        [[nodiscard]] bool PropUnderWater(const std::string& name) const;
-        
         uint64_t m_SpawnableProps;
 
         std::unordered_map<std::string, PropPtr>    m_Props;
-        std::unordered_map<std::string, bool>       m_UnderWater;
 
         PlacementVec m_Placements;
 

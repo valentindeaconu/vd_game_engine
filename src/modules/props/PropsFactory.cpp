@@ -15,7 +15,7 @@ namespace mod::props {
                                                                           []() { glFrontFace(GL_CCW); },
                                                                           []() { glFrontFace(GL_CW); });
 
-        pEngine->Subscribe(pPropsRenderer, PropsRenderer::kDefaultPriority);
+        pEngine->Subscribe(pPropsRenderer, PropsRenderer::kPriority);
     }
 
 }

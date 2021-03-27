@@ -98,11 +98,15 @@ namespace mod::props {
     }
 
     void PropsManager::GenerateLocations() {
-        const float mapSize = glm::abs(m_pTerrain->WorldTransform().Translation().x);
+        const float lowerBound = m_pTerrain->WorldTransform().Translation().x;
+        const float upperBound = lowerBound + m_pTerrain->MapSize();
+
+        const glm::vec2 terrainCenter = m_pTerrain->Center();
+        const float maxDist = m_pTerrain->Radius().x;
 
         std::random_device rd{};
         std::mt19937 gen{ rd() };
-        std::uniform_real_distribution<float> d(-mapSize, mapSize);
+        std::uniform_real_distribution<float> d(lowerBound, upperBound);
 
         for (int propIndex = 0; propIndex < m_SpawnableProps; ++propIndex) {
             glm::vec3 location;
@@ -113,10 +117,13 @@ namespace mod::props {
             do {
                 propsAtLocation.clear();
 
-                // Generate random locations until a valid location is found (within the map's bounds)
+                // Generate random locations until a valid location is found (within the map's visible radius)
+                // Locations are implicitly within map's bounds since distribution is between lowerbound and upperbound 
+                float dist = maxDist + 1.0f;
                 do { 
-                    location = glm::vec3(d(gen), 0.0f, d(gen)); 
-                } while (!ValidLocation(location.x, location.y, mapSize));
+                    location = glm::vec3(d(gen), 0.0f, d(gen));
+                    dist = glm::length(glm::vec2(location.x, location.z) - terrainCenter);
+                } while (dist >= maxDist);
 
                 // Compute height
                 location.y = m_pTerrain->HeightAt(location.x, location.z);
@@ -155,24 +162,6 @@ namespace mod::props {
 
             m_Placements.emplace_back(std::move(placement));
         }
-    }
-
-    bool PropsManager::ValidLocation(float x, float y, float mapSize) const {
-        if (x > -mapSize && y > -mapSize && x < mapSize && y < mapSize) {
-            float dist = glm::length(glm::vec2(x, y) - m_pTerrain->Center());
-            return dist < m_pTerrain->Radius().x;
-        }
-
-        return false;
-    }
-
-    bool PropsManager::PropUnderWater(const std::string& name) const {
-        auto it = m_UnderWater.find(name);
-        if (it != m_UnderWater.end()) {
-            return it->second;
-        }
-
-        return false;
     }
 
 }

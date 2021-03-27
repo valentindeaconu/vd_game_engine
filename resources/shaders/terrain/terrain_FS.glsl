@@ -84,36 +84,28 @@ void main() {
             materialColor += texture(materials[i].diffuseMap, fTexCoords * materials[i].horizontalScaling) * blendSampleArray[i];
         }
 
-        // compute normal
-        vec3 normalEye = normal;
-
         float dist = length(cameraPosition - fPosition);
         if (dist < highDetailRange - 50) {
             float attenuation = clamp(-dist/(highDetailRange - 50) + 1.0f, 0.0f, 1.0f);
 
             vec3 bitangent = normalize(cross(fTangent, normal));
 
-            mat3 TBN = mat3(fTangent, bitangent, normal);
+            mat3 TBN = mat3(fTangent, normal, bitangent);
 
             vec3 bumpNormal = vec3(0.0f);
             for (int i = 0; i < MAX_MATERIALS; ++i) {
-                vec3 materialNormal = texture(materials[i].normalMap, fTexCoords * materials[i].horizontalScaling).rbg * blendSampleArray[i];
-                bumpNormal += (2.0f * materialNormal - 1.0f);
+                vec3 materialNormal = texture(materials[i].normalMap, fTexCoords * materials[i].horizontalScaling).rbg;
+                bumpNormal += (2.0f * materialNormal - 1.0f) * blendSampleArray[i];
             }
 
             bumpNormal = normalize(bumpNormal);
             bumpNormal.xz *= attenuation;
             normal = normalize(TBN * bumpNormal);
-
-            // from tangent space to world space
-            normalEye = normalize(transpose(TBN) * normal);
         }
 
         // compute lights
         // in eye coordinates, the viewer is situated at the origin
         vec3 cameraPosEye = vec3(0.0f);
-        // from world space to light space
-        normalEye = normalize(fNormalMatrix * normalEye);
         // compute view direction
         vec3 viewDirN = normalize(cameraPosition - fPosition);
         // compute light direction matrix
@@ -129,7 +121,7 @@ void main() {
         material.Ambient = materialColor.xyz;
         material.Diffuse = materialColor.xyz;
 
-        vec3 lighting = modulateWithLightsAndShadow(sun, lights, normalEye, viewDirN, lightDirectionMatrix, fPosition.xyz, material, shadow);
+        vec3 lighting = modulateWithLightsAndShadow(sun, lights, normal, viewDirN, lightDirectionMatrix, fPosition.xyz, material, shadow);
 
         // compute visibility factor
         float visibility = GetVisibilityThruFog(fPosition, fog.Density, fog.Gradient);

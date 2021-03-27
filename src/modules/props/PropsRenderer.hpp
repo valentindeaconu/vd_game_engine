@@ -15,6 +15,7 @@
 #include <engine/event/EventHandler.hpp>
 #include <modules/shadow/ShadowShader.hpp>
 #include <modules/terrain/Terrain.hpp>
+#include <modules/biomes/BiomeManager.hpp>
 
 #include "PropsManager.hpp"
 
@@ -23,6 +24,8 @@ namespace mod::props {
             : public vd::component::IRenderer
             , public vd::injector::Injectable {
     public:
+        static const vd::datastruct::Observable::priority_t kPriority = biomes::BiomeManager::kPriority + 1;
+
         explicit PropsRenderer(PropsManagerPtr propsManager, 
                                vd::component::IEntityShaderPtr shaderPtr,
                                vd::Consumer beforeExecution = vd::g_kEmptyConsumer,
