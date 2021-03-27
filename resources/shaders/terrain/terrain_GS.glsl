@@ -26,7 +26,7 @@ uniform vec3 cameraPosition;
 
 uniform int highDetailRange;
 
-uniform usampler2D splatMap;
+uniform sampler2D splatMap;
 
 #include "material_lib.glsl"
 
@@ -90,16 +90,17 @@ void main() {
         for (int k = 0; k < gl_in.length(); ++k) {
             float height = gl_in[k].gl_Position.y;
 
-            uint splatMask = texture(splatMap, getTexCoords(k)).r;
+            // vec4 blendSample = texture(splatMap, getTexCoords(k));
+            // float[4] blendSampleArray = float[](blendSample.r, blendSample.g, blendSample.b, blendSample.a);
+            float[16] blendSampleArray = BlendSample(splatMap, getTexCoords(k));
 
             float scale = 0.0f;
-            for (uint i = 0; i < MAX_MATERIALS; ++i) {
-                uint msk = (1 << i);
-                if ((splatMask & msk) > 0) {
-                    scale += texture(materials[i].displaceMap, getTexCoords(k) * materials[i].horizontalScaling).r * materials[i].heightScaling;
-                }
+            for (int i = 0; i < MAX_MATERIALS; ++i) {
+                scale += texture(materials[i].displaceMap, getTexCoords(k) * materials[i].horizontalScaling).r 
+                        * materials[i].heightScaling
+                        * blendSampleArray[i];
             }
-
+            
             // attenuate the scale factor using the distance to the vertex
             scale *= clamp(-distance(gl_in[k].gl_Position.xyz, cameraPosition) / (highDetailRange - 50) + 1.0f, 0.0f, 1.0f);
 

@@ -15,7 +15,7 @@ namespace mod::terrain {
                                                                                 []() { glFrontFace(GL_CCW); },
                                                                                 []() { glFrontFace(GL_CW); });
 
-        pEngine->Subscribe(pTerrainRenderer, TerrainRenderer::kDefaultPriority);
+        pEngine->Subscribe(pTerrainRenderer, TerrainRenderer::kPriority);
     }
 
 }

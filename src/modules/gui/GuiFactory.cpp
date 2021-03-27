@@ -7,6 +7,7 @@
 #include <modules/terrain/Terrain.hpp>
 #include <modules/water/Water.hpp>
 #include <modules/shadow/ShadowManager.hpp>
+#include <modules/biomes/BiomeManager.hpp>
 
 namespace mod::gui {
 
@@ -50,16 +51,16 @@ namespace mod::gui {
                   glm::vec2(-0.75f, -0.75f),
                   glm::vec2(0.250f, 0.250f)); */
 
-        /// Terrain Height Map
+        /// Splat Map
         /* CreateGui(pEngine,
-                  [t = vd::ObjectOfType<mod::terrain::Terrain>::Find()]() {
-                      return t->HeightMap();
+                  [b = vd::ObjectOfType<mod::biomes::BiomeManager>::Find()]() {
+                      return b->SplatMap();
                   },
                   glm::vec2(0.75f, 0.75f),
                   glm::vec2(0.250f, 0.250f)); */
 
         /// Terrain Normal Map
-        /* CreateGui(pEngine,
+        /*CreateGui(pEngine,
                   [t = vd::ObjectOfType<mod::terrain::Terrain>::Find()]() {
                       return t->NormalMap();
                   },

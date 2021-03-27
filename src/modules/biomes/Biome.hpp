@@ -1,9 +1,9 @@
 //
-// Created by Vali on 9/22/2020.
+// Created by Vali on 3/26/2021.
 //
 
-#ifndef VD_GAME_ENGINE_BIOME_HPP
-#define VD_GAME_ENGINE_BIOME_HPP
+#ifndef VDGE_BIOME_HPP
+#define VDGE_BIOME_HPP
 
 #include <engine/model/Material.hpp>
 
@@ -12,33 +12,36 @@
 
 #include <modules/props/Prop.hpp>
 
-namespace mod::terrain {
+namespace mod::biomes {
     class Biome {
     public:
         Biome();
         explicit Biome(std::string name);
-        ~Biome();
 
         std::string& Name();
 
         float& MinimumHeight();
         float& MaximumHeight();
+        float& MinimumSlope();
+        float& MaximumSlope();
 
         vd::model::Material& Material();
 
-        std::vector<props::PropPtr>& Props();
+        std::vector<vd::object::Entity3DPtr>& Entities();
     private:
         float m_MinimumHeight;
         float m_MaximumHeight;
+        float m_MinimumSlope;
+        float m_MaximumSlope;
 
         std::string m_Name;
 
         vd::model::Material m_Material;
 
-        std::vector<props::PropPtr> m_Props;
+        std::vector<vd::object::Entity3DPtr> m_Entities;
     };
     typedef std::shared_ptr<Biome>  BiomePtr;
     typedef std::vector<BiomePtr>   BiomePtrVec;
 }
 
-#endif //VD_GAME_ENGINE_BIOME_HPP
+#endif //VDGE_BIOME_HPP

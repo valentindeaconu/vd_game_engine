@@ -1,15 +1,14 @@
 #include "PropsRenderer.hpp"
 
 namespace mod::props {
-    PropsRenderer::PropsRenderer(vd::component::IEntityShaderPtr shaderPtr,
+    PropsRenderer::PropsRenderer(PropsManagerPtr propsManager,
+                                 vd::component::IEntityShaderPtr shaderPtr,
                                  vd::Consumer beforeExecution,
                                  vd::Consumer afterExecution)
         : IRenderer(std::move(shaderPtr), std::move(beforeExecution), std::move(afterExecution))
-        , m_pPropGenerator(std::make_shared<PropGenerator>(4500)) // TODO: Read prop count from a properties file
+        , m_pPropsManager(std::move(propsManager))
     {
     }
-
-    PropsRenderer::~PropsRenderer() = default;
 
     void PropsRenderer::Link() {
         m_pCamera = vd::ObjectOfType<vd::camera::Camera>::Find();
@@ -18,9 +17,9 @@ namespace mod::props {
     }
 
     void PropsRenderer::Init() {
-        m_pPropGenerator->GenerateLocations();
+        m_pPropsManager->Init();
 
-        const auto& placements = m_pPropGenerator->Placements();
+        const auto& placements = m_pPropsManager->Placements();
         m_Units.Total = placements.size();
 
         m_Units.Transforms.resize(m_Units.Total);
@@ -36,7 +35,6 @@ namespace mod::props {
             m_Units.Transforms[i].Translation() = placement.Location;
             m_Units.Culled[i] = false;
         }
-        // TODO: Now that we saved generator's data, we can release it from memory
 
         m_pShader->Init();
         m_pShader->Bind();
@@ -51,7 +49,6 @@ namespace mod::props {
         float cameraYaw = m_pCamera->Yaw() + 180.0f;
         cameraYaw = (cameraYaw > 360.0f) ? cameraYaw - 360.0f : cameraYaw;
 
-        // int total = 0;
         for (size_t i = 0; i < m_Units.Total; ++i) {
             auto& Prop = m_Units.Props[i];
             auto& Transform = m_Units.Transforms[i];
@@ -67,25 +64,19 @@ namespace mod::props {
                 Transform.YAxisRotationAngle() = 0.0f;
             }
 
-            // TODO: This is a hack, we're checking against frustum's bounding box
+            // Checking against frustum's bounding box
             const auto& boundingBoxes = Prop->BoundingBoxes(levelOfDetail);
             const auto& fBounds =  m_pFrustumCullingManager->FrustumBounds();
-            // const auto& frustum =  m_pFrustumCullingManager->Frustum();
 
             bool found = false;
             for (const auto& bounds : boundingBoxes) {
                 if (Detector::Bounds3AgainstBounds3(bounds.WithTransform(Transform), fBounds) != Relationship::eOutside) {
-                // if (Detector::Bounds3AgainstFrustum(bounds.WithTransform(Transform), frustum) != Relationship::eOutside) {
                     found = true;
                     break;
                 }
             }
             m_Units.Culled[i] = !found;
-
-            // total = (!found) ? total + 1 : total;
         }
-
-        // vd::Logger::log("Total culled: " + std::to_string(total));
     }
 
     void PropsRenderer::Render(const params_t& params) {
@@ -137,11 +128,12 @@ namespace mod::props {
     }
 
     void PropsRenderer::CleanUp() {
+        m_pPropsManager->CleanUp();
         m_pShader->CleanUp();
     }
 
     bool PropsRenderer::IsReady() {
-        return IRenderer::IsReady() && m_pPropGenerator != nullptr;
+        return IRenderer::IsReady() && m_pPropsManager != nullptr;
     }
 
 }

@@ -12,6 +12,7 @@
 
 #include "PropsRenderer.hpp"
 #include "PropShader.hpp"
+#include "PropsManager.hpp"
 
 namespace mod::props {
     class PropsFactory : public vd::component::IModuleFactory {

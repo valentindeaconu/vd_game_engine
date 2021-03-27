@@ -12,7 +12,7 @@ in float fRadiusClip;
 // terrain material color
 uniform sampler2D shadowMap;
 uniform sampler2D normalMap;
-uniform usampler2D splatMap;
+uniform sampler2D splatMap;
 #include "material_lib.glsl"
 
 uniform int highDetailRange;
@@ -51,8 +51,7 @@ float computeShadow(vec4 fragPosLightSpace, vec3 normal, vec3 lightDirection, fl
     // get depth of current fragment from light's perspective
     float currentDepth = projCoords.z;
 
-    // TODO: Solve bias
-    float bias = /*0.005f; //*/ max(0.0075f * (1.0f - dot(normal, lightDirection)), 0.005f);
+    float bias = max(0.0075f * (1.0f - dot(normal, lightDirection)), 0.005f);
 
     // check whether current frag pos is in shadow
     float shadow = 0.0;
@@ -78,18 +77,12 @@ void main() {
         vec3 normal = normalize(2.0f * texture(normalMap, fTexCoords).rbg - 1.0f);
 
         // compute material color
-        uint splatMask = texture(splatMap, fTexCoords).r;
+        float[16] blendSampleArray = BlendSample(splatMap, fTexCoords);
 
         vec4 materialColor = vec4(0.0f);
-        float total = 0.0f;
-        for (uint i = 0; i < MAX_MATERIALS; ++i) {
-            uint msk = (1 << i);
-            if ((splatMask & msk) > 0) {
-                materialColor += texture(materials[i].diffuseMap, fTexCoords * materials[i].horizontalScaling);
-                total = total + 1.0f;
-            }
+        for (int i = 0; i < MAX_MATERIALS; ++i) {
+            materialColor += texture(materials[i].diffuseMap, fTexCoords * materials[i].horizontalScaling) * blendSampleArray[i];
         }
-        materialColor /= total;
 
         // compute normal
         vec3 normalEye = normal;
@@ -103,13 +96,11 @@ void main() {
             mat3 TBN = mat3(fTangent, bitangent, normal);
 
             vec3 bumpNormal = vec3(0.0f);
-            for (uint i = 0; i < MAX_MATERIALS; ++i) {
-                uint msk = (1 << i);
-                if ((splatMask & msk) > 0) {
-                    vec3 materialNormal = texture(materials[i].normalMap, fTexCoords * materials[i].horizontalScaling).rbg;
-                    bumpNormal += (2.0f * materialNormal - 1.0f);
-                }
+            for (int i = 0; i < MAX_MATERIALS; ++i) {
+                vec3 materialNormal = texture(materials[i].normalMap, fTexCoords * materials[i].horizontalScaling).rbg * blendSampleArray[i];
+                bumpNormal += (2.0f * materialNormal - 1.0f);
             }
+
             bumpNormal = normalize(bumpNormal);
             bumpNormal.xz *= attenuation;
             normal = normalize(TBN * bumpNormal);

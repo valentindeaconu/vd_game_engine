@@ -25,6 +25,7 @@ namespace vd {
 
     template <typename T> using Getter = std::function<T()>;
     template <typename T> using Setter = std::function<void(T&)>;
+    template <typename T> using User = std::function<void(const T&)>;
 
     typedef Getter<void>   Consumer;
     typedef Getter<bool>   Predicate;

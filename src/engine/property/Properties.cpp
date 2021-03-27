@@ -10,12 +10,12 @@ namespace vd::property {
     {
     }
 
-    Properties::~Properties() = default;
-
-    Properties& Properties::operator=(const Properties& other) = default;
-
     bool Properties::Empty() const {
         return m_Map.empty();
+    }
+
+    bool Properties::Has(const std::string& key) const {
+        return m_Map.contains(key);
     }
 
     template<> bool Properties::Get<bool>(const std::string& key) const {

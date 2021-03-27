@@ -20,6 +20,8 @@ namespace mod::terrain {
             : public vd::component::IRenderer
             , public vd::injector::Injectable {
     public:
+        static const vd::datastruct::Observable::priority_t kPriority = kDefaultPriority - 10;
+
         TerrainRenderer(TerrainPtr terrainPtr,
                         vd::component::IEntityShaderPtr shaderPtr,
                         vd::Consumer beforeExecution = vd::g_kEmptyConsumer,
