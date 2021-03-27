@@ -27,6 +27,7 @@ namespace mod::props {
         AddUniform("model");
         AddUniform("view");
         AddUniform("projection");
+        AddUniform("normalMatrix");
 
         AddUniform("diffuseMap");
         AddUniform("specularMap");
@@ -46,7 +47,11 @@ namespace mod::props {
 
 
     void PropShader::UpdateUniforms(vd::object::Entity3DPtr pEntity, uint64_t levelOfDetail, uint32_t meshIndex) {
-        SetUniform("model", pEntity->WorldTransform().Get());
+        glm::mat4 model = pEntity->WorldTransform().Get();
+        glm::mat3 normalMatrix = glm::transpose(glm::inverse(glm::mat3(model)));
+
+        SetUniform("model", model);
+        SetUniform("normalMatrix", normalMatrix);
 
         SetUniform("view", m_pCamera->ViewMatrix());
         SetUniform("projection", m_pWindow->ProjectionMatrix());
@@ -78,5 +83,6 @@ namespace mod::props {
         }
         
         m_pFogManager->SetUniforms(shared_from_this());
+        m_pLightManager->SetUniforms(shared_from_this());
     }
 }

@@ -18,6 +18,9 @@ struct Material {
 const int MAX_LIGHTS = VDGE_LIGHTS_COUNT;
 uniform Light lights[MAX_LIGHTS];
 uniform Light sun;
+uniform mat3 lightDirectionMatrix;
+
+uniform mat4 view;
 
 Material computePointLight(Light light, vec3 normalEye, vec3 viewDirN, vec3 fragPos) {
 	Material material;
@@ -62,9 +65,10 @@ Material computeDirectionalLight(Light light, vec3 normalEye, vec3 viewDirN, mat
 	material.Diffuse = max(dot(normalEye, lightDirN), 0.0f) * light.Color;
 
 	//compute specular light
-	//compute half vector
+	// //compute half vector
 	vec3 halfVector = normalize(lightDirN + viewDirN);
 	float specCoeff = pow(max(dot(halfVector, normalEye), 0.0f), light.Shininess);
+
 	material.Specular = light.SpecularStrength * specCoeff * light.Color;
 
 	return material;

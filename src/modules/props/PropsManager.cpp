@@ -122,11 +122,12 @@ namespace mod::props {
                 float dist = maxDist + 1.0f;
                 do { 
                     location = glm::vec3(d(gen), 0.0f, d(gen));
-                    dist = glm::length(glm::vec2(location.x, location.z) - terrainCenter);
-                } while (dist >= maxDist);
 
-                // Compute height
-                location.y = m_pTerrain->HeightAt(location.x, location.z);
+                    // Compute height
+                    location.y = m_pTerrain->HeightAt(location.x, location.z);
+
+                    dist = glm::length(glm::vec2(location.x, location.z) - terrainCenter);
+                } while (dist >= maxDist || glm::abs(location.y - m_pWater->GetHeight()) < 2.0f);
 
                 // Check if the location is under water
                 bool isUnderWater = (location.y < m_pWater->GetHeight());

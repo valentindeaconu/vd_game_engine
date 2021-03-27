@@ -153,6 +153,7 @@ namespace mod::terrain {
         SetUniform("radius", m_pTerrain->Radius());
         
         m_pFogManager->SetUniforms(shared_from_this());
+        m_pLightManager->SetUniforms(shared_from_this());
     }
 
 }

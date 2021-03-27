@@ -123,7 +123,8 @@ void main() {
         fTangent = tangent;
         fPosition_ls = lightProjection * lightView * worldCoords;
 
-        fNormalMatrix = transpose(inverse(mat3(view * (worldModel + localModel))));
+        // fNormalMatrix = transpose(inverse(mat3(view * (worldModel + localModel))));
+        fNormalMatrix = transpose(inverse(mat3(worldModel + localModel)));
 
         fRadiusClip = computeRadiusClip(worldCoords);
 

@@ -43,14 +43,21 @@ namespace vd::light {
         }
     }
 
-    LightManager::~LightManager() = default;
+    void LightManager::Link() {
+        m_pCamera = vd::ObjectOfType<camera::Camera>::Find();
+    }
 
     void LightManager::Init() {
-
+        Update();
     }
 
     void LightManager::Update() {
-
+        if (m_pCamera->CameraRotated() || m_pCamera->CameraMoved()) {
+            // TODO: Dispatch this computation on a job thread
+            // m_pThreadPool->CreateJob([&, view = m_pCamera->ViewMatrix()]() {
+                m_LightDirectionMatrix = glm::transpose(glm::inverse(glm::mat3(m_pCamera->ViewMatrix())));
+            // }, true);
+        }
     }
 
     void LightManager::CleanUp() {
@@ -76,6 +83,8 @@ namespace vd::light {
             pShader->AddUniform(currentLightUniformNameBase + ".SpecularStrength");
             pShader->AddUniform(currentLightUniformNameBase + ".Shininess");
         }
+
+        pShader->AddUniform("lightDirectionMatrix");
     }
 
     void LightManager::SetUniforms(const gl::ShaderPtr& pShader) {
@@ -114,6 +123,8 @@ namespace vd::light {
             pShader->SetUniform(currentLightUniformNameBase + ".SpecularStrength", pLight->SpecularStrength());
             pShader->SetUniform(currentLightUniformNameBase + ".Shininess", pLight->Shininess());
         }
+
+        pShader->SetUniform("lightDirectionMatrix", m_LightDirectionMatrix);
     }
 
     const LightPtr& LightManager::Sun() const {

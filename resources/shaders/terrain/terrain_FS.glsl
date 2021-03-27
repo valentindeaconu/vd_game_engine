@@ -17,7 +17,6 @@ uniform sampler2D splatMap;
 
 uniform int highDetailRange;
 uniform vec3 cameraPosition;
-uniform mat4 view;
 
 // light constants
 #include <light.glsl>
@@ -106,22 +105,22 @@ void main() {
         // compute lights
         // in eye coordinates, the viewer is situated at the origin
         vec3 cameraPosEye = vec3(0.0f);
+        // compute normal in light space
+        vec3 normalLS = normalize(fNormalMatrix * normal);
         // compute view direction
         vec3 viewDirN = normalize(cameraPosition - fPosition);
-        // compute light direction matrix
-        mat3 lightDirectionMatrix = mat3(transpose(inverse(view)));
 
         // compute shadow
         float distance = (length(fPosition) - (shadowDistance - shadowTransitionDistance)) / shadowTransitionDistance;
         float shadowDistanceFactor = clamp(1.0f - distance, 0.0f, 1.0f);
-        float shadow = computeShadow(fPosition_ls, normal, sun.Direction, shadowDistanceFactor);
+        float shadow = computeShadow(fPosition_ls, normalLS, sun.Direction, shadowDistanceFactor);
 
         // modulate with lights
         Material material;
         material.Ambient = materialColor.xyz;
         material.Diffuse = materialColor.xyz;
 
-        vec3 lighting = modulateWithLightsAndShadow(sun, lights, normal, viewDirN, lightDirectionMatrix, fPosition.xyz, material, shadow);
+        vec3 lighting = modulateWithLightsAndShadow(sun, lights, normalLS, viewDirN, lightDirectionMatrix, fPosition.xyz, material, shadow);
 
         // compute visibility factor
         float visibility = GetVisibilityThruFog(fPosition, fog.Density, fog.Gradient);

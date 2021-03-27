@@ -8,8 +8,6 @@ out vec4 fPosition;
 out vec3 fNormal;
 out vec2 fTexCoords;
 
-out mat3 fNormalMatrix;
-out mat3 fLightDirectionMatrix;
 out float fVisibility;
 
 uniform mat4 model;
@@ -35,12 +33,6 @@ void main()
 	// compute eye space coordinates
 	vec4 cameraPosition = view * worldPosition;
 	fPosition = cameraPosition;
-
-	// compute normal matrix
-	fNormalMatrix = transpose(inverse(mat3(view * model)));
-	
-	// compute light direction matrix
-	fLightDirectionMatrix = transpose(inverse(mat3(view)));
 	
 	// compute vertex visibility
 	fVisibility = GetVisibilityThruFog(cameraPosition.xyz, fog.Density, fog.Gradient);
