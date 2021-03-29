@@ -12,6 +12,8 @@ out vec4 fPosition_ls;
 
 out mat3 fNormalMatrix;
 
+out float fRadiusClip;
+
 uniform mat4 view;
 uniform mat4 projection;
 uniform mat4 localModel;
@@ -24,11 +26,14 @@ uniform vec3 cameraPosition;
 
 uniform int highDetailRange;
 
-uniform usampler2D splatMap;
+uniform sampler2D splatMap;
 
 #include "material_lib.glsl"
 
 uniform vec4 clipPlane;
+
+uniform vec2 radius;
+uniform vec2 center;
 
 vec2 getTexCoords(int i) {
     if (i == 0) {
@@ -54,6 +59,21 @@ vec3 computeTangent(vec3 v0, vec3 v1, vec3 v2, vec2 uv0, vec2 uv1, vec2 uv2) {
     return normalize((e1 * deltaUV2.y - e2 * deltaUV1.y) * r);
 }
 
+float computeRadiusClip(vec4 worldCoords) {
+    vec4 zeroWC = vec4(worldCoords.x, .0f, worldCoords.z, worldCoords.w);
+    vec4 center4 = vec4(center.x, .0f, center.y, .0f);
+
+    float dist = length(zeroWC - center4);
+
+    if (dist > radius.x) {
+        float factor = (dist - radius.x) / (radius.y - radius.x);
+        factor = clamp(factor, 0.0f, 1.0f);
+        return factor;
+    } else {
+        return .0f;
+    }
+}
+
 void main() {
     vec3 tangent = vec3(0.0f);
 
@@ -70,16 +90,17 @@ void main() {
         for (int k = 0; k < gl_in.length(); ++k) {
             float height = gl_in[k].gl_Position.y;
 
-            uint splatMask = texture(splatMap, getTexCoords(k)).r;
+            // vec4 blendSample = texture(splatMap, getTexCoords(k));
+            // float[4] blendSampleArray = float[](blendSample.r, blendSample.g, blendSample.b, blendSample.a);
+            float[16] blendSampleArray = BlendSample(splatMap, getTexCoords(k));
 
             float scale = 0.0f;
-            for (uint i = 0; i < MAX_MATERIALS; ++i) {
-                uint msk = (1 << i);
-                if ((splatMask & msk) > 0) {
-                    scale += texture(materials[i].displaceMap, getTexCoords(k) * materials[i].horizontalScaling).r * materials[i].heightScaling;
-                }
+            for (int i = 0; i < MAX_MATERIALS; ++i) {
+                scale += texture(materials[i].displaceMap, getTexCoords(k) * materials[i].horizontalScaling).r 
+                        * materials[i].heightScaling
+                        * blendSampleArray[i];
             }
-
+            
             // attenuate the scale factor using the distance to the vertex
             scale *= clamp(-distance(gl_in[k].gl_Position.xyz, cameraPosition) / (highDetailRange - 50) + 1.0f, 0.0f, 1.0f);
 
@@ -89,6 +110,7 @@ void main() {
 
     for (int i = 0; i < gl_in.length(); ++i) {
         vec4 worldCoords = gl_in[i].gl_Position + vec4(0.0f, displacement[i], 0.0f, 0.0f);
+
         vec4 eyeSpaceCoords = view * worldCoords;
         gl_Position = projection * eyeSpaceCoords;
 
@@ -101,7 +123,10 @@ void main() {
         fTangent = tangent;
         fPosition_ls = lightProjection * lightView * worldCoords;
 
-        fNormalMatrix = transpose(inverse(mat3(view * (worldModel + localModel))));
+        // fNormalMatrix = transpose(inverse(mat3(view * (worldModel + localModel))));
+        fNormalMatrix = transpose(inverse(mat3(worldModel + localModel)));
+
+        fRadiusClip = computeRadiusClip(worldCoords);
 
         EmitVertex();
     }

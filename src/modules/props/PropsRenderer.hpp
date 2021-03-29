@@ -15,18 +15,21 @@
 #include <engine/event/EventHandler.hpp>
 #include <modules/shadow/ShadowShader.hpp>
 #include <modules/terrain/Terrain.hpp>
+#include <modules/biomes/BiomeManager.hpp>
 
-#include "PropGenerator.hpp"
+#include "PropsManager.hpp"
 
 namespace mod::props {
     class PropsRenderer
             : public vd::component::IRenderer
             , public vd::injector::Injectable {
     public:
-        explicit PropsRenderer(vd::component::IEntityShaderPtr shaderPtr,
-                      vd::Consumer beforeExecution = vd::g_kEmptyConsumer,
-                      vd::Consumer afterExecution = vd::g_kEmptyConsumer);
-        ~PropsRenderer();
+        static const vd::datastruct::Observable::priority_t kPriority = biomes::BiomeManager::kPriority + 1;
+
+        explicit PropsRenderer(PropsManagerPtr propsManager, 
+                               vd::component::IEntityShaderPtr shaderPtr,
+                               vd::Consumer beforeExecution = vd::g_kEmptyConsumer,
+                               vd::Consumer afterExecution = vd::g_kEmptyConsumer);
 
         void Link() override;
 
@@ -45,7 +48,7 @@ namespace mod::props {
             size_t                              Total;
         } m_Units;
 
-        PropGeneratorPtr m_pPropGenerator;
+        PropsManagerPtr     m_pPropsManager;
 
         vd::camera::CameraPtr                   m_pCamera;
         vd::culling::FrustumCullingManagerPtr   m_pFrustumCullingManager;

@@ -21,15 +21,19 @@ namespace vd::property {
     class Properties {
     public:
         Properties();
-        ~Properties();
-
-        Properties& operator=(const Properties& other);
 
         /**
          * Returns whether the properties were empty (only empty lines or comment lines)
          * @return true if there is no properties, false otherwise
          */
         [[nodiscard]] bool Empty() const;
+
+        /**
+         * Find if a value is assigned to a given key
+         * @param key the given key
+         * @return true if the value is assigned
+         */
+        [[nodiscard]] bool Has(const std::string& key) const;
 
         /**
          * Find the value assigned to a given key and cast it to the desired type

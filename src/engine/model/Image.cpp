@@ -365,8 +365,8 @@ namespace vd::model {
 
         math::Matrix2x2<uint32_t> m;
         m[0][0] = Get<uint32_t>(uv_x_0, uv_y_0);
-        m[0][1] = Inside(uv_x_0, uv_y_1) ? Get<uint32_t>(uv_x_0, uv_y_1) : 0;
-        m[1][0] = Inside(uv_x_1, uv_y_0) ? Get<uint32_t>(uv_x_1, uv_y_0) : 0;
+        m[0][1] = Inside(uv_x_1, uv_y_0) ? Get<uint32_t>(uv_x_1, uv_y_0) : 0;
+        m[1][0] = Inside(uv_x_0, uv_y_1) ? Get<uint32_t>(uv_x_0, uv_y_1) : 0;
         m[1][1] = Inside(uv_x_1, uv_y_1) ? Get<uint32_t>(uv_x_1, uv_y_1) : 0;
 
         float frac_x = uv_x - float(uv_x_0);
@@ -404,8 +404,8 @@ namespace vd::model {
 
         math::Matrix2x2<float> m;
         m[0][0] = Get<float>(uv_x_0, uv_y_0);
-        m[0][1] = Inside(uv_x_0, uv_y_1) ? Get<float>(uv_x_0, uv_y_1) : 0.0f;
-        m[1][0] = Inside(uv_x_1, uv_y_0) ? Get<float>(uv_x_1, uv_y_0) : 0.0f;
+        m[0][1] = Inside(uv_x_1, uv_y_0) ? Get<float>(uv_x_1, uv_y_0) : 0.0f;
+        m[1][0] = Inside(uv_x_0, uv_y_1) ? Get<float>(uv_x_0, uv_y_1) : 0.0f;
         m[1][1] = Inside(uv_x_1, uv_y_1) ? Get<float>(uv_x_1, uv_y_1) : 0.0f;
 
         float frac_x = uv_x - float(uv_x_0);
@@ -447,23 +447,23 @@ namespace vd::model {
 
         math::Matrix4x4<float> m;
         m[0][0] = Inside(uv_x_m1, uv_y_m1) ? Get<float>(uv_x_m1, uv_y_m1) : 0.0f;
-        m[0][1] = Inside(uv_x_m1, uv_y_0) ? Get<float>(uv_x_m1, uv_y_0) : 0.0f;
-        m[0][2] = Inside(uv_x_m1, uv_y_1) ? Get<float>(uv_x_m1, uv_y_1) : 0.0f;
-        m[0][3] = Inside(uv_x_m1, uv_y_p1) ? Get<float>(uv_x_m1, uv_y_p1) : 0.0f;
+        m[0][1] = Inside(uv_x_0, uv_y_m1) ? Get<float>(uv_x_0, uv_y_m1) : 0.0f;
+        m[0][2] = Inside(uv_x_1, uv_y_m1) ? Get<float>(uv_x_1, uv_y_m1) : 0.0f;
+        m[0][3] = Inside(uv_x_p1, uv_y_m1) ? Get<float>(uv_x_p1, uv_y_m1) : 0.0f;
 
-        m[1][0] = Inside(uv_x_0, uv_y_m1) ? Get<float>(uv_x_0, uv_y_m1) : 0.0f;
+        m[1][0] = Inside(uv_x_m1, uv_y_0) ? Get<float>(uv_x_m1, uv_y_0) : 0.0f;
         m[1][1] = Get<float>(uv_x_0, uv_y_0);
-        m[1][2] = Inside(uv_x_0, uv_y_1) ? Get<float>(uv_x_0, uv_y_1) : 0.0f;
-        m[1][3] = Inside(uv_x_0, uv_y_p1) ? Get<float>(uv_x_0, uv_y_p1) : 0.0f;
+        m[1][2] = Inside(uv_x_1, uv_y_0) ? Get<float>(uv_x_1, uv_y_0) : 0.0f;
+        m[1][3] = Inside(uv_x_p1, uv_y_0) ? Get<float>(uv_x_p1, uv_y_0) : 0.0f;
 
-        m[2][0] = Inside(uv_x_1, uv_y_m1) ? Get<float>(uv_x_1, uv_y_m1) : 0.0f;
-        m[2][1] = Inside(uv_x_1, uv_y_0) ? Get<float>(uv_x_1, uv_y_0) : 0.0f;
+        m[2][0] = Inside(uv_x_m1, uv_y_1) ? Get<float>(uv_x_m1, uv_y_1) : 0.0f;
+        m[2][1] = Inside(uv_x_0, uv_y_1) ? Get<float>(uv_x_0, uv_y_1) : 0.0f;
         m[2][2] = Inside(uv_x_1, uv_y_1) ? Get<float>(uv_x_1, uv_y_1) : 0.0f;
-        m[2][3] = Inside(uv_x_1, uv_y_p1) ? Get<float>(uv_x_1, uv_y_p1) : 0.0f;
+        m[2][3] = Inside(uv_x_p1, uv_y_1) ? Get<float>(uv_x_p1, uv_y_1) : 0.0f;
 
-        m[3][0] = Inside(uv_x_p1, uv_y_m1) ? Get<float>(uv_x_p1, uv_y_m1) : 0.0f;
-        m[3][1] = Inside(uv_x_p1, uv_y_0) ? Get<float>(uv_x_p1, uv_y_0) : 0.0f;
-        m[3][2] = Inside(uv_x_p1, uv_y_1) ? Get<float>(uv_x_p1, uv_y_1) : 0.0f;
+        m[3][0] = Inside(uv_x_m1, uv_y_p1) ? Get<float>(uv_x_m1, uv_y_p1) : 0.0f;
+        m[3][1] = Inside(uv_x_0, uv_y_p1) ? Get<float>(uv_x_0, uv_y_p1) : 0.0f;
+        m[3][2] = Inside(uv_x_1, uv_y_p1) ? Get<float>(uv_x_1, uv_y_p1) : 0.0f;
         m[3][3] = Inside(uv_x_p1, uv_y_p1) ? Get<float>(uv_x_p1, uv_y_p1) : 0.0f;
 
         float frac_x = uv_x - float(uv_x_0);
@@ -471,6 +471,46 @@ namespace vd::model {
 
         return math::Interpolator<float>::Bicubic(m, frac_x, frac_y);
     }
+    
+    /// Float image, 4 channels, bilinear
+    template<>
+    template<>
+    glm::vec4 Image<float, ImageFormat::eRGBA>::Get<glm::vec4, math::Interpolation::eBilinear>(const glm::vec2& uv) const {
+        glm::vec2 uvCoords = uv;
+
+        if (uvCoords.x < 0.0f || uvCoords.x > 1.0f || uvCoords.y < 0.0f || uvCoords.y > 1.0f) {
+            vd::Logger::warn("UV coords exceed image, down sampling to accepted values");
+
+            uvCoords.x -= glm::floor(uvCoords.x);
+            uvCoords.y -= glm::floor(uvCoords.y);
+        }
+
+        float uv_x = uvCoords.x * float(m_Dimension.width - 1);
+        float uv_y = uvCoords.y * float(m_Dimension.height - 1);
+
+        int uv_x_0 = int(std::floor(uv_x));
+        int uv_y_0 = int(std::floor(uv_y));
+
+        if ((std::abs(uv_x - std::floor(uv_x)) < std::numeric_limits<float>::epsilon() &&
+             std::abs(uv_y - std::floor(uv_y)) < std::numeric_limits<float>::epsilon())) {
+            return Get<glm::vec4>(uv_x_0, uv_y_0);
+        }
+
+        int uv_x_1 = uv_x_0 + 1;
+        int uv_y_1 = uv_y_0 + 1;
+
+        math::Matrix2x2<glm::vec4> m;
+        m[0][0] = Get<glm::vec4>(uv_x_0, uv_y_0);
+        m[0][1] = Inside(uv_x_1, uv_y_0) ? Get<glm::vec4>(uv_x_1, uv_y_0) : glm::vec4(0.0f);
+        m[1][0] = Inside(uv_x_0, uv_y_1) ? Get<glm::vec4>(uv_x_0, uv_y_1) : glm::vec4(0.0f);
+        m[1][1] = Inside(uv_x_1, uv_y_1) ? Get<glm::vec4>(uv_x_1, uv_y_1) : glm::vec4(0.0f);
+
+        float frac_x = uv_x - float(uv_x_0);
+        float frac_y = uv_y - float(uv_y_0);
+
+        return math::Interpolator<glm::vec4>::Bilinear(m, frac_x, frac_y);
+    }
+
 
     template<typename T, ImageFormat F>
     std::string& Image<T, F>::Name() {

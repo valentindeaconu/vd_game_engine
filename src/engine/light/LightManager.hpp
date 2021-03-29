@@ -11,16 +11,24 @@
 #include <engine/component/IManager.hpp>
 #include <engine/component/IShading.hpp>
 
+#include <engine/injector/Injectable.hpp>
+#include <engine/camera/Camera.hpp>
+#include <engine/core/ThreadPool.hpp>
+
 #include <engine/property/Properties.hpp>
 #include <engine/loader/PropertiesLoader.hpp>
 
 #include "Light.hpp"
 
 namespace vd::light {
-    class LightManager : public vd::component::IManager, public vd::component::IShading {
+    class LightManager 
+        : public vd::component::IManager
+        , public vd::component::IShading
+        , public vd::injector::Injectable {
     public:
         explicit LightManager(const std::string& propsFilePath);
-        ~LightManager();
+
+        void Link() override;
 
         void Init() override;
         void Update() override;
@@ -34,6 +42,11 @@ namespace vd::light {
     private:
         LightPtr                m_pSun;
         std::vector<LightPtr>   m_Lights;
+
+        glm::mat3               m_LightDirectionMatrix;
+
+        camera::CameraPtr       m_pCamera;
+        core::ThreadPoolPtr     m_pThreadPool;
     };
     typedef std::shared_ptr<LightManager>   LightManagerPtr;
 }

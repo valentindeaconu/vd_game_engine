@@ -11,13 +11,10 @@ namespace vd::fog {
 
         m_pFog = std::make_shared<fog::Fog>(
                 pProperties->Get<float>("Fog.Density"),
-                pProperties->Get<float>("Fog.SkyDensity"),
                 pProperties->Get<float>("Fog.Gradient"),
-                pProperties->Get<glm::vec3>("Fog.Color")
+                glm::vec3(0.0f)
         );
     }
-
-    FogManager::~FogManager() = default;
 
     void FogManager::Init() {
 
@@ -32,17 +29,19 @@ namespace vd::fog {
     }
 
     void FogManager::AddUniforms(const gl::ShaderPtr& pShader) {
-        SKIP_IF_EXCEPTION(pShader->AddUniform("fog.Density"));
-        SKIP_IF_EXCEPTION(pShader->AddUniform("fog.SkyDensity"));
-        SKIP_IF_EXCEPTION(pShader->AddUniform("fog.Gradient"));
-        SKIP_IF_EXCEPTION(pShader->AddUniform("fog.Color"));
+        pShader->AddUniform("fog.Density");
+        pShader->AddUniform("fog.Gradient");
+        pShader->AddUniform("fog.Color");
     }
 
     void FogManager::SetUniforms(const gl::ShaderPtr& pShader) {
-        SKIP_IF_EXCEPTION(pShader->SetUniform("fog.Density", m_pFog->Density()));
-        SKIP_IF_EXCEPTION(pShader->SetUniform("fog.SkyDensity", m_pFog->SkyDensity()));
-        SKIP_IF_EXCEPTION(pShader->SetUniform("fog.Gradient", m_pFog->Gradient()));
-        SKIP_IF_EXCEPTION(pShader->SetUniform("fog.Color", m_pFog->Color()));
+        pShader->SetUniform("fog.Density", m_pFog->Density());
+        pShader->SetUniform("fog.Gradient", m_pFog->Gradient());
+        pShader->SetUniform("fog.Color", m_pFog->Color());
+    }
+
+    void FogManager::FogColor(const glm::vec3& color) {
+        m_pFog->Color() = color;
     }
 
     const FogPtr& FogManager::Fog() const {

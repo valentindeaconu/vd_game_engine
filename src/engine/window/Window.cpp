@@ -194,7 +194,7 @@ namespace vd::window {
                 m_pWindow->Resize(info.width, info.height);
             }
 
-            if (m_pEventHandler->KeyDown(Key::eEscape)) {
+            if (glfwWindowShouldClose(m_pWindow->m_Window) || m_pEventHandler->KeyDown(Key::eEscape)) {
                 m_pWindow->m_CloseRequested = true;
             }
         }

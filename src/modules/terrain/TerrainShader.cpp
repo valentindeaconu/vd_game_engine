@@ -14,6 +14,7 @@ namespace mod::terrain {
         m_pCamera = vd::ObjectOfType<vd::camera::Camera>::Find();
         m_pWindow = vd::ObjectOfType<vd::window::Window>::Find();
         m_pShadowManager = vd::ObjectOfType<mod::shadow::ShadowManager>::Find();
+        m_pBiomeManager = vd::ObjectOfType<mod::biomes::BiomeManager>::Find();
     }
 
     void TerrainShader::Init() {
@@ -66,7 +67,7 @@ namespace mod::terrain {
 
         AddUniform("tessFactor");
 
-        m_BiomeCount = m_pTerrain->Biomes().size();
+        m_BiomeCount = m_pBiomeManager->BiomesCount();
         for (int i = 0; i < m_BiomeCount; ++i) {
             AddUniform("materials[" + std::to_string(i) + "].diffuseMap");
             AddUniform("materials[" + std::to_string(i) + "].normalMap");
@@ -79,6 +80,9 @@ namespace mod::terrain {
 
         AddUniform("isWireframe");
         AddUniform("wireframeColor");
+
+        AddUniform("center");
+        AddUniform("radius");
 
         m_pFogManager->AddUniforms(shared_from_this());
         m_pLightManager->AddUniforms(shared_from_this());
@@ -116,12 +120,12 @@ namespace mod::terrain {
         m_pTerrain->NormalMap()->BindToUnit(2);
         SetUniform("normalMap", 2);
 
-        m_pTerrain->SplatMap()->BindToUnit(3);
+        m_pBiomeManager->SplatMap()->BindToUnit(3);
         SetUniform("splatMap", 3);
 
         int textureUnit = 4;
         for (int i = 0; i < m_BiomeCount; ++i) {
-            vd::model::Material& material = m_pTerrain->Biomes()[i]->Material();
+            vd::model::Material& material = m_pBiomeManager->BiomeByIndex(i)->Material();
 
             material.DiffuseMap()->BindToUnit(textureUnit);
             SetUniform("materials[" + std::to_string(i) + "].diffuseMap", textureUnit);
@@ -144,6 +148,12 @@ namespace mod::terrain {
 
         SetUniform("isWireframe", m_pContext->WireframeMode());
         SetUniform("wireframeColor", glm::vec4(0.1f, 1.0f, 0.1f, 1.0f));
+        
+        SetUniform("center", m_pTerrain->Center());
+        SetUniform("radius", m_pTerrain->Radius());
+        
+        m_pFogManager->SetUniforms(shared_from_this());
+        m_pLightManager->SetUniforms(shared_from_this());
     }
 
 }

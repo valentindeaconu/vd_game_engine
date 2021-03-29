@@ -88,7 +88,7 @@ namespace vd::core {
     JobPtr ThreadPool::CreateJob(vd::Consumer action, bool autoRun) {
         JobPtr job = std::make_shared<Job>(std::move(action), autoRun);
 
-        std::unique_lock<std::mutex> lock(m_JobQueue.Lock);
+        std::lock_guard<std::mutex> lock(m_JobQueue.Lock);
         m_JobQueue.Queue.push(job);
 
         return job;

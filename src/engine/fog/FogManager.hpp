@@ -19,7 +19,6 @@ namespace vd::fog {
     class FogManager : public component::IManager, public component::IShading {
     public:
         explicit FogManager(const std::string& propsFilePath);
-        ~FogManager();
 
         void Init() override;
         void Update() override;
@@ -27,6 +26,8 @@ namespace vd::fog {
 
         void AddUniforms(const gl::ShaderPtr& pShader) override;
         void SetUniforms(const gl::ShaderPtr& pShader) override;
+
+        void FogColor(const glm::vec3& color);
 
         [[nodiscard]] const FogPtr& Fog() const;
     private:

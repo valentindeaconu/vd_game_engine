@@ -16,6 +16,7 @@
 #include <engine/light/LightManager.hpp>
 #include <engine/fog/FogManager.hpp>
 #include <modules/shadow/ShadowManager.hpp>
+#include <modules/biomes/BiomeManager.hpp>
 
 #include <memory>
 
@@ -36,6 +37,7 @@ namespace mod::terrain {
         uint32_t m_BiomeCount;
 
         TerrainPtr                      m_pTerrain;
+        biomes::BiomeManagerPtr         m_pBiomeManager;
         vd::light::LightManagerPtr      m_pLightManager;
         vd::fog::FogManagerPtr          m_pFogManager;
         vd::window::WindowPtr           m_pWindow;

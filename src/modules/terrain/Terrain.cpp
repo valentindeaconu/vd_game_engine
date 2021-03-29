@@ -26,7 +26,11 @@ namespace mod::terrain {
         WorldTransform().Scale() = glm::vec3(scaleXZ, scaleY, scaleXZ);
         WorldTransform().Translation() = glm::vec3(-scaleXZ / 2.0f, 0.0f, -scaleXZ / 2.0f);
 
-        PopulateBiomes();
+        m_MapSize = scaleXZ;
+        m_ScaleY = scaleY;
+
+        // Compute radius & center
+        ComputeCenterAndRadius();
 
         ComputeMaps();
 
@@ -87,13 +91,19 @@ namespace mod::terrain {
 
         m_RootNode = nullptr;
 
-        for (auto& biome : m_Biomes) {
-            for (auto& prop : biome->Props()) {
-                prop->CleanUp();
-            }
-        }
-
         Entity2D::CleanUp();
+    }
+
+    float Terrain::MapSize() const {
+        return m_MapSize;
+    }
+
+    glm::vec2 Terrain::Radius() const {
+        return m_Radius;
+    }
+
+    const glm::vec2& Terrain::Center() const {
+        return m_Center;
     }
 
     const vd::property::PropertiesPtr& Terrain::Properties() const {
@@ -104,10 +114,6 @@ namespace mod::terrain {
         return m_ImaginaryRootNodes;
     }
 
-    const BiomePtrVec& Terrain::Biomes() const {
-        return m_Biomes;
-    }
-
     const vd::gl::Texture2DPtr& Terrain::HeightMap() const {
         return m_pHeightMap;
     }
@@ -116,53 +122,45 @@ namespace mod::terrain {
         return m_pNormalMap;
     }
 
-    const vd::gl::Texture2DPtr& Terrain::SplatMap() const {
-        return m_pSplatMap;
+    glm::vec2 Terrain::ToTerrainUV(float x, float z) const {
+        const glm::vec3 T = const_cast<Terrain*>(this)->WorldTransform().Translation();
+        const auto invT = -T;
+
+        const float lowerBound = T.x;
+        const float upperBound = lowerBound + m_MapSize;
+
+        if (x < lowerBound || z < lowerBound || x >= upperBound || z >= upperBound)
+            return glm::vec2(-1, -1);
+
+        // reverse transform
+        glm::vec3 coords = (glm::vec3(x, 0, z) + invT) / m_MapSize;
+        
+        return glm::vec2(coords.x, coords.z);
     }
 
     float Terrain::HeightAt(float x, float z) const {
-        const auto scaleXZ = m_pProperties->Get<float>("ScaleXZ");
-        const auto scaleY = m_pProperties->Get<float>("ScaleY");
+        const auto uv = ToTerrainUV(z, x);
 
-        float upperBound = scaleXZ / 2.0f;
-        float lowerBound = -upperBound;
-
-        if (x < lowerBound || z < lowerBound || x >= upperBound || z >= upperBound)
+        if (uv.x < 0.0f || uv.y < 0.0f) {
             return 0.0f;
-
-        // reverse transform
-        float rx = (x + (scaleXZ / 2.0f)) / scaleXZ;
-        float rz = (z + (scaleXZ / 2.0f)) / scaleXZ;
-
-        const auto height = m_pHeightImg->Get<float, vd::math::Interpolation::eBilinear>(glm::vec2(rz, rx));
-
-        return height * scaleY;
-    }
-
-    BiomePtrVec Terrain::BiomesAt(float x, float z) const {
-        const auto scaleXZ = m_pProperties->Get<float>("ScaleXZ");
-
-        float upperBound = scaleXZ / 2.0f;
-        float lowerBound = -upperBound;
-
-        BiomePtrVec output;
-
-        if (x < lowerBound || z < lowerBound || x >= upperBound || z >= upperBound)
-            return output;
-
-        // reverse transform
-        float rx = (x + (scaleXZ / 2.0f)) / scaleXZ;
-        float rz = (z + (scaleXZ / 2.0f)) / scaleXZ;
-
-        const auto mask = m_pSplatImg->Get<uint32_t, vd::math::Interpolation::eNearestNeighbour>(glm::vec2(rz, rx));
-
-        for (size_t k = 0; k < m_Biomes.size(); ++k) {
-            if ((mask & (1 << k)) != 0) {
-                output.emplace_back(m_Biomes[k]);
-            }
         }
 
-        return output;
+        const auto height = m_pHeightImg->Get<float, vd::math::Interpolation::eBilinear>(uv);
+
+        return height * m_ScaleY;
+    }
+
+    void Terrain::ComputeCenterAndRadius() {
+        const auto lowerPerc = m_pProperties->Get<float>("Fade.LowerPercentage");
+        const auto upperPerc = m_pProperties->Get<float>("Fade.UpperPercentage");
+
+        const auto halfUnit = m_MapSize * 0.5f;
+
+        m_Radius.y = upperPerc * halfUnit;
+        m_Radius.x = lowerPerc * halfUnit;
+
+        glm::vec3 center = WorldTransform().Translation() + glm::vec3(m_MapSize * .5f, 0.0f, m_MapSize * .5f);
+        m_Center = glm::vec2(center.x, center.z);
     }
 
     void Terrain::CreateProps() {
@@ -180,49 +178,6 @@ namespace mod::terrain {
                 if (!m_pProperties->Set("MaxLevelOfDetail", std::to_string(i))) {
                     vd::Logger::terminate("Could not add max level of detail to the properties", 1);
                 }
-                break;
-            }
-        }
-    }
-
-    void Terrain::PopulateBiomes() {
-        const auto scaleY = m_pProperties->Get<float>("ScaleY");
-        for (int i = 0; ; ++i) {
-            try {
-                const std::string prefix = "Biome." + std::to_string(i);
-
-                BiomePtr biomePtr = std::make_shared<Biome>();
-
-                biomePtr->Name() = m_pProperties->Get<std::string>(prefix + ".Name");
-                biomePtr->MinimumHeight() = m_pProperties->Get<float>(prefix + ".MinHeight") * scaleY;
-                biomePtr->MaximumHeight() = m_pProperties->Get<float>(prefix + ".MaxHeight") * scaleY;
-
-                const std::string materialPrefix = prefix + ".Material";
-                biomePtr->Material().DiffuseMap() =
-                        vd::service::TextureService::CreateFromFile(m_pProperties->Get<std::string>(materialPrefix + ".Diffuse"));
-                biomePtr->Material().DiffuseMap()->Bind();
-                biomePtr->Material().DiffuseMap()->MipmapLinearFilter();
-                biomePtr->Material().DiffuseMap()->Unbind();
-
-                biomePtr->Material().NormalMap() =
-                        vd::service::TextureService::CreateFromFile(m_pProperties->Get<std::string>(materialPrefix + ".Normal"));
-                biomePtr->Material().NormalMap()->Bind();
-                biomePtr->Material().NormalMap()->MipmapLinearFilter();
-                biomePtr->Material().NormalMap()->Unbind();
-
-                biomePtr->Material().DisplaceMap() =
-                        vd::service::TextureService::CreateFromFile(m_pProperties->Get<std::string>(materialPrefix + ".Displace"));
-                biomePtr->Material().DisplaceMap()->Bind();
-                biomePtr->Material().DisplaceMap()->MipmapLinearFilter();
-                biomePtr->Material().DisplaceMap()->Unbind();
-
-                biomePtr->Material().DisplaceScale() = m_pProperties->Get<float>(materialPrefix + ".HeightScaling");
-                biomePtr->Material().HorizontalScale() = m_pProperties->Get<float>(materialPrefix + ".HorizontalScaling");
-
-                PopulateBiomeWithProps(biomePtr, prefix);
-
-                m_Biomes.emplace_back(std::move(biomePtr));
-            } catch (std::invalid_argument& e) {
                 break;
             }
         }
@@ -252,45 +207,6 @@ namespace mod::terrain {
         normalmap::NormalMapBuilder NMBuilder;
         NMBuilder.Create(m_pHeightMap, size, strength, m_pNormalMap);
         NMBuilder.CleanUp();
-
-        splatmap::SplatMapBuilder SMBuilder;
-        SMBuilder.Create(m_pHeightMap, size, scaleY, m_Biomes, m_pSplatMap, m_pSplatImg);
-        SMBuilder.CleanUp();
-    }
-
-    void Terrain::PopulateBiomeWithProps(BiomePtr& pBiome, const std::string& biomePrefix) {
-        for (int i = 0; ; ++i) {
-            try {
-               const std::string objectPrefix = biomePrefix + ".Object." + std::to_string(i);
-
-               const auto kScale = m_pProperties->Get<float>(objectPrefix + ".Scale");
-
-               std::vector<props::Prop::Details> propsDetails;
-               for (int j = 0; ; ++j) {
-                   try {
-                       const std::string lodObjectPrefix = objectPrefix + ".Level." + std::to_string(j);
-
-                       props::Prop::Details propDetails;
-                       propDetails.Path = m_pProperties->Get<std::string>(lodObjectPrefix + ".Location");
-                       propDetails.File = m_pProperties->Get<std::string>(lodObjectPrefix + ".File");
-                       propDetails.Distance = m_pProperties->Get<float>(lodObjectPrefix + ".Distance");
-                       propDetails.Billboard = m_pProperties->Get<bool>(lodObjectPrefix + ".Billboard");
-
-                       propsDetails.emplace_back(std::move(propDetails));
-                   } catch (std::invalid_argument& e) {
-                       break;
-                   }
-               }
-
-                props::PropPtr pProp = std::make_shared<props::Prop>(propsDetails);
-                pProp->WorldTransform().Scale() = glm::vec3(kScale, kScale, kScale);
-                pProp->Init();
-
-                pBiome->Props().emplace_back(std::move(pProp));
-            } catch (std::invalid_argument& e) {
-                break;
-            }
-        }
     }
 
     std::vector<glm::vec2> Terrain::GeneratePatch() {

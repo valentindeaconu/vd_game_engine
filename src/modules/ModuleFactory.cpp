@@ -13,12 +13,14 @@
 #include <modules/props/PropsFactory.hpp>
 #include <modules/terrain/TerrainFactory.hpp>
 #include <modules/water/WaterFactory.hpp>
+#include <modules/biomes/BiomeFactory.hpp>
 
 namespace mod {
 
     void ModuleFactory::Create(const vd::EnginePtr& pEngine) {
         std::make_shared<shadow::ShadowFactory>()->Create(pEngine);
 
+        std::make_shared<biomes::BiomeFactory>()->Create(pEngine);
         std::make_shared<terrain::TerrainFactory>()->Create(pEngine);
         std::make_shared<player::PlayerFactory>()->Create(pEngine);
         std::make_shared<water::WaterFactory>()->Create(pEngine);

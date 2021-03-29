@@ -31,33 +31,38 @@ namespace mod::sky {
         AddUniform("leftUseColor");
         AddUniform("leftColor");
         AddUniform("leftFactor");
+        AddUniform("leftFogLimits");
         AddUniform("leftCubeMap");
 
         AddUniform("rightUseColor");
         AddUniform("rightColor");
         AddUniform("rightFactor");
+        AddUniform("rightFogLimits");
         AddUniform("rightCubeMap");
 
         AddUniform("mixable");
         AddUniform("percentage");
-
-        m_pFogManager->AddUniforms(shared_from_this());
+        AddUniform("fogColor");
     }
 
     void SkyShader::InitUniforms(vd::object::Entity3DPtr pEntity) {
-        m_pFogManager->SetUniforms(shared_from_this());
+
     }
 
     void SkyShader::UpdateUniforms(vd::object::Entity3DPtr pEntity, uint64_t levelOfDetail, uint32_t meshIndex) {
-        SetUniform("view", glm::mat4(glm::mat3(m_pCamera->ViewMatrix())));
         SetUniform("projection", m_pWindow->ProjectionMatrix());
 
         auto pSky = std::dynamic_pointer_cast<Sky>(pEntity);
         const auto& details = pSky->Details();
 
+        glm::mat4 view = glm::mat4(glm::mat3(m_pCamera->ViewMatrix()));
+        view = glm::rotate(view, glm::radians(details.Rotation), glm::vec3(0, 1, 0));
+        SetUniform("view", view);
+
         SetUniform("leftUseColor", details.First.UseColor);
         SetUniform("leftColor", details.First.Color);
         SetUniform("leftFactor", details.First.Factor);
+        SetUniform("leftFogLimits", details.First.FogLimits);
 
         if (details.First.Texture != nullptr) {
             details.First.Texture->BindToUnit(0);
@@ -67,6 +72,7 @@ namespace mod::sky {
         SetUniform("rightUseColor", details.Second.UseColor);
         SetUniform("rightColor", details.Second.Color);
         SetUniform("rightFactor", details.Second.Factor);
+        SetUniform("rightFogLimits", details.Second.FogLimits);
 
         if (details.Second.Texture != nullptr) {
             details.Second.Texture->BindToUnit(1);
@@ -75,5 +81,6 @@ namespace mod::sky {
 
         SetUniform("mixable", details.Mixable);
         SetUniform("percentage", details.Percentage);
+        SetUniform("fogColor", details.FogColor);
     }
 }

@@ -15,20 +15,19 @@
 
 #include "../Biome.hpp"
 
-namespace mod::terrain::splatmap {
+namespace mod::biomes::splatmap {
     class SplatMapBuilder {
     public:
-        typedef vd::model::ImagePtr<uint32_t, vd::model::ImageFormat::eR>   data_t;
+        typedef vd::model::ImagePtr<float, vd::model::ImageFormat::eRGBA>   data_t;
 
         SplatMapBuilder();
-        ~SplatMapBuilder();
 
         void Create(const vd::gl::Texture2DPtr& heightMap,
+                    const vd::gl::Texture2DPtr& normalMap,
                     int size,
-                    float scaleY,
                     const BiomePtrVec& biomes,
                     vd::gl::Texture2DPtr& outSplatMap,
-                    data_t& outData);
+                    SplatMapBuilder::data_t& outData);
         void CleanUp();
     private:
         vd::gl::ShaderPtr m_pShader;

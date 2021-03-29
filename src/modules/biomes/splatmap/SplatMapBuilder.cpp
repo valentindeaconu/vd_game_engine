@@ -4,7 +4,7 @@
 
 #include "SplatMapBuilder.hpp"
 
-namespace mod::terrain::splatmap {
+namespace mod::biomes::splatmap {
 
     SplatMapBuilder::SplatMapBuilder() {
         m_pShader = std::make_shared<vd::gl::Shader>();
@@ -18,23 +18,21 @@ namespace mod::terrain::splatmap {
         m_pShader->Compile();
     }
 
-    SplatMapBuilder::~SplatMapBuilder() = default;
-
     void SplatMapBuilder::Create(const vd::gl::Texture2DPtr& heightMap,
+                                 const vd::gl::Texture2DPtr& normalMap,
                                  int size,
-                                 float scaleY,
                                  const BiomePtrVec& biomes,
                                  vd::gl::Texture2DPtr& outSplatMap,
                                  SplatMapBuilder::data_t& outData) {
         /// Create texture
         outSplatMap = vd::service::TextureService::UncachedCreateStorage(
                 vd::Dimension(size, size),
-                vd::gl::TextureFormat::eR32UI,
+                vd::gl::TextureFormat::eRGBA32F,
                 int(std::log(size) / std::log(2))
         );
 
         outSplatMap->Bind();
-        outSplatMap->NoFilter();
+        outSplatMap->LinearFilter();
         outSplatMap->Unbind();
 
         /// Setup Shader
@@ -42,33 +40,35 @@ namespace mod::terrain::splatmap {
 
         heightMap->BindToUnit(0);
         m_pShader->PushUniform("heightMap", 0);
+        normalMap->BindToUnit(1);
+        m_pShader->PushUniform("normalMap", 1);
+        
         m_pShader->PushUniform("size", size);
-        m_pShader->PushUniform("scaleY", scaleY);
 
         for (int i = 0; i < biomes.size(); ++i) {
-            const auto& biomePtr = biomes[i];
+            const auto prefix = "biomes[" + std::to_string(i) + "].";
 
-            const std::string prefix = "biomes[" + std::to_string(i) + "]";
-
-            m_pShader->PushUniform(prefix + ".minHeight", biomePtr->MinimumHeight());
-            m_pShader->PushUniform(prefix + ".maxHeight", biomePtr->MaximumHeight());
+            m_pShader->PushUniform(prefix + "minHeight", biomes[i]->MinimumHeight());
+            m_pShader->PushUniform(prefix + "maxHeight", biomes[i]->MaximumHeight());
+            m_pShader->PushUniform(prefix + "minSlope", biomes[i]->MinimumSlope());
+            m_pShader->PushUniform(prefix + "maxSlope", biomes[i]->MaximumSlope());
         }
 
         /// Dispatch Compute Shader
-        glBindImageTexture(0, outSplatMap->Id(), 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_R32UI);
+        glBindImageTexture(0, outSplatMap->Id(), 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA32F);
         glDispatchCompute(size/16, size/16, 1);
         glFinish();
 
         m_pShader->Unbind();
-        heightMap->Unbind();
+        normalMap->Unbind();
 
         /// Extract Texture Data
         outSplatMap->Bind();
 
-        outData = std::make_shared<vd::model::Image<uint32_t, vd::model::ImageFormat::eR>>(size, size);
-        outData->Data().resize(size * size);
+        outData = std::make_shared<vd::model::Image<float, vd::model::ImageFormat::eRGBA>>(size, size);
+        outData->Data().resize(size * size * 4);
 
-        glGetTexImage(GL_TEXTURE_2D, 0, GL_RED_INTEGER, GL_UNSIGNED_INT, &outData->Data()[0]);
+        glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_FLOAT, &outData->Data()[0]);
 
         outSplatMap->Unbind();
     }

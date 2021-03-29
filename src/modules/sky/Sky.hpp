@@ -13,6 +13,7 @@
 
 #include <engine/injector/Injectable.hpp>
 #include <engine/time/TimeManager.hpp>
+#include <engine/fog/FogManager.hpp>
 
 #include <engine/math/Utils.hpp>
 
@@ -27,11 +28,14 @@ namespace mod::sky {
                 glm::vec3                   Color;
                 glm::vec3                   Factor;
                 vd::gl::TextureCubeMapPtr   Texture;
+                glm::vec2                   FogLimits;
             };
             Factor      First;
             Factor      Second;
+            glm::vec3   FogColor;
             bool        Mixable;
             float       Percentage;
+            float       Rotation;
         };
 
         explicit Sky(const std::string& propsFilePath);
@@ -54,11 +58,17 @@ namespace mod::sky {
             float                       StartAtAngle;
             float                       MidAtAngle;
             float                       EndAtAngle;
+            glm::vec3                   FogColor;
+            float                       LowerLimit;
+            float                       UpperLimit;
         };
 
         static void SetDetailsFactor(RenderDetails::Factor& factor, const State& source);
         static void ClearDetailsFactor(RenderDetails::Factor& factor);
         static float AngleTransform(float angle, bool shift);
+
+        glm::vec3 UpdateFog(const Sky::State& state);
+        glm::vec3 UpdateFogMixable(const Sky::State& left, const Sky::State& right, float factor);
 
         size_t                  m_CurrentState;
         float                   m_NextSwitch;
@@ -66,6 +76,8 @@ namespace mod::sky {
         bool                    m_WaitReset;
         std::vector<State>      m_States;
         RenderDetails           m_Details;
+
+        float                   m_RotationSpeed;
 
         const std::vector<float> kSkyboxVertices = {
             -1.0f, -1.0f, -1.0f,    // 0
@@ -88,7 +100,7 @@ namespace mod::sky {
         };
 
         vd::time::TimeManagerPtr    m_pTimeManager;
-
+        vd::fog::FogManagerPtr      m_pFogManager;        
     };
     typedef std::shared_ptr<Sky>	SkyPtr;
 }

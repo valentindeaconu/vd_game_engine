@@ -152,6 +152,14 @@ set(SOURCES
         src/engine/time/TimeManager.hpp
         src/engine/window/Window.cpp
         src/engine/window/Window.hpp
+        src/modules/biomes/splatmap/SplatMapBuilder.cpp
+        src/modules/biomes/splatmap/SplatMapBuilder.hpp
+        src/modules/biomes/Biome.cpp
+        src/modules/biomes/Biome.hpp
+        src/modules/biomes/BiomeFactory.cpp
+        src/modules/biomes/BiomeFactory.hpp
+        src/modules/biomes/BiomeManager.cpp
+        src/modules/biomes/BiomeManager.hpp
         src/modules/gui/GuiQuad.cpp
         src/modules/gui/GuiQuad.hpp
         src/modules/gui/GuiRenderer.cpp
@@ -192,8 +200,8 @@ set(SOURCES
         src/modules/props/PropsRenderer.hpp
         src/modules/props/PropShader.cpp
         src/modules/props/PropShader.hpp
-        src/modules/props/PropGenerator.cpp
-        src/modules/props/PropGenerator.hpp
+        src/modules/props/PropsManager.cpp
+        src/modules/props/PropsManager.hpp
         src/modules/props/PropsFactory.cpp
         src/modules/props/PropsFactory.hpp
         src/modules/shadow/ShadowBox.cpp
@@ -222,14 +230,10 @@ set(SOURCES
         src/modules/terrain/Terrain.hpp
         src/modules/terrain/TerrainNode.cpp
         src/modules/terrain/TerrainNode.hpp
-        src/modules/terrain/Biome.cpp
-        src/modules/terrain/Biome.hpp
         src/modules/terrain/TerrainRenderer.cpp
         src/modules/terrain/TerrainRenderer.hpp
         src/modules/terrain/normalmap/NormalMapBuilder.cpp
         src/modules/terrain/normalmap/NormalMapBuilder.hpp
-        src/modules/terrain/splatmap/SplatMapBuilder.cpp
-        src/modules/terrain/splatmap/SplatMapBuilder.hpp
         src/modules/terrain/TerrainFactory.cpp
         src/modules/terrain/TerrainFactory.hpp
         src/modules/water/Water.cpp
