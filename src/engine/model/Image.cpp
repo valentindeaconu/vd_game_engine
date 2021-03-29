@@ -365,8 +365,8 @@ namespace vd::model {
 
         math::Matrix2x2<uint32_t> m;
         m[0][0] = Get<uint32_t>(uv_x_0, uv_y_0);
-        m[0][1] = Inside(uv_x_0, uv_y_1) ? Get<uint32_t>(uv_x_0, uv_y_1) : 0;
-        m[1][0] = Inside(uv_x_1, uv_y_0) ? Get<uint32_t>(uv_x_1, uv_y_0) : 0;
+        m[0][1] = Inside(uv_x_1, uv_y_0) ? Get<uint32_t>(uv_x_1, uv_y_0) : 0;
+        m[1][0] = Inside(uv_x_0, uv_y_1) ? Get<uint32_t>(uv_x_0, uv_y_1) : 0;
         m[1][1] = Inside(uv_x_1, uv_y_1) ? Get<uint32_t>(uv_x_1, uv_y_1) : 0;
 
         float frac_x = uv_x - float(uv_x_0);
@@ -404,8 +404,8 @@ namespace vd::model {
 
         math::Matrix2x2<float> m;
         m[0][0] = Get<float>(uv_x_0, uv_y_0);
-        m[0][1] = Inside(uv_x_0, uv_y_1) ? Get<float>(uv_x_0, uv_y_1) : 0.0f;
-        m[1][0] = Inside(uv_x_1, uv_y_0) ? Get<float>(uv_x_1, uv_y_0) : 0.0f;
+        m[0][1] = Inside(uv_x_1, uv_y_0) ? Get<float>(uv_x_1, uv_y_0) : 0.0f;
+        m[1][0] = Inside(uv_x_0, uv_y_1) ? Get<float>(uv_x_0, uv_y_1) : 0.0f;
         m[1][1] = Inside(uv_x_1, uv_y_1) ? Get<float>(uv_x_1, uv_y_1) : 0.0f;
 
         float frac_x = uv_x - float(uv_x_0);
@@ -447,23 +447,23 @@ namespace vd::model {
 
         math::Matrix4x4<float> m;
         m[0][0] = Inside(uv_x_m1, uv_y_m1) ? Get<float>(uv_x_m1, uv_y_m1) : 0.0f;
-        m[0][1] = Inside(uv_x_m1, uv_y_0) ? Get<float>(uv_x_m1, uv_y_0) : 0.0f;
-        m[0][2] = Inside(uv_x_m1, uv_y_1) ? Get<float>(uv_x_m1, uv_y_1) : 0.0f;
-        m[0][3] = Inside(uv_x_m1, uv_y_p1) ? Get<float>(uv_x_m1, uv_y_p1) : 0.0f;
+        m[0][1] = Inside(uv_x_0, uv_y_m1) ? Get<float>(uv_x_0, uv_y_m1) : 0.0f;
+        m[0][2] = Inside(uv_x_1, uv_y_m1) ? Get<float>(uv_x_1, uv_y_m1) : 0.0f;
+        m[0][3] = Inside(uv_x_p1, uv_y_m1) ? Get<float>(uv_x_p1, uv_y_m1) : 0.0f;
 
-        m[1][0] = Inside(uv_x_0, uv_y_m1) ? Get<float>(uv_x_0, uv_y_m1) : 0.0f;
+        m[1][0] = Inside(uv_x_m1, uv_y_0) ? Get<float>(uv_x_m1, uv_y_0) : 0.0f;
         m[1][1] = Get<float>(uv_x_0, uv_y_0);
-        m[1][2] = Inside(uv_x_0, uv_y_1) ? Get<float>(uv_x_0, uv_y_1) : 0.0f;
-        m[1][3] = Inside(uv_x_0, uv_y_p1) ? Get<float>(uv_x_0, uv_y_p1) : 0.0f;
+        m[1][2] = Inside(uv_x_1, uv_y_0) ? Get<float>(uv_x_1, uv_y_0) : 0.0f;
+        m[1][3] = Inside(uv_x_p1, uv_y_0) ? Get<float>(uv_x_p1, uv_y_0) : 0.0f;
 
-        m[2][0] = Inside(uv_x_1, uv_y_m1) ? Get<float>(uv_x_1, uv_y_m1) : 0.0f;
-        m[2][1] = Inside(uv_x_1, uv_y_0) ? Get<float>(uv_x_1, uv_y_0) : 0.0f;
+        m[2][0] = Inside(uv_x_m1, uv_y_1) ? Get<float>(uv_x_m1, uv_y_1) : 0.0f;
+        m[2][1] = Inside(uv_x_0, uv_y_1) ? Get<float>(uv_x_0, uv_y_1) : 0.0f;
         m[2][2] = Inside(uv_x_1, uv_y_1) ? Get<float>(uv_x_1, uv_y_1) : 0.0f;
-        m[2][3] = Inside(uv_x_1, uv_y_p1) ? Get<float>(uv_x_1, uv_y_p1) : 0.0f;
+        m[2][3] = Inside(uv_x_p1, uv_y_1) ? Get<float>(uv_x_p1, uv_y_1) : 0.0f;
 
-        m[3][0] = Inside(uv_x_p1, uv_y_m1) ? Get<float>(uv_x_p1, uv_y_m1) : 0.0f;
-        m[3][1] = Inside(uv_x_p1, uv_y_0) ? Get<float>(uv_x_p1, uv_y_0) : 0.0f;
-        m[3][2] = Inside(uv_x_p1, uv_y_1) ? Get<float>(uv_x_p1, uv_y_1) : 0.0f;
+        m[3][0] = Inside(uv_x_m1, uv_y_p1) ? Get<float>(uv_x_m1, uv_y_p1) : 0.0f;
+        m[3][1] = Inside(uv_x_0, uv_y_p1) ? Get<float>(uv_x_0, uv_y_p1) : 0.0f;
+        m[3][2] = Inside(uv_x_1, uv_y_p1) ? Get<float>(uv_x_1, uv_y_p1) : 0.0f;
         m[3][3] = Inside(uv_x_p1, uv_y_p1) ? Get<float>(uv_x_p1, uv_y_p1) : 0.0f;
 
         float frac_x = uv_x - float(uv_x_0);
@@ -501,8 +501,8 @@ namespace vd::model {
 
         math::Matrix2x2<glm::vec4> m;
         m[0][0] = Get<glm::vec4>(uv_x_0, uv_y_0);
-        m[0][1] = Inside(uv_x_0, uv_y_1) ? Get<glm::vec4>(uv_x_0, uv_y_1) : glm::vec4(0.0f);
-        m[1][0] = Inside(uv_x_1, uv_y_0) ? Get<glm::vec4>(uv_x_1, uv_y_0) : glm::vec4(0.0f);
+        m[0][1] = Inside(uv_x_1, uv_y_0) ? Get<glm::vec4>(uv_x_1, uv_y_0) : glm::vec4(0.0f);
+        m[1][0] = Inside(uv_x_0, uv_y_1) ? Get<glm::vec4>(uv_x_0, uv_y_1) : glm::vec4(0.0f);
         m[1][1] = Inside(uv_x_1, uv_y_1) ? Get<glm::vec4>(uv_x_1, uv_y_1) : glm::vec4(0.0f);
 
         float frac_x = uv_x - float(uv_x_0);
