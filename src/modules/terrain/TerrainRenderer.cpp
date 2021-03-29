@@ -30,6 +30,15 @@ namespace mod::terrain {
 
     void TerrainRenderer::Update() {
         m_pTerrain->Update();
+
+        m_BufferData.clear();
+        m_BufferData.reserve(m_pTerrain->MaximumDataLength());
+        m_LeafCount = 0;
+
+        const auto& rootNodes = m_pTerrain->RootNodes();
+        for (auto& rootNode : rootNodes) {
+            CollectData(rootNode, m_BufferData, m_LeafCount);
+        }
     }
 
     void TerrainRenderer::Render(const params_t& params) {
@@ -46,12 +55,16 @@ namespace mod::terrain {
             Prepare();
 
             m_pShader->Bind();
+            m_pShader->UpdateUniforms(m_pTerrain, 0, 0);
 
-            const auto& rootNodes = m_pTerrain->RootNodes();
+            /*const auto& rootNodes = m_pTerrain->RootNodes();
+            for (auto& rootNode : rootNodes) {
+                CollectData(rootNode, m_BufferData, m_LeafCount);
+            }*/
 
-            for (auto &rootNode : rootNodes) {
-                RenderNode(rootNode);
-            }
+            vd::gl::BufferPtr& buffer = m_pTerrain->Buffers()[0];
+            buffer->UpdateBufferData(vd::gl::eArrayBuffer, (m_BufferData.size() << 2), &m_BufferData[0], 1);
+            buffer->DrawArraysInstanced(vd::gl::ePatches, 16, m_LeafCount);
 
             m_pShader->Unbind();
 
@@ -59,22 +72,37 @@ namespace mod::terrain {
         }
      }
 
-    void TerrainRenderer::RenderNode(const TerrainNode::ptr_type_t& pNode) {
+    void TerrainRenderer::CollectData(const TerrainNode::ptr_type_t& pNode, std::vector<float>& data, size_t& leafCount) {
         if (pNode != nullptr) {
             using namespace vd::collision;
-
+        
             if (Detector::Bounds3AgainstFrustum(pNode->Bounds(), m_pFrustumCullingManager->Frustum()) != eOutside) {
                 if (pNode->Leaf()) {
-                    m_pShader->SetUniform("localModel", pNode->Transform().Get());
-                    m_pShader->SetUniform("tessFactor", pNode->TessFactors());
-                    m_pShader->UpdateUniforms(m_pTerrain, 0, 0);
+                    /*m_pShader->PushUniform("vLocalModel", pNode->Transform().Get());
+                    m_pShader->PushUniform("vTessFactor", pNode->TessFactors());
 
                     vd::gl::BufferPtr& buffer = m_pTerrain->Buffers()[0];
-                    buffer->DrawArrays(vd::gl::ePatches, 16);
+                    buffer->DrawArrays(vd::gl::ePatches, 16);*/
+
+                    glm::mat4 localModel = pNode->Transform().Get();
+
+                    for (size_t i = 0; i < 4; ++i) {
+                        for (size_t j = 0; j < 4; ++j) {
+                            data.emplace_back(localModel[i][j]);
+                        }
+                    }
+
+                    const glm::vec4& tessFactor = pNode->TessFactors();
+
+                    for (size_t i = 0; i < 4; ++i) {
+                        data.emplace_back(tessFactor[i]);
+                    }
+
+                    leafCount++;
                 } else {
                     const auto& children = pNode->Children();
                     for (const auto& child : children) {
-                        RenderNode(std::dynamic_pointer_cast<TerrainNode>(child));
+                        CollectData(std::dynamic_pointer_cast<TerrainNode>(child), data, leafCount);
                     }
                 }
             }

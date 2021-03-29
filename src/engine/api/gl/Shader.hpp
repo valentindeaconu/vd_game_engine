@@ -80,6 +80,8 @@ namespace vd::gl {
 
         void BindUniformBlock(const std::string& uniformBlockName, uint32_t uniformBlockBinding) const;
         void BindFragDataLocation(const std::string& name, uint32_t index) const;
+
+        void BindAttributeLocation(size_t location, const std::string& name);
     private:
         void OnCreate() override;
         void OnCleanUp() override;

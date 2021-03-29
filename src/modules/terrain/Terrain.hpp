@@ -45,6 +45,9 @@ namespace mod::terrain {
         [[nodiscard]] const vd::gl::Texture2DPtr& HeightMap() const;
         [[nodiscard]] const vd::gl::Texture2DPtr& NormalMap() const;
 
+        [[nodiscard]] size_t UnitDataLength() const;
+        [[nodiscard]] size_t MaximumDataLength() const;
+
         [[nodiscard]] glm::vec2 ToTerrainUV(float x, float z) const;
 
         [[nodiscard]] float HeightAt(float x, float z) const;
@@ -65,6 +68,10 @@ namespace mod::terrain {
         // Circular Shape
         glm::vec2   m_Radius;
         glm::vec2   m_Center;
+
+        // Total Data Length
+        size_t m_UnitDataLength;
+        size_t m_MaximumDataLength;
 
         // Camera required for update optimization
         vd::camera::CameraPtr m_pCamera;

@@ -3,7 +3,11 @@
 layout (vertices = 16) out;
 
 in vec2 tcTexCoords[];
+in vec4 tcTessFactor[];
+in mat3 tcNormalMatrix[];
+
 out vec2 teTexCoords[];
+out mat3 teNormalMatrix[];
 
 /*
                A        Outer[1] / AB      B
@@ -27,11 +31,11 @@ const int DA = 0;
 
 uniform float tessellationLevel;
 
-uniform vec4 tessFactor;
-
 uniform vec3 cameraPosition;
 
 void main() {
+    vec4 tessFactor = tcTessFactor[gl_InvocationID];
+
     // control only the first call
     if (gl_InvocationID == 0) {
         gl_TessLevelOuter[AB] = tessellationLevel * tessFactor[1];
@@ -44,5 +48,7 @@ void main() {
     }
 
     teTexCoords[gl_InvocationID] = tcTexCoords[gl_InvocationID];
+    teNormalMatrix[gl_InvocationID] = tcNormalMatrix[gl_InvocationID];
+
     gl_out[gl_InvocationID].gl_Position = gl_in[gl_InvocationID].gl_Position;
 }

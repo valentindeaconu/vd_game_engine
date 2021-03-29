@@ -34,9 +34,13 @@ namespace mod::terrain {
         void Render(const params_t& params) override;
         void CleanUp() override;
     private:
-        void RenderNode(const TerrainNode::ptr_type_t& pNode);
+        void CollectData(const TerrainNode::ptr_type_t& pNode, std::vector<float>& data, size_t& leafCount);
 
         bool IsReady() override;
+
+
+        size_t              m_LeafCount;
+        std::vector<float>  m_BufferData;
 
         TerrainPtr m_pTerrain;
 

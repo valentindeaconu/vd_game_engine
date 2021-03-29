@@ -358,4 +358,10 @@ namespace vd::gl {
         
         glBindFragDataLocation(m_Program, index, name.c_str());
     }
+    
+    void Shader::BindAttributeLocation(size_t location, const std::string& name) {
+        PassIfCreated();
+
+        glBindAttribLocation(m_Program, location, name.c_str());
+    }
 }

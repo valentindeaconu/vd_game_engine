@@ -25,8 +25,8 @@ namespace vd::object::primitive {
                 &pMesh->Vertices()[0],
                 gl::eStaticDraw
         );
-        pBuffer->AttributeArray(0, 2, vd::gl::eFloat, sizeof(vd::model::Vertex2D), (GLvoid*)0);
-        pBuffer->AttributeArray(1, 2, vd::gl::eFloat, sizeof(vd::model::Vertex2D), (GLvoid*)offsetof(vd::model::Vertex2D, TexCoords));
+        pBuffer->AttributeArray(0, 0, 2, vd::gl::eFloat, sizeof(vd::model::Vertex2D), (GLvoid*)0);
+        pBuffer->AttributeArray(1, 0, 2, vd::gl::eFloat, sizeof(vd::model::Vertex2D), (GLvoid*)offsetof(vd::model::Vertex2D, TexCoords));
         pBuffer->Unbind();
 
         BoundingBoxes().emplace_back();

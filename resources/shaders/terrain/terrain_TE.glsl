@@ -3,7 +3,10 @@
 layout (quads, equal_spacing) in;
 
 in vec2 teTexCoords[];
+in mat3 teNormalMatrix[];
+
 out vec2 gTexCoords;
+out mat3 gNormalMatrix;
 
 uniform sampler2D heightMap;
 uniform float scaleY;
@@ -29,6 +32,15 @@ void main() {
 
     position.y = texture(heightMap, texCoords).r * scaleY;
 
+    mat3 normalMatrix = (
+        (1 - u) * (1 - v) * teNormalMatrix[15] +
+        u * (1 - v) * teNormalMatrix[3] +
+        u * v * teNormalMatrix[0] +
+        (1 - u) * v * teNormalMatrix[12]
+    );
+
     gTexCoords = texCoords;
+    gNormalMatrix = normalMatrix;
+
     gl_Position = position;
 }

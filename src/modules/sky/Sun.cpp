@@ -58,7 +58,7 @@ namespace mod::sky {
                 &pMesh->Vertices()[0],
                 vd::gl::eStaticDraw
         );
-        pBuffer->AttributeArray(0, 2, vd::gl::eFloat, sizeof(vd::model::Vertex2D), (GLvoid*)0);
+        pBuffer->AttributeArray(0, 0, 2, vd::gl::eFloat, sizeof(vd::model::Vertex2D), (GLvoid*)0);
         pBuffer->Unbind();
 
         Meshes().emplace_back(std::move(pMesh));

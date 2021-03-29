@@ -42,7 +42,7 @@ namespace mod::terrain {
 
         Compile();
 
-        AddUniform("localModel");
+        // AddUniform("localModel");
         AddUniform("worldModel");
         AddUniform("view");
         AddUniform("projection");
@@ -65,7 +65,7 @@ namespace mod::terrain {
         AddUniform("splatMap");
         AddUniform("shadowMap");
 
-        AddUniform("tessFactor");
+        // AddUniform("tessFactor");
 
         m_BiomeCount = m_pBiomeManager->BiomesCount();
         for (int i = 0; i < m_BiomeCount; ++i) {
