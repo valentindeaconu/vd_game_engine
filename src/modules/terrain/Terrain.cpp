@@ -57,14 +57,37 @@ namespace mod::terrain {
         pBuffer->Create();
         pBuffer->Bind();
 
-        pBuffer->AddBuffer(
-                vd::gl::eArrayBuffer,
-                vertices.size() * sizeof(glm::vec2),
-                &vertices[0],
-                vd::gl::eStaticDraw
-        );
+        const uint32_t kInstanceDataLength = (4 * 4 + 4); // 4x4 mat, 4 tessFactor
 
-        pBuffer->AttributeArray(0, 2, vd::gl::eFloat, sizeof(glm::vec2), (GLvoid*)0);
+        const auto kRootNodes = m_pProperties->Get<int>("RootNodes");
+        const auto kMaxLevelOfDetail = m_pProperties->Get<int>("MaxLevelOfDetail");
+
+        // 4^(kMaxLevelOfDetail) = (2^2)^(kMaxLOD) = 2^(2 * kMaxLod)
+        const uint32_t kMaxInstances = kRootNodes * (1 << (kMaxLevelOfDetail << 1));
+
+        m_UnitDataLength = kInstanceDataLength;
+        m_MaximumDataLength = kMaxInstances * kInstanceDataLength;
+        
+        pBuffer->AddBuffer(vd::gl::eArrayBuffer, vertices.size() * sizeof(glm::vec2), &vertices[0], vd::gl::eStaticDraw);
+        pBuffer->AttributeArray(0, 0, 2, vd::gl::eFloat, sizeof(glm::vec2), (GLvoid*)0);
+
+        const size_t maxDataLengthInBytes = (m_MaximumDataLength << 2); // 4 bytes per float
+        const size_t instanceDataLength = (kInstanceDataLength << 2); // 4 bytes per float
+
+        struct Data {
+            glm::vec4 c0;
+            glm::vec4 c1;
+            glm::vec4 c2;
+            glm::vec4 c3;
+            glm::vec4 t;
+        };
+
+        pBuffer->AddBuffer(vd::gl::eArrayBuffer, maxDataLengthInBytes, nullptr, vd::gl::eDynamicDraw);
+        pBuffer->InstanceAttributeArray(1, 1, 4, vd::gl::eFloat, instanceDataLength, 1, (GLvoid*)offsetof(Data, c0));
+        pBuffer->InstanceAttributeArray(2, 1, 4, vd::gl::eFloat, instanceDataLength, 1, (GLvoid*)offsetof(Data, c1));
+        pBuffer->InstanceAttributeArray(3, 1, 4, vd::gl::eFloat, instanceDataLength, 1, (GLvoid*)offsetof(Data, c2));
+        pBuffer->InstanceAttributeArray(4, 1, 4, vd::gl::eFloat, instanceDataLength, 1, (GLvoid*)offsetof(Data, c3));
+        pBuffer->InstanceAttributeArray(5, 1, 4, vd::gl::eFloat, instanceDataLength, 1, (GLvoid*)offsetof(Data, t));
 
         pBuffer->PatchParameter(vd::gl::ePatchVertices, vertices.size());
 
@@ -120,6 +143,14 @@ namespace mod::terrain {
 
     const vd::gl::Texture2DPtr& Terrain::NormalMap() const {
         return m_pNormalMap;
+    }
+
+    size_t Terrain::UnitDataLength() const {
+        return m_UnitDataLength;
+    }
+
+    size_t Terrain::MaximumDataLength() const {
+        return m_MaximumDataLength;
     }
 
     glm::vec2 Terrain::ToTerrainUV(float x, float z) const {

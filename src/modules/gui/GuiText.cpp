@@ -28,7 +28,7 @@ namespace mod::gui {
         pBuffer->Bind();
 
         pBuffer->AddBuffer(vd::gl::eArrayBuffer, sizeof(float) * 6 * 4, nullptr, vd::gl::eDynamicDraw);
-        pBuffer->AttributeArray(0, 4, vd::gl::eFloat, 4 * sizeof(float), nullptr);
+        pBuffer->AttributeArray(0, 0, 4, vd::gl::eFloat, 4 * sizeof(float), nullptr);
 
         pBuffer->Unbind();
     }

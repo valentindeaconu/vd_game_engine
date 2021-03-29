@@ -49,9 +49,9 @@ namespace vd::object {
                         &mesh->Indices()[0],
                         gl::eStaticDraw
                 );
-                pBuffer->AttributeArray(0, 3, vd::gl::eFloat, sizeof(vd::model::Vertex3D), (GLvoid*)0);
-                pBuffer->AttributeArray(1, 3, vd::gl::eFloat, sizeof(vd::model::Vertex3D), (GLvoid*)offsetof(vd::model::Vertex3D, Normal));
-                pBuffer->AttributeArray(2, 2, vd::gl::eFloat, sizeof(vd::model::Vertex3D), (GLvoid*)offsetof(vd::model::Vertex3D, TexCoords));
+                pBuffer->AttributeArray(0, 0, 3, vd::gl::eFloat, sizeof(vd::model::Vertex3D), (GLvoid*)0);
+                pBuffer->AttributeArray(1, 0, 3, vd::gl::eFloat, sizeof(vd::model::Vertex3D), (GLvoid*)offsetof(vd::model::Vertex3D, Normal));
+                pBuffer->AttributeArray(2, 0, 2, vd::gl::eFloat, sizeof(vd::model::Vertex3D), (GLvoid*)offsetof(vd::model::Vertex3D, TexCoords));
                 pBuffer->Unbind();
 
                 Buffers().emplace_back(std::move(pBuffer));

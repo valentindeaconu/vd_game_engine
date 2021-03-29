@@ -8,6 +8,7 @@
 #include <engine/model/Mesh.hpp>
 
 #include <unordered_map>
+#include <vector>
 
 #include "Enums.hpp"
 #include "Component.hpp"
@@ -22,15 +23,28 @@ namespace vd::gl {
         void Unbind();
 
         uint32_t AddBuffer(BufferType type, size_t size, const void* data, BufferUsageType usage);
-        void UpdateBufferData(BufferType type, size_t count, const void* data);
-        void RemoveBuffer(BufferType type);
+        void UpdateBufferData(BufferType type, size_t count, const void* data, size_t bufferIndex = 0);
+        void RemoveBuffer(BufferType type, size_t bufferIndex = 0);
 
-        void AttributeArray(uint32_t index, int32_t size, DataType type, uint32_t stride, const void* ptr);
+        void AttributeArray(uint32_t index, 
+                            size_t bufferIndex, 
+                            int32_t size, 
+                            DataType dataType, 
+                            uint32_t stride, 
+                            const void* ptr);
+        void InstanceAttributeArray(uint32_t index, 
+                                    size_t bufferIndex, 
+                                    int32_t size, 
+                                    DataType dataType, 
+                                    uint32_t stride, 
+                                    uint32_t divisor, 
+                                    const void* ptr);
 
         void PatchParameter(const PatchParameterType& parameter, int value);
         void PatchParameter(const PatchParameterType& parameter, const float* values);
 
         void DrawArrays(PrimitiveType type, size_t count);
+        void DrawArraysInstanced(PrimitiveType type, size_t count, size_t instanceCount);
         void DrawElements(PrimitiveType type, size_t count, DataType dataType);
 
     private:
@@ -40,8 +54,8 @@ namespace vd::gl {
         bool        m_Bound;
         uint32_t    m_VaoId;
 
-        std::vector<uint32_t>                       m_AttribArrays;
-        std::unordered_map<BufferType, uint32_t>    m_Buffers;
+        std::vector<uint32_t>                                   m_AttribArrays;
+        std::unordered_map<BufferType, std::vector<uint32_t>>   m_Buffers;
     };
     typedef std::shared_ptr<Buffer>	BufferPtr;
     typedef std::vector<BufferPtr>	BufferPtrVec;

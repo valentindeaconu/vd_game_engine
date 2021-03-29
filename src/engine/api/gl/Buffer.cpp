@@ -42,7 +42,9 @@ namespace vd::gl {
         std::vector<uint32_t> v;
         v.reserve(m_Buffers.size());
         for (auto& buffer : m_Buffers) {
-            v.emplace_back(buffer.second);
+            for (auto& id : buffer.second) {
+                v.emplace_back(id);
+            }
         }
 
         glDeleteBuffers(v.size(), &v[0]);
@@ -73,8 +75,8 @@ namespace vd::gl {
     uint32_t Buffer::AddBuffer(BufferType type, size_t size, const void* data, BufferUsageType usage) {
         PassIfCreated();
 
-        if (m_Buffers.contains(type)) {
-            throw RuntimeError("A buffer of type " + ToString(type) + " already exists");
+        if (!m_Buffers.contains(type)) {
+            m_Buffers[type] = std::vector<uint32_t>();
         }
 
         uint32_t id;
@@ -84,37 +86,38 @@ namespace vd::gl {
 
         glBindBuffer(type, id);
         glBufferData(type, size, data, usage);
-
+        
         Unbind();
 
-        m_Buffers[type] = id;
+        m_Buffers[type].emplace_back(id);
 
         return id;
     }
 
-    void Buffer::UpdateBufferData(BufferType type, size_t count, const void* data) {
+    void Buffer::UpdateBufferData(BufferType type, size_t count, const void* data, size_t bufferIndex) {
         PassIfCreated();
 
         if (!m_Buffers.contains(type)) {
             throw RuntimeError("No buffer of type " + ToString(type) + " exists");
         }
 
-        uint32_t id = m_Buffers[type];
+        uint32_t id = m_Buffers[type][bufferIndex];
 
         Bind();
         glBindBuffer(type, id);
+        // glBufferData(type, count, data, GL_DYNAMIC_DRAW);
         glBufferSubData(type, 0, count, data);
         Unbind();
     }
 
-    void Buffer::RemoveBuffer(BufferType type) {
+    void Buffer::RemoveBuffer(BufferType type, size_t bufferIndex) {
         PassIfCreated();
 
         if (!m_Buffers.contains(type)) {
             throw RuntimeError("No buffer of type " + ToString(type) + " exists");
         }
 
-        uint32_t id = m_Buffers[type];
+        uint32_t id = m_Buffers[type][bufferIndex];
         m_Buffers.erase(type);
 
         Bind();
@@ -122,15 +125,64 @@ namespace vd::gl {
         Unbind();
     }
 
-    void Buffer::AttributeArray(uint32_t index, int32_t size, DataType type, uint32_t stride, const void *ptr) {
+    void Buffer::AttributeArray(uint32_t index,
+                                size_t bufferIndex, 
+                                int32_t size, 
+                                DataType dataType, 
+                                uint32_t stride, 
+                                const void *ptr) {
         PassIfCreated();
+
+        if (!m_Buffers.contains(eArrayBuffer)) {
+            throw RuntimeError("No buffer of type " + ToString(eArrayBuffer) + " exists");
+        }
+
+        if (bufferIndex >= m_Buffers[eArrayBuffer].size()) {
+            throw RuntimeError("Buffer of type " + ToString(eArrayBuffer) + " with index " + std::to_string(bufferIndex) + " does not exists");            
+        }
 
         Bind();
 
+        glBindBuffer(eArrayBuffer, m_Buffers[eArrayBuffer][bufferIndex]);
+
         glEnableVertexAttribArray(index);
-        glVertexAttribPointer(index, size, type, GL_FALSE, stride, (GLvoid*)ptr);
+        glVertexAttribPointer(index, size, dataType, GL_FALSE, stride, (GLvoid*)ptr);
 
         m_AttribArrays.emplace_back(index);
+
+        glBindBuffer(eArrayBuffer, 0);
+
+        Unbind();
+    }
+
+    void Buffer::InstanceAttributeArray(uint32_t index,
+                                        size_t bufferIndex,  
+                                        int32_t size, 
+                                        DataType dataType, 
+                                        uint32_t stride, 
+                                        uint32_t divisor, 
+                                        const void *ptr) {
+        PassIfCreated();
+
+        if (!m_Buffers.contains(eArrayBuffer)) {
+            throw RuntimeError("No buffer of type " + ToString(eArrayBuffer) + " exists");
+        }
+
+        if (bufferIndex >= m_Buffers[eArrayBuffer].size()) {
+            throw RuntimeError("Buffer of type " + ToString(eArrayBuffer) + " with index " + std::to_string(bufferIndex) + " does not exists");            
+        }
+
+        Bind();
+
+        glBindBuffer(eArrayBuffer, m_Buffers[eArrayBuffer][bufferIndex]);
+
+        glEnableVertexAttribArray(index);
+        glVertexAttribPointer(index, size, dataType, GL_FALSE, stride, (GLvoid*)ptr);
+        glVertexAttribDivisor(index, divisor);
+
+        m_AttribArrays.emplace_back(index);
+
+        glBindBuffer(eArrayBuffer, 0);
 
         Unbind();
     }
@@ -151,15 +203,30 @@ namespace vd::gl {
         PassIfCreated();
         
         Bind();
+
         glDrawArrays(type, 0, count);
+        
         Unbind();
     }
+
+    void Buffer::DrawArraysInstanced(PrimitiveType type, size_t count, size_t instanceCount) {
+        PassIfCreated();
+        
+        Bind();
+
+        glDrawArraysInstanced(type, 0, count, instanceCount);
+
+        Unbind();
+    }
+
 
     void Buffer::DrawElements(PrimitiveType type, size_t count, DataType dataType) {
         PassIfCreated();
 
         Bind();
+
         glDrawElements(type, count, dataType, nullptr);
+
         Unbind();
     }
 

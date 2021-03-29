@@ -4,6 +4,7 @@ layout(triangles) in;
 layout(triangle_strip, max_vertices = 3) out;
 
 in vec2 gTexCoords[];
+in mat3 gNormalMatrix[];
 
 out vec2 fTexCoords;
 out vec3 fPosition;
@@ -16,8 +17,6 @@ out float fRadiusClip;
 
 uniform mat4 view;
 uniform mat4 projection;
-uniform mat4 localModel;
-uniform mat4 worldModel;
 
 uniform mat4 lightView;
 uniform mat4 lightProjection;
@@ -123,8 +122,7 @@ void main() {
         fTangent = tangent;
         fPosition_ls = lightProjection * lightView * worldCoords;
 
-        // fNormalMatrix = transpose(inverse(mat3(view * (worldModel + localModel))));
-        fNormalMatrix = transpose(inverse(mat3(worldModel + localModel)));
+        fNormalMatrix = gNormalMatrix[i];
 
         fRadiusClip = computeRadiusClip(worldCoords);
 
