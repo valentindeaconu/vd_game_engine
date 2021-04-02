@@ -230,4 +230,15 @@ namespace vd::gl {
         Unbind();
     }
 
+    
+    void Buffer::DrawElementsInstanced(PrimitiveType type, size_t count, DataType dataType, size_t instanceCount) {
+        PassIfCreated();
+
+        Bind();
+
+        glDrawElementsInstanced(type, count, dataType, nullptr, instanceCount);
+
+        Unbind();
+    }
+
 }

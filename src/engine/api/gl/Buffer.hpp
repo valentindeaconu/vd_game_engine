@@ -46,6 +46,7 @@ namespace vd::gl {
         void DrawArrays(PrimitiveType type, size_t count);
         void DrawArraysInstanced(PrimitiveType type, size_t count, size_t instanceCount);
         void DrawElements(PrimitiveType type, size_t count, DataType dataType);
+        void DrawElementsInstanced(PrimitiveType type, size_t count, DataType dataType, size_t instanceCount);
 
     private:
         void OnCreate() override;
