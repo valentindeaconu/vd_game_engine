@@ -40,7 +40,9 @@ void main() {
     }
 
     for (int i = 0; i < 16; ++i) {
-        blendValues[i] = blendValues[i] / total;
+        if (total > 0) {
+            blendValues[i] = blendValues[i] / total;
+        }
     }
 
     vec4 blendSampleTL = vec4(blendValues[0], blendValues[1], blendValues[2], blendValues[3]);
