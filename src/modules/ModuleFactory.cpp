@@ -14,6 +14,7 @@
 #include <modules/terrain/TerrainFactory.hpp>
 #include <modules/water/WaterFactory.hpp>
 #include <modules/biomes/BiomeFactory.hpp>
+#include <modules/particles/ParticleFactory.hpp>
 
 namespace mod {
 
@@ -26,6 +27,7 @@ namespace mod {
         std::make_shared<water::WaterFactory>()->Create(pEngine);
         std::make_shared<sky::SkyFactory>()->Create(pEngine);
         std::make_shared<props::PropsFactory>()->Create(pEngine);
+        std::make_shared<particles::ParticleFactory>()->Create(pEngine);
 
         std::make_shared<gui::GuiFactory>()->Create(pEngine);
         std::make_shared<postprocessing::EffectFactory>()->Create(pEngine);

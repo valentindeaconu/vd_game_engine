@@ -24,9 +24,9 @@ namespace vd {
 
         m_pUpdateJob->OnFinish([&]() {
             m_pRenderJob->Run();
-            m_pUpdateJob->Reset();
-
+            
             m_pThreadPool->PushJobFor(m_pUpdateJob, "Update");
+            m_pUpdateJob->Reset();
         });
 
         m_pRenderJob->OnFinish([&]() {

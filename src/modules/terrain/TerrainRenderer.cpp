@@ -70,7 +70,7 @@ namespace mod::terrain {
 
             Finish();
         }
-     }
+    }
 
     void TerrainRenderer::CollectData(const TerrainNode::ptr_type_t& pNode, std::vector<float>& data, size_t& leafCount) {
         if (pNode != nullptr) {

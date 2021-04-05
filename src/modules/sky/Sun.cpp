@@ -54,7 +54,7 @@ namespace mod::sky {
         pBuffer->Bind();
         pBuffer->AddBuffer(
                 vd::gl::eArrayBuffer,
-                pMesh->Vertices().size() * sizeof(vd::model::Vertex3D),
+                pMesh->Vertices().size() * sizeof(vd::model::Vertex2D),
                 &pMesh->Vertices()[0],
                 vd::gl::eStaticDraw
         );

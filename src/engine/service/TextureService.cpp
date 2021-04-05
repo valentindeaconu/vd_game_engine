@@ -77,14 +77,14 @@ namespace vd::service {
         return pTexture;
     }
 
-    gl::Texture2DPtr TextureService::CreateFromFile(const std::string& path) {
+    gl::Texture2DPtr TextureService::CreateFromFile(const std::string& path, size_t size, bool verticalFlip) {
         if (s_2D_Cache.find(path) != s_2D_Cache.end()) {
             return s_2D_Collector[s_2D_Cache[path]];
         }
 
-        vd::model::ImagePtr<uint8_t> imagePtr = loader::ImageLoader::Load<uint8_t>(path);
+        vd::model::ImagePtr<uint8_t> imagePtr = loader::ImageLoader::Load<uint8_t>(path, verticalFlip);
 
-        gl::Texture2DPtr pTexture = std::make_shared<gl::Texture2D>(imagePtr->Width(), imagePtr->Height());
+        gl::Texture2DPtr pTexture = std::make_shared<gl::Texture2D>(imagePtr->Width(), imagePtr->Height(), size);
 
         pTexture->Create();
         pTexture->Bind();

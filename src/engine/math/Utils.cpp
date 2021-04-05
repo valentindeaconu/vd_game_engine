@@ -24,4 +24,12 @@ namespace vd::math {
             }
         }
     }
+
+    float Map(float value, float fromL, float fromH, float toL, float toH) {
+        return (value - fromL) * (toH - toL) / (fromH - fromL) + toL;
+    }
+
+    float Map01(float value, float toL, float toH) {
+        return value * (toH - toL) + toL;
+    }
 }

@@ -172,6 +172,16 @@ set(SOURCES
         src/modules/gui/GuiText.hpp
         src/modules/gui/GuiTextShader.cpp
         src/modules/gui/GuiTextShader.hpp
+        src/modules/particles/Particle.cpp
+        src/modules/particles/Particle.hpp
+        src/modules/particles/ParticleFactory.cpp
+        src/modules/particles/ParticleFactory.hpp
+        src/modules/particles/ParticleRenderer.cpp
+        src/modules/particles/ParticleRenderer.hpp
+        src/modules/particles/ParticleShader.cpp
+        src/modules/particles/ParticleShader.hpp
+        src/modules/particles/ParticleSystem.cpp
+        src/modules/particles/ParticleSystem.hpp
         src/modules/player/Player.cpp
         src/modules/player/Player.hpp
         src/modules/player/PlayerShader.cpp
