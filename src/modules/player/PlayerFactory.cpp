@@ -10,10 +10,7 @@ namespace mod::player {
         PlayerPtr pPlayer = vd::injector::CreateAndStore<Player>();
         PlayerShaderPtr pPlayerShader = std::make_shared<PlayerShader>();
 
-        PlayerRendererPtr pPlayerRenderer = std::make_shared<mod::player::PlayerRenderer>(pPlayer,
-                                                                                          pPlayerShader,
-                                                                                          []() { glFrontFace(GL_CCW); },
-                                                                                          []() { glFrontFace(GL_CW); });
+        PlayerRendererPtr pPlayerRenderer = std::make_shared<mod::player::PlayerRenderer>(pPlayer, pPlayerShader);
 
         pEngine->Subscribe(pPlayerRenderer, PlayerRenderer::kDefaultPriority);
     }

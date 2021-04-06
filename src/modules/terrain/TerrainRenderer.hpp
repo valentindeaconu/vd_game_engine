@@ -6,6 +6,7 @@
 #define VD_GAME_ENGINE_TERRAINRENDERER_HPP
 
 #include <engine/component/IRenderer.hpp>
+#include <engine/component/IEntityShader.hpp>
 
 #include <engine/collision/Detector.hpp>
 
@@ -16,35 +17,30 @@
 #include "TerrainNode.hpp"
 
 namespace mod::terrain {
-    class TerrainRenderer
-            : public vd::component::IRenderer
-            , public vd::injector::Injectable {
+    class TerrainRenderer : public vd::component::IRenderer, public vd::injector::Injectable {
     public:
         static const vd::datastruct::Observable::priority_t kPriority = kDefaultPriority - 10;
 
-        TerrainRenderer(TerrainPtr terrainPtr,
-                        vd::component::IEntityShaderPtr shaderPtr,
-                        vd::Consumer beforeExecution = vd::g_kEmptyConsumer,
-                        vd::Consumer afterExecution = vd::g_kEmptyConsumer);
+        TerrainRenderer(TerrainPtr terrain, vd::component::IEntityShaderPtr shader);
 
         void Link() override;
 
-        void Init() override;
-        void Update() override;
-        void Render(const params_t& params) override;
-        void CleanUp() override;
+        void OnInit() override;
+        void OnUpdate() override;
+        void OnRender(const params_t& params) override;
+        void OnCleanUp() override;
     private:
         void CollectData(const TerrainNode::ptr_type_t& pNode, std::vector<float>& data, size_t& leafCount);
 
-        bool IsReady() override;
+        bool Precondition(const params_t& params) override;
+        void Prepare() override;
+        void Finish() override;
 
-
-        size_t              m_LeafCount;
-        std::vector<float>  m_BufferData;
-
-        TerrainPtr m_pTerrain;
-
-        vd::culling::FrustumCullingManagerPtr m_pFrustumCullingManager;
+        size_t                                  m_LeafCount;
+        std::vector<float>                      m_BufferData;
+        TerrainPtr                              m_pTerrain;
+        vd::component::IEntityShaderPtr         m_pShader;
+        vd::culling::FrustumCullingManagerPtr   m_pFrustumCullingManager;
     };
     typedef std::shared_ptr<TerrainRenderer>	TerrainRendererPtr;
 }

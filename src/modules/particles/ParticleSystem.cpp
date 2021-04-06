@@ -7,7 +7,8 @@
 namespace mod::particles {
 
     ParticleSystem::ParticleSystem(float particlesPerSecond, float speed, float gravityComplient, float lifeLength, const std::string& texturePath, size_t size) 
-        : m_ParticlesPerSecond(particlesPerSecond)
+        : m_AdditiveBlending(false)
+        , m_ParticlesPerSecond(particlesPerSecond)
         , m_Speed(speed)
         , m_GravityComplient(gravityComplient)
         , m_LifeLength(lifeLength)
@@ -75,6 +76,10 @@ namespace mod::particles {
         m_RotationInfo.Enabled = true;
         m_RotationInfo.Low = low;
         m_RotationInfo.High = high;
+    }
+
+    bool& ParticleSystem::AdditiveBlending() {
+        return m_AdditiveBlending;
     }
 
     const vd::gl::Texture2DPtr& ParticleSystem::TextureAtlas() const {

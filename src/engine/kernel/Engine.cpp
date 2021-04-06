@@ -143,15 +143,6 @@ namespace vd {
     }
 
     void Engine::Init() {
-        // GL Init configs
-        glClearColor(0.3f, 0.3f, 0.3f, 1.0f);
-        glEnable(GL_FRAMEBUFFER_SRGB);
-        glEnable(GL_DEPTH_TEST); // enable depth-testing
-        glDepthFunc(GL_LESS); // depth-testing interprets a smaller value as "closer"
-        glEnable(GL_CULL_FACE); // cull face
-        glCullFace(GL_BACK); // cull back face
-        glFrontFace(GL_CCW); // GL_CCW for counter clock-wise
-
         // Create main rendering pass (3d scene rendering pass)
         gl::FrameBufferPtr pSceneFbo = std::make_shared<gl::FrameBuffer>(m_pWindow->Width(), m_pWindow->Height());
         pSceneFbo->Create();
@@ -176,12 +167,12 @@ namespace vd {
         // Main rendering pass will render the scene
         auto beforeFn = [ctx = m_pContext]() {
             if (ctx->WireframeMode()) {
-                glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+                vd::gl::Context::DrawModeWireframe();
             }
         };
         auto afterFn = [ctx = m_pContext]() {
             if (ctx->WireframeMode()) {
-                glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+                vd::gl::Context::DrawModeFill();
             }
         };
 

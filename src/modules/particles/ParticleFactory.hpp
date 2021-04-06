@@ -5,14 +5,15 @@
 #ifndef VDGE_PARTICLEFACTORY_HPP
 #define VDGE_PARTICLEFACTORY_HPP
 
+#include <memory>
+
 #include <engine/component/IModuleFactory.hpp>
 
 #include <engine/injector/CreateAndStore.hpp>
-#include <engine/defines/Types.hpp>
 
 #include "Particle.hpp"
-#include "ParticleShader.hpp"
 #include "ParticleRenderer.hpp"
+#include "ParticleSystem.hpp"
 
 namespace mod::particles {
 

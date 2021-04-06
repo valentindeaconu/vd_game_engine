@@ -5,11 +5,11 @@
 #include "ParticleRenderer.hpp"
 
 namespace mod::particles {
-    ParticleRenderer::ParticleRenderer(vd::component::IEntityShaderPtr shader,
-                                       vd::Consumer beforeExecution,
-                                       vd::Consumer afterExecution) 
-        : vd::component::IRenderer(std::move(shader), std::move(beforeExecution), std::move(afterExecution))
+    ParticleRenderer::ParticleRenderer(ParticleSystemPtr particleSystem) 
+        : vd::component::IRenderer("ParticleRenderer")
+        , m_pSystem(std::move(particleSystem))
     {
+        m_pShader = std::make_shared<ParticleShader>();
     }
 
     void ParticleRenderer::Link() {
@@ -18,7 +18,7 @@ namespace mod::particles {
         m_pPlayer = vd::ObjectOfType<mod::player::Player>::Find();
     }
 
-    void ParticleRenderer::Init() {
+    void ParticleRenderer::OnInit() {
         m_pBuffer = std::make_shared<vd::gl::Buffer>();
         m_pBuffer->Create();
         m_pBuffer->Bind();
@@ -49,13 +49,9 @@ namespace mod::particles {
         m_pBuffer->Unbind();
 
         m_pShader->Init();
-
-        m_pParticleSystem = std::make_shared<ParticleSystem>(75, 4.2f, 0.02f, 2.45f, "./resources/assets/particles/fire_8x8.png", 8);
-        m_pParticleSystem->RandomizeScale(0.49f, 0.85f);
-        m_pParticleSystem->RandomizeVelocity(-0.17f, 0.17f);
     }
 
-    void ParticleRenderer::Update() {
+    void ParticleRenderer::OnUpdate() {
         if (m_pEventHandler->KeyDown(vd::Key::eU)) {
             glm::vec3 pos = m_pPlayer->WorldTransform().Translation();
 
@@ -65,7 +61,7 @@ namespace mod::particles {
         }
 
         ParticlePtrVec particles;
-        m_pParticleSystem->GenerateParticles(m_pPlayer->WorldTransform().Translation(), m_pContext->FrameTime(), particles);
+        m_pSystem->GenerateParticles(m_pPlayer->WorldTransform().Translation(), m_pContext->FrameTime(), particles);
 
         for (auto& particle : particles) {
             m_Batch.emplace_back(std::move(particle));
@@ -100,36 +96,42 @@ namespace mod::particles {
         }
     }
 
-    void ParticleRenderer::Render(const params_t& params) {
-        if (!IsReady()) {
-            vd::Logger::warn("ParticleRenderer was not ready to render");
-            return;
+    void ParticleRenderer::OnRender(const params_t& params) {
+        m_pShader->Bind();
+        m_pShader->UpdateUniforms(m_pSystem);
+
+        m_pBuffer->UpdateBufferData(vd::gl::eArrayBuffer, (m_BufferData.size() << 2), &m_BufferData[0], 0);
+        m_pBuffer->DrawArrays(vd::gl::ePoints, m_ParticleCount);
+
+        m_pShader->Unbind();
+    }
+
+    void ParticleRenderer::OnCleanUp() {
+        m_pShader->CleanUp();    
+        m_pBuffer->CleanUp();
+    }
+
+    bool ParticleRenderer::Precondition(const params_t& params) {
+        if (m_pShader == nullptr || m_pSystem == nullptr) {
+            return false;
         }
 
-        const auto& renderingPass = params.at("RenderingPass");
+        return params.at("RenderingPass") == "Main";
+    }
 
-        if (renderingPass == "Main") {
-            Prepare();
+    void ParticleRenderer::Prepare() {
+        vd::gl::Context::DepthMask(false);
+        vd::gl::Context::CounterClockwiseFacing();
 
-            m_pShader->Bind();
-            m_pShader->UpdateUniforms(nullptr, 0, 0);
-
-            m_pParticleSystem->TextureAtlas()->BindToUnit(0);
-            m_pShader->SetUniform("uAtlasSampler.Atlas", 0);
-            m_pShader->SetUniform("uAtlasSampler.Size", int(m_pParticleSystem->TextureAtlas()->Size()));
-
-            m_pBuffer->UpdateBufferData(vd::gl::eArrayBuffer, (m_BufferData.size() << 2), &m_BufferData[0], 0);
-            m_pBuffer->DrawArrays(vd::gl::ePoints, m_ParticleCount);
-
-            m_pShader->Unbind();
-
-            Finish();
+        if (m_pSystem->AdditiveBlending()) {
+            vd::gl::Context::AdditiveBlending();
+        } else {
+            vd::gl::Context::AlphaBlending();
         }
     }
 
-    void ParticleRenderer::CleanUp() {
-        m_pShader->CleanUp();    
-        m_pBuffer->CleanUp();
+    void ParticleRenderer::Finish() {
+        vd::gl::Context::Reset();
     }
 
 }

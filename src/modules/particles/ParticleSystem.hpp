@@ -25,10 +25,13 @@ namespace mod::particles {
         void RandomizeScale(float low, float high);
         void RandomizeRotation(float low, float high);
 
+        [[nodiscard]] bool& AdditiveBlending();
         [[nodiscard]] const vd::gl::Texture2DPtr& TextureAtlas() const;
     private:
         ParticlePtr EmitParticle(const glm::vec3& position);
         float RandomValue();
+
+        bool m_AdditiveBlending;
 
         float m_ParticlesPerSecond;
         float m_Speed;

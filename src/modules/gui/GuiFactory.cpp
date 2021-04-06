@@ -185,10 +185,7 @@ namespace mod::gui {
                                const glm::vec2& scale) {
 
         GuiQuadPtr pGuiQuad = std::make_shared<GuiQuad>(textureGetter, position, scale);
-        GuiRendererPtr pGuiRenderer = std::make_shared<GuiRenderer>(pGuiQuad,
-                                                                    m_pGuiShader,
-                                                                    []() { glFrontFace(GL_CCW); },
-                                                                    []() { glFrontFace(GL_CW); });
+        GuiRendererPtr pGuiRenderer = std::make_shared<GuiRenderer>(pGuiQuad, m_pGuiShader);
 
         pEngine->Subscribe(pGuiRenderer, GuiRenderer::kPriority);
     }
@@ -200,23 +197,8 @@ namespace mod::gui {
                                 const glm::vec3& color) {
         GuiTextPtr pGuiText = std::make_shared<GuiText>(text, m_pFont, position, scale, color);
 
-        vd::Consumer before = []() {
-            glFrontFace(GL_CW);
-            glEnable(GL_BLEND);
-            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-            glDisable(GL_DEPTH_TEST);
-        };
 
-        vd::Consumer after = []() {
-            glFrontFace(GL_CCW);
-            glDisable(GL_BLEND);
-            glEnable(GL_DEPTH_TEST);
-        };
-
-        GuiRendererPtr pGuiRenderer = std::make_shared<GuiRenderer>(pGuiText,
-                                                                    m_pGuiTextShader,
-                                                                    before,
-                                                                    after);
+        GuiRendererPtr pGuiRenderer = std::make_shared<GuiRenderer>(pGuiText, m_pGuiTextShader);
 
         pEngine->Subscribe(pGuiRenderer, GuiRenderer::kPriority);
     }
@@ -230,23 +212,7 @@ namespace mod::gui {
     {
         UpdatableGuiTextPtr pGuiText = std::make_shared<UpdatableGuiText>(text, m_pFont, updateFn, position, scale, color);
 
-        vd::Consumer before = []() {
-            glFrontFace(GL_CW);
-            glEnable(GL_BLEND);
-            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-            glDisable(GL_DEPTH_TEST);
-        };
-
-        vd::Consumer after = []() {
-            glFrontFace(GL_CCW);
-            glDisable(GL_BLEND);
-            glEnable(GL_DEPTH_TEST);
-        };
-
-        GuiRendererPtr pGuiRenderer = std::make_shared<GuiRenderer>(pGuiText,
-                                                                    m_pGuiTextShader,
-                                                                    before,
-                                                                    after);
+        GuiRendererPtr pGuiRenderer = std::make_shared<GuiRenderer>(pGuiText, m_pGuiTextShader);
 
         pEngine->Subscribe(pGuiRenderer, GuiRenderer::kPriority);
     }

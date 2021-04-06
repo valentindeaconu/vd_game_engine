@@ -26,19 +26,18 @@ namespace mod::props {
     public:
         static const vd::datastruct::Observable::priority_t kPriority = biomes::BiomeManager::kPriority + 1;
 
-        explicit PropsRenderer(PropsManagerPtr propsManager, 
-                               vd::component::IEntityShaderPtr shaderPtr,
-                               vd::Consumer beforeExecution = vd::g_kEmptyConsumer,
-                               vd::Consumer afterExecution = vd::g_kEmptyConsumer);
+        explicit PropsRenderer(PropsManagerPtr propsManager, vd::component::IEntityShaderPtr shader);
 
         void Link() override;
 
-        void Init() override;
-        void Update() override;
-        void Render(const params_t& params) override;
-        void CleanUp() override;
+        void OnInit() override;
+        void OnUpdate() override;
+        void OnRender(const params_t& params) override;
+        void OnCleanUp() override;
     private:
-        bool IsReady() override;
+        bool Precondition(const params_t& params) override;
+        void Prepare() override;
+        void Finish() override;
 
         struct Props {
             std::vector<vd::math::Transform>    Transforms;
@@ -48,8 +47,8 @@ namespace mod::props {
             size_t                              Total;
         } m_Units;
 
-        PropsManagerPtr     m_pPropsManager;
-
+        PropsManagerPtr                         m_pPropsManager;
+        vd::component::IEntityShaderPtr         m_pShader;
         vd::camera::CameraPtr                   m_pCamera;
         vd::culling::FrustumCullingManagerPtr   m_pFrustumCullingManager;
         mod::shadow::ShadowShaderPtr            m_pShadowShader;

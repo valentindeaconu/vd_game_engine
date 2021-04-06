@@ -5,22 +5,18 @@
 #include "SkyRenderer.hpp"
 
 namespace mod::sky {
-    SkyRenderer::SkyRenderer(SkyPtr pSky,
-                             vd::component::IEntityShaderPtr pShader,
-                             vd::Consumer beforeExecution,
-                             vd::Consumer afterExecution)
-        : IRenderer(std::move(pShader), std::move(beforeExecution), std::move(afterExecution))
+    SkyRenderer::SkyRenderer(SkyPtr pSky, vd::component::IEntityShaderPtr pShader)
+        : IRenderer("SkyRenderer")
+        , m_pShader(std::move(pShader))
         , m_pSky(std::move(pSky))
     {
     }
-
-    SkyRenderer::~SkyRenderer() = default;
 
     void SkyRenderer::Link() {
         m_pShadowShader = vd::ObjectOfType<mod::shadow::ShadowShader>::Find();
     }
 
-    void SkyRenderer::Init() {
+    void SkyRenderer::OnInit() {
         m_pSky->Init();
 
         m_pShader->Init();
@@ -29,52 +25,55 @@ namespace mod::sky {
         m_pShader->Unbind();
     }
 
-    void SkyRenderer::Update() {
+    void SkyRenderer::OnUpdate() {
         m_pSky->Update();
     }
 
-    void SkyRenderer::Render(const params_t& params) {
-        if (!IsReady()) {
-            vd::Logger::warn("SkyRenderer was not ready to render");
-            return;
+    void SkyRenderer::OnRender(const params_t& params) {
+        const vd::component::IEntityShaderPtr& pShader = (params.at("RenderingPass") == "Shadow") ? m_pShadowShader : m_pShader;
+
+        pShader->Bind();
+
+        const auto levelOfDetail = m_pSky->LevelOfDetailAtDistance(.0f);
+
+        auto& meshes = m_pSky->Meshes(levelOfDetail);
+        auto& bufferIndices = m_pSky->BufferIndices(levelOfDetail);
+
+        vd::gl::BufferPtrVec& buffers = m_pSky->Buffers();
+        for (size_t meshIndex = 0; meshIndex < meshes.size(); ++meshIndex) {
+            pShader->UpdateUniforms(m_pSky, levelOfDetail, meshIndex);
+            buffers[ bufferIndices[meshIndex] ]->DrawElements(vd::gl::eTriangles, 36, vd::gl::eUnsignedInt);
+        }
+
+        pShader->Unbind();
+    }
+
+    void SkyRenderer::OnCleanUp() {
+        m_pSky->CleanUp();
+        m_pShader->CleanUp();
+    }
+
+    bool SkyRenderer::Precondition(const params_t& params) {
+        if (m_pSky == nullptr || m_pShader == nullptr) {
+            return false;
         }
 
         const auto& renderingPass = params.at("RenderingPass");
 
         // TODO: Is sky necessary to be drawn on Shadow Rendering Pass?
-        if (renderingPass == "Shadow" ||
-            renderingPass == "Reflection" ||
-            renderingPass == "Refraction" ||
-            renderingPass == "Main") {
-            Prepare();
-
-            const vd::component::IEntityShaderPtr& pShader = (renderingPass == "Shadow") ? m_pShadowShader : m_pShader;
-
-            pShader->Bind();
-
-            const auto levelOfDetail = m_pSky->LevelOfDetailAtDistance(.0f);
-
-            auto& meshes = m_pSky->Meshes(levelOfDetail);
-            auto& bufferIndices = m_pSky->BufferIndices(levelOfDetail);
-
-            vd::gl::BufferPtrVec& buffers = m_pSky->Buffers();
-            for (size_t meshIndex = 0; meshIndex < meshes.size(); ++meshIndex) {
-                pShader->UpdateUniforms(m_pSky, levelOfDetail, meshIndex);
-                buffers[ bufferIndices[meshIndex] ]->DrawElements(vd::gl::eTriangles, 36, vd::gl::eUnsignedInt);
-            }
-
-            pShader->Unbind();
-
-            Finish();
-        }
+        return (renderingPass == "Shadow" ||
+                renderingPass == "Reflection" ||
+                renderingPass == "Refraction" ||
+                renderingPass == "Main");
     }
 
-    void SkyRenderer::CleanUp() {
-        m_pSky->CleanUp();
-        m_pShader->CleanUp();
+    void SkyRenderer::Prepare() {
+        vd::gl::Context::LequalDepthTesting();
+        vd::gl::Context::DepthMask(false);
+        vd::gl::Context::CounterClockwiseFacing();
     }
 
-    bool SkyRenderer::IsReady() {
-        return IRenderer::IsReady() && m_pSky != nullptr;
+    void SkyRenderer::Finish() {
+        vd::gl::Context::Reset();
     }
 }

@@ -222,8 +222,10 @@ set(SOURCES
         src/modules/shadow/ShadowManager.hpp
         src/modules/shadow/ShadowFactory.cpp
         src/modules/shadow/ShadowFactory.hpp
-        src/modules/sky/LensFlare.cpp
-        src/modules/sky/LensFlare.hpp
+        src/modules/sky/LensFlareRenderer.cpp
+        src/modules/sky/LensFlareRenderer.hpp
+        src/modules/sky/LensFlareShader.cpp
+        src/modules/sky/LensFlareShader.hpp
         src/modules/sky/Sky.cpp
         src/modules/sky/Sky.hpp
         src/modules/sky/SkyShader.cpp
@@ -234,6 +236,10 @@ set(SOURCES
         src/modules/sky/SkyFactory.hpp
         src/modules/sky/Sun.cpp
         src/modules/sky/Sun.hpp
+        src/modules/sky/SunRenderer.cpp
+        src/modules/sky/SunRenderer.hpp
+        src/modules/sky/SunShader.cpp
+        src/modules/sky/SunShader.hpp
         src/modules/terrain/TerrainShader.cpp
         src/modules/terrain/TerrainShader.hpp
         src/modules/terrain/Terrain.cpp

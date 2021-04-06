@@ -100,7 +100,7 @@ namespace vd::service {
                      GL_UNSIGNED_BYTE,
                      &(imagePtr->Data()[0]));
 
-        pTexture->NoFilter();
+        pTexture->LinearFilter();
         pTexture->WrapRepeat();
         pTexture->Unbind();
 

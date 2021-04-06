@@ -12,40 +12,46 @@
 #include <engine/event/EventHandler.hpp>
 #include <modules/player/Player.hpp>
 
+#include <engine/api/gl/Context.hpp>
+
 #include <modules/water/WaterRenderer.hpp>
 
 #include "Particle.hpp"
 #include "ParticleSystem.hpp"
+#include "ParticleShader.hpp"
 
 namespace mod::particles {
     class ParticleRenderer : public vd::component::IRenderer, public vd::injector::Injectable {
     public:
         static const int kPriority = water::WaterRenderer::kPriority + 1;
 
-        ParticleRenderer(vd::component::IEntityShaderPtr shader,
-                         vd::Consumer beforeExecution = vd::g_kEmptyConsumer,
-                         vd::Consumer afterExecution = vd::g_kEmptyConsumer);
-        
+        ParticleRenderer(ParticleSystemPtr particleSystem);
+
         void Link() override;
 
-        void Init() override;
-        void Update() override;
-        void Render(const params_t& params) override;
-        void CleanUp() override;
+        void OnInit() override;
+        void OnUpdate() override;
+        void OnRender(const params_t& params) override;
+        void OnCleanUp() override;
     private:
-        size_t                  m_DataLength;
-        size_t                  m_ParticleCount;
+        bool Precondition(const params_t& params) override;
+        void Prepare() override;
+        void Finish() override;
 
-        vd::gl::BufferPtr       m_pBuffer;
+        size_t                      m_DataLength;
+        size_t                      m_ParticleCount;
 
-        std::list<ParticlePtr>  m_Batch;
-        std::vector<float>      m_BufferData;
+        vd::gl::BufferPtr           m_pBuffer;
+
+        std::list<ParticlePtr>      m_Batch;
+        std::vector<float>          m_BufferData;
 
         vd::context::ContextPtr     m_pContext;
         vd::event::EventHandlerPtr  m_pEventHandler;
         mod::player::PlayerPtr      m_pPlayer;
 
-        ParticleSystemPtr m_pParticleSystem;
+        ParticleShaderPtr           m_pShader;
+        ParticleSystemPtr           m_pSystem;
     };
     typedef std::shared_ptr<ParticleRenderer>	ParticleRendererPtr;
 }

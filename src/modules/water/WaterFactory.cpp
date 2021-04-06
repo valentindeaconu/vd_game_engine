@@ -10,18 +10,7 @@ namespace mod::water {
         WaterPtr pWater = vd::injector::CreateAndStore<Water>("./resources/properties/water.properties");
         WaterShaderPtr pWaterShader = std::make_shared<WaterShader>();
 
-        vd::Consumer before = []() {
-            glFrontFace(GL_CCW);
-            glEnable(GL_BLEND);
-            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        };
-
-        vd::Consumer after = []() {
-            glFrontFace(GL_CW);
-            glDisable(GL_BLEND);
-        };
-
-        WaterRendererPtr pWaterRenderer = std::make_shared<WaterRenderer>(pWater, pWaterShader, before, after);
+        WaterRendererPtr pWaterRenderer = std::make_shared<WaterRenderer>(pWater, pWaterShader);
 
         vd::camera::CameraPtr pCamera = vd::ObjectOfType<vd::camera::Camera>::Find();
         vd::context::ContextPtr pContext = vd::ObjectOfType<vd::context::Context>::Find();

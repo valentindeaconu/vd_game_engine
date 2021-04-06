@@ -37,17 +37,17 @@ namespace mod::particles {
         AddUniform("uAtlasSampler.Atlas");
         AddUniform("uAtlasSampler.Size");
     }
-    
-    void ParticleShader::InitUniforms(vd::object::EntityPtr pEntity) {
 
-    }
-
-    void ParticleShader::UpdateUniforms(vd::object::EntityPtr pEntity, uint64_t levelOfDetail, uint32_t meshIndex) {
+    void ParticleShader::UpdateUniforms(const ParticleSystemPtr& pParticleSystem) {
         SetUniform("uView", m_pCamera->ViewMatrix());
         SetUniform("uProjection", m_pWindow->ProjectionMatrix());
 
         SetUniform("uCameraUp", m_pCamera->Up());
         SetUniform("uCameraRight", m_pCamera->Right());
+
+        pParticleSystem->TextureAtlas()->BindToUnit(0);
+        SetUniform("uAtlasSampler.Atlas", 0);
+        SetUniform("uAtlasSampler.Size", int(pParticleSystem->TextureAtlas()->Size()));
     }
 
 

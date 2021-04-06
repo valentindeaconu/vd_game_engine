@@ -7,20 +7,12 @@
 namespace mod::particles {
 
     void ParticleFactory::Create(const vd::EnginePtr& pEngine) {
-        ParticleShaderPtr pParticleShader = std::make_shared<ParticleShader>();
+        ParticleSystemPtr pParticleSystem = std::make_shared<ParticleSystem>(14, 4.2f, 0.02f, 2.45f, "./resources/assets/particles/fire_8x8.png", 8);
+        pParticleSystem->RandomizeScale(5.0f, 5.0f);
+        pParticleSystem->RandomizeVelocity(-0.17f, 0.17f);
+        pParticleSystem->AdditiveBlending() = true;
 
-        ParticleRendererPtr pParticleRenderer = std::make_shared<ParticleRenderer>(pParticleShader,
-                                                                                   []() {
-                                                                                       glEnable(GL_BLEND);
-                                                                                       glBlendFunc(GL_SRC_ALPHA, GL_ONE);
-                                                                                       glDepthMask(GL_FALSE);
-                                                                                       glFrontFace(GL_CCW);
-                                                                                   },
-                                                                                   []() {
-                                                                                       glFrontFace(GL_CW);
-                                                                                       glDepthMask(GL_TRUE);
-                                                                                       glDisable(GL_BLEND);
-                                                                                   });
+        ParticleRendererPtr pParticleRenderer = std::make_shared<ParticleRenderer>(pParticleSystem);
 
         pEngine->Subscribe(pParticleRenderer, ParticleRenderer::kPriority);
     }
