@@ -13,7 +13,7 @@ namespace mod::particles {
     }
 
     void ParticleRenderer::Link() {
-        m_pEventHandler = vd::ObjectOfType<vd::event::EventHandler>::Find();
+        m_pCamera = vd::ObjectOfType<vd::camera::Camera>::Find();
         m_pContext = vd::ObjectOfType<vd::context::Context>::Find();
         m_pPlayer = vd::ObjectOfType<mod::player::Player>::Find();
     }
@@ -52,19 +52,35 @@ namespace mod::particles {
     }
 
     void ParticleRenderer::OnUpdate() {
-        if (m_pEventHandler->KeyDown(vd::Key::eU)) {
-            glm::vec3 pos = m_pPlayer->WorldTransform().Translation();
-
-            m_Batch.emplace_back(
-                std::make_shared<Particle>(pos, glm::vec3(0, 30, 0), 1, 1.50f, 0, 0.25f)
-            );
-        }
-
         ParticlePtrVec particles;
         m_pSystem->GenerateParticles(m_pPlayer->WorldTransform().Translation(), m_pContext->FrameTime(), particles);
 
         for (auto& particle : particles) {
-            m_Batch.emplace_back(std::move(particle));
+            if (m_pSystem->AdditiveBlending()) {
+                // If additive blending is used, order of particles does not metter because
+                // addition is commutative
+                m_Batch.emplace_back(std::move(particle));
+            } else { 
+                const auto& cameraPosition = m_pCamera->Position();
+                // Insertion Sort - decreasing order by square distance from the camera
+                // This method is the fastest way since for 60 particles per second, particles array
+                // will contain 0 or 1 particles, for 120 pps, 1 or 2, for 180 pps 3 or 4.
+                auto it = m_Batch.begin();
+                for (; it != m_Batch.end(); ++it) {
+                    if (particle->SquareDistance(cameraPosition, true) > (*it)->SquareDistance()) {
+                        break;
+                    }
+                }
+
+                // If there are no particles in the batch, square distance will not be computed for the
+                // very first particle, so we need to manually compute it
+                if (it == m_Batch.begin()) {
+                    particle->SquareDistance(cameraPosition, true);
+                }
+
+                // Batch is a linked list, so insertion will be realised in constant time
+                m_Batch.insert(it, std::move(particle));
+            }
         }
 
         m_BufferData.clear();
@@ -75,11 +91,16 @@ namespace mod::particles {
         for (auto it = m_Batch.begin(); it != m_Batch.end(); ++it) {
             (*it)->Update(m_pContext->FrameTime());
             if ((*it)->Alive()) {
-                glm::mat4 model = (*it)->Transform().Get();
+                glm::mat4 modelView = BuildModelViewMatrix(
+                    (*it)->Position(),
+                    (*it)->Scale(),
+                    (*it)->Rotation(),
+                    m_pCamera->ViewMatrix()
+                );
 
                 for (size_t i = 0; i < 4; ++i) {
                     for (size_t j = 0; j < 4; ++j) {
-                        m_BufferData.emplace_back(model[i][j]);
+                        m_BufferData.emplace_back(modelView[i][j]);
                     }
                 }
 
@@ -134,4 +155,28 @@ namespace mod::particles {
         vd::gl::Context::Reset();
     }
 
+    glm::mat4 ParticleRenderer::BuildModelViewMatrix(const glm::vec3& position, 
+                                                     float scale, 
+                                                     float rotation, 
+                                                     const glm::mat4& view) 
+    {
+        glm::mat4 model = glm::translate(glm::mat4(1.0f), position);
+
+        // We need to make a ModelView matrix which contains no rotation after they are 
+        // multiplied with each other (so that we can obtain a billboard effect - always facing the camera)
+        model[0][0] = view[0][0];
+        model[0][1] = view[1][0];
+        model[0][2] = view[2][0];
+        model[1][0] = view[0][1];
+        model[1][1] = view[1][1];
+        model[1][2] = view[2][1];
+        model[2][0] = view[0][2];
+        model[2][1] = view[1][2];
+        model[2][2] = view[2][2];
+
+        model = glm::rotate(model, glm::radians(rotation), glm::vec3(0, 0, 1));
+        model = glm::scale(model, glm::vec3(scale));
+
+        return view * model;
+    }
 }

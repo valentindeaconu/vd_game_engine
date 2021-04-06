@@ -28,22 +28,14 @@ namespace mod::particles {
 
         Compile();
 
-        AddUniform("uView");
         AddUniform("uProjection");
-
-        AddUniform("uCameraUp");
-        AddUniform("uCameraRight");
 
         AddUniform("uAtlasSampler.Atlas");
         AddUniform("uAtlasSampler.Size");
     }
 
     void ParticleShader::UpdateUniforms(const ParticleSystemPtr& pParticleSystem) {
-        SetUniform("uView", m_pCamera->ViewMatrix());
         SetUniform("uProjection", m_pWindow->ProjectionMatrix());
-
-        SetUniform("uCameraUp", m_pCamera->Up());
-        SetUniform("uCameraRight", m_pCamera->Right());
 
         pParticleSystem->TextureAtlas()->BindToUnit(0);
         SetUniform("uAtlasSampler.Atlas", 0);

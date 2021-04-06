@@ -9,7 +9,7 @@
 
 #include <engine/injector/Injectable.hpp>
 #include <engine/context/Context.hpp>
-#include <engine/event/EventHandler.hpp>
+#include <engine/camera/Camera.hpp>
 #include <modules/player/Player.hpp>
 
 #include <engine/api/gl/Context.hpp>
@@ -38,6 +38,8 @@ namespace mod::particles {
         void Prepare() override;
         void Finish() override;
 
+        static glm::mat4 BuildModelViewMatrix(const glm::vec3& position, float scale, float rotation, const glm::mat4& view);
+
         size_t                      m_DataLength;
         size_t                      m_ParticleCount;
 
@@ -47,7 +49,7 @@ namespace mod::particles {
         std::vector<float>          m_BufferData;
 
         vd::context::ContextPtr     m_pContext;
-        vd::event::EventHandlerPtr  m_pEventHandler;
+        vd::camera::CameraPtr       m_pCamera;
         mod::player::PlayerPtr      m_pPlayer;
 
         ParticleShaderPtr           m_pShader;
