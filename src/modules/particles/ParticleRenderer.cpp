@@ -5,9 +5,10 @@
 #include "ParticleRenderer.hpp"
 
 namespace mod::particles {
-    ParticleRenderer::ParticleRenderer(ParticleSystemPtr particleSystem) 
+    ParticleRenderer::ParticleRenderer(ParticleSystemPtr particleSystem, ParticlesGenerator particlesGenerator) 
         : vd::component::IRenderer("ParticleRenderer")
         , m_pSystem(std::move(particleSystem))
+        , m_ParticlesGenerator(std::move(particlesGenerator))
     {
         m_pShader = std::make_shared<ParticleShader>();
     }
@@ -15,7 +16,6 @@ namespace mod::particles {
     void ParticleRenderer::Link() {
         m_pCamera = vd::ObjectOfType<vd::camera::Camera>::Find();
         m_pContext = vd::ObjectOfType<vd::context::Context>::Find();
-        m_pPlayer = vd::ObjectOfType<mod::player::Player>::Find();
     }
 
     void ParticleRenderer::OnInit() {
@@ -53,7 +53,7 @@ namespace mod::particles {
 
     void ParticleRenderer::OnUpdate() {
         ParticlePtrVec particles;
-        m_pSystem->GenerateParticles(m_pPlayer->WorldTransform().Translation(), m_pContext->FrameTime(), particles);
+        m_ParticlesGenerator(m_pSystem, m_pContext->FrameTime(), particles);
 
         for (auto& particle : particles) {
             if (m_pSystem->AdditiveBlending()) {

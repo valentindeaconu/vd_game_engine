@@ -10,11 +10,12 @@
 #include <engine/injector/Injectable.hpp>
 #include <engine/context/Context.hpp>
 #include <engine/camera/Camera.hpp>
-#include <modules/player/Player.hpp>
 
 #include <engine/api/gl/Context.hpp>
 
 #include <modules/water/WaterRenderer.hpp>
+
+#include <engine/defines/Types.hpp>
 
 #include "Particle.hpp"
 #include "ParticleSystem.hpp"
@@ -23,18 +24,20 @@
 namespace mod::particles {
     class ParticleRenderer : public vd::component::IRenderer, public vd::injector::Injectable {
     public:
+        typedef std::function<void(ParticleSystemPtr, float, ParticlePtrVec&)> ParticlesGenerator; 
+    
         static const int kPriority = water::WaterRenderer::kPriority + 1;
 
-        ParticleRenderer(ParticleSystemPtr particleSystem);
+        ParticleRenderer(ParticleSystemPtr, ParticlesGenerator);
 
         void Link() override;
 
         void OnInit() override;
         void OnUpdate() override;
-        void OnRender(const params_t& params) override;
+        void OnRender(const params_t&) override;
         void OnCleanUp() override;
     private:
-        bool Precondition(const params_t& params) override;
+        bool Precondition(const params_t&) override;
         void Prepare() override;
         void Finish() override;
 
@@ -48,9 +51,10 @@ namespace mod::particles {
         std::list<ParticlePtr>      m_Batch;
         std::vector<float>          m_BufferData;
 
+        ParticlesGenerator          m_ParticlesGenerator;
+
         vd::context::ContextPtr     m_pContext;
         vd::camera::CameraPtr       m_pCamera;
-        mod::player::PlayerPtr      m_pPlayer;
 
         ParticleShaderPtr           m_pShader;
         ParticleSystemPtr           m_pSystem;

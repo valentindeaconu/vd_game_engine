@@ -6,10 +6,14 @@
 #define VDGE_PARTICLEFACTORY_HPP
 
 #include <memory>
+#include <glm/glm.hpp>
 
 #include <engine/component/IModuleFactory.hpp>
 
 #include <engine/injector/CreateAndStore.hpp>
+#include <engine/injector/Injectable.hpp>
+#include <engine/camera/Camera.hpp>
+#include <modules/player/Player.hpp>
 
 #include "Particle.hpp"
 #include "ParticleRenderer.hpp"
