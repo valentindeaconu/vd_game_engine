@@ -144,6 +144,11 @@ set(SOURCES
         src/engine/object/Entity3D.hpp
         src/engine/property/Properties.cpp
         src/engine/property/Properties.hpp
+        src/engine/scene/Components.hpp
+        src/engine/scene/Entity.cpp
+        src/engine/scene/Entity.hpp
+        src/engine/scene/Scene.cpp
+        src/engine/scene/Scene.hpp
         src/engine/service/TextureService.cpp
         src/engine/service/TextureService.hpp
         src/engine/time/Time.cpp

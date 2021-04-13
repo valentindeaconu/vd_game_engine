@@ -32,6 +32,8 @@ namespace vd {
 
     inline Consumer     g_kEmptyConsumer    = []() { };
     inline Predicate    g_kEmptyPredicate   = []() { return true; };
+
+    typedef float   Timestep;
 }
 
 #endif //VD_GAME_ENGINE_TYPES_HPP

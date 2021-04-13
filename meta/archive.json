@@ -137,5 +137,18 @@
             ]
         }
     }
+},
+{
+    "LIB": "ENTT",
+    "PLATFORM": {
+        "ANY": {
+            "LINK": "https://raw.githubusercontent.com/skypjack/entt/master/single_include/entt/entt.hpp",
+            "METHODS": [
+                "DOWNLOAD entt.hpp",
+                "HEADER"
+            ]
+        }
+    }
+    
 }
 ]}

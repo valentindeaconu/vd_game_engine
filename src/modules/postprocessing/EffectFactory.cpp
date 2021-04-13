@@ -6,6 +6,8 @@
 
 #define CONTEXT_FINDER  vd::ObjectOfType<vd::context::Context>::Find()
 
+// #define POSTPROCESSING
+
 namespace mod::postprocessing {
 
     void EffectFactory::Create(const vd::EnginePtr& pEngine) {
@@ -25,6 +27,7 @@ namespace mod::postprocessing {
             pFrameBuffer->Unbind();
         };
 
+#ifdef POSTPROCESSING
         /// Horizontal Blur Stage 1 (No downscale)
         auto pHBlur1 = std::make_shared<vd::component::ConcreteEffect>(
             "HorizontalBlur_1",
@@ -78,13 +81,16 @@ namespace mod::postprocessing {
                 [ctx = CONTEXT_FINDER]() { return !ctx->WireframeMode(); }
         );
         pRenderer->PushStage(pDepthOfField, std::make_shared<DepthOfFieldShader>());
-
+#endif 
         /// At the end of the processing, send last result to the ToScreenPseudoEffect to display it
         auto pToScreenPseudoEffect = std::make_shared<ToScreenPseudoEffect>(
-                //[ctx = CONTEXT_FINDER]() { return vd::gl::FrameBufferPtrVec({ ctx->SceneFrameBuffer() }); }
+#ifndef POSTPROCESSING
+                [ctx = CONTEXT_FINDER]() { return vd::gl::FrameBufferPtrVec({ ctx->SceneFrameBuffer() }); }
+#elif
                 [c = pDepthOfField]() {
                     return vd::gl::FrameBufferPtrVec({ c->FrameBuffer() });
                 }
+#endif
         );
         pRenderer->PushStage(pToScreenPseudoEffect, std::make_shared<ToScreenShader>());
 
