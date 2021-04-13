@@ -23,15 +23,17 @@ namespace mod::postprocessing {
 
         void Link() override;
 
-        void Init() override;
-        void Update() override;
-        void Render(const params_t& params) override;
-        void CleanUp() override;
+        void OnInit() override;
+        void OnUpdate() override;
+        void OnRender(const params_t& params) override;
+        void OnCleanUp() override;
 
         void PushStage(const vd::component::IRenderingEffectPtr& pEffect,
                        const vd::component::IRenderingEffectShaderPtr& pShader);
     private:
-        bool IsReady() override;
+        bool Precondition(const params_t& params) override;
+        void Prepare();
+        void Finish();
 
         struct Stage {
             vd::component::IRenderingEffectPtr          Effect;

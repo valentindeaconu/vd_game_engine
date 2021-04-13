@@ -6,27 +6,23 @@
 
 namespace mod::gui {
 
-    GuiRenderer::GuiRenderer(GuiQuadPtr guiQuadPtr,
-                             vd::component::IEntityShaderPtr shaderPtr,
-                             vd::Consumer beforeExecution,
-                             vd::Consumer afterExecution)
-        : IRenderer(std::move(shaderPtr), std::move(beforeExecution), std::move(afterExecution))
+    GuiRenderer::GuiRenderer(GuiQuadPtr guiQuadPtr, vd::component::IEntity2DShaderPtr shaderPtr)
+        : IRenderer("GuiRenderer")
+        , m_pShader(std::move(shaderPtr))
         , m_pGuiEntity(std::move(guiQuadPtr))
         , m_Type(eQuad)
     {
     }
 
-    GuiRenderer::GuiRenderer(GuiTextPtr guiTextPtr,
-                             vd::component::IEntityShaderPtr shaderPtr,
-                             vd::Consumer beforeExecution,
-                             vd::Consumer afterExecution)
-            : IRenderer(std::move(shaderPtr), std::move(beforeExecution), std::move(afterExecution))
+    GuiRenderer::GuiRenderer(GuiTextPtr guiTextPtr, vd::component::IEntity2DShaderPtr shaderPtr)
+            : IRenderer("GuiRenderer")
+            , m_pShader(std::move(shaderPtr))
             , m_pGuiEntity(std::move(guiTextPtr))
             , m_Type(eText)
     {
     }
 
-    void GuiRenderer::Init() {
+    void GuiRenderer::OnInit() {
         m_pGuiEntity->Init();
 
         m_pShader->Init();
@@ -35,22 +31,11 @@ namespace mod::gui {
         m_pShader->Unbind();
     }
 
-    void GuiRenderer::Update() {
+    void GuiRenderer::OnUpdate() {
         m_pGuiEntity->Update();
     }
 
-    void GuiRenderer::Render(const GuiRenderer::params_t& params) {
-        if (!IsReady()) {
-            vd::Logger::warn("GuiRenderer was not ready to render");
-            return;
-        }
-
-        if (params.at("RenderingPass") != "GUI") {
-            return;
-        }
-
-        Prepare();
-
+    void GuiRenderer::OnRender(const GuiRenderer::params_t& params) {
         m_pShader->Bind();
 
         switch (m_Type) {
@@ -77,17 +62,33 @@ namespace mod::gui {
         }
 
         m_pShader->Unbind();
-
-        Finish();
     }
 
-    void GuiRenderer::CleanUp() {
+    void GuiRenderer::OnCleanUp() {
         m_pGuiEntity->CleanUp();
         m_pShader->CleanUp();
     }
 
-    bool GuiRenderer::IsReady() {
-        return IRenderer::IsReady();
+    bool GuiRenderer::Precondition(const params_t& params) {
+        if (m_pShader == nullptr || m_pGuiEntity == nullptr) {
+            return false;
+        }
+
+        return (params.at("RenderingPass") == "GUI");
+    }
+
+    void GuiRenderer::Prepare() {
+        if (m_Type == eQuad) {
+            vd::gl::Context::CounterClockwiseFacing();
+        } else {
+            vd::gl::Context::ClockwiseFacing();
+            vd::gl::Context::AlphaBlending();
+            vd::gl::Context::NoDepthTesting();
+        }
+    }
+
+    void GuiRenderer::Finish() {
+        vd::gl::Context::Reset();
     }
 
 }

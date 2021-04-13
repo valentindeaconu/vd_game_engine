@@ -6,12 +6,10 @@
 
 namespace mod::terrain {
 
-    TerrainRenderer::TerrainRenderer(TerrainPtr terrainPtr,
-                                     vd::component::IEntityShaderPtr shaderPtr,
-                                     vd::Consumer beforeExecution,
-                                     vd::Consumer afterExecution)
-        : IRenderer(std::move(shaderPtr), std::move(beforeExecution), std::move(afterExecution))
-        , m_pTerrain(std::move(terrainPtr))
+    TerrainRenderer::TerrainRenderer(TerrainPtr terrain, vd::component::IEntityShaderPtr shader)
+        : IRenderer("TerrainRenderer")
+        , m_pShader(std::move(shader))
+        , m_pTerrain(std::move(terrain))
     {
     }
 
@@ -19,7 +17,7 @@ namespace mod::terrain {
         m_pFrustumCullingManager = vd::ObjectOfType<vd::culling::FrustumCullingManager>::Find();
     }
 
-    void TerrainRenderer::Init() {
+    void TerrainRenderer::OnInit() {
         m_pTerrain->Init();
 
         m_pShader->Init();
@@ -28,7 +26,7 @@ namespace mod::terrain {
         m_pShader->Unbind();
     }
 
-    void TerrainRenderer::Update() {
+    void TerrainRenderer::OnUpdate() {
         m_pTerrain->Update();
 
         m_BufferData.clear();
@@ -41,36 +39,16 @@ namespace mod::terrain {
         }
     }
 
-    void TerrainRenderer::Render(const params_t& params) {
-        if (!IsReady()) {
-            vd::Logger::warn("TerrainRenderer was not ready to render");
-            return;
-        }
+    void TerrainRenderer::OnRender(const params_t& params) {
+        m_pShader->Bind();
+        m_pShader->UpdateUniforms(m_pTerrain, 0, 0);
 
-        const auto& renderingPass = params.at("RenderingPass");
+        vd::gl::BufferPtr& buffer = m_pTerrain->Buffers()[0];
+        buffer->UpdateBufferData(vd::gl::eArrayBuffer, (m_BufferData.size() << 2), &m_BufferData[0], 1);
+        buffer->DrawArraysInstanced(vd::gl::ePatches, 16, m_LeafCount);
 
-        if (renderingPass == "Reflection" ||
-            renderingPass == "Refraction" ||
-            renderingPass == "Main") {
-            Prepare();
-
-            m_pShader->Bind();
-            m_pShader->UpdateUniforms(m_pTerrain, 0, 0);
-
-            /*const auto& rootNodes = m_pTerrain->RootNodes();
-            for (auto& rootNode : rootNodes) {
-                CollectData(rootNode, m_BufferData, m_LeafCount);
-            }*/
-
-            vd::gl::BufferPtr& buffer = m_pTerrain->Buffers()[0];
-            buffer->UpdateBufferData(vd::gl::eArrayBuffer, (m_BufferData.size() << 2), &m_BufferData[0], 1);
-            buffer->DrawArraysInstanced(vd::gl::ePatches, 16, m_LeafCount);
-
-            m_pShader->Unbind();
-
-            Finish();
-        }
-     }
+        m_pShader->Unbind();
+    }
 
     void TerrainRenderer::CollectData(const TerrainNode::ptr_type_t& pNode, std::vector<float>& data, size_t& leafCount) {
         if (pNode != nullptr) {
@@ -78,12 +56,6 @@ namespace mod::terrain {
         
             if (Detector::Bounds3AgainstFrustum(pNode->Bounds(), m_pFrustumCullingManager->Frustum()) != eOutside) {
                 if (pNode->Leaf()) {
-                    /*m_pShader->PushUniform("vLocalModel", pNode->Transform().Get());
-                    m_pShader->PushUniform("vTessFactor", pNode->TessFactors());
-
-                    vd::gl::BufferPtr& buffer = m_pTerrain->Buffers()[0];
-                    buffer->DrawArrays(vd::gl::ePatches, 16);*/
-
                     glm::mat4 localModel = pNode->Transform().Get();
 
                     for (size_t i = 0; i < 4; ++i) {
@@ -109,12 +81,27 @@ namespace mod::terrain {
         }
     }
 
-    void TerrainRenderer::CleanUp() {
+    void TerrainRenderer::OnCleanUp() {
         m_pTerrain->CleanUp();
         m_pShader->CleanUp();
     }
 
-    bool TerrainRenderer::IsReady() {
-        return IRenderer::IsReady() && m_pTerrain != nullptr;
+    bool TerrainRenderer::Precondition(const params_t& params) {
+        if (m_pShader == nullptr || m_pTerrain == nullptr) {
+            return false;
+        }
+
+        const auto& renderingPass = params.at("RenderingPass");
+        return (renderingPass == "Reflection" ||
+                renderingPass == "Refraction" ||
+                renderingPass == "Main");
+    }
+
+    void TerrainRenderer::Prepare() {
+        vd::gl::Context::CounterClockwiseFacing();
+    }
+
+    void TerrainRenderer::Finish() {
+        vd::gl::Context::Reset();
     }
 }

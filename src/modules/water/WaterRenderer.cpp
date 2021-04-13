@@ -6,18 +6,14 @@
 
 namespace mod::water {
 
-    WaterRenderer::WaterRenderer(WaterPtr waterPtr,
-                                 vd::component::IEntityShaderPtr shaderPtr,
-                                 vd::Consumer beforeExecution,
-                                 vd::Consumer afterExecution)
-        : IRenderer(std::move(shaderPtr), std::move(beforeExecution), std::move(afterExecution))
+    WaterRenderer::WaterRenderer(WaterPtr waterPtr, vd::component::IEntityShaderPtr shaderPtr)
+        : IRenderer("WaterRenderer")
+        , m_pShader(std::move(shaderPtr))
         , m_pWater(std::move(waterPtr))
     {
     }
 
-    WaterRenderer::~WaterRenderer() = default;
-
-    void WaterRenderer::Init() {
+    void WaterRenderer::OnInit() {
         m_pWater->Init();
 
         m_pShader->Init();
@@ -26,33 +22,20 @@ namespace mod::water {
         m_pShader->Unbind();
     }
 
-    void WaterRenderer::Update() {
+    void WaterRenderer::OnUpdate() {
         m_pWater->Update();
     }
 
-    void WaterRenderer::Render(const params_t& params) {
-        if (!IsReady()) {
-            vd::Logger::warn("WaterRenderer was not ready to render");
-            return;
-        }
+    void WaterRenderer::OnRender(const params_t& params) {
+        m_pShader->Bind();
+        m_pShader->UpdateUniforms(m_pWater, 0, 0);
 
-        const auto& renderingPass = params.at("RenderingPass");
-        if (renderingPass == "Main") {
-            Prepare();
+        m_pWater->Buffers()[0]->DrawElements(vd::gl::eTriangles, 6, vd::gl::eUnsignedInt);
 
-            m_pShader->Bind();
-
-            m_pShader->UpdateUniforms(m_pWater, 0, 0);
-
-            m_pWater->Buffers()[0]->DrawElements(vd::gl::eTriangles, 6, vd::gl::eUnsignedInt);
-
-            m_pShader->Unbind();
-
-            Finish();
-        }
+        m_pShader->Unbind();
     }
 
-    void WaterRenderer::CleanUp() {
+    void WaterRenderer::OnCleanUp() {
         m_pWater->CleanUp();
         m_pShader->CleanUp();
     }
@@ -61,7 +44,19 @@ namespace mod::water {
         return m_pWater;
     }
 
-    bool WaterRenderer::IsReady() {
-        return IRenderer::IsReady() && m_pWater != nullptr;
+    bool WaterRenderer::Precondition(const params_t& params) {
+        if (m_pWater == nullptr || m_pShader == nullptr) {
+            return false;
+        }
+        return params.at("RenderingPass") == "Main";
+    }
+
+    void WaterRenderer::Prepare() {
+        vd::gl::Context::CounterClockwiseFacing();
+        vd::gl::Context::AlphaBlending();
+    }
+
+    void WaterRenderer::Finish() {
+        vd::gl::Context::Reset();
     }
 }

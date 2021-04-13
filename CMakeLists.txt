@@ -177,6 +177,16 @@ set(SOURCES
         src/modules/gui/GuiText.hpp
         src/modules/gui/GuiTextShader.cpp
         src/modules/gui/GuiTextShader.hpp
+        src/modules/particles/Particle.cpp
+        src/modules/particles/Particle.hpp
+        src/modules/particles/ParticleFactory.cpp
+        src/modules/particles/ParticleFactory.hpp
+        src/modules/particles/ParticleRenderer.cpp
+        src/modules/particles/ParticleRenderer.hpp
+        src/modules/particles/ParticleShader.cpp
+        src/modules/particles/ParticleShader.hpp
+        src/modules/particles/ParticleSystem.cpp
+        src/modules/particles/ParticleSystem.hpp
         src/modules/player/Player.cpp
         src/modules/player/Player.hpp
         src/modules/player/PlayerShader.cpp
@@ -217,8 +227,10 @@ set(SOURCES
         src/modules/shadow/ShadowManager.hpp
         src/modules/shadow/ShadowFactory.cpp
         src/modules/shadow/ShadowFactory.hpp
-        src/modules/sky/LensFlare.cpp
-        src/modules/sky/LensFlare.hpp
+        src/modules/sky/LensFlareRenderer.cpp
+        src/modules/sky/LensFlareRenderer.hpp
+        src/modules/sky/LensFlareShader.cpp
+        src/modules/sky/LensFlareShader.hpp
         src/modules/sky/Sky.cpp
         src/modules/sky/Sky.hpp
         src/modules/sky/SkyShader.cpp
@@ -229,6 +241,10 @@ set(SOURCES
         src/modules/sky/SkyFactory.hpp
         src/modules/sky/Sun.cpp
         src/modules/sky/Sun.hpp
+        src/modules/sky/SunRenderer.cpp
+        src/modules/sky/SunRenderer.hpp
+        src/modules/sky/SunShader.cpp
+        src/modules/sky/SunShader.hpp
         src/modules/terrain/TerrainShader.cpp
         src/modules/terrain/TerrainShader.hpp
         src/modules/terrain/Terrain.cpp

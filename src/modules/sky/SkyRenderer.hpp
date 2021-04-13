@@ -17,25 +17,23 @@
 namespace mod::sky {
     class SkyRenderer : public vd::component::IRenderer, public vd::injector::Injectable {
     public:
-        SkyRenderer(SkyPtr pSky,
-                    vd::component::IEntityShaderPtr pShader,
-                    vd::Consumer beforeExecution = vd::g_kEmptyConsumer,
-                    vd::Consumer afterExecution = vd::g_kEmptyConsumer);
-        ~SkyRenderer();
+        SkyRenderer(SkyPtr sky, vd::component::IEntityShaderPtr shader);
 
         void Link() override;
 
-        void Init() override;
-        void Update() override;
-        void Render(const params_t& params) override;
-        void CleanUp() override;
+        void OnInit() override;
+        void OnUpdate() override;
+        void OnRender(const params_t& params) override;
+        void OnCleanUp() override;
 
     private:
-        bool IsReady() override;
+        bool Precondition(const params_t& params) override;
+        void Prepare();
+        void Finish();
 
-        SkyPtr m_pSky;
-
-        mod::shadow::ShadowShaderPtr m_pShadowShader;
+        SkyPtr                          m_pSky;
+        vd::component::IEntityShaderPtr m_pShader;
+        mod::shadow::ShadowShaderPtr    m_pShadowShader;
     };
 
     typedef std::shared_ptr<SkyRenderer>	SkyRendererPtr;

@@ -123,7 +123,7 @@ namespace vd::math {
     void Transform::ComputeZAxisRotationAngle() {
         if (!m_AxisRotationAngleComputed.z) {
             m_AxisRotationAngle.z = glm::clamp(m_AxisRotationAngle.z, 0.0f, 360.0f);
-            m_ZAxisRotation = glm::angleAxis(glm::radians(m_AxisRotationAngle.z), glm::vec3(0.0f, 1.0f, 0.0f));
+            m_ZAxisRotation = glm::angleAxis(glm::radians(m_AxisRotationAngle.z), glm::vec3(0.0f, 0.0f, 1.0f));
 
             m_AxisRotationAngleComputed.z = true;
             m_TransformComputed = false;

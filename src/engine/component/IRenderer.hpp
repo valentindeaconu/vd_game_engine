@@ -8,31 +8,42 @@
 #include <engine/datastruct/Observer.hpp>
 #include <engine/defines/Types.hpp>
 
+#include <engine/exception/Exceptions.hpp>
+
 #include <string>
 
-#include "IEntityShader.hpp"
-
 namespace vd::component {
+    namespace exception {
+        struct RendererError : public CustomException {
+            explicit RendererError(const std::string& name, const std::string& message);
+        };
+    }
+
     class IRenderer : public datastruct::Observer {
     public:
         static const vd::datastruct::Observable::priority_t kDefaultPriority = 200;
 
-        explicit IRenderer(IEntityShaderPtr shaderPtr,
-                  Consumer beforeExecution = g_kEmptyConsumer,
-                  Consumer afterExecution = g_kEmptyConsumer);
-        ~IRenderer();
+        explicit IRenderer(std::string name);
 
-        void Prepare();
-        void Finish();
+        void Init() override;
+        void Update() override;
+        void Render(const params_t& params) override;
+        void CleanUp() override;
 
-        IEntityShaderPtr& Shader();
+        virtual void OnInit() = 0;
+        virtual void OnUpdate() = 0;
+        virtual void OnRender(const params_t& params) = 0;
+        virtual void OnCleanUp() = 0;
+
+        [[nodiscard]] const std::string& Name() const;
     protected:
-        virtual bool IsReady();
+        virtual bool Precondition(const params_t& params) = 0;
+        virtual void Prepare() = 0;
+        virtual void Finish() = 0;
 
-        vd::Consumer m_BeforeExecution;
-        vd::Consumer m_AfterExecution;
-
-        IEntityShaderPtr m_pShader;
+    private:
+        bool        m_Initialized;
+        std::string m_Name;
     };
     typedef std::shared_ptr<IRenderer>	RendererPtr;
 }

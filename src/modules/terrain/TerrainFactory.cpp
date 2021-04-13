@@ -10,10 +10,7 @@ namespace mod::terrain {
         TerrainPtr pTerrain = vd::injector::CreateAndStore<Terrain>("./resources/properties/terrain.properties");
         TerrainShaderPtr pTerrainShader = std::make_shared<TerrainShader>();
 
-        TerrainRendererPtr pTerrainRenderer = std::make_shared<TerrainRenderer>(pTerrain,
-                                                                                pTerrainShader,
-                                                                                []() { glFrontFace(GL_CCW); },
-                                                                                []() { glFrontFace(GL_CW); });
+        TerrainRendererPtr pTerrainRenderer = std::make_shared<TerrainRenderer>(pTerrain, pTerrainShader);
 
         pEngine->Subscribe(pTerrainRenderer, TerrainRenderer::kPriority);
     }

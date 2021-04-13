@@ -10,10 +10,7 @@ namespace mod::props {
         PropShaderPtr pPropShader = std::make_shared<PropShader>();
         PropsManagerPtr pPropsManager = std::make_shared<PropsManager>("./resources/properties/props.properties");
 
-        PropsRendererPtr pPropsRenderer = std::make_shared<PropsRenderer>(pPropsManager,
-                                                                          pPropShader,
-                                                                          []() { glFrontFace(GL_CCW); },
-                                                                          []() { glFrontFace(GL_CW); });
+        PropsRendererPtr pPropsRenderer = std::make_shared<PropsRenderer>(pPropsManager, pPropShader);
 
         pEngine->Subscribe(pPropsRenderer, PropsRenderer::kPriority);
     }

@@ -49,7 +49,7 @@ namespace vd::service {
                                        const gl::DataType& type,
                                        const void* data = nullptr);
 
-        static gl::Texture2DPtr CreateFromFile(const std::string& path);
+        static gl::Texture2DPtr CreateFromFile(const std::string& path, size_t size = 1, bool verticalFlip = true);
 
         static gl::TextureCubeMapPtr CubeMapFromFiles(const CubeMapFacesPathVec& paths);
 

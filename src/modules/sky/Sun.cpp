@@ -5,6 +5,7 @@
 #include "Sun.hpp"
 
 namespace mod::sky {
+    
     Sun::Sun(const std::string& propsFilePath) {
         auto pProps = vd::loader::PropertiesLoader::Load(propsFilePath);
 
@@ -54,7 +55,7 @@ namespace mod::sky {
         pBuffer->Bind();
         pBuffer->AddBuffer(
                 vd::gl::eArrayBuffer,
-                pMesh->Vertices().size() * sizeof(vd::model::Vertex3D),
+                pMesh->Vertices().size() * sizeof(vd::model::Vertex2D),
                 &pMesh->Vertices()[0],
                 vd::gl::eStaticDraw
         );
@@ -79,113 +80,4 @@ namespace mod::sky {
         m_pLightManager->Sun()->Position() = sunLightPosition;
     }
 
-    SunRenderer::SunRenderer(SunPtr sun,
-                             vd::component::IEntityShaderPtr shader,
-                             vd::Consumer beforeExecution,
-                             vd::Consumer afterExecution)
-        : IRenderer(std::move(shader), std::move(beforeExecution), std::move(afterExecution))
-        , m_pSun(std::move(sun))
-    {
-    }
-
-    void SunRenderer::Init() {
-        m_pSun->Init();
-
-        m_pShader->Init();
-        m_pShader->Bind();
-        m_pShader->InitUniforms(m_pSun);
-        m_pShader->Unbind();
-    }
-
-    void SunRenderer::Update() {
-        m_pSun->Update();
-    }
-
-    void SunRenderer::Render(const vd::datastruct::Observer::params_t &params) {
-        if (!IsReady()) {
-            vd::Logger::warn("SunRenderer was not ready to render");
-            return;
-        }
-
-        const auto& renderingPass = params.at("RenderingPass");
-        if (renderingPass == "Main") {
-            Prepare();
-
-            m_pShader->Bind();
-
-            vd::gl::BufferPtrVec& buffers = m_pSun->Buffers();
-
-            auto& meshes = m_pSun->Meshes();
-            m_pShader->UpdateUniforms(m_pSun, 0, 0);
-            buffers[0]->DrawArrays(vd::gl::ePoints, 1);
-
-            m_pShader->Unbind();
-
-            Finish();
-        }
-    }
-
-    void SunRenderer::CleanUp() {
-        m_pSun->CleanUp();
-        m_pShader->CleanUp();
-    }
-
-    bool SunRenderer::IsReady() {
-        return IRenderer::IsReady() && m_pSun != nullptr;
-    }
-
-    void SunShader::Link() {
-        m_pCamera = vd::ObjectOfType<vd::camera::Camera>::Find();
-        m_pWindow = vd::ObjectOfType<vd::window::Window>::Find();
-    }
-
-    void SunShader::Init() {
-        Create();
-
-        std::string vsSource;
-        vd::loader::ShaderLoader::Load("./resources/shaders/sun/sun_VS.glsl", vsSource);
-        AddShader(vsSource, vd::gl::Shader::eVertexShader);
-
-        std::string gSource;
-        vd::loader::ShaderLoader::Load("./resources/shaders/sun/sun_GS.glsl", gSource);
-        AddShader(gSource, vd::gl::Shader::eGeometryShader);
-
-        std::string fsSource;
-        vd::loader::ShaderLoader::Load("./resources/shaders/sun/sun_FS.glsl", fsSource);
-        AddShader(fsSource, vd::gl::Shader::eFragmentShader);
-
-        Compile();
-
-        AddUniform("model");
-        AddUniform("view");
-        AddUniform("projection");
-
-        AddUniform("diffuseMap");
-
-        AddUniform("scale");
-        AddUniform("cameraUp");
-        AddUniform("cameraRight");
-    }
-
-    void SunShader::InitUniforms(vd::object::Entity2DPtr pEntity) {
-
-    }
-
-    void SunShader::UpdateUniforms(vd::object::Entity2DPtr pEntity, uint64_t levelOfDetail, uint32_t meshIndex) {
-        SetUniform("model", pEntity->WorldTransform().Get());
-        SetUniform("view", m_pCamera->ViewMatrix());
-        SetUniform("projection", m_pWindow->ProjectionMatrix());
-
-        SetUniform("cameraUp", m_pCamera->Up());
-        SetUniform("cameraRight", m_pCamera->Right());
-
-        const vd::model::Mesh2DPtr& pMesh = pEntity->Meshes()[meshIndex];
-
-        SetUniform("scale", pEntity->LocalTransform().Scale().x);
-
-        auto& diffuseMap = pMesh->Materials()[0].DiffuseMap();
-
-        diffuseMap->BindToUnit(0);
-        SetUniform("diffuseMap", 0);
-    }
 }
