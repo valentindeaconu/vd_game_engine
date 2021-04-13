@@ -2,17 +2,14 @@
 // Created by Vali on 3/1/2021.
 //
 
-#ifndef VDGE_LENSFLARE_HPP
-#define VDGE_LENSFLARE_HPP
+#ifndef VDGE_LENSFLARERENDERER_HPP
+#define VDGE_LENSFLARERENDERER_HPP
 
 #include <memory>
 
 #include <engine/api/gl/Query.hpp>
-
 #include <engine/object/primitive/Quad2D.hpp>
-
 #include <engine/defines/Types.hpp>
-
 #include <engine/service/TextureService.hpp>
 
 #include <engine/injector/Injectable.hpp>
@@ -21,9 +18,10 @@
 #include <engine/context/Context.hpp>
 
 #include <engine/component/IRenderer.hpp>
-#include <engine/loader/ShaderLoader.hpp>
+#include <engine/component/IEntityShader.hpp>
 
 #include "Sun.hpp"
+#include "LensFlareShader.hpp"
 
 namespace mod::sky {
 
@@ -31,20 +29,19 @@ namespace mod::sky {
     public:
         static const int kPriority = kDefaultPriority + 75;
 
-        FlareRenderer(const std::string& propsFilePath,
-                        vd::component::IEntityShaderPtr shader,
-                        vd::Consumer beforeExecution = vd::g_kEmptyConsumer,
-                        vd::Consumer afterExecution = vd::g_kEmptyConsumer);
+        FlareRenderer(const std::string& propsFilePath);
 
         void Link() override;
 
-        void Init() override;
-        void Update() override;
-        void Render(const params_t& params) override;
-        void CleanUp() override;
+        void OnInit() override;
+        void OnUpdate() override;
+        void OnRender(const params_t& params) override;
+        void OnCleanUp() override;
 
     private:
-        bool IsReady() override;
+        bool Precondition(const params_t& params) override;
+        void Prepare() override;
+        void Finish() override;
 
         size_t  m_TextureCount;
         float   m_Spacing;
@@ -60,6 +57,7 @@ namespace mod::sky {
 
         vd::gl::QueryPtr                    m_pQuery;
         vd::object::primitive::Quad2DPtr    m_pQuad;
+        FlareShaderPtr                      m_pShader;
 
         SunPtr                  m_pSun;
         vd::camera::CameraPtr   m_pCamera;
@@ -68,18 +66,6 @@ namespace mod::sky {
     };
     typedef std::shared_ptr<FlareRenderer>	FlareRendererPtr;
 
-    class FlareShader : public vd::component::IEntity2DShader, public vd::injector::Injectable {
-    public:
-        void Link() override;
-        void Init() override;
-
-        void InitUniforms(vd::object::Entity2DPtr pEntity) override;
-        void UpdateUniforms(vd::object::Entity2DPtr pEntity, uint64_t levelOfDetail, uint32_t meshIndex) override;
-    private:
-        vd::camera::CameraPtr m_pCamera;
-        vd::window::WindowPtr m_pWindow;
-    };
-    typedef std::shared_ptr<FlareShader>	FlareShaderPtr;
 }
 
 #endif //VDGE_LENSFLARE_HPP

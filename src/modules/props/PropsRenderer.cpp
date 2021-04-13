@@ -1,11 +1,9 @@
 #include "PropsRenderer.hpp"
 
 namespace mod::props {
-    PropsRenderer::PropsRenderer(PropsManagerPtr propsManager,
-                                 vd::component::IEntityShaderPtr shaderPtr,
-                                 vd::Consumer beforeExecution,
-                                 vd::Consumer afterExecution)
-        : IRenderer(std::move(shaderPtr), std::move(beforeExecution), std::move(afterExecution))
+    PropsRenderer::PropsRenderer(PropsManagerPtr propsManager, vd::component::IEntityShaderPtr shaderPtr)
+        : IRenderer("PropsRenderer")
+        , m_pShader(std::move(shaderPtr))
         , m_pPropsManager(std::move(propsManager))
     {
     }
@@ -16,7 +14,7 @@ namespace mod::props {
         m_pShadowShader = vd::ObjectOfType<mod::shadow::ShadowShader>::Find();
     }
 
-    void PropsRenderer::Init() {
+    void PropsRenderer::OnInit() {
         m_pPropsManager->Init();
 
         const auto& placements = m_pPropsManager->Placements();
@@ -42,7 +40,7 @@ namespace mod::props {
         m_pShader->Unbind();
     }
 
-    void PropsRenderer::Update() {
+    void PropsRenderer::OnUpdate() {
         using vd::collision::Detector;
         using vd::collision::Relationship;
 
@@ -79,61 +77,60 @@ namespace mod::props {
         }
     }
 
-    void PropsRenderer::Render(const params_t& params) {
-        if (!IsReady()) {
-            vd::Logger::warn("PropsRenderer was not ready to render");
-            return;
-        }
-
+    void PropsRenderer::OnRender(const params_t& params) {
         using vd::collision::Detector;
 
-        const auto& renderingPass = params.at("RenderingPass");
+        vd::component::IEntityShaderPtr pShader = (params.at("RenderingPass") != "Shadow") ? m_pShader : m_pShadowShader;
 
-        if (renderingPass == "Shadow" ||
-            renderingPass == "Reflection" ||
-            renderingPass == "Refraction" ||
-            renderingPass == "Main") {
-            Prepare();
+        pShader->Bind();
 
-            vd::component::IEntityShaderPtr pShader = (renderingPass != "Shadow") ? m_pShader : m_pShadowShader;
+        for (size_t i = 0; i < m_Units.Total; ++i) {
+            if (!m_Units.Culled[i]) {
+                auto& Prop = m_Units.Props[i];
+                auto& Level = m_Units.Levels[i];
+                auto& Transform = m_Units.Transforms[i];
 
-            pShader->Bind();
+                Prop->WorldTransform() = Transform;
 
-            for (size_t i = 0; i < m_Units.Total; ++i) {
-                if (!m_Units.Culled[i]) {
-                    auto& Prop = m_Units.Props[i];
-                    auto& Level = m_Units.Levels[i];
-                    auto& Transform = m_Units.Transforms[i];
+                auto& meshes = Prop->Meshes(Level);
+                auto& bufferIndices = Prop->BufferIndices(Level);
+                auto& buffers = Prop->Buffers();
 
-                    Prop->WorldTransform() = Transform;
-
-                    auto& meshes = Prop->Meshes(Level);
-                    auto& bufferIndices = Prop->BufferIndices(Level);
-                    auto& buffers = Prop->Buffers();
-
-                    for (int meshIndex = 0; meshIndex < meshes.size(); ++meshIndex) {
-                        pShader->UpdateUniforms(Prop, Level, meshIndex);
-                        const int count = meshes[meshIndex]->Indices().size();
-                        buffers[bufferIndices[meshIndex]]->DrawElements(vd::gl::eTriangles,
-                                                                        count,
-                                                                        vd::gl::eUnsignedInt);
-                    }
+                for (int meshIndex = 0; meshIndex < meshes.size(); ++meshIndex) {
+                    pShader->UpdateUniforms(Prop, Level, meshIndex);
+                    const int count = meshes[meshIndex]->Indices().size();
+                    buffers[bufferIndices[meshIndex]]->DrawElements(vd::gl::eTriangles,
+                                                                    count,
+                                                                    vd::gl::eUnsignedInt);
                 }
             }
-
-            pShader->Unbind();
-
-            Finish();
         }
+
+        pShader->Unbind();
     }
 
-    void PropsRenderer::CleanUp() {
+    void PropsRenderer::OnCleanUp() {
         m_pPropsManager->CleanUp();
         m_pShader->CleanUp();
     }
 
-    bool PropsRenderer::IsReady() {
-        return IRenderer::IsReady() && m_pPropsManager != nullptr;
+    bool PropsRenderer::Precondition(const params_t& params) {
+        if (m_pPropsManager == nullptr || m_pShader == nullptr) {
+            return false;
+        }
+
+        const auto& renderingPass = params.at("RenderingPass");
+        return (renderingPass == "Shadow" ||
+                renderingPass == "Reflection" ||
+                renderingPass == "Refraction" ||
+                renderingPass == "Main");
     }
 
+    void PropsRenderer::Prepare() {
+        vd::gl::Context::CounterClockwiseFacing();
+    }
+
+    void PropsRenderer::Finish() {
+        vd::gl::Context::Reset();
+    }
 }

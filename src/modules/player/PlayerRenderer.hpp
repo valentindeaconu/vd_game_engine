@@ -20,22 +20,22 @@
 namespace mod::player {
     class PlayerRenderer : public vd::component::IRenderer, public vd::injector::Injectable {
     public:
-        PlayerRenderer(PlayerPtr playerPtr,
-                       vd::component::IEntityShaderPtr shaderPtr,
-                       vd::Consumer beforeExecution = vd::g_kEmptyConsumer,
-                       vd::Consumer afterExecution = vd::g_kEmptyConsumer);
+        PlayerRenderer(PlayerPtr player, vd::component::IEntityShaderPtr shader);
 
         void Link() override;
 
-        void Init() override;
-        void Update() override;
-        void Render(const params_t& params) override;
-        void CleanUp() override;
+        void OnInit() override;
+        void OnUpdate() override;
+        void OnRender(const params_t& params) override;
+        void OnCleanUp() override;
 
     private:
-        bool IsReady() override;
+        bool Precondition(const params_t& params) override;
+        void Prepare() override;
+        void Finish() override;
 
-        PlayerPtr m_pPlayer;
+        PlayerPtr                       m_pPlayer;
+        vd::component::IEntityShaderPtr m_pShader;
 
         vd::camera::CameraPtr           m_pCamera;
         mod::shadow::ShadowShaderPtr    m_pShadowShader;

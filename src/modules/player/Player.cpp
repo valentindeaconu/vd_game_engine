@@ -51,7 +51,7 @@ namespace mod::player {
         currentPosition.x += dx;
         currentPosition.z += dz;
 
-        m_CurrentUpwardsSpeed += m_kGravity * m_pContext->FrameTime();
+        m_CurrentUpwardsSpeed += vd::g_kGravitySpeed * m_pContext->FrameTime();
         currentPosition.y += m_CurrentUpwardsSpeed * m_pContext->FrameTime();
 
         float height = m_pTerrain->HeightAt(currentPosition.x, currentPosition.z);

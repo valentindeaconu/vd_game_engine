@@ -7,9 +7,7 @@
 namespace mod::postprocessing {
 
     EffectRenderer::EffectRenderer()
-        : vd::component::IRenderer(nullptr,
-                                   []() { glFrontFace(GL_CCW); },
-                                   []() { glFrontFace(GL_CW); })
+        : vd::component::IRenderer("EffectRenderer")
     {
         m_pQuad = std::make_shared<vd::object::primitive::Quad2D>();
     }
@@ -18,7 +16,7 @@ namespace mod::postprocessing {
         m_pWindow = vd::ObjectOfType<vd::window::Window>::Find();
     }
 
-    void EffectRenderer::Init() {
+    void EffectRenderer::OnInit() {
         m_pQuad->Init();
 
         vd::Dimension windowDimension(m_pWindow->Width(), m_pWindow->Height());
@@ -32,42 +30,31 @@ namespace mod::postprocessing {
         }
     }
 
-    void EffectRenderer::Update() {
+    void EffectRenderer::OnUpdate() {
         m_pQuad->Update();
     }
 
-    void EffectRenderer::Render(const vd::datastruct::Observer::params_t& params) {
-        if (!IsReady()) {
-            vd::Logger::warn("EffectRenderer was not ready to render");
-            return;
-        }
+    void EffectRenderer::OnRender(const vd::datastruct::Observer::params_t& params) {
+        for (auto& s : m_Stages) {
+            vd::component::IRenderingEffectPtr& effect = s.Effect;
+            vd::component::IRenderingEffectShaderPtr& shader = s.Shader;
 
-        if (params.at("RenderingPass") == "PostProcessing") {
-            Prepare();
+            if (effect->Precondition()) {
+                effect->Prepare();
 
-            for (auto& s : m_Stages) {
-                vd::component::IRenderingEffectPtr& effect = s.Effect;
-                vd::component::IRenderingEffectShaderPtr& shader = s.Shader;
+                shader->Bind();
+                shader->UpdateUniforms(effect);
 
-                if (effect->Precondition()) {
-                    effect->Prepare();
+                m_pQuad->Buffers()[0]->DrawArrays(vd::gl::eTriangleStrip, 4);
 
-                    shader->Bind();
-                    shader->UpdateUniforms(effect);
+                shader->Unbind();
 
-                    m_pQuad->Buffers()[0]->DrawArrays(vd::gl::eTriangleStrip, 4);
-
-                    shader->Unbind();
-
-                    effect->Finish();
-                }
+                effect->Finish();
             }
-
-            Finish();
         }
     }
 
-    void EffectRenderer::CleanUp() {
+    void EffectRenderer::OnCleanUp() {
         m_pQuad->CleanUp();
 
         for (auto& s : m_Stages) {
@@ -78,14 +65,25 @@ namespace mod::postprocessing {
         m_Stages.clear();
     }
 
-    bool EffectRenderer::IsReady() {
-        return !m_Stages.empty();
-    }
-
     void EffectRenderer::PushStage(const vd::component::IRenderingEffectPtr& pEffect,
                                    const vd::component::IRenderingEffectShaderPtr& pShader) {
         Stage s = { pEffect, pShader };
         m_Stages.emplace_back(std::move(s));
     }
 
+    bool EffectRenderer::Precondition(const params_t& params) {
+        if (m_Stages.empty()) {
+            return false;
+        }
+        
+        return params.at("RenderingPass") == "PostProcessing";
+    }
+
+    void EffectRenderer::Prepare() {
+        vd::gl::Context::CounterClockwiseFacing();
+    }
+
+    void EffectRenderer::Finish() {
+        vd::gl::Context::Reset();
+    }
 }

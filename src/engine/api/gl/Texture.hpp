@@ -21,7 +21,7 @@ namespace vd::gl {
     template<GLuint T>
     class Texture : public Component {
     public:
-        explicit Texture(size_t width = 0, size_t height = 0);
+        explicit Texture(size_t width = 0, size_t height = 0, size_t size = 1);
 
         void Bind() const;
         void BindToUnit(GLuint index) const;
@@ -46,6 +46,7 @@ namespace vd::gl {
 
         [[nodiscard]] size_t Width() const;
         [[nodiscard]] size_t Height() const;
+        [[nodiscard]] size_t Size() const;
     private:
         void OnCreate() override;
         void OnCleanUp() override;
@@ -59,6 +60,7 @@ namespace vd::gl {
         DimensionType GetDimension() const;
 
         GLuint m_Id;
+        size_t m_Size;
 
         vd::Dimension m_Dimension;
     };

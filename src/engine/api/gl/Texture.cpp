@@ -10,8 +10,9 @@ namespace vd::gl {
     template class Texture<GL_TEXTURE_CUBE_MAP>;
 
     template<GLuint type>
-    Texture<type>::Texture(size_t width, size_t height)
+    Texture<type>::Texture(size_t width, size_t height, size_t size)
         : m_Dimension(width, height)
+        , m_Size(size)
         , m_Id(0)
     {
     }
@@ -150,6 +151,11 @@ namespace vd::gl {
     template<GLuint type>
     size_t Texture<type>::Height() const {
         return m_Dimension.height;
+    }
+
+    template<GLuint type>
+    size_t Texture<type>::Size() const {
+        return m_Size;
     }
 
     template<GLuint type>

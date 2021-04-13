@@ -1,30 +1,62 @@
 #include "IRenderer.hpp"
 
 namespace vd::component {
-    IRenderer::IRenderer(IEntityShaderPtr shaderPtr,
-                         vd::Consumer beforeExecution,
-                         vd::Consumer afterExecution)
-        : m_pShader(std::move(shaderPtr))
-        , m_BeforeExecution(std::move(beforeExecution))
-        , m_AfterExecution(std::move(afterExecution))
+    namespace exception {
+        RendererError::RendererError(const std::string& name, const std::string& message) 
+            : CustomException("RendererError", "[" + name + "]: " + message)
+        {
+        }
+    }
+
+    IRenderer::IRenderer(std::string name)
+        : m_Initialized(false)
+        , m_Name(std::move(name))
     {
     }
 
-    IRenderer::~IRenderer() = default;
-
-    void IRenderer::Prepare() {
-        m_BeforeExecution();
+    void IRenderer::Init() {
+#ifdef VDGE_DEBUG
+        if (m_Initialized) {
+            throw exception::RendererError(m_Name, "Renderer is already initialized");
+        }
+#endif
+        if (!m_Initialized) {
+            OnInit();
+            m_Initialized = true;
+        }
     }
 
-    void IRenderer::Finish() {
-        m_AfterExecution();
+    void IRenderer::Update() {        
+        if (!m_Initialized) {
+            throw exception::RendererError(m_Name, "Updating an uninitialized renderer");
+        }
+
+        OnUpdate();
     }
 
-    IEntityShaderPtr& IRenderer::Shader() {
-        return m_pShader;
+    void IRenderer::Render(const params_t& params) {
+        if (!m_Initialized) {
+            throw exception::RendererError(m_Name, "Rendering an uninitialized renderer");
+        }
+
+        if (Precondition(params)) {
+            Prepare();
+
+            OnRender(params);
+
+            Finish();
+        }
     }
 
-    bool IRenderer::IsReady() {
-        return m_pShader != nullptr;
+    void IRenderer::CleanUp() {
+        if (m_Initialized) {
+            OnCleanUp();
+            m_Initialized = false;
+        }
     }
+
+    const std::string& IRenderer::Name() const {
+        return m_Name;
+    }
+
 }
