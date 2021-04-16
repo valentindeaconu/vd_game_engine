@@ -25,30 +25,13 @@ namespace mod::gui {
                         std::move(
                                 std::make_shared<vd::model::Mesh>(
                                         vd::gapi::AttributeTypeVec ({
-                                                  vd::gapi::AttributeType::FLOAT_2,
-                                                  vd::gapi::AttributeType::FLOAT_2
+                                                  vd::gapi::AttributeType::FLOAT_4,
                                           }))));
-
-        // maximum length of the text to display is 128
 
         // Mesh is reused for each letter due to no atlas for font (each letter has to be bound in order to use its texture)
         pMesh->MakeDynamic(vd::gapi::DataFragmentation::eAsTriangles,
-                           96, // 4 floats/vertex * 6 vertex/letter
+                           24, // 4 floats/vertex * 6 vertex/letter
                            0);
-
-
-        // Buffers().clear();
-
-        // TODO: Allocate the new Mesh class as dynamic and use it
-        /*vd::gl::BufferPtr& pBuffer = Buffers().emplace_back(std::move(std::make_shared<vd::gl::Buffer>()));
-
-        pBuffer->Create();
-        pBuffer->Bind();
-
-        pBuffer->AddBuffer(vd::gl::eArrayBuffer, sizeof(float) * 6 * 4, nullptr, vd::gl::eDynamicDraw);
-        pBuffer->AttributeArray(0, 0, 4, vd::gl::eFloat, 4 * sizeof(float), nullptr);
-
-        pBuffer->Unbind();*/
     }
 
     void GuiText::Init() {

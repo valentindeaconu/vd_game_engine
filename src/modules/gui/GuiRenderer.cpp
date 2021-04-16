@@ -57,26 +57,6 @@ namespace mod::gui {
                     mesh->DynamicSetVertexData(vertices, false);
                     mesh->Draw();
                 }
-
-                /*
-                vd::gl::BufferPtr& buffer = m_pGuiEntity->Buffers()[0];
-
-                // TODO: Not optimal, vertices are rebuilt each frame
-                for (int i = 0; i < mesh->VertexCount(); i += 6) {
-                    std::vector<glm::vec4> glyph(6);
-                    for (int j = 0; j < 6; ++j) {
-                        auto vertex = mesh->VertexAtIndex(i + j);
-
-                        const auto& position = vertex.Attribute<glm::vec2>(0);
-                        const auto& texCoords = vertex.Attribute<glm::vec2>(1);
-                        glyph[j] = glm::vec4(position, texCoords);
-                    }
-
-                    m_pShader->UpdateUniforms(m_pGuiEntity, 0, i / 6);
-                    buffer->UpdateBufferData(vd::gl::eArrayBuffer, 96, &glyph[0]); // 96 = 6 vertices * 4 floats each * 4 bytes per float
-                    buffer->DrawArrays(vd::gl::eTriangles, 6);
-                }
-                 */
                 break;
             }
         }
