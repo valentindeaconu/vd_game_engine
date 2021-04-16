@@ -2,10 +2,10 @@
 // Created by Vali on 11/11/2020.
 //
 
-#ifndef VD_GAME_ENGINE_GL_BUFFER_HPP
-#define VD_GAME_ENGINE_GL_BUFFER_HPP
+#ifndef VDGE_GL_BUFFER_WRAPPER_HPP
+#define VDGE_GL_BUFFER_WRAPPER_HPP
 
-#include <engine/model/Mesh.hpp>
+#include <engine/gapi/Buffer.hpp>
 
 #include <unordered_map>
 #include <vector>
@@ -13,7 +13,7 @@
 #include "Enums.hpp"
 #include "Component.hpp"
 
-namespace vd::gl {
+namespace vd::gl::wrappers {
 
     class Buffer : public Component {
     public:
@@ -32,6 +32,7 @@ namespace vd::gl {
                             DataType dataType, 
                             uint32_t stride, 
                             const void* ptr);
+
         void InstanceAttributeArray(uint32_t index, 
                                     size_t bufferIndex, 
                                     int32_t size, 
@@ -62,4 +63,4 @@ namespace vd::gl {
     typedef std::vector<BufferPtr>	BufferPtrVec;
 }
 
-#endif //VD_GAME_ENGINE_GL_BUFFER_HPP
+#endif //VDGE_GL_BUFFER_WRAPPER_HPP

@@ -49,16 +49,13 @@ namespace vd::gl {
 
         Shader();
 
-        void Bind();
-        void Unbind();
-
         void AddShader(const std::string& source, const Type& type);
         void Compile();
 
-        [[nodiscard]] uint32_t Program() const;
-
         void AddUniform(const std::string& uniformName);
-        void AddUniformBlock(const std::string& uniformBlockName);
+
+        void Bind();
+        void Unbind();
 
         void SetUniform(const std::string& uniformName, int value) const;
         void SetUniform(const std::string& uniformName, float value) const;
@@ -78,10 +75,13 @@ namespace vd::gl {
         void PushUniform(const std::string& uniformName, const glm::mat3& value);
         void PushUniform(const std::string& uniformName, const glm::mat4& value);
 
+        void AddUniformBlock(const std::string& uniformBlockName);
         void BindUniformBlock(const std::string& uniformBlockName, uint32_t uniformBlockBinding) const;
         void BindFragDataLocation(const std::string& name, uint32_t index) const;
 
         void BindAttributeLocation(size_t location, const std::string& name);
+
+        [[nodiscard]] uint32_t Program() const;
     private:
         void OnCreate() override;
         void OnCleanUp() override;

@@ -4,7 +4,7 @@
 
 #include "Buffer.hpp"
 
-namespace vd::gl {
+namespace vd::gl:wrappers {
     inline std::string ToString(BufferType t) {
         switch (t) {
             case eArrayBuffer: return "ARRAY BUFFER";
