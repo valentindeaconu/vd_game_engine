@@ -11,7 +11,7 @@
 
 #include <glm/glm.hpp>
 #include <engine/defines/Types.hpp>
-#include <engine/api/gl/Texture.hpp>
+#include <engine/gapi/gl/Texture.hpp>
 
 namespace vd::model {
     struct Character {

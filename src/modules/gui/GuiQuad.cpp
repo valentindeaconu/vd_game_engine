@@ -26,23 +26,21 @@ namespace mod::gui {
             m_Texture = m_TextureGetter();
         }
 
-        vd::model::Mesh2DPtrVec& meshPtrVec = Meshes();
+        vd::model::MeshPtr& pMesh = Meshes()
+                .emplace_back(std::make_shared<vd::model::Mesh>(vd::gapi::AttributeTypeVec({
+                    vd::gapi::AttributeType::FLOAT_2
+                })));
 
-        vd::model::Mesh2DPtr pMesh = std::make_shared<vd::model::Mesh2D>();
+        pMesh->Assign(vd::gapi::DataFragmentation::eAsTriangles,
+        {
+            vd::model::Vertex(std::vector<float>{ -1.0f, 1.0f }),
+            vd::model::Vertex(std::vector<float>{ -1.0f, -1.0f }),
+            vd::model::Vertex(std::vector<float>{ 1.0f, 1.0f }),
+            vd::model::Vertex(std::vector<float>{ 1.0f, -1.0f })
+        },
+        {0, 1, 2, 2, 1, 3});
 
-        pMesh->Vertices() = {
-                vd::model::Vertex2D(-1.0f, 1.0f),
-                vd::model::Vertex2D(-1.0f, -1.0f),
-                vd::model::Vertex2D(1.0f, 1.0f),
-                vd::model::Vertex2D(1.0f, -1.0f)
-        };
-
-        pMesh->Indices() = {0, 1, 2, 2, 1, 3};
-
-        pMesh->Materials().emplace_back();
-        pMesh->Materials().back().DiffuseMap() = m_Texture;
-
-        meshPtrVec.push_back(pMesh);
+        pMesh->Material().DiffuseMap() = m_Texture;
     }
 
     void GuiQuad::Update() {

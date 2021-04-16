@@ -40,30 +40,30 @@ namespace mod::sky {
         float angle = glm::radians(m_pTimeManager->CurrentAngle() * 0.5f + (m_pTimeManager->AM() ? 180.0f : 0));
         WorldTransform().Translation() = glm::vec3(glm::sin(angle), glm::cos(angle), 0.0f) * m_Radius;
 
-        vd::model::Mesh2DPtr pMesh = std::make_shared<vd::model::Mesh2D>();
+        vd::model::MeshPtr& pMesh = Meshes()
+                .emplace_back(std::make_shared<vd::model::Mesh>(vd::gapi::AttributeTypeVec ({ vd::gapi::AttributeType::FLOAT_2 })));
 
-        pMesh->Vertices() = { vd::model::Vertex2D(.5f, .5f) };
+        pMesh->Assign(vd::gapi::DataFragmentation::eAsPoints, { vd::model::Vertex(std::vector<float>{ 0.5f, 0.5f }) });
 
-        auto& material = pMesh->Materials().emplace_back();
+        auto& material = pMesh->Material();
         material.DiffuseMap() = vd::service::TextureService::CreateFromFile(m_TexPath);
         material.DiffuseMap()->Bind();
         material.DiffuseMap()->NoFilter();
         material.DiffuseMap()->Unbind();
 
-        vd::gl::BufferPtr pBuffer = std::make_shared<vd::gl::Buffer>();
+        /*vd::gl::BufferPtr pBuffer = std::make_shared<vd::gl::Buffer>();
         pBuffer->Create();
         pBuffer->Bind();
         pBuffer->AddBuffer(
                 vd::gl::eArrayBuffer,
-                pMesh->Vertices().size() * sizeof(vd::model::Vertex2D),
-                &pMesh->Vertices()[0],
+                pMesh->VerticesSizeInBytes(),
+                &pMesh->Data()[0],
                 vd::gl::eStaticDraw
         );
-        pBuffer->AttributeArray(0, 0, 2, vd::gl::eFloat, sizeof(vd::model::Vertex2D), (GLvoid*)0);
+        pBuffer->AttributeArray(0, 0, 2, vd::gl::eFloat, pMesh->VertexSizeInBytes(), (GLvoid*)0);
         pBuffer->Unbind();
 
-        Meshes().emplace_back(std::move(pMesh));
-        Buffers().emplace_back(std::move(pBuffer));
+        Buffers().emplace_back(std::move(pBuffer));*/
     }
 
     void Sun::Update() {

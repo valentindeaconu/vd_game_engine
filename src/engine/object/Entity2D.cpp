@@ -12,7 +12,7 @@ namespace vd::object {
             throw RuntimeError("could not initialise a 2D entity without meshes");
         }
 
-        for (auto& mesh : m_Meshes) {
+        /*for (auto& mesh : m_Meshes) {
             Buffers().emplace_back(std::move(std::make_shared<vd::gl::Buffer>()));
             vd::gl::BufferPtr pBuffer = Buffers().back();
 
@@ -21,26 +21,26 @@ namespace vd::object {
 
             pBuffer->AddBuffer(
                     gl::eArrayBuffer,
-                    mesh->Vertices().size() * sizeof(vd::model::Vertex2D),
-                    &mesh->Vertices()[0],
+                    mesh->VerticesSizeInBytes(),
+                    &mesh->Data()[0],
                     gl::eStaticDraw
             );
 
             pBuffer->AddBuffer(
                     gl::eElementArrayBuffer,
-                    mesh->Indices().size() * sizeof(GLuint),
+                    mesh->IndicesSizeInBytes(),
                     &mesh->Indices()[0],
                     gl::eStaticDraw
             );
 
-            pBuffer->AttributeArray(0, 0, 2, vd::gl::eFloat, sizeof(vd::model::Vertex2D), (GLvoid*)0);
-            pBuffer->AttributeArray(1, 0, 2, vd::gl::eFloat, sizeof(vd::model::Vertex2D), (GLvoid*)offsetof(vd::model::Vertex2D, TexCoords));
+            pBuffer->AttributeArray(0, 0, 2, vd::gl::eFloat, mesh->VertexSizeInBytes(), (GLvoid*)0);
+            pBuffer->AttributeArray(1, 0, 2, vd::gl::eFloat, mesh->VertexSizeInBytes(), (GLvoid*)(2 * 4)); // 2 floats * 4 bytes each
 
             pBuffer->Unbind();
 
             m_BoundingBoxes.emplace_back();
             m_BoundingBoxes.back().WrapMesh(mesh);
-        }
+        }*/
     }
 
     void Entity2D::CleanUp() {
@@ -52,7 +52,7 @@ namespace vd::object {
         m_BoundingBoxes.clear();
     }
 
-    model::Mesh2DPtrVec& Entity2D::Meshes() {
+    model::MeshPtrVec& Entity2D::Meshes() {
         return m_Meshes;
     }
 

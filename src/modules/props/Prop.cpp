@@ -13,11 +13,10 @@ namespace mod::props {
 
             if (lodDetails.Billboard) {
                 for (auto& mesh : meshes) {
-                    for (auto& material : mesh->Materials()) {
-                        material.DiffuseMap()->Bind();
-                        material.DiffuseMap()->LinearFilter();
-                        material.DiffuseMap()->Unbind();
-                    }
+                    auto& material = mesh->Material();
+                    material.DiffuseMap()->Bind();
+                    material.DiffuseMap()->LinearFilter();
+                    material.DiffuseMap()->Unbind();
                 }
             }
 

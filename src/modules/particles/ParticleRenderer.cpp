@@ -19,7 +19,7 @@ namespace mod::particles {
     }
 
     void ParticleRenderer::OnInit() {
-        m_pBuffer = std::make_shared<vd::gl::Buffer>();
+        m_pBuffer = std::make_shared<vd::gl::wrappers::Buffer>();
         m_pBuffer->Create();
         m_pBuffer->Bind();
 
@@ -112,8 +112,8 @@ namespace mod::particles {
             }
         }
 
-        for (auto it = garbageCollector.begin(); it != garbageCollector.end(); ++it) {
-            m_Batch.erase(*it);
+        for (auto& p : garbageCollector) {
+            m_Batch.erase(p);
         }
     }
 

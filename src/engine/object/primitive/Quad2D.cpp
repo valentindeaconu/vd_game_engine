@@ -8,29 +8,38 @@ namespace vd::object::primitive {
     void Quad2D::Setup() { }
 
     void Quad2D::Init() {
-        vd::model::Mesh2DPtr& pMesh = Meshes().emplace_back(std::move(std::make_shared<vd::model::Mesh2D>()));
-        pMesh->Vertices() = {
-                vd::model::Vertex2D(-1.0f, 1.0f),
-                vd::model::Vertex2D(-1.0f, -1.0f),
-                vd::model::Vertex2D(1.0f, 1.0f),
-                vd::model::Vertex2D(1.0f, -1.0f)
-        };
+        vd::model::MeshPtr& pMesh = Meshes()
+                .emplace_back(
+                    std::make_shared<vd::model::Mesh>(
+                        vd::gapi::AttributeTypeVec({
+                            vd::gapi::AttributeType::FLOAT_2
+                        })
+                    )
+                );
 
-        vd::gl::BufferPtr& pBuffer = Buffers().emplace_back(std::move(std::make_shared<vd::gl::Buffer>()));
+        pMesh->Assign(vd::gapi::DataFragmentation::eAsTriangleStrip,
+                      {
+                            vd::model::Vertex(std::vector<float>({ -1.0f, 1.0f })),
+                            vd::model::Vertex(std::vector<float>({ -1.0f, -1.0f })),
+                            vd::model::Vertex(std::vector<float>({ 1.0f, 1.0f })),
+                            vd::model::Vertex(std::vector<float>({ 1.0f, -1.0f }))
+                      });
+
+        /*vd::gl::wrappers::BufferPtr& pBuffer = Buffers().emplace_back(std::move(std::make_shared<vd::gl::wrappers::Buffer>()));
         pBuffer->Create();
         pBuffer->Bind();
         pBuffer->AddBuffer(
                 gl::eArrayBuffer,
-                pMesh->Vertices().size() * sizeof(vd::model::Vertex2D),
-                &pMesh->Vertices()[0],
+                pMesh->VerticesSizeInBytes(),
+                &pMesh->Data()[0],
                 gl::eStaticDraw
         );
-        pBuffer->AttributeArray(0, 0, 2, vd::gl::eFloat, sizeof(vd::model::Vertex2D), (GLvoid*)0);
-        pBuffer->AttributeArray(1, 0, 2, vd::gl::eFloat, sizeof(vd::model::Vertex2D), (GLvoid*)offsetof(vd::model::Vertex2D, TexCoords));
+        pBuffer->AttributeArray(0, 0, 2, vd::gl::eFloat, pMesh->VertexSizeInBytes(), (GLvoid*)0);
+        pBuffer->AttributeArray(1, 0, 2, vd::gl::eFloat, pMesh->VertexSizeInBytes(), (GLvoid*)(2 * 4));
         pBuffer->Unbind();
 
         BoundingBoxes().emplace_back();
-        BoundingBoxes().back().WrapMesh(pMesh);
+        BoundingBoxes().back().WrapMesh(pMesh);*/
     }
 
     void Quad2D::Update() {

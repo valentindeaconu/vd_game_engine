@@ -4,7 +4,7 @@
 
 #include "Shader.hpp"
 
-namespace vd::gl {
+namespace vd::gl::wrappers {
 
     namespace exception {
         ShaderError::ShaderError(const std::string &stage, const std::string &message)
@@ -48,9 +48,9 @@ namespace vd::gl {
     }
 
     Shader::Shader()
-        : m_Program(0)
-        , m_Bound(false)
-        , m_UniformMap()
+            : m_Program(0)
+            , m_Bound(false)
+            , m_UniformMap()
     {
     }
 
@@ -62,7 +62,7 @@ namespace vd::gl {
         glDeleteProgram(m_Program);
     }
 
-    void Shader::Select() {
+    void Shader::Bind() {
         PassIfCreated();
 
         if (!m_Bound) {
@@ -71,115 +71,75 @@ namespace vd::gl {
         }
     }
 
-    void Shader::Unselect() {
+    void Shader::Unbind() {
         if (m_Bound) {
             glUseProgram(0);
             m_Bound = false;
         }
     }
 
-    void Shader::Allocate(const std::string& uniformName) {
+    void Shader::AddShader(const std::string& source, const Shader::Type& type) {
         PassIfCreated();
 
-        uint32_t location = glGetUniformLocation(m_Program, uniformName.c_str());
+        uint32_t shader = glCreateShader(type);
 
-        if (location == 0xFFFFFFFF) {
-            throw exception::UniformLocationException(uniformName);
+        if (shader == 0) {
+            throw exception::ShaderError("Shader Creation @" + ToString(type), "Could not create a new shader");
         }
 
-        m_UniformMap[uniformName] = location;
-    }
+        const char *shaderSource = source.c_str();
+        glShaderSource(shader, 1, &shaderSource, nullptr);
 
-    void Shader::Set(const std::string& uniformName, int value) {
-        PassIfCreated();
+        glCompileShader(shader);
 
-        auto it = m_UniformMap.find(uniformName);
-        if (it != m_UniformMap.end()) {
-            glUniform1i(it->second, value);
-        } else {
-            throw exception::UniformNotLocatedException(uniformName);
+        int compileStatus;
+        glGetShaderiv(shader, GL_COMPILE_STATUS, &compileStatus);
+
+        if (!compileStatus) {
+            char infoLog[1024];
+            glGetShaderInfoLog(shader, 1024, nullptr, infoLog);
+
+            printf("%s\n", shaderSource);
+
+            glDeleteShader(shader);
+            throw exception::ShaderError("Shader Compilation @" + ToString(type), infoLog);
         }
-    }
 
-    void Shader::Set(const std::string& uniformName, float value) {
-        PassIfCreated();
-
-        auto it = m_UniformMap.find(uniformName);
-        if (it != m_UniformMap.end()) {
-            glUniform1f(it->second, value);
-        } else {
-            throw exception::UniformNotLocatedException(uniformName);
+        if (m_Program == 0) {
+            glDeleteShader(shader);
+            throw exception::ShaderError("Shader Attach @" + ToString(type), "There's no program to attach to");
         }
+
+        glAttachShader(m_Program, shader);
+        glDeleteShader(shader);
     }
 
-    void Shader::Set(const std::string& uniformName, const glm::vec2& value) {
+    void Shader::Compile() {
         PassIfCreated();
 
-        auto it = m_UniformMap.find(uniformName);
-        if (it != m_UniformMap.end()) {
-            glUniform2f(it->second, value.x, value.y);
-        } else {
-            throw exception::UniformNotLocatedException(uniformName);
+        glLinkProgram(m_Program);
+
+        int linkStatus;
+        glGetProgramiv(m_Program, GL_LINK_STATUS, &linkStatus);
+
+        if (!linkStatus) {
+            char infoLog[1024];
+            glGetProgramInfoLog(m_Program, 1024, nullptr, infoLog);
+
+            throw exception::ShaderError("Linking", infoLog);
         }
-    }
 
-    void Shader::Set(const std::string& uniformName, const glm::vec3& value) {
-        PassIfCreated();
+        int validateStatus;
+        glGetProgramiv(m_Program, GL_VALIDATE_STATUS, &validateStatus);
 
-        auto it = m_UniformMap.find(uniformName);
-        if (it != m_UniformMap.end()) {
-            glUniform3f(it->second, value.x, value.y, value.z);
-        } else {
-            throw exception::UniformNotLocatedException(uniformName);
-        }
-    }
+        if (!validateStatus) {
+            char infoLog[1024];
+            glGetProgramInfoLog(m_Program, 1024, nullptr, infoLog);
 
-    void Shader::Set(const std::string& uniformName, const glm::vec4& value) {
-        PassIfCreated();
-
-        auto it = m_UniformMap.find(uniformName);
-        if (it != m_UniformMap.end()) {
-            glUniform4f(it->second, value.x, value.y, value.z, value.w);
-        } else {
-            throw exception::UniformNotLocatedException(uniformName);
+            throw exception::ShaderError("Validation", infoLog);
         }
     }
 
-    void Shader::Set(const std::string& uniformName, const glm::quat& value) {
-        PassIfCreated();
-
-        auto it = m_UniformMap.find(uniformName);
-        if (it != m_UniformMap.end()) {
-            glUniform4f(it->second, value.x, value.y, value.z, value.w);
-        } else {
-            throw exception::UniformNotLocatedException(uniformName);
-        }
-    }
-
-    void Shader::Set(const std::string& uniformName, const glm::mat3& value) {
-        PassIfCreated();
-
-        auto it = m_UniformMap.find(uniformName);
-        if (it != m_UniformMap.end()) {
-            glUniformMatrix3fv(it->second, 1, false, glm::value_ptr(value));
-        } else {
-            throw exception::UniformNotLocatedException(uniformName);
-        }
-    }
-
-    void Shader::Set(const std::string& uniformName, const glm::mat4& value) {
-        PassIfCreated();
-
-        auto it = m_UniformMap.find(uniformName);
-        if (it != m_UniformMap.end()) {
-            glUniformMatrix4fv(it->second, 1, false, glm::value_ptr(value));
-        } else {
-            throw exception::UniformNotLocatedException(uniformName);
-        }
-    }
-
-    // TODO: Remove comments
-    /*
     void Shader::AddUniform(const std::string& uniformName) {
         PassIfCreated();
 
@@ -260,7 +220,7 @@ namespace vd::gl {
 
     void Shader::SetUniform(const std::string& uniformName, const glm::mat3& value) const {
         PassIfCreated();
-        
+
         auto it = m_UniformMap.find(uniformName);
         if (it != m_UniformMap.end()) {
             glUniformMatrix3fv(it->second, 1, false, glm::value_ptr(value));
@@ -348,7 +308,7 @@ namespace vd::gl {
 
     void Shader::PushUniform(const std::string& uniformName, const glm::mat3& value) {
         PassIfCreated();
-        
+
         auto it = m_UniformMap.find(uniformName);
         if (it == m_UniformMap.end()) {
             AddUniform(uniformName);
@@ -366,69 +326,6 @@ namespace vd::gl {
         }
 
         glUniformMatrix4fv(m_UniformMap[uniformName], 1, false, glm::value_ptr(value));
-    }
-    */
-
-    void Shader::AddShader(const std::string& source, const Shader::Type& type) {
-        PassIfCreated();
-
-        uint32_t shader = glCreateShader(type);
-
-        if (shader == 0) {
-            throw exception::ShaderError("Shader Creation @" + ToString(type), "Could not create a new shader");
-        }
-
-        const char *shaderSource = source.c_str();
-        glShaderSource(shader, 1, &shaderSource, nullptr);
-
-        glCompileShader(shader);
-
-        int compileStatus;
-        glGetShaderiv(shader, GL_COMPILE_STATUS, &compileStatus);
-
-        if (!compileStatus) {
-            char infoLog[1024];
-            glGetShaderInfoLog(shader, 1024, nullptr, infoLog);
-
-            printf("%s\n", shaderSource);
-
-            glDeleteShader(shader);
-            throw exception::ShaderError("Shader Compilation @" + ToString(type), infoLog);
-        }
-
-        if (m_Program == 0) {
-            glDeleteShader(shader);
-            throw exception::ShaderError("Shader Attach @" + ToString(type), "There's no program to attach to");
-        }
-
-        glAttachShader(m_Program, shader);
-        glDeleteShader(shader);
-    }
-
-    void Shader::Compile() {
-        PassIfCreated();
-
-        glLinkProgram(m_Program);
-
-        int linkStatus;
-        glGetProgramiv(m_Program, GL_LINK_STATUS, &linkStatus);
-
-        if (!linkStatus) {
-            char infoLog[1024];
-            glGetProgramInfoLog(m_Program, 1024, nullptr, infoLog);
-
-            throw exception::ShaderError("Linking", infoLog);
-        }
-
-        int validateStatus;
-        glGetProgramiv(m_Program, GL_VALIDATE_STATUS, &validateStatus);
-
-        if (!validateStatus) {
-            char infoLog[1024];
-            glGetProgramInfoLog(m_Program, 1024, nullptr, infoLog);
-
-            throw exception::ShaderError("Validation", infoLog);
-        }
     }
 
     void Shader::AddUniformBlock(const std::string& uniformBlockName) {
@@ -456,10 +353,10 @@ namespace vd::gl {
 
     void Shader::BindFragDataLocation(const std::string& name, uint32_t index) const {
         PassIfCreated();
-        
+
         glBindFragDataLocation(m_Program, index, name.c_str());
     }
-    
+
     void Shader::BindAttributeLocation(size_t location, const std::string& name) {
         PassIfCreated();
 

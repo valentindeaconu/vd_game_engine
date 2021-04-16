@@ -29,11 +29,12 @@ namespace mod::sky {
     void SunRenderer::OnRender(const vd::datastruct::Observer::params_t &params) {
         m_pShader->Bind();
 
-        vd::gl::BufferPtrVec& buffers = m_pSun->Buffers();
+        //vd::gl::BufferPtrVec& buffers = m_pSun->Buffers();
 
         auto& meshes = m_pSun->Meshes();
         m_pShader->UpdateUniforms(m_pSun, 0, 0);
-        buffers[0]->DrawArrays(vd::gl::ePoints, 1);
+        //buffers[0]->DrawArrays(vd::gl::ePoints, 1);
+        meshes[0]->Draw();
 
         m_pShader->Unbind();
     }

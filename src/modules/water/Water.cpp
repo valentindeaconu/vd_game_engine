@@ -135,16 +135,16 @@ namespace mod::water {
     }
 
     void Water::GeneratePatch() {
-        vd::model::Mesh3DPtr pMesh = std::make_shared<vd::model::Mesh3D>();
+        vd::model::MeshPtr pMesh = std::make_shared<vd::model::Mesh>(vd::gapi::AttributeTypeVec ({ vd::gapi::AttributeType::FLOAT_3 }));
 
-        pMesh->Vertices() = {
-            vd::model::Vertex3D(0.0f, 0.0f, 1.0f),
-            vd::model::Vertex3D(0.0f, 0.0f, 0.0f),
-            vd::model::Vertex3D(1.0f, 0.0f, 1.0f),
-            vd::model::Vertex3D(1.0f, 0.0f, 0.0f)
-        };
-
-        pMesh->Indices() = {0, 2, 1, 1, 2, 3};
+        pMesh->Assign(vd::gapi::DataFragmentation::eAsTriangles,
+        {
+            vd::model::Vertex(std::vector<float>{ 0.0f, 0.0f, 1.0f }),
+            vd::model::Vertex(std::vector<float>{ 0.0f, 0.0f, 0.0f }),
+            vd::model::Vertex(std::vector<float>{ 1.0f, 0.0f, 1.0f }),
+            vd::model::Vertex(std::vector<float>{ 1.0f, 0.0f, 0.0f })
+        },
+        {0, 2, 1, 1, 2, 3});
 
         this->PushMesh({ pMesh }, 1000.0f);
     }

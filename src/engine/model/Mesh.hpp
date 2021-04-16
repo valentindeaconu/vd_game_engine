@@ -11,46 +11,79 @@
 #include "Vertex.hpp"
 #include "Material.hpp"
 
+#include <engine/math/Bounds.hpp>
+
+#include <engine/defines/Macros.hpp>
+#include <engine/gapi/Factory.hpp>
+
 namespace vd::model {
-    class Mesh2D {
+    class InstanceMesh;
+
+    class Mesh {
     public:
-        typedef std::vector<Vertex2D>   VertexVec;
-        typedef std::vector<uint32_t>   IndexVec;
-        typedef std::vector<Material>   MaterialVec;
+        explicit Mesh(const gapi::AttributeTypeVec& vertexAttributes);
 
-        Mesh2D();
+        Mesh(const Mesh&) = default;
 
-        VertexVec&      Vertices();
-        IndexVec&       Indices();
-        MaterialVec&    Materials();
+        bool Assign(const gapi::DataFragmentation& dataFragmentation,
+                    const std::vector<Vertex>& vertices,
+                    const std::vector<uint32_t>& indices = std::vector<uint32_t>(),
+                    bool computeBounds = true);
+
+        bool MakeDynamic(const gapi::DataFragmentation& dataFragmentation,
+                         uint64_t perVertexMaximumDataSize,
+                         uint64_t maximumIndices);
+
+        bool DynamicSetVertexData(const std::vector<Vertex>& vertices, bool computeBounds = true);
+        bool DynamicSetIndicesData(const std::vector<uint32_t>& indices);
+
+        void Draw() const;
+
+        [[nodiscard]] model::Material& Material();
     private:
-        VertexVec	    m_Vertices;
-        IndexVec	    m_Indices;
-        MaterialVec     m_Materials;
+        friend class InstanceMesh;
+
+        void ComputeBounds(const std::vector<Vertex>& vertices);
+        static bool SolveVertexVec(const std::vector<Vertex>&, const gapi::AttributeTypeVec&, std::vector<float>&);
+
+        bool                    m_DynamicData;
+        gapi::AttributeTypeVec  m_VertexAttributes;
+        gapi::BufferPtr         m_Buffer;
+
+        model::Material         m_Material;
     };
+    typedef std::shared_ptr<Mesh>   MeshPtr;
+    typedef std::vector<MeshPtr>    MeshPtrVec;
 
-    typedef std::shared_ptr<Mesh2D>	Mesh2DPtr;
-    typedef std::vector<Mesh2DPtr>	Mesh2DPtrVec;
-
-    class Mesh3D {
+    class InstanceMesh {
     public:
-        typedef std::vector<Vertex3D>   VertexVec;
-        typedef std::vector<GLuint>     IndexVec;
-        typedef std::vector<Material>   MaterialVec;
+        InstanceMesh(const gapi::AttributeTypeVec& vertexAttributes,
+                     const gapi::AttributeTypeVec& instanceAttributes);
 
-        Mesh3D();
+        InstanceMesh(const InstanceMesh&) = default;
 
-        VertexVec&      Vertices();
-        IndexVec&       Indices();
-        MaterialVec&    Materials();
+        bool Assign(const gapi::DataFragmentation& dataFragmentation,
+                    const std::vector<Vertex>& vertexData,
+                    const std::vector<uint32_t>& indices,
+                    const std::vector<Vertex>& instancesData,
+                    bool computeBounds = true);
+
+        bool MakeDynamic(const gapi::DataFragmentation& dataFragmentation,
+                         uint64_t perVertexMaximumDataSize,
+                         uint64_t maximumIndices,
+                         uint64_t perInstanceMaximumDataSize);
+
+        bool DynamicSetVertexData(const std::vector<Vertex>& vertexData, bool computeBounds = true);
+        bool DynamicSetIndicesData(const std::vector<uint32_t>& indices);
+        bool DynamicSetInstanceData(const std::vector<Vertex>& instanceData);
+
+        void Draw() const;
+
+        [[nodiscard]] model::Material& Material();
     private:
-        VertexVec	    m_Vertices;
-        IndexVec	    m_Indices;
-        MaterialVec     m_Materials;
+        Mesh                    m_Mesh;
+        gapi::AttributeTypeVec  m_InstanceAttributes;
     };
-
-    typedef std::shared_ptr<Mesh3D>	Mesh3DPtr;
-    typedef std::vector<Mesh3DPtr>	Mesh3DPtrVec;
 }
 
 #endif //VD_GAME_ENGINE_MESH_HPP

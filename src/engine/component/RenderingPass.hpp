@@ -7,7 +7,7 @@
 
 #include <engine/defines/Types.hpp>
 
-#include <engine/api/gl/FrameBuffer.hpp>
+#include <engine/gapi/gl/FrameBuffer.hpp>
 
 #include <string>
 

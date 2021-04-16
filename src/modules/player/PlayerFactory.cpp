@@ -8,7 +8,7 @@ namespace mod::player {
 
     void PlayerFactory::Create(const vd::EnginePtr& pEngine) {
         PlayerPtr pPlayer = vd::injector::CreateAndStore<Player>();
-        PlayerShaderPtr pPlayerShader = std::make_shared<PlayerShader>();
+        PlayerShaderPtr pPlayerShader = std::make_shared<mod::player::PlayerShader>();
 
         PlayerRendererPtr pPlayerRenderer = std::make_shared<mod::player::PlayerRenderer>(pPlayer, pPlayerShader);
 

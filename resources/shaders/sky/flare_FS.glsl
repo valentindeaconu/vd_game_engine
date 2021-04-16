@@ -11,4 +11,8 @@ void main()
 {
     fColor = texture(diffuseMap, fTexCoords);
     fColor.a *= brightness;
+
+    while (fColor == vec4(0)) break;
+
+    fColor = vec4(0, 1, 0.1, 1);
 }

@@ -4,76 +4,110 @@
 
 #include "Vertex.hpp"
 
+#include <engine/defines/Macros.hpp>
+
 namespace vd::model {
 
-    Vertex2D::Vertex2D(float x, float y)
-        : Position(x, y)
-        , TexCoords(0.0f)
-    {
+    Vertex::Vertex(const gapi::AttributeTypeVec& attributes) {
+        m_Attributes.reserve(attributes.size());
+        m_Attributes.insert(m_Attributes.end(), attributes.begin(), attributes.end());
+
+        // Compute data size for all attributes and resize the data vector
+        // By resizing, data is initialized with zeros
+        uint64_t dataSize = gapi::AttributeType::ComputeDataSize(m_Attributes, m_Attributes.size());
+        m_Data.resize(dataSize);
     }
 
-    Vertex2D::Vertex2D(float x, float y, float u, float v)
-        : Position(x, y)
-        , TexCoords(u, v)
-    {
+    Vertex::Vertex(const std::vector<float>& rawData) {
+        m_Data.clear();
+        m_Data.reserve(rawData.size());
+        m_Data.insert(m_Data.begin(), rawData.begin(), rawData.end());
     }
 
-    Vertex2D::Vertex2D(const glm::vec2& position)
-        : Position(position)
-        , TexCoords(0.0f)
-    {
+    bool Vertex::SameAttributes(const gapi::AttributeTypeVec& attributes) const {
+        return m_Attributes == attributes;
     }
 
-    Vertex2D::Vertex2D(const glm::vec2& position, const glm::vec2& texCoords)
-        : Position(position)
-        , TexCoords(texCoords)
-    {
+    void Vertex::Assign(const gapi::AttributeTypeVec& attributes) {
+        CORE_ASSERT(gapi::AttributeType::ComputeDataSize(attributes, attributes.size()) == m_Data.size(),
+                    "Attributes does not match current data");
+
+        m_Attributes.clear();
+        m_Attributes.reserve(attributes.size());
+        m_Attributes.insert(m_Attributes.begin(), attributes.begin(), attributes.end());
     }
 
-    Vertex3D::Vertex3D(float x, float z)
-        : Position(x, 0.0f, z)
-        , Normal()
-        , TexCoords()
-    {
+    void Vertex::Assign(const std::vector<float>& rawData) {
+        CORE_ASSERT(rawData.size() == m_Data.size(), "Raw data dimension is different than allocated data");
+
+        m_Data.clear();
+        m_Data.reserve(rawData.size());
+        m_Data.insert(m_Data.begin(), rawData.begin(), rawData.end());
     }
 
-    Vertex3D::Vertex3D(const glm::vec2& position)
-        : Position(position.x, 0.0f, position.y)
-        , Normal()
-        , TexCoords()
-    {
+    template <>
+    float& Vertex::Attribute(size_t index) {
+        CORE_ASSERT(index < m_Attributes.size(), "Requested attribute is not allocated");
+        CORE_ASSERT(m_Attributes[index] == gapi::AttributeType::FLOAT_1, "Vertex attribute is not of type Float1!");
+
+        uint64_t dataSizeBefore = gapi::AttributeType::ComputeDataSize(m_Attributes, index);
+        return m_Data[dataSizeBefore];
     }
 
-    Vertex3D::Vertex3D(float x, float y, float z)
-        : Position(x, y, z)
-        , Normal()
-        , TexCoords()
-    {
+    template <>
+    float Vertex::Attribute(size_t index) const {
+        return const_cast<Vertex*>(this)->Attribute<float>(index);
     }
 
-    Vertex3D::Vertex3D(const glm::vec3& position)
-        : Position(position)
-        , Normal()
-        , TexCoords()
-    {
+    template <>
+    glm::vec2& Vertex::Attribute(size_t index) {
+        CORE_ASSERT(index < m_Attributes.size(), "Requested attribute is not allocated");
+        CORE_ASSERT(m_Attributes[index] == gapi::AttributeType::FLOAT_2, "Vertex attribute is not of type Float2!");
+
+        uint64_t dataSizeBefore = gapi::AttributeType::ComputeDataSize(m_Attributes, index);
+        return *(reinterpret_cast<glm::vec2*>(&m_Data[dataSizeBefore]));
     }
 
-    Vertex3D::Vertex3D(const glm::vec3& position, const glm::vec3& normal)
-        : Position(position)
-        , Normal(normal)
-        , TexCoords()
-    {
+    template <>
+    glm::vec2 Vertex::Attribute(size_t index) const {
+        return glm::vec2(const_cast<Vertex*>(this)->Attribute<glm::vec2>(index));
     }
 
-    Vertex3D::Vertex3D(const glm::vec3& position, const glm::vec3& normal, const glm::vec2& texCoords)
-        : Position(position)
-        , Normal(normal)
-        , TexCoords(texCoords)
-    {
+    template <>
+    glm::vec3& Vertex::Attribute(size_t index) {
+        CORE_ASSERT(index < m_Attributes.size(), "Requested attribute is not allocated");
+        CORE_ASSERT(m_Attributes[index] == gapi::AttributeType::FLOAT_3, "Vertex attribute is not of type Float3!");
+
+        uint64_t dataSizeBefore = gapi::AttributeType::ComputeDataSize(m_Attributes, index);
+        return *(reinterpret_cast<glm::vec3*>(&m_Data[dataSizeBefore]));
     }
 
-    glm::vec2 Vertex3D::xz() {
-        return glm::vec2(Position.x, Position.z);
+    template <>
+    glm::vec3 Vertex::Attribute(size_t index) const {
+        return glm::vec3(const_cast<Vertex*>(this)->Attribute<glm::vec3>(index));
+    }
+
+    template <>
+    glm::vec4& Vertex::Attribute(size_t index) {
+        CORE_ASSERT(index < m_Attributes.size(), "Requested attribute is not allocated");
+        CORE_ASSERT(m_Attributes[index] == gapi::AttributeType::FLOAT_4, "Vertex attribute is not of type Float4!");
+
+        uint64_t dataSizeBefore = gapi::AttributeType::ComputeDataSize(m_Attributes, index);
+        return *(reinterpret_cast<glm::vec4*>(&m_Data[dataSizeBefore]));
+    }
+
+    template <>
+    glm::vec4 Vertex::Attribute(size_t index) const {
+        return glm::vec4(const_cast<Vertex*>(this)->Attribute<glm::vec4>(index));
+    }
+
+    const std::vector<float>& Vertex::Data() const {
+        return m_Data;
+    }
+
+    size_t Vertex::SizeInBytes() const {
+        // Vertex contains only floats and a float contains 4 bytes, so the total amount must be equal to size * 4
+        return (m_Data.size() << 2);
     }
 
 }

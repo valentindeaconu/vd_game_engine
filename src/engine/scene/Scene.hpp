@@ -12,12 +12,14 @@
 #include <engine/defines/RenderingPasses.hpp>
 #include <engine/defines/Types.hpp>
 
+#include "Components.hpp"
+
 namespace vd::scene {
     class Entity;
 
     class Scene {
     public:
-        Scene();
+        Scene() = default;
 
         Entity CreateEntity();
 

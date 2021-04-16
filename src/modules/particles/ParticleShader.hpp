@@ -5,7 +5,7 @@
 #ifndef VDGE_PARTICLESHADER_HPP
 #define VDGE_PARTICLESHADER_HPP
 
-#include <engine/api/gl/Shader.hpp>
+#include <engine/gapi/gl/wrappers/Shader.hpp>
 
 #include <engine/loader/ShaderLoader.hpp>
 
@@ -17,7 +17,7 @@
 
 namespace mod::particles {
     
-    class ParticleShader : public vd::gl::Shader, public vd::injector::Injectable {
+    class ParticleShader : public vd::gl::wrappers::Shader, public vd::injector::Injectable {
     public:
         void Link() override;
 

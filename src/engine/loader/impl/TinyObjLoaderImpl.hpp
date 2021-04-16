@@ -13,7 +13,7 @@
 namespace vd::loader::impl {
     class TinyObjLoaderImpl : public IObjectLoader {
     public:
-        vd::model::Mesh3DPtrVec Load(const std::string& path) override;
+        vd::model::MeshPtrVec Load(const std::string& path) override;
     };
     typedef std::shared_ptr<TinyObjLoaderImpl>  TinyObjLoaderImplPtr;
 }

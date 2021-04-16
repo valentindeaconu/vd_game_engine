@@ -7,7 +7,7 @@
 
 #include <random>
 
-#include <engine/api/gl/Texture.hpp>
+#include <engine/gapi/gl/Texture.hpp>
 #include <engine/service/TextureService.hpp>
 
 #include "Particle.hpp"

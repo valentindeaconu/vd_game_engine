@@ -22,13 +22,13 @@ namespace vd::object {
 
         uint64_t LevelOfDetailAtDistance(float distance);
 
-        [[nodiscard]] const model::Mesh3DPtrVec&      Meshes(uint64_t index) const;
-        [[nodiscard]] const math::Bounds3Vec&         BoundingBoxes(uint64_t index) const;
-        [[nodiscard]] const std::vector<uint64_t>&    BufferIndices(uint64_t index) const;
+        [[nodiscard]] const model::MeshPtrVec&      Meshes(uint64_t index) const;
+        [[nodiscard]] const math::Bounds3Vec&       BoundingBoxes(uint64_t index) const;
+        [[nodiscard]] const std::vector<uint64_t>&  BufferIndices(uint64_t index) const;
 
         void UpdateBoundsForLevel(uint64_t levelOfDetail);
     protected:
-        void PushMesh(const model::Mesh3DPtrVec& meshes, float distance);
+        void PushMesh(const model::MeshPtrVec& meshes, float distance);
 
     private:
         uint64_t m_Count;
@@ -36,7 +36,7 @@ namespace vd::object {
         /// Structure of Arrays (SoA) for easy computations
         struct {
             std::vector<float>                  Distances;
-            std::vector<model::Mesh3DPtrVec>    Meshes;
+            std::vector<model::MeshPtrVec>      Meshes;
             std::vector<math::Bounds3Vec>       BoundingBoxes;
             std::vector<std::vector<uint64_t>>  BufferIndices;
         } m_DetailedMeshes;

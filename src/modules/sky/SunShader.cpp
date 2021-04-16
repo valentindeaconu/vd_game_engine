@@ -15,15 +15,15 @@ namespace mod::sky {
 
         std::string vsSource;
         vd::loader::ShaderLoader::Load("./resources/shaders/sun/sun_VS.glsl", vsSource);
-        AddShader(vsSource, vd::gl::Shader::eVertexShader);
+        AddShader(vsSource, vd::gl::wrappers::Shader::eVertexShader);
 
         std::string gSource;
         vd::loader::ShaderLoader::Load("./resources/shaders/sun/sun_GS.glsl", gSource);
-        AddShader(gSource, vd::gl::Shader::eGeometryShader);
+        AddShader(gSource, vd::gl::wrappers::Shader::eGeometryShader);
 
         std::string fsSource;
         vd::loader::ShaderLoader::Load("./resources/shaders/sun/sun_FS.glsl", fsSource);
-        AddShader(fsSource, vd::gl::Shader::eFragmentShader);
+        AddShader(fsSource, vd::gl::wrappers::Shader::eFragmentShader);
 
         Compile();
 
@@ -50,11 +50,10 @@ namespace mod::sky {
         SetUniform("cameraUp", m_pCamera->Up());
         SetUniform("cameraRight", m_pCamera->Right());
 
-        const vd::model::Mesh2DPtr& pMesh = pEntity->Meshes()[meshIndex];
-
         SetUniform("scale", pEntity->LocalTransform().Scale().x);
 
-        auto& diffuseMap = pMesh->Materials()[0].DiffuseMap();
+        const vd::model::MeshPtr& pMesh = pEntity->Meshes()[meshIndex];;
+        auto& diffuseMap = pMesh->Material().DiffuseMap();
 
         diffuseMap->BindToUnit(0);
         SetUniform("diffuseMap", 0);

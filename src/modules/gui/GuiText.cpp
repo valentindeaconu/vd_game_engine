@@ -20,9 +20,27 @@ namespace mod::gui {
     }
 
     void GuiText::Setup() {
-        Buffers().clear();
+        vd::model::MeshPtr& pMesh = Meshes()
+                .emplace_back(
+                        std::move(
+                                std::make_shared<vd::model::Mesh>(
+                                        vd::gapi::AttributeTypeVec ({
+                                                  vd::gapi::AttributeType::FLOAT_2,
+                                                  vd::gapi::AttributeType::FLOAT_2
+                                          }))));
 
-        vd::gl::BufferPtr& pBuffer = Buffers().emplace_back(std::move(std::make_shared<vd::gl::Buffer>()));
+        // maximum length of the text to display is 128
+
+        // Mesh is reused for each letter due to no atlas for font (each letter has to be bound in order to use its texture)
+        pMesh->MakeDynamic(vd::gapi::DataFragmentation::eAsTriangles,
+                           96, // 4 floats/vertex * 6 vertex/letter
+                           0);
+
+
+        // Buffers().clear();
+
+        // TODO: Allocate the new Mesh class as dynamic and use it
+        /*vd::gl::BufferPtr& pBuffer = Buffers().emplace_back(std::move(std::make_shared<vd::gl::Buffer>()));
 
         pBuffer->Create();
         pBuffer->Bind();
@@ -30,7 +48,7 @@ namespace mod::gui {
         pBuffer->AddBuffer(vd::gl::eArrayBuffer, sizeof(float) * 6 * 4, nullptr, vd::gl::eDynamicDraw);
         pBuffer->AttributeArray(0, 0, 4, vd::gl::eFloat, 4 * sizeof(float), nullptr);
 
-        pBuffer->Unbind();
+        pBuffer->Unbind();*/
     }
 
     void GuiText::Init() {
@@ -57,44 +75,47 @@ namespace mod::gui {
         return m_Position;
     }
 
+    GuiText::LetterMeshVec& GuiText::LetterMeshes() {
+        return m_LetterMeshes;
+    }
+
     void GuiText::Color(const glm::vec3& color) {
-        Meshes()[0]->Materials()[0].Color() = glm::vec4(color, 1.0f);
+        vd::model::MeshPtr pMesh = Meshes()[0];
+        pMesh->Material().Color() = glm::vec4(color, 1.0f);
         m_Color = color;
     }
 
     void GuiText::Rebuild() {
-        Meshes().clear();
-
         float x = m_Position.x;
         float y = m_Position.y;
 
-        vd::model::Mesh2DPtr& pMesh = Meshes().emplace_back(std::move(std::make_shared<vd::model::Mesh2D>()));
+        m_LetterMeshes.clear();
 
-        pMesh->Vertices().reserve(m_Text.size() * 6);
+        for (char& c : m_Text) {
+            vd::model::Character ch = m_pFont->Characters()[c];
 
-        for (auto it = m_Text.begin(); it != m_Text.end(); ++it) {
-            vd::model::Character ch = m_pFont->Characters()[*it];
-
-            float xpos = x + ch.Bearing.x * m_Scale;
+            float xpos = x + float(ch.Bearing.x) * m_Scale;
             float ypos = y + float(ch.Size.y - ch.Bearing.y) * m_Scale;
 
-            float w = ch.Size.x * m_Scale;
-            float h = ch.Size.y * m_Scale;
+            float w = float(ch.Size.x) * m_Scale;
+            float h = float(ch.Size.y) * m_Scale;
 
-            pMesh->Vertices().emplace_back(xpos, ypos + h, 0.0, 1.0);
-            pMesh->Vertices().emplace_back(xpos + w, ypos, 1.0, 0.0);
-            pMesh->Vertices().emplace_back(xpos, ypos, 0.0, 0.0);
+            auto& letterMesh = m_LetterMeshes.emplace_back();
 
-            pMesh->Vertices().emplace_back(xpos, ypos + h, 0.0, 1.0);
-            pMesh->Vertices().emplace_back(xpos + w, ypos + h, 1.0, 1.0);
-            pMesh->Vertices().emplace_back(xpos + w, ypos, 1.0, 0.0);
+            letterMesh[0] = vd::model::Vertex(std::vector<float>({ xpos, ypos + h, 0.0, 1.0 }));
+            letterMesh[1] = vd::model::Vertex(std::vector<float>({ xpos + w, ypos, 1.0, 0.0 }));
+            letterMesh[2] = vd::model::Vertex(std::vector<float>({ xpos, ypos, 0.0, 0.0 }));
+
+            letterMesh[3] = vd::model::Vertex(std::vector<float>({ xpos, ypos + h, 0.0, 1.0 }));
+            letterMesh[4] = vd::model::Vertex(std::vector<float>({ xpos + w, ypos + h, 1.0, 1.0 }));
+            letterMesh[5] = vd::model::Vertex(std::vector<float>({ xpos + w, ypos, 1.0, 0.0 }));
 
             // Now advance cursors for next glyph
-            x += (ch.Advance >> 6) * m_Scale; // Bitshift by 6 to get value in pixels (1/64th times 2^6 = 64)
+            x += float(ch.Advance >> 6) * m_Scale; // Bitshift by 6 to get value in pixels (1/64th times 2^6 = 64)
         }
 
-        pMesh->Materials().emplace_back();
-        pMesh->Materials().back().Color() = glm::vec4(m_Color, 1.0f);
+        auto& pMesh = Meshes()[0];
+        pMesh->Material().Color() = glm::vec4(m_Color, 1.0f);
     }
 
     UpdatableGuiText::UpdatableGuiText(std::string text,

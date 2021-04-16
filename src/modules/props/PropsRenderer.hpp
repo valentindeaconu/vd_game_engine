@@ -6,6 +6,7 @@
 #define VD_GAME_ENGINE_PROPRENDERER_HPP
 
 #include <engine/component/IRenderer.hpp>
+#include <modules/shadow/ShadowShader.hpp>
 
 #include <engine/injector/Injectable.hpp>
 
@@ -13,7 +14,6 @@
 #include <engine/culling/FrustumCullingManager.hpp>
 #include <engine/camera/Camera.hpp>
 #include <engine/event/EventHandler.hpp>
-#include <modules/shadow/ShadowShader.hpp>
 #include <modules/terrain/Terrain.hpp>
 #include <modules/biomes/BiomeManager.hpp>
 

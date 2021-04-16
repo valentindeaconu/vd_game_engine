@@ -5,8 +5,8 @@
 #ifndef VD_GAME_ENGINE_NORMALMAPBUILDER_HPP
 #define VD_GAME_ENGINE_NORMALMAPBUILDER_HPP
 
-#include <engine/api/gl/Texture.hpp>
-#include <engine/api/gl/Shader.hpp>
+#include <engine/gapi/gl/Texture.hpp>
+#include <engine/gapi/gl/wrappers/Shader.hpp>
 #include <engine/loader/ShaderLoader.hpp>
 
 #include <engine/service/TextureService.hpp>
@@ -22,7 +22,7 @@ namespace mod::terrain::normalmap {
         void Create(const vd::gl::Texture2DPtr& heightMap, int size, float strength, vd::gl::Texture2DPtr& outNormalMap);
         void CleanUp();
     private:
-        vd::gl::ShaderPtr m_pShader;
+        vd::gl::wrappers::ShaderPtr m_pShader;
     };
     typedef std::shared_ptr<NormalMapBuilder> NormalMapBuilderPtr;
 }

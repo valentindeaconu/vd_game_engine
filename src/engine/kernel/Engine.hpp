@@ -11,7 +11,7 @@
 #include <vector>
 #include <list>
 
-#include <engine/api/gl/Context.hpp>
+#include <engine/gapi/gl/Context.hpp>
 #include <engine/datastruct/Observer.hpp>
 #include <engine/component/RenderingPass.hpp>
 

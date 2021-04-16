@@ -33,7 +33,7 @@ namespace mod::player {
 
         pShader->Bind();
 
-        vd::gl::BufferPtrVec& buffers = m_pPlayer->Buffers();
+        // vd::gl::BufferPtrVec& buffers = m_pPlayer->Buffers();
 
         const float distanceToCamera = glm::length(m_pCamera->Position() - m_pPlayer->WorldTransform().Translation());
         const auto levelOfDetail = m_pPlayer->LevelOfDetailAtDistance(distanceToCamera);
@@ -44,8 +44,9 @@ namespace mod::player {
 
         for (size_t meshIndex = 0; meshIndex < meshes.size(); ++meshIndex) {
             pShader->UpdateUniforms(m_pPlayer, levelOfDetail, meshIndex);
-            const int count = meshes[meshIndex]->Indices().size();
-            buffers[ bufferIndices[meshIndex] ]->DrawElements(vd::gl::eTriangles, count, vd::gl::eUnsignedInt);
+            //const int count = meshes[meshIndex]->Indices().size();
+            //buffers[ bufferIndices[meshIndex] ]->DrawElements(vd::gl::eTriangles, count, vd::gl::eUnsignedInt);
+            meshes[meshIndex]->Draw();
         }
 
         pShader->Unbind();

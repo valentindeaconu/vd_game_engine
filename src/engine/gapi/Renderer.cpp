@@ -2,11 +2,11 @@
 // Created by vali on 4/15/21.
 //
 
-#include "IRenderer.hpp"
+#include "Renderer.hpp"
 
 namespace vd::gapi {
 
-    void IRenderer::Render() {
+    void Renderer::Render() {
         while (!m_ActionsQueue.empty()) {
             auto& [Action, Callback] = m_ActionsQueue.front();
             m_ActionsQueue.pop();
@@ -16,31 +16,38 @@ namespace vd::gapi {
         }
     }
 
+    void Renderer::Submit(const model::Mesh& mesh, const math::Transform& transform, Storage& programParameters) {
+        programParameters["uModel"] = transform.Get();
+        programParameters["uView"] = m_Context.View;
+        programParameters["uProjection"] = m_Context.Projection;
 
-    void IRenderer::Submit(const model::MaterialMesh& mesh, const math::Transform& transform) {
-        auto pair = std::make_pair([=]() {
-            m_Context.Program->Select();
-            m_Context.Program->Update(mesh, transform);
+        auto pair = std::make_pair([program = m_Context.Program, mesh = mesh]() {
+            program->Use();
 
-            mesh->Buffer()->DrawElements(vd::gl::eTriangles, mesh.Indices().size(), vd::gl::eUnsignedInt);
+            // TODO: What to do with the "Storage"?
+            UpdateProgram(program, Storage());
 
-            m_Context.Program->Unselect();
+            mesh.Draw();
+
+            program->Discard();
         }, vd::g_kEmptyConsumer);
+
+        m_ActionsQueue.push(std::move(pair));
     }
 
-    void IRenderer::SetView(const glm::mat4& view) {
+    void Renderer::SetView(const glm::mat4& view) {
         m_Context.View = view;
     }
 
-    void IRenderer::SetProjection(const glm::mat4& projection) {
+    void Renderer::SetProjection(const glm::mat4& projection) {
         m_Context.Projection = projection;
     }
 
-    void IRenderer::SetProgram(IProgramPtr program) {
+    void Renderer::SetProgram(ProgramPtr program) {
         m_Context.Program = std::move(program);
     }
 
-    void IRenderer::UpdateProgram(const IProgramPtr& program, const Storage& storage) {
+    void Renderer::UpdateProgram(const ProgramPtr& program, const Storage& storage) {
         for (const auto& pair : storage) {
             if (!program->Set(pair.first, pair.second)) {
                 Logger::log("Could not set parameter: " + pair.first);

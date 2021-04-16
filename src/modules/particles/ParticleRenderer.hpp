@@ -11,7 +11,7 @@
 #include <engine/context/Context.hpp>
 #include <engine/camera/Camera.hpp>
 
-#include <engine/api/gl/Context.hpp>
+#include <engine/gapi/gl/Context.hpp>
 
 #include <modules/water/WaterRenderer.hpp>
 
@@ -46,7 +46,7 @@ namespace mod::particles {
         size_t                      m_DataLength;
         size_t                      m_ParticleCount;
 
-        vd::gl::BufferPtr           m_pBuffer;
+        vd::gl::wrappers::BufferPtr           m_pBuffer;
 
         std::list<ParticlePtr>      m_Batch;
         std::vector<float>          m_BufferData;

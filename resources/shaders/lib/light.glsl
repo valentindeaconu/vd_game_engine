@@ -3,7 +3,6 @@ struct Light {
 	float AmbientStrength;
 	float SpecularStrength;
 	float Shininess;
-	vec3 Direction;
 	vec3 Position;
 	vec3 Color;
 	vec3 Attenuation;
@@ -18,15 +17,12 @@ struct Material {
 const int MAX_LIGHTS = VDGE_LIGHTS_COUNT;
 uniform Light lights[MAX_LIGHTS];
 uniform Light sun;
-uniform mat3 lightDirectionMatrix;
-
-uniform mat4 view;
 
 Material computePointLight(Light light, vec3 normalEye, vec3 viewDirN, vec3 fragPos) {
 	Material material;
 
 	//compute light position in eye coordinates
-	vec4 lightPosEye = view * vec4(light.Position, 1.0f);
+	vec4 lightPosEye = vec4(light.Position, 1.0f);
 
 	//compute distance to light
 	float dist = length(lightPosEye.xyz - fragPos);
@@ -52,11 +48,11 @@ Material computePointLight(Light light, vec3 normalEye, vec3 viewDirN, vec3 frag
 	return material;
 }
 
-Material computeDirectionalLight(Light light, vec3 normalEye, vec3 viewDirN, mat3 lightDirMatrix) {
+Material computeDirectionalLight(Light light, vec3 normalEye, vec3 viewDirN) {
 	Material material;
 
 	//compute light direction
-	vec3 lightDirN = normalize(lightDirMatrix * light.Direction);
+	vec3 lightDirN = normalize(light.Position);
 
 	//compute ambient light
 	material.Ambient = light.AmbientStrength * light.Color;
@@ -78,17 +74,16 @@ vec3 modulateWithLightsAndShadow(Light sun,
 								Light lights[MAX_LIGHTS],
 								vec3 normalEye,
 								vec3 viewDirN,
-								mat3 lightDirMatrix,
 								vec3 fragPos,
 								Material material,
 								float shadow) {
-	Material total = computeDirectionalLight(sun, normalEye, viewDirN, lightDirMatrix);
+	Material total = computeDirectionalLight(sun, normalEye, viewDirN);
 
 	for (int i = 0; i < MAX_LIGHTS; ++i) {
 		Material curr;
 
 		if (lights[i].Type == 0) {
-			curr = computeDirectionalLight(lights[i], normalEye, viewDirN, lightDirMatrix);
+			curr = computeDirectionalLight(lights[i], normalEye, viewDirN);
 		} else if (lights[i].Type == 1) {
 			curr = computePointLight(lights[i], normalEye, viewDirN, fragPos);
 		} else {

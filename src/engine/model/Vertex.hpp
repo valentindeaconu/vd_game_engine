@@ -7,34 +7,35 @@
 
 #include <glm/glm.hpp>
 #include <memory>
+#include <vector>
 
 #include <engine/exception/Exceptions.hpp>
+#include <engine/gapi/Buffer.hpp>
 
 namespace vd::model {
 
-    struct Vertex2D {
-        glm::vec2 Position;
-        glm::vec2 TexCoords;
+    class Vertex {
+    public:
+        Vertex() = default;
+        explicit Vertex(const gapi::AttributeTypeVec& attributes);
+        explicit Vertex(const std::vector<float>& rawData);
 
-        Vertex2D(float x, float y);
-        Vertex2D(float x, float y, float u, float v);
-        explicit Vertex2D(const glm::vec2& position = glm::vec2(0.0f));
-        Vertex2D(const glm::vec2& position, const glm::vec2& texCoords);
-    };
+        [[nodiscard]] bool SameAttributes(const gapi::AttributeTypeVec& attributes) const;
 
-    struct Vertex3D {
-        glm::vec3 Position;
-        glm::vec3 Normal;
-        glm::vec2 TexCoords;
+        void Assign(const gapi::AttributeTypeVec& attributes);
+        void Assign(const std::vector<float>& rawData);
 
-        Vertex3D(float x, float z);
-        explicit Vertex3D(const glm::vec2& position);
-        Vertex3D(float x, float y, float z);
-        explicit Vertex3D(const glm::vec3& position = glm::vec3(0.0f));
-        Vertex3D(const glm::vec3& position, const glm::vec3& normal);
-        Vertex3D(const glm::vec3& position, const glm::vec3& normal, const glm::vec2& texCoords);
+        template <typename T>
+        T& Attribute(size_t index);
 
-        glm::vec2 xz();
+        template <typename T>
+        T Attribute(size_t index) const;
+
+        [[nodiscard]] const std::vector<float>& Data() const;
+        [[nodiscard]] size_t SizeInBytes() const;
+    private:
+        gapi::AttributeTypeVec  m_Attributes;
+        std::vector<float>      m_Data;
     };
 
 }

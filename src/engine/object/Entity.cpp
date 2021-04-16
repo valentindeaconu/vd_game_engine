@@ -10,7 +10,7 @@ namespace vd::object {
         return m_WorldTransform;
     }
 
-    gl::BufferPtrVec& Entity::Buffers() {
+    gl::wrappers::BufferPtrVec& Entity::Buffers() {
         return m_Buffers;
     }
 

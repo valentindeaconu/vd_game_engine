@@ -9,7 +9,7 @@
 
 #include <memory>
 
-#include <engine/api/gl/FrameBuffer.hpp>
+#include <engine/gapi/gl/FrameBuffer.hpp>
 
 #include <engine/injector/Injectable.hpp>
 #include <engine/event/EventHandler.hpp>

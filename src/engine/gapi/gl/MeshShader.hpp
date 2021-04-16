@@ -17,11 +17,10 @@
 #include <engine/fog/FogManager.hpp>
 #include <engine/context/Context.hpp>
 
-namespace vd {
-    class MeshShader
-            : public vd::component::IEntity3DShader
-                    , public vd::injector::Injectable
-                    , public std::enable_shared_from_this<MeshShader> {
+namespace vd::gl {
+    class MeshShader : public vd::component::IEntity3DShader
+                        , public vd::injector::Injectable
+                        , public std::enable_shared_from_this<MeshShader> {
     public:
         void Link() override;
         void Init() override;

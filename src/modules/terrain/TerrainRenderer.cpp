@@ -43,7 +43,7 @@ namespace mod::terrain {
         m_pShader->Bind();
         m_pShader->UpdateUniforms(m_pTerrain, 0, 0);
 
-        vd::gl::BufferPtr& buffer = m_pTerrain->Buffers()[0];
+        vd::gl::wrappers::BufferPtr& buffer = m_pTerrain->Buffers()[0];
         buffer->UpdateBufferData(vd::gl::eArrayBuffer, (m_BufferData.size() << 2), &m_BufferData[0], 1);
         buffer->DrawArraysInstanced(vd::gl::ePatches, 16, m_LeafCount);
 

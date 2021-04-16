@@ -7,7 +7,7 @@
 
 #include <engine/component/IEntityShader.hpp>
 #include <engine/component/IRenderer.hpp>
-#include <engine/api/gl/Context.hpp>
+#include <engine/gapi/gl/Context.hpp>
 
 #include "GuiQuad.hpp"
 #include "GuiText.hpp"

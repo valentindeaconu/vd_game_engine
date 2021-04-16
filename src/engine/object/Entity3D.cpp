@@ -18,7 +18,7 @@ namespace vd::object {
             throw RuntimeError("could not initialise a 3D entity without meshes");
         }
 
-        Buffers().clear();
+        /*Buffers().clear();
         for (int i = 0; i < m_Count; ++i) {
             auto& meshes = m_DetailedMeshes.Meshes[i];
 
@@ -39,26 +39,26 @@ namespace vd::object {
                 pBuffer->Bind();
                 pBuffer->AddBuffer(
                         gl::eArrayBuffer,
-                        mesh->Vertices().size() * sizeof(vd::model::Vertex3D),
-                        &mesh->Vertices()[0],
+                        mesh->VerticesSizeInBytes(),
+                        &mesh->Data()[0],
                         gl::eStaticDraw
                 );
                 pBuffer->AddBuffer(
                         gl::eElementArrayBuffer,
-                        mesh->Indices().size() * sizeof(GLuint),
+                        mesh->IndicesSizeInBytes(),
                         &mesh->Indices()[0],
                         gl::eStaticDraw
                 );
-                pBuffer->AttributeArray(0, 0, 3, vd::gl::eFloat, sizeof(vd::model::Vertex3D), (GLvoid*)0);
-                pBuffer->AttributeArray(1, 0, 3, vd::gl::eFloat, sizeof(vd::model::Vertex3D), (GLvoid*)offsetof(vd::model::Vertex3D, Normal));
-                pBuffer->AttributeArray(2, 0, 2, vd::gl::eFloat, sizeof(vd::model::Vertex3D), (GLvoid*)offsetof(vd::model::Vertex3D, TexCoords));
+                pBuffer->AttributeArray(0, 0, 3, vd::gl::eFloat, mesh->VertexSizeInBytes(), (GLvoid*)0);
+                pBuffer->AttributeArray(1, 0, 3, vd::gl::eFloat, mesh->VertexSizeInBytes(), (GLvoid*)(3 * 4));
+                pBuffer->AttributeArray(2, 0, 2, vd::gl::eFloat, mesh->VertexSizeInBytes(), (GLvoid*)(6 * 4));
                 pBuffer->Unbind();
 
                 Buffers().emplace_back(std::move(pBuffer));
 
                 boundingBoxes.emplace_back(math::Bounds3(mesh));
             }
-        }
+        }*/
     }
 
     void Entity3D::CleanUp() {
@@ -84,7 +84,7 @@ namespace vd::object {
         return m_Count - 1;
     }
 
-    const model::Mesh3DPtrVec& Entity3D::Meshes(uint64_t index) const {
+    const model::MeshPtrVec& Entity3D::Meshes(uint64_t index) const {
         return m_DetailedMeshes.Meshes[index];
     }
 
@@ -97,7 +97,7 @@ namespace vd::object {
     }
 
 
-    void Entity3D::PushMesh(const model::Mesh3DPtrVec& meshes, float distance) {
+    void Entity3D::PushMesh(const model::MeshPtrVec& meshes, float distance) {
         m_DetailedMeshes.Distances.emplace_back(distance);
         m_DetailedMeshes.Meshes.emplace_back(meshes);
 
@@ -109,13 +109,13 @@ namespace vd::object {
     }
 
     void Entity3D::UpdateBoundsForLevel(uint64_t levelOfDetail) {
-        const auto sz = m_DetailedMeshes.Meshes[levelOfDetail].size();
+        /*const auto sz = m_DetailedMeshes.Meshes[levelOfDetail].size();
         m_DetailedMeshes.BoundingBoxes[levelOfDetail].clear();
         m_DetailedMeshes.BoundingBoxes[levelOfDetail].resize(sz);
 
         for (int i = 0; i < sz; ++i) {
             math::Bounds3 bounds(m_DetailedMeshes.Meshes[levelOfDetail][i]);
             m_DetailedMeshes.BoundingBoxes[levelOfDetail][i] = bounds.WithTransform(WorldTransform());
-        }
+        }*/
     }
 }

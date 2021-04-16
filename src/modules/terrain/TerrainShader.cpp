@@ -22,23 +22,23 @@ namespace mod::terrain {
         
         std::string vsSource;
         vd::loader::ShaderLoader::Load("./resources/shaders/terrain/terrain_VS.glsl", vsSource);
-        AddShader(vsSource, vd::gl::Shader::eVertexShader);
+        AddShader(vsSource, vd::gl::wrappers::Shader::eVertexShader);
 
         std::string tcSource;
         vd::loader::ShaderLoader::Load("./resources/shaders/terrain/terrain_TC.glsl", tcSource);
-        AddShader(tcSource, vd::gl::Shader::eTessellationControlShader);
+        AddShader(tcSource, vd::gl::wrappers::Shader::eTessellationControlShader);
 
         std::string teSource;
         vd::loader::ShaderLoader::Load("./resources/shaders/terrain/terrain_TE.glsl", teSource);
-        AddShader(teSource, vd::gl::Shader::eTessellationEvaluationShader);
+        AddShader(teSource, vd::gl::wrappers::Shader::eTessellationEvaluationShader);
 
         std::string gsSource;
         vd::loader::ShaderLoader::Load("./resources/shaders/terrain/terrain_GS.glsl", gsSource);
-        AddShader(gsSource, vd::gl::Shader::eGeometryShader);
+        AddShader(gsSource, vd::gl::wrappers::Shader::eGeometryShader);
 
         std::string fsSource;
         vd::loader::ShaderLoader::Load("./resources/shaders/terrain/terrain_FS.glsl", fsSource);
-        AddShader(fsSource, vd::gl::Shader::eFragmentShader);
+        AddShader(fsSource, vd::gl::wrappers::Shader::eFragmentShader);
 
         Compile();
 

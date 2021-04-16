@@ -52,7 +52,7 @@ namespace mod::terrain {
 
         std::vector<glm::vec2> vertices = GeneratePatch();
 
-        vd::gl::BufferPtr& pBuffer = Buffers().emplace_back(std::move(std::make_shared<vd::gl::Buffer>()));
+        vd::gl::wrappers::BufferPtr& pBuffer = Buffers().emplace_back(std::move(std::make_shared<vd::gl::wrappers::Buffer>()));
 
         pBuffer->Create();
         pBuffer->Bind();

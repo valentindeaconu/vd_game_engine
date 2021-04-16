@@ -2,21 +2,33 @@
 // Created by vali on 4/15/21.
 //
 
-#ifndef VDGE_IPROGRAM_HPP
-#define VDGE_IPROGRAM_HPP
+#ifndef VDGE_PROGRAM_HPP
+#define VDGE_PROGRAM_HPP
 
+#include <vector>
 #include <memory>
 #include <string>
 #include <any>
 #include <glm/glm.hpp>
 
 namespace vd::gapi {
-    class IProgram {
-    public:
-        virtual void Select() = 0;
-        virtual void Unselect() = 0;
+    enum class GraphicPipelineStage {
+        eVertex = 0,
+        eTessellationControl,
+        eTessellationEvaluation,
+        eGeometry,
+        eFragment,
+        eCompute
+    };
 
-        virtual void Allocate(const std::string&) = 0;
+    class Program {
+    public:
+        virtual void Create(const std::vector<std::pair<GraphicPipelineStage, std::string>>&) = 0;
+
+        virtual void Use() = 0;
+        virtual void Discard() = 0;
+
+        virtual void SetEmpty(const std::string&) = 0;
 
         virtual void Set(const std::string&, int) = 0;
         virtual void Set(const std::string&, float) = 0;
@@ -27,9 +39,11 @@ namespace vd::gapi {
         virtual void Set(const std::string&, const glm::mat3&) = 0;
         virtual void Set(const std::string&, const glm::mat4&) = 0;
         bool Set(const std::string&, const std::any&);
+
+        virtual void Release() = 0;
     };
-    typedef std::shared_ptr<IProgram>    IProgramPtr;
+    typedef std::shared_ptr<Program>    ProgramPtr;
 }
 
 
-#endif //VDGE_IPROGRAM_HPP
+#endif //VDGE_PROGRAM_HPP

@@ -7,7 +7,7 @@
 
 #include <engine/object/Entity3D.hpp>
 
-#include <engine/api/gl/FrameBuffer.hpp>
+#include <engine/gapi/gl/FrameBuffer.hpp>
 
 #include <engine/loader/PropertiesLoader.hpp>
 

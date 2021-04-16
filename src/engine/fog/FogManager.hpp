@@ -24,8 +24,8 @@ namespace vd::fog {
         void Update() override;
         void CleanUp() override;
 
-        void AddUniforms(const gl::ShaderPtr& pShader) override;
-        void SetUniforms(const gl::ShaderPtr& pShader) override;
+        void AddUniforms(const gl::wrappers::ShaderPtr& pShader) override;
+        void SetUniforms(const gl::wrappers::ShaderPtr& pShader) override;
 
         void FogColor(const glm::vec3& color);
 

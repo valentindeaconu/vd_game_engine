@@ -7,13 +7,13 @@
 
 #include <memory>
 
-#include <engine/api/gl/Shader.hpp>
+#include <engine/gapi/gl/wrappers/Shader.hpp>
 #include <engine/loader/ShaderLoader.hpp>
 
 #include "RenderingEffect.hpp"
 
 namespace vd::component {
-    class IRenderingEffectShader : public gl::Shader {
+    class IRenderingEffectShader : public gl::wrappers::Shader {
     protected:
         virtual void AddUniforms() = 0;
     public:

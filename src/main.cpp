@@ -5,6 +5,8 @@
 
 #include <engine/kernel/EngineFactory.hpp>
 
+#include <engine/model/Vertex.hpp>
+
 int main(int argc, char ** argv) {
     /// Engine creation
     vd::EnginePtr pEngine = nullptr;

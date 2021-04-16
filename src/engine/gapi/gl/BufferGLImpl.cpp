@@ -2,11 +2,11 @@
 // Created by Vali on 2/17/2021.
 //
 
-#include "Buffer.hpp"
+#include "BufferGLImpl.hpp"
 
 namespace vd::gl {
 
-    Buffer::Buffer()
+    BufferGLImpl::BufferGLImpl()
         : m_DynamicMemory(false)
         , m_MultipleInstances(false)
         , m_DataFragmentation(gapi::DataFragmentation::eAsPoints)
@@ -15,20 +15,20 @@ namespace vd::gl {
     {
     }
 
-    void Buffer::Use() {
+    void BufferGLImpl::Use() {
         m_Buffer->Bind();
     }
 
-    void Buffer::Discard() {
+    void BufferGLImpl::Discard() {
         m_Buffer->Unbind();
     }
 
-    void Buffer::AllocateStatic(gapi::DataFragmentation dataFragmentation,
-                                const std::vector<gapi::AttributeType>& perVertexAttributes,
-                                const std::vector<gapi::AttributeType>& perInstanceAttributes,
-                                const std::vector<float>& perVertexData,
-                                const std::vector<float>& perInstanceData,
-                                const std::vector<uint32_t>& indices) {
+    void BufferGLImpl::AllocateStatic(gapi::DataFragmentation dataFragmentation,
+                                      const gapi::AttributeTypeVec& perVertexAttributes,
+                                      const gapi::AttributeTypeVec& perInstanceAttributes,
+                                      const std::vector<float>& perVertexData,
+                                      const std::vector<float>& perInstanceData,
+                                      const std::vector<uint32_t>& indices) {
         // If buffer was already allocated, just release it's memory and reallocate it
         if (m_Buffer) {
             m_Buffer->CleanUp();
@@ -44,7 +44,7 @@ namespace vd::gl {
         // with the sizeof(<datatype>) value
         // Also, remember to transfer the datatype enum to the Buffer object
 
-        uint64_t vertexDataSize = ComputeDataSize(perVertexAttributes, perVertexAttributes.size());
+        uint64_t vertexDataSize = gapi::AttributeType::ComputeDataSize(perVertexAttributes, perVertexAttributes.size());
         uint64_t vertexDataSizeInBytes = (vertexDataSize << 2);
 
         uint64_t vertexCount = perVertexData.size() / vertexDataSize;
@@ -63,7 +63,7 @@ namespace vd::gl {
             m_Buffer->PatchParameter(vd::gl::ePatchVertices, vertexCount);
         }
 
-        if (dataFragmentation == gapi::DataFragmentation::eAsTriangles) {
+        if (!indices.empty()) {
             m_Buffer->AddBuffer(gl::eElementArrayBuffer,
                                 (indices.size() << 2),
                                 &indices[0],
@@ -75,7 +75,7 @@ namespace vd::gl {
         uint64_t attrIndex = 0;
         uint64_t attrOffset = 0;
         for (auto& attr : perVertexAttributes) {
-            uint8_t attrSize = ToAttributeSize(attr);
+            uint8_t attrSize = attr;
 
             m_Buffer->AttributeArray(attrIndex,
                                      0,
@@ -91,7 +91,7 @@ namespace vd::gl {
         if (!perInstanceAttributes.empty()) {
             m_MultipleInstances = true;
 
-            uint64_t instanceDataSize = ComputeDataSize(perInstanceAttributes, perInstanceAttributes.size());
+            uint64_t instanceDataSize = gapi::AttributeType::ComputeDataSize(perInstanceAttributes, perInstanceAttributes.size());
             uint64_t instanceDataSizeInBytes = (instanceDataSize << 2);
 
             uint64_t instanceCount = perInstanceData.size() / instanceDataSize;
@@ -104,7 +104,7 @@ namespace vd::gl {
 
             attrOffset = 0;
             for (auto& attr : perVertexAttributes) {
-                uint8_t attrSize = ToAttributeSize(attr);
+                uint8_t attrSize = attr;
 
                 m_Buffer->InstanceAttributeArray(attrIndex,
                                                  0,
@@ -122,12 +122,12 @@ namespace vd::gl {
         m_Buffer->Unbind();
     }
 
-    void Buffer::AllocateDynamic(gapi::DataFragmentation dataFragmentation,
-                                 const std::vector<gapi::AttributeType>& perVertexAttributes,
-                                 const std::vector<gapi::AttributeType>& perInstanceAttributes,
-                                 uint64_t perVertexMaximumDataSize,
-                                 uint64_t maximumIndices,
-                                 uint64_t perInstanceMaximumDataSize) {
+    void BufferGLImpl::AllocateDynamic(gapi::DataFragmentation dataFragmentation,
+                                       const gapi::AttributeTypeVec& perVertexAttributes,
+                                       const gapi::AttributeTypeVec& perInstanceAttributes,
+                                       uint64_t perVertexMaximumDataSize,
+                                       uint64_t maximumIndices,
+                                       uint64_t perInstanceMaximumDataSize) {
         m_DynamicMemory = true;
 
         // If buffer was already allocated, just release it's memory and reallocate it
@@ -145,7 +145,7 @@ namespace vd::gl {
         // with the sizeof(<datatype>) value
         // Also, remember to transfer the datatype enum to the Buffer object
 
-        uint64_t vertexDataSize = ComputeDataSize(perVertexAttributes, perVertexAttributes.size());
+        uint64_t vertexDataSize = gapi::AttributeType::ComputeDataSize(perVertexAttributes, perVertexAttributes.size());
         uint64_t vertexDataSizeInBytes = (vertexDataSize << 2);
 
         m_Buffer->Create();
@@ -155,7 +155,7 @@ namespace vd::gl {
                             nullptr,
                             gl::eDynamicDraw);
 
-        if (dataFragmentation == gapi::DataFragmentation::eAsTriangles) {
+        if (maximumIndices > 0) {
             m_Buffer->AddBuffer(gl::eElementArrayBuffer,
                                 (maximumIndices << 2),
                                 nullptr,
@@ -165,7 +165,7 @@ namespace vd::gl {
         uint64_t attrIndex = 0;
         uint64_t attrOffset = 0;
         for (auto& attr : perVertexAttributes) {
-            uint8_t attrSize = ToAttributeSize(attr);
+            uint8_t attrSize = attr;
 
             m_Buffer->AttributeArray(attrIndex,
                                      0,
@@ -181,14 +181,14 @@ namespace vd::gl {
         if (!perInstanceAttributes.empty()) {
             m_MultipleInstances = true;
 
-            uint64_t instanceDataSize = ComputeDataSize(perInstanceAttributes, perInstanceAttributes.size());
+            uint64_t instanceDataSize = gapi::AttributeType::ComputeDataSize(perInstanceAttributes, perInstanceAttributes.size());
             uint64_t instanceDataSizeInBytes = (instanceDataSize << 2);
 
             m_Buffer->AddBuffer(vd::gl::eArrayBuffer, (perInstanceMaximumDataSize << 2), nullptr, vd::gl::eDynamicDraw);
 
             attrOffset = 0;
             for (auto& attr : perVertexAttributes) {
-                uint8_t attrSize = ToAttributeSize(attr);
+                uint8_t attrSize = attr;
 
                 m_Buffer->InstanceAttributeArray(attrIndex,
                                                  0,
@@ -206,25 +206,31 @@ namespace vd::gl {
         m_Buffer->Unbind();
     }
 
-    void Buffer::UpdateVertexData(const std::vector<float>& perVertexData) {
+    void BufferGLImpl::UpdateVertexData(const std::vector<float>& perVertexData, uint64_t vertexCount) {
         if (m_DynamicMemory) {
             m_Buffer->UpdateBufferData(vd::gl::eArrayBuffer,
                                        (perVertexData.size() << 2),
                                        &perVertexData[0],
                                        0);
+
+            if (!m_Buffer->HasBuffer(vd::gl::eElementArrayBuffer)) {
+                m_Count = vertexCount;
+            }
         }
     }
 
-    void Buffer::UpdateIndices(const std::vector<uint32_t>& indices) {
+    void BufferGLImpl::UpdateIndices(const std::vector<uint32_t>& indices) {
         if (m_DynamicMemory) {
             m_Buffer->UpdateBufferData(vd::gl::eElementArrayBuffer,
                                        (indices.size() << 2),
                                        &indices[0],
                                        0);
+
+            m_Count = indices.size();
         }
     }
 
-    void Buffer::UpdateInstanceData(const std::vector<float>& perInstanceData) {
+    void BufferGLImpl::UpdateInstanceData(const std::vector<float>& perInstanceData) {
         if (m_DynamicMemory) {
             m_Buffer->UpdateBufferData(vd::gl::eArrayBuffer,
                                        (perInstanceData.size() << 2),
@@ -233,49 +239,29 @@ namespace vd::gl {
         }
     }
 
-    void Buffer::Draw() {
-        if (m_DataFragmentation == gapi::DataFragmentation::eAsTriangles) {
+    void BufferGLImpl::Draw() {
+        gl::PrimitiveType primitiveType = ToPrimitiveType(m_DataFragmentation);
+
+        if (m_Buffer->HasBuffer(vd::gl::eElementArrayBuffer)) {
             if (m_MultipleInstances) {
-                m_Buffer->DrawElementsInstanced(vd::gl::eTriangles, m_Count, vd::gl::eFloat, m_InstanceCount);
+                m_Buffer->DrawElementsInstanced(primitiveType, m_Count, vd::gl::eUnsignedInt, m_InstanceCount);
             } else {
-                m_Buffer->DrawElements(vd::gl::eTriangles, m_Count, vd::gl::eFloat);
+                m_Buffer->DrawElements(primitiveType, m_Count, vd::gl::eUnsignedInt);
             }
         } else {
-            gl::PrimitiveType primitiveType = ToPrimitiveType(m_DataFragmentation);
-
             if (m_MultipleInstances) {
-                m_Buffer->DrawArraysInstanced(primitiveType, m_Count,  m_InstanceCount);
+                m_Buffer->DrawArraysInstanced(primitiveType, m_Count, m_InstanceCount);
             } else {
                 m_Buffer->DrawArrays(primitiveType, m_Count);
             }
         }
     }
 
-    void Buffer::Release() {
+    void BufferGLImpl::Release() {
         m_Buffer->CleanUp();
     }
 
-    uint8_t Buffer::ToAttributeSize(const gapi::AttributeType& attribute) {
-        switch (attribute) {
-            case gapi::AttributeType::eFloat1: return 1;
-            case gapi::AttributeType::eFloat2: return 2;
-            case gapi::AttributeType::eFloat3: return 3;
-            case gapi::AttributeType::eFloat4: return 4;
-        }
-    }
-
-    uint64_t Buffer::ComputeDataSize(const std::vector<gapi::AttributeType>& attributes, size_t index) {
-        uint64_t totalSize = 0;
-
-        size_t N = std::min(index, attributes.size());
-        for (int i = 0; i < N; ++i) {
-            totalSize += (uint64_t)attributes[i];
-        }
-
-        return totalSize;
-    }
-
-    gl::PrimitiveType Buffer::ToPrimitiveType(const gapi::DataFragmentation& dataFragmentation) {
+    gl::PrimitiveType BufferGLImpl::ToPrimitiveType(const gapi::DataFragmentation& dataFragmentation) {
         switch (dataFragmentation) {
             case gapi::DataFragmentation::eAsPoints:        return gl::PrimitiveType::ePoints;
             case gapi::DataFragmentation::eAsLines:         return gl::PrimitiveType::eLines;

@@ -18,10 +18,10 @@ namespace vd::object {
         virtual void Init();
         virtual void CleanUp();
 
-        model::Mesh2DPtrVec& Meshes();
-        math::Bounds2Vec& BoundingBoxes();
+        model::MeshPtrVec&  Meshes();
+        math::Bounds2Vec&   BoundingBoxes();
     private:
-        model::Mesh2DPtrVec m_Meshes;
+        model::MeshPtrVec   m_Meshes;
         math::Bounds2Vec    m_BoundingBoxes;
     };
     typedef std::shared_ptr<Entity2D>   Entity2DPtr;

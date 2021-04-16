@@ -22,8 +22,8 @@ namespace mod::sky {
         for (int i = 0; ; ++i) {
             const std::string prefix = "Texture." + std::to_string(i);
             try {
-                std::string path = pProps->Get<std::string>(prefix + ".Path");
-                float scale = pProps->Get<float>(prefix + ".Scale");
+                auto path = pProps->Get<std::string>(prefix + ".Path");
+                auto scale = pProps->Get<float>(prefix + ".Scale");
 
                 m_Textures.emplace_back(vd::service::TextureService::CreateFromFile(path));
                 m_TexturesPositionScale.emplace_back(glm::vec4(0.0f, 0.0f, scale, scale));
@@ -68,7 +68,7 @@ namespace mod::sky {
         float quadWidth = 0.07f;
         m_QueryQuadPositionScale = glm::vec4(.0f, .0f, quadWidth, quadWidth * m_pWindow->AspectRatio());
 
-        m_InvQueryQuadTotalSamples = 1.0f / (glm::pow(quadWidth * m_pWindow->Width() * 0.5f, 2) * m_pContext->SamplesPerPixel());
+        m_InvQueryQuadTotalSamples = 1.0f / (glm::pow(quadWidth * m_pWindow->Width(), 2) * m_pContext->SamplesPerPixel());
     }
 
     void FlareRenderer::OnUpdate() {
@@ -120,7 +120,8 @@ namespace mod::sky {
             m_pShader->Bind();
             m_pShader->UpdateUniforms(m_Textures[0], m_QueryQuadPositionScale, 1.0f);
 
-            m_pQuad->Buffers()[0]->DrawArrays(vd::gl::eTriangleStrip, 4);
+            m_pQuad->Meshes()[0]->Draw();
+            // m_pQuad->Buffers()[0]->DrawArrays(vd::gl::eTriangleStrip, 4);
 
             m_pShader->Unbind();
 
@@ -132,7 +133,10 @@ namespace mod::sky {
             m_pShader->Bind();
             m_pShader->UpdateUniforms(m_Textures[i], m_TexturesPositionScale[i], m_Brightness);
 
-            m_pQuad->Buffers()[0]->DrawArrays(vd::gl::eTriangleStrip, 4);
+            glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+            // m_pQuad->Buffers()[0]->DrawArrays(vd::gl::eTriangleStrip, 4);
+            m_pQuad->Meshes()[0]->Draw();
+            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
             m_pShader->Unbind();
         }

@@ -34,16 +34,14 @@ namespace vd::light {
         void Update() override;
         void CleanUp() override;
 
-        void AddUniforms(const gl::ShaderPtr& pShader) override;
-        void SetUniforms(const gl::ShaderPtr& pShader) override;
+        void AddUniforms(const gl::wrappers::ShaderPtr& pShader) override;
+        void SetUniforms(const gl::wrappers::ShaderPtr& pShader) override;
 
         [[nodiscard]] const LightPtr& Sun() const;
         [[nodiscard]] const std::vector<LightPtr>& Lights() const;
     private:
         LightPtr                m_pSun;
         std::vector<LightPtr>   m_Lights;
-
-        glm::mat3               m_LightDirectionMatrix;
 
         camera::CameraPtr       m_pCamera;
         core::ThreadPoolPtr     m_pThreadPool;

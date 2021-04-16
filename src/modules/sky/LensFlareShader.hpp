@@ -7,8 +7,8 @@
 
 #include <memory>
 
-#include <engine/api/gl/Shader.hpp>
-#include <engine/api/gl/Texture.hpp>
+#include <engine/gapi/gl/wrappers/Shader.hpp>
+#include <engine/gapi/gl/Texture.hpp>
 #include <engine/loader/ShaderLoader.hpp>
 
 #include <engine/injector/Injectable.hpp>
@@ -17,7 +17,7 @@
 
 namespace mod::sky {
 
-    class FlareShader : public vd::gl::Shader, public vd::injector::Injectable {
+    class FlareShader : public vd::gl::wrappers::Shader, public vd::injector::Injectable {
     public:
         void Link() override;
 

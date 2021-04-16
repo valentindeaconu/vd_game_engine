@@ -15,11 +15,11 @@ namespace mod::shadow {
 
         std::string vsSource;
         vd::loader::ShaderLoader::Load("./resources/shaders/shadow/shadow_VS.glsl", vsSource);
-        AddShader(vsSource, vd::gl::Shader::eVertexShader);
+        AddShader(vsSource, vd::gl::wrappers::Shader::eVertexShader);
 
         std::string fsSource;
         vd::loader::ShaderLoader::Load("./resources/shaders/shadow/shadow_FS.glsl", fsSource);
-        AddShader(fsSource, vd::gl::Shader::eFragmentShader);
+        AddShader(fsSource, vd::gl::wrappers::Shader::eFragmentShader);
 
         Compile();
         
@@ -40,13 +40,11 @@ namespace mod::shadow {
         SetUniform("view", m_pShadowManager->ViewMatrix());
         SetUniform("projection", m_pShadowManager->ProjectionMatrix());
 
-        const vd::model::Mesh3DPtr& pMesh = pEntity->Meshes(levelOfDetail)[meshIndex];
+        const vd::model::MeshPtr& pMesh = pEntity->Meshes(levelOfDetail)[meshIndex];
 
-        if (!pMesh->Materials().empty()) {
-            vd::model::Material& meshMaterial = pMesh->Materials().front();
-
-            if (meshMaterial.DiffuseMap() != nullptr) {
-                meshMaterial.DiffuseMap()->BindToUnit(0);
+        if (pMesh != nullptr) {
+            if (pMesh->Material().DiffuseMap() != nullptr) {
+                pMesh->Material().DiffuseMap()->BindToUnit(0);
                 SetUniform("diffuseMap", 0);
             }
         }

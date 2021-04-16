@@ -8,11 +8,16 @@
 #include <engine/object/Entity2D.hpp>
 #include <engine/model/Font.hpp>
 
-#include <engine/api/gl/Buffer.hpp>
+#include <engine/gapi/gl/wrappers/Buffer.hpp>
+
+#include <engine/core/Threads.hpp>
 
 namespace mod::gui {
     class GuiText : public vd::object::Entity2D {
     public:
+        typedef std::array<vd::model::Vertex, 6>    LetterMesh;
+        typedef std::vector<LetterMesh>             LetterMeshVec;
+
         GuiText(std::string text,
                 vd::model::FontPtr font,
                 const glm::vec2& position,
@@ -27,6 +32,8 @@ namespace mod::gui {
         vd::model::FontPtr& Font();
         float& Scale();
         glm::vec2& Position();
+        LetterMeshVec& LetterMeshes();
+
         void Color(const glm::vec3& color);
 
         void Rebuild();
@@ -36,6 +43,7 @@ namespace mod::gui {
         glm::vec2           m_Position;
         glm::vec3           m_Color;
         std::string         m_Text;
+        LetterMeshVec       m_LetterMeshes;
     };
     typedef std::shared_ptr<GuiText>    GuiTextPtr;
 

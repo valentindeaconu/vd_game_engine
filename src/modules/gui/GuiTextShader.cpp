@@ -12,11 +12,11 @@ namespace mod::gui {
 
             std::string vsSource;
             vd::loader::ShaderLoader::Load("./resources/shaders/gui/text_VS.glsl", vsSource);
-            AddShader(vsSource, vd::gl::Shader::eVertexShader);
+            AddShader(vsSource, vd::gl::wrappers::Shader::eVertexShader);
 
             std::string fsSource;
             vd::loader::ShaderLoader::Load("./resources/shaders/gui/text_FS.glsl", fsSource);
-            AddShader(fsSource, vd::gl::Shader::eFragmentShader);
+            AddShader(fsSource, vd::gl::wrappers::Shader::eFragmentShader);
 
             Compile();
 
@@ -39,7 +39,9 @@ namespace mod::gui {
     void GuiTextShader::UpdateUniforms(vd::object::Entity2DPtr pEntity, uint64_t levelOfDetail, uint32_t meshIndex) {
         mod::gui::GuiTextPtr pGuiText = std::dynamic_pointer_cast<mod::gui::GuiText>(pEntity);
 
-        SetUniform("textColor", glm::vec3(pEntity->Meshes()[0]->Materials()[0].Color()));
+        auto& pMesh = pEntity->Meshes()[0];
+
+        SetUniform("textColor", glm::vec3(pMesh->Material().Color()));
 
         pGuiText->Font()->Characters()[pGuiText->Text()[meshIndex]].Texture->BindToUnit(1);
         SetUniform("text", 1);

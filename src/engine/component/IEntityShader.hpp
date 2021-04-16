@@ -5,13 +5,13 @@
 #ifndef VD_GAME_ENGINE_IENTITYSHADER_HPP
 #define VD_GAME_ENGINE_IENTITYSHADER_HPP
 
-#include <engine/api/gl/Shader.hpp>
+#include <engine/gapi/gl/wrappers/Shader.hpp>
 
 #include <engine/object/Entity2D.hpp>
 #include <engine/object/Entity3D.hpp>
 
 namespace vd::component {
-    class IEntityShader : public gl::Shader {
+    class IEntityShader : public gl::wrappers::Shader {
     public:
         virtual void Init() = 0;
 

@@ -8,7 +8,7 @@
 #include <tiny_obj_loader.h>
 
 namespace vd::loader::impl {
-    vd::model::Mesh3DPtrVec TinyObjLoaderImpl::Load(const std::string &path) {
+    vd::model::MeshPtrVec TinyObjLoaderImpl::Load(const std::string &path) {
         tinyobj::attrib_t attrib;
         std::vector<tinyobj::shape_t> shapes;
         std::vector<tinyobj::material_t> materials;
@@ -44,15 +44,23 @@ namespace vd::loader::impl {
 
         vd::Logger::log("[" + basename + "] " + std::to_string(shapes.size()) + " shape(s), " + std::to_string(materials.size()) + " material(s)");
 
-        vd::model::Mesh3DPtrVec meshes;
+        vd::model::MeshPtrVec meshes;
         meshes.reserve(shapes.size());
 
         // Loop over shapes
         for (auto & shape : shapes) {
-            vd::model::Mesh3DPtr pMesh = std::make_shared<vd::model::Mesh3D>();
+            vd::model::MeshPtr pMesh = std::make_shared<vd::model::Mesh>(gapi::AttributeTypeVec({
+                    vd::gapi::AttributeType::FLOAT_3, // Position
+                    vd::gapi::AttributeType::FLOAT_3, // Normal
+                    vd::gapi::AttributeType::FLOAT_2  // TexCoords
+            }));
 
             // Loop over faces
             size_t index_offset = 0;
+
+            std::vector<vd::model::Vertex> vertices;
+            std::vector<uint32_t> indices;
+
             for (size_t f = 0; f < shape.mesh.num_face_vertices.size(); f++) {
                 int fv = shape.mesh.num_face_vertices[f];
 
@@ -77,25 +85,25 @@ namespace vd::loader::impl {
                         ty = attrib.texcoords[2 * idx.texcoord_index + 1];
                     }
 
-                    glm::vec3 vertexPosition(vx, vy, vz);
-                    glm::vec3 vertexNormal(nx, ny, nz);
-                    glm::vec2 vertexTexCoords(tx, ty);
+                    vertices.emplace_back(std::vector<float>({
+                            vx, vy, vz,
+                            nx, ny, nz,
+                            tx, ty
+                    }));
 
-                    pMesh->Vertices().emplace_back(vertexPosition, vertexNormal, vertexTexCoords);
-
-                    pMesh->Indices().push_back((GLuint)index_offset + v);
+                    indices.emplace_back(uint32_t(index_offset + v));
                 }
 
                 index_offset += fv;
             }
 
+            pMesh->Assign(gapi::DataFragmentation::eAsTriangles, vertices, indices);
+
             // get material id
             if (!shape.mesh.material_ids.empty() && !materials.empty()) {
                 materialId = shape.mesh.material_ids[0];
                 if (materialId != -1) {
-                    pMesh->Materials().emplace_back(materials[materialId].name);
-
-                    auto& material = pMesh->Materials().back();
+                    auto& material = pMesh->Material();
 
                     material.Emission() = glm::vec3(materials[materialId].emission[0],
                                                     materials[materialId].emission[1],

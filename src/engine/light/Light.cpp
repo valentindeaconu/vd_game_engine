@@ -28,8 +28,8 @@ namespace vd::light {
         return m_Position;
     }
 
-    glm::vec3& Light::Direction() {
-        return Position();
+    glm::vec3& Light::EyeSpacePosition() {
+        return m_EyeSpacePosition;
     }
 
     glm::vec3& Light::Color() {

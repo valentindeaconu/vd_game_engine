@@ -28,13 +28,13 @@ namespace vd::fog {
 
     }
 
-    void FogManager::AddUniforms(const gl::ShaderPtr& pShader) {
+    void FogManager::AddUniforms(const gl::wrappers::ShaderPtr& pShader) {
         pShader->AddUniform("fog.Density");
         pShader->AddUniform("fog.Gradient");
         pShader->AddUniform("fog.Color");
     }
 
-    void FogManager::SetUniforms(const gl::ShaderPtr& pShader) {
+    void FogManager::SetUniforms(const gl::wrappers::ShaderPtr& pShader) {
         pShader->SetUniform("fog.Density", m_pFog->Density());
         pShader->SetUniform("fog.Gradient", m_pFog->Gradient());
         pShader->SetUniform("fog.Color", m_pFog->Color());

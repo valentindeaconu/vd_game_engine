@@ -13,6 +13,9 @@ out float fVisibility;
 uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
+uniform mat3 normalMatrix;
+
+uniform int fakeLighting = 0;
 
 #include <fog.glsl>
 
@@ -21,7 +24,12 @@ uniform vec4 clipPlane;
 void main() 
 {
 	// pass normal and texcoords
-	fNormal = vNormal;
+	if (fakeLighting == 0) {
+		fNormal = normalize(normalMatrix * vNormal); // compute normal in eye-space
+	} else {
+		fNormal = normalize(normalMatrix * vec3(0, 1, 0));
+	}
+
 	fTexCoords = vTexCoords;
 
 	// world coordinates

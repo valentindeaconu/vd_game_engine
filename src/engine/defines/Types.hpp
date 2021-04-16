@@ -7,6 +7,9 @@
 
 #include <cstdint>
 #include <functional>
+#include <map>
+#include <any>
+#include <string>
 
 namespace vd {
     namespace internal {
@@ -34,6 +37,8 @@ namespace vd {
     inline Predicate    g_kEmptyPredicate   = []() { return true; };
 
     typedef float   Timestep;
+
+    typedef std::map<std::string, std::any> Storage;
 }
 
 #endif //VD_GAME_ENGINE_TYPES_HPP

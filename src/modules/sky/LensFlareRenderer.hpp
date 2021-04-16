@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include <engine/api/gl/Query.hpp>
+#include <engine/gapi/gl/Query.hpp>
 #include <engine/object/primitive/Quad2D.hpp>
 #include <engine/defines/Types.hpp>
 #include <engine/service/TextureService.hpp>

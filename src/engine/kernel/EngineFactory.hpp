@@ -6,7 +6,7 @@
 #define VD_GAME_ENGINE_ENGINEFACTORY_HPP
 
 // Graphic API Context
-#include <engine/api/gl/Context.hpp>
+#include <engine/gapi/gl/Context.hpp>
 
 // Injector
 #include <engine/injector/CreateAndStore.hpp>

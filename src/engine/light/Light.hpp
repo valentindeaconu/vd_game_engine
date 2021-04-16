@@ -25,7 +25,7 @@ namespace vd::light {
         [[nodiscard]] const LightType& Type() const;
 
         glm::vec3& Position();
-        glm::vec3& Direction();
+        glm::vec3& EyeSpacePosition();
         glm::vec3& Color();
         glm::vec3& Attenuation();
 
@@ -37,6 +37,7 @@ namespace vd::light {
         const LightType m_kType;
 
         glm::vec3 m_Position;
+        glm::vec3 m_EyeSpacePosition;
         glm::vec3 m_Color;
         glm::vec3 m_Attenuation;
 

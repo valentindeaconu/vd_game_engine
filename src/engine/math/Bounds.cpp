@@ -83,23 +83,25 @@ namespace vd::math {
 
     Bounds2::Bounds2(const glm::vec2 &left, const glm::vec2 &right) : Bounds<glm::vec2>(left, right) { }
 
-    Bounds2::Bounds2(const model::Mesh2DPtr& meshPtr) : Bounds<glm::vec2>() {
-        WrapMesh(meshPtr);
+    Bounds2::Bounds2(const std::vector<model::Vertex>& vertices) : Bounds<glm::vec2>() {
+        WrapVertices(vertices);
     }
 
-    void Bounds2::WrapMesh(const model::Mesh2DPtr& meshPtr) {
-        if (meshPtr != nullptr && !meshPtr->Vertices().empty()) {
-            m_Left.x = m_Right.x = meshPtr->Vertices().front().Position.x;
-            m_Left.y = m_Right.y = meshPtr->Vertices().front().Position.y;
+    void Bounds2::WrapVertices(const std::vector<model::Vertex> &vertices) {
+        if (!vertices.empty()) {
+            const glm::vec2& firstPosition = vertices[0].Attribute<glm::vec2>(0);
 
-            for (size_t i = 1; i < meshPtr->Vertices().size(); ++i) {
-                model::Vertex2D& v = meshPtr->Vertices()[i];
+            m_Left.x = m_Right.x = firstPosition.x;
+            m_Left.y = m_Right.y = firstPosition.y;
 
-                m_Right.x = std::max(m_Right.x, v.Position.x);
-                m_Left.x = std::min(m_Left.x, v.Position.x);
+            for (size_t i = 1; i < vertices.size(); ++i) {
+                const glm::vec2& position = vertices[i].Attribute<glm::vec2>(0);
 
-                m_Right.y = std::max(m_Right.y, v.Position.y);
-                m_Left.y = std::min(m_Left.y, v.Position.y);
+                m_Right.x = std::max(m_Right.x, position.x);
+                m_Left.x = std::min(m_Left.x, position.x);
+
+                m_Right.y = std::max(m_Right.y, position.y);
+                m_Left.y = std::min(m_Left.y, position.y);
             }
         }
     }
@@ -108,27 +110,29 @@ namespace vd::math {
 
     Bounds3::Bounds3(const glm::vec3& left, const glm::vec3&right) : Bounds(left, right) { }
 
-    Bounds3::Bounds3(const model::Mesh3DPtr& meshPtr) : Bounds<glm::vec3>() {
-        WrapMesh(meshPtr);
+    Bounds3::Bounds3(const std::vector<model::Vertex>& vertices) : Bounds<glm::vec3>() {
+        WrapVertices(vertices);
     }
 
-    void Bounds3::WrapMesh(const model::Mesh3DPtr& meshPtr) {
-        if (meshPtr != nullptr && !meshPtr->Vertices().empty()) {
-            m_Left.x = m_Right.x = meshPtr->Vertices().front().Position.x;
-            m_Left.y = m_Right.y = meshPtr->Vertices().front().Position.y;
-            m_Left.z = m_Right.z = meshPtr->Vertices().front().Position.z;
+    void Bounds3::WrapVertices(const std::vector<model::Vertex>& vertices) {
+        if (!vertices.empty()) {
+            const glm::vec3& firstPosition = vertices[0].Attribute<glm::vec3>(0);
 
-            for (size_t i = 1; i < meshPtr->Vertices().size(); ++i) {
-                model::Vertex3D& v = meshPtr->Vertices()[i];
+            m_Left.x = m_Right.x = firstPosition.x;
+            m_Left.y = m_Right.y = firstPosition.y;
+            m_Left.z = m_Right.z = firstPosition.z;
 
-                m_Right.x = std::max(m_Right.x, v.Position.x);
-                m_Left.x = std::min(m_Left.x, v.Position.x);
+            for (size_t i = 1; i < vertices.size(); ++i) {
+                const glm::vec3& position = vertices[i].Attribute<glm::vec3>(0);
 
-                m_Right.y = std::max(m_Right.y, v.Position.y);
-                m_Left.y = std::min(m_Left.y, v.Position.y);
+                m_Right.x = std::max(m_Right.x, position.x);
+                m_Left.x = std::min(m_Left.x, position.x);
 
-                m_Right.z = std::max(m_Right.z, v.Position.z);
-                m_Left.z = std::min(m_Left.z, v.Position.z);
+                m_Right.y = std::max(m_Right.y, position.y);
+                m_Left.y = std::min(m_Left.y, position.y);
+
+                m_Right.z = std::max(m_Right.z, position.z);
+                m_Left.z = std::min(m_Left.z, position.z);
             }
         }
     }

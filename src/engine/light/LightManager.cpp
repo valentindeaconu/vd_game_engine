@@ -53,10 +53,19 @@ namespace vd::light {
 
     void LightManager::Update() {
         if (m_pCamera->CameraRotated() || m_pCamera->CameraMoved()) {
+            const glm::mat4& view = m_pCamera->ViewMatrix();
+
+            glm::mat3 lightDirectionMatrix = glm::transpose(glm::inverse(glm::mat3(view)));
+
             // TODO: Dispatch this computation on a job thread
             // m_pThreadPool->CreateJob([&, view = m_pCamera->ViewMatrix()]() {
-                m_LightDirectionMatrix = glm::transpose(glm::inverse(glm::mat3(m_pCamera->ViewMatrix())));
             // }, true);
+
+            m_pSun->EyeSpacePosition() = glm::normalize(lightDirectionMatrix * m_pSun->Position());
+
+            for (auto& light : m_Lights) {
+                light->EyeSpacePosition() = glm::vec3(view * glm::vec4(light->Position(), 1.0f));
+            }
         }
     }
 
@@ -64,8 +73,8 @@ namespace vd::light {
 
     }
 
-    void LightManager::AddUniforms(const gl::ShaderPtr& pShader) {
-        pShader->AddUniform("sun.Direction");
+    void LightManager::AddUniforms(const gl::wrappers::ShaderPtr& pShader) {
+        pShader->AddUniform("sun.Position");
         pShader->AddUniform("sun.Color");
         pShader->AddUniform("sun.AmbientStrength");
         pShader->AddUniform("sun.SpecularStrength");
@@ -76,19 +85,16 @@ namespace vd::light {
 
             pShader->AddUniform(currentLightUniformNameBase + ".Type");
             pShader->AddUniform(currentLightUniformNameBase + ".Position");
-            pShader->AddUniform(currentLightUniformNameBase + ".Direction");
             pShader->AddUniform(currentLightUniformNameBase + ".Color");
             pShader->AddUniform(currentLightUniformNameBase + ".Attenuation");
             pShader->AddUniform(currentLightUniformNameBase + ".AmbientStrength");
             pShader->AddUniform(currentLightUniformNameBase + ".SpecularStrength");
             pShader->AddUniform(currentLightUniformNameBase + ".Shininess");
         }
-
-        pShader->AddUniform("lightDirectionMatrix");
     }
 
-    void LightManager::SetUniforms(const gl::ShaderPtr& pShader) {
-        pShader->SetUniform("sun.Direction", m_pSun->Direction());
+    void LightManager::SetUniforms(const gl::wrappers::ShaderPtr& pShader) {
+        pShader->SetUniform("sun.Position", m_pSun->Position());
         pShader->SetUniform("sun.Color", m_pSun->Color());
         pShader->SetUniform("sun.AmbientStrength", m_pSun->AmbientStrength());
         pShader->SetUniform("sun.SpecularStrength", m_pSun->SpecularStrength());
@@ -102,18 +108,18 @@ namespace vd::light {
             switch (pLight->Type()) {
                 case vd::light::eDirectional: {
                     pShader->SetUniform(currentLightUniformNameBase + ".Type", 0);
-                    pShader->SetUniform(currentLightUniformNameBase + ".Direction", pLight->Direction());
+                    pShader->SetUniform(currentLightUniformNameBase + ".Position", pLight->EyeSpacePosition());
                     break;
                 }
                 case vd::light::ePoint: {
                     pShader->SetUniform(currentLightUniformNameBase + ".Type", 1);
-                    pShader->SetUniform(currentLightUniformNameBase + ".Position", pLight->Position());
+                    pShader->SetUniform(currentLightUniformNameBase + ".Position", pLight->EyeSpacePosition());
                     break;
                 }
                 case vd::light::eSpot:
                 default: {
                     pShader->SetUniform(currentLightUniformNameBase + ".Type", 2);
-                    pShader->SetUniform(currentLightUniformNameBase + ".Position", pLight->Position());
+                    pShader->SetUniform(currentLightUniformNameBase + ".Position", pLight->EyeSpacePosition());
                     break;
                 }
             }
@@ -123,8 +129,6 @@ namespace vd::light {
             pShader->SetUniform(currentLightUniformNameBase + ".SpecularStrength", pLight->SpecularStrength());
             pShader->SetUniform(currentLightUniformNameBase + ".Shininess", pLight->Shininess());
         }
-
-        pShader->SetUniform("lightDirectionMatrix", m_LightDirectionMatrix);
     }
 
     const LightPtr& LightManager::Sun() const {

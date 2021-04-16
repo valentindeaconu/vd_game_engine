@@ -12,6 +12,7 @@ out vec4 tcTessFactor;
 out mat3 tcNormalMatrix;
 
 uniform mat4 worldModel;
+uniform mat4 view;
 
 uniform sampler2D heightMap;
 
@@ -23,8 +24,8 @@ void main() {
     tcTexCoords = localCoords;
     tcTessFactor = vTessFactor;
 
-    // Compute normal matrix (transpose inverse of model matrix, without translation)
-    tcNormalMatrix = transpose(inverse(mat3(worldModel + vLocalModel)));
+    // Compute normal matrix (transpose inverse of model-view matrix, without translation)
+    tcNormalMatrix = transpose(inverse(mat3(view * (worldModel * vLocalModel))));
 
     // Read vertex' height
     float height = texture(heightMap, localCoords).r;

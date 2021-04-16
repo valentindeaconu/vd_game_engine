@@ -108,19 +108,19 @@ void main() {
         // compute normal in light space
         vec3 normalLS = normalize(fNormalMatrix * normal);
         // compute view direction
-        vec3 viewDirN = normalize(cameraPosition - fPosition);
+        vec3 viewDirN = normalize(-fPosition);
 
         // compute shadow
         float distance = (length(fPosition) - (shadowDistance - shadowTransitionDistance)) / shadowTransitionDistance;
         float shadowDistanceFactor = clamp(1.0f - distance, 0.0f, 1.0f);
-        float shadow = computeShadow(fPosition_ls, normalLS, sun.Direction, shadowDistanceFactor);
+        float shadow = computeShadow(fPosition_ls, normalLS, sun.Position, shadowDistanceFactor);
 
         // modulate with lights
         Material material;
         material.Ambient = materialColor.xyz;
         material.Diffuse = materialColor.xyz;
 
-        vec3 lighting = modulateWithLightsAndShadow(sun, lights, normalLS, viewDirN, lightDirectionMatrix, fPosition.xyz, material, shadow);
+        vec3 lighting = modulateWithLightsAndShadow(sun, lights, normalLS, viewDirN, fPosition.xyz, material, shadow);
 
         // compute visibility factor
         float visibility = GetVisibilityThruFog(fPosition, fog.Density, fog.Gradient);

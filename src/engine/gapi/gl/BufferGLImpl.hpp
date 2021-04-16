@@ -16,28 +16,28 @@
 
 namespace vd::gl {
 
-    class Buffer : public gapi::Buffer {
+    class BufferGLImpl : public gapi::Buffer {
     public:
-        Buffer();
+        BufferGLImpl();
 
         void Use() override;
         void Discard() override;
 
         void AllocateStatic(gapi::DataFragmentation dataFragmentation,
-                            const std::vector<gapi::AttributeType>& perVertexAttributes,
-                            const std::vector<gapi::AttributeType>& perInstanceAttributes,
+                            const gapi::AttributeTypeVec& perVertexAttributes,
+                            const gapi::AttributeTypeVec& perInstanceAttributes,
                             const std::vector<float>& perVertexData,
                             const std::vector<float>& perInstanceData,
                             const std::vector<uint32_t>& indices) override;
 
         void AllocateDynamic(gapi::DataFragmentation dataFragmentation,
-                             const std::vector<gapi::AttributeType>& perVertexAttributes,
-                             const std::vector<gapi::AttributeType>& perInstanceAttributes,
+                             const gapi::AttributeTypeVec& perVertexAttributes,
+                             const gapi::AttributeTypeVec& perInstanceAttributes,
                              uint64_t perVertexMaximumDataSize,
                              uint64_t maximumIndices,
                              uint64_t perInstanceMaximumDataSize) override;
 
-        void UpdateVertexData(const std::vector<float>& perVertexData) override;
+        void UpdateVertexData(const std::vector<float>& perVertexData, uint64_t vertexCount) override;
         void UpdateIndices(const std::vector<uint32_t>& indices) override;
         void UpdateInstanceData(const std::vector<float>& perInstanceData) override;
 
@@ -45,9 +45,7 @@ namespace vd::gl {
 
         void Release() override;
     private:
-        static uint64_t             ComputeDataSize(const std::vector<gapi::AttributeType>&, size_t);
-        static uint8_t              ToAttributeSize(const gapi::AttributeType& attribute);
-        static gl::PrimitiveType    ToPrimitiveType(const gapi::DataFragmentation& dataFragmentation);
+        static gl::PrimitiveType ToPrimitiveType(const gapi::DataFragmentation& dataFragmentation);
 
         std::unique_ptr<wrappers::Buffer> m_Buffer;
 
@@ -57,7 +55,7 @@ namespace vd::gl {
         uint64_t                m_Count;
         uint64_t                m_InstanceCount;
     };
-    typedef std::shared_ptr<Buffer> BufferPtr;
+    typedef std::shared_ptr<BufferGLImpl> BufferGLImplPtr;
 }
 
 #endif //VDGE_GL_BUFFER_HPP

@@ -16,11 +16,11 @@ namespace mod::sky {
 
         std::string vsSource;
         vd::loader::ShaderLoader::Load("./resources/shaders/sky/flare_VS.glsl", vsSource);
-        AddShader(vsSource, vd::gl::Shader::eVertexShader);
+        AddShader(vsSource, vd::gl::wrappers::Shader::eVertexShader);
 
         std::string fsSource;
         vd::loader::ShaderLoader::Load("./resources/shaders/sky/flare_FS.glsl", fsSource);
-        AddShader(fsSource, vd::gl::Shader::eFragmentShader);
+        AddShader(fsSource, vd::gl::wrappers::Shader::eFragmentShader);
 
         Compile();
 

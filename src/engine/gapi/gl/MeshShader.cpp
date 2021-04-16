@@ -4,7 +4,7 @@
 
 #include "MeshShader.hpp"
 
-namespace vd {
+namespace vd::gl {
 
     void MeshShader::Link() {
         m_pCamera = vd::ObjectOfType<vd::camera::Camera>::Find();
@@ -19,11 +19,11 @@ namespace vd {
 
         std::string vsSource;
         vd::loader::ShaderLoader::Load("./resources/shaders/mesh/mesh_VS.glsl", vsSource);
-        AddShader(vsSource, vd::gl::Shader::eVertexShader);
+        AddShader(vsSource, vd::gl::wrappers::Shader::eVertexShader);
 
         std::string fsSource;
         vd::loader::ShaderLoader::Load("./resources/shaders/mesh/mesh_FS.glsl", fsSource);
-        AddShader(fsSource, vd::gl::Shader::eFragmentShader);
+        AddShader(fsSource, vd::gl::wrappers::Shader::eFragmentShader);
 
         Compile();
 
@@ -66,8 +66,7 @@ namespace vd {
         SetUniform("uFakeLighting", 0);
 
         const vd::model::MeshPtr& pMesh = pEntity->Meshes(levelOfDetail)[meshIndex];
-        vd::model::MaterialMeshPtr pMaterialMesh = std::dynamic_pointer_cast<vd::model::MaterialMesh>(pMesh);
-        vd::model::Material& meshMaterial = pMaterialMesh->Material();
+        vd::model::Material& meshMaterial = pMesh->Material();
 
         if (meshMaterial.DiffuseMap() != nullptr) {
             meshMaterial.DiffuseMap()->BindToUnit(0);

@@ -24,7 +24,9 @@ namespace vd::loader::impl {
         }
     }
 
-    VDGEGLSLImpl::~VDGEGLSLImpl() = default;
+    void VDGEGLSLImpl::Prepare() {
+        m_Defines.clear();
+    }
 
     void VDGEGLSLImpl::Load(const std::string& path, std::string& output) {
         output.clear();
@@ -33,10 +35,12 @@ namespace vd::loader::impl {
         std::vector<std::string> lines;
         FileLoader::Load(path, lines);
 
+        bool ignoreDueDefine = false;
+
         for (size_t i = 0; i < lines.size(); ++i) {
             std::string& line = lines[i];
 
-            if (line.empty()) {
+            if (ignoreDueDefine || line.empty()) {
                 continue;
             }
 
@@ -80,9 +84,25 @@ namespace vd::loader::impl {
                     Load(location, include_content);
 
                     output += include_content + '\n';
+                } else if (line.starts_with("#define")) {
+                    const size_t variablePosition = std::string("#define ").length();
+                    std::string variable = line.substr(variablePosition);
+                    m_Defines.insert(variable);
+                } else if (line.starts_with("#ifndef")) {
+                    const size_t variablePosition = std::string("#ifndef ").length();
+                    std::string variable = line.substr(variablePosition);
+
+                    ignoreDueDefine = m_Defines.contains(variable);
+                } else if (line.starts_with("#ifdef")) {
+                    const size_t variablePosition = std::string("#ifdef ").length();
+                    std::string variable = line.substr(variablePosition);
+
+                    ignoreDueDefine = !m_Defines.contains(variable);
+                } else if (line.starts_with("#endif")) {
+                    ignoreDueDefine = false;
                 }
             } else {
-                for (const auto& pair : m_ConstantMap) {
+                for (const auto &pair : m_ConstantMap) {
                     size_t pos = line.find(pair.first);
                     if (pos != std::string::npos) {
                         line.replace(pos, pair.first.length(), pair.second);

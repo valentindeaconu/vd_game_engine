@@ -10,21 +10,6 @@ include_directories(src/)
 include_directories(include/)
 
 set(SOURCES
-        src/engine/api/gl/Enums.hpp
-        src/engine/api/gl/Buffer.cpp
-        src/engine/api/gl/Buffer.hpp
-        src/engine/api/gl/Component.cpp
-        src/engine/api/gl/Component.hpp
-        src/engine/api/gl/Context.cpp
-        src/engine/api/gl/Context.hpp
-        src/engine/api/gl/FrameBuffer.cpp
-        src/engine/api/gl/FrameBuffer.hpp
-        src/engine/api/gl/Texture.cpp
-        src/engine/api/gl/Texture.hpp
-        src/engine/api/gl/Shader.cpp
-        src/engine/api/gl/Shader.hpp
-        src/engine/api/gl/Query.cpp
-        src/engine/api/gl/Query.hpp
         src/engine/camera/first/FirstPersonCamera.cpp
         src/engine/camera/first/FirstPersonCamera.hpp
         src/engine/camera/free/FreeCamera.cpp
@@ -54,6 +39,7 @@ set(SOURCES
         src/engine/context/Context.hpp
         src/engine/core/ThreadPool.cpp
         src/engine/core/ThreadPool.hpp
+        src/engine/core/Threads.hpp
         src/engine/core/Job.cpp
         src/engine/core/Job.hpp
         src/engine/culling/FrustumCullingManager.cpp
@@ -65,6 +51,7 @@ set(SOURCES
         src/engine/defines/Actions.hpp
         src/engine/defines/Buttons.hpp
         src/engine/defines/Keys.hpp
+        src/engine/defines/Macros.hpp
         src/engine/defines/Types.hpp
         src/engine/event/EventHandler.cpp
         src/engine/event/EventHandler.hpp
@@ -74,6 +61,35 @@ set(SOURCES
         src/engine/fog/FogManager.hpp
         src/engine/fog/Fog.cpp
         src/engine/fog/Fog.hpp
+        src/engine/gapi/gl/wrappers/Buffer.cpp
+        src/engine/gapi/gl/wrappers/Buffer.hpp
+        src/engine/gapi/gl/wrappers/Shader.cpp
+        src/engine/gapi/gl/wrappers/Shader.hpp
+        src/engine/gapi/gl/Enums.hpp
+        src/engine/gapi/gl/BufferGLImpl.cpp
+        src/engine/gapi/gl/BufferGLImpl.cpp
+        src/engine/gapi/gl/Component.cpp
+        src/engine/gapi/gl/Component.hpp
+        src/engine/gapi/gl/Context.cpp
+        src/engine/gapi/gl/Context.hpp
+        src/engine/gapi/gl/FrameBuffer.cpp
+        src/engine/gapi/gl/FrameBuffer.hpp
+        src/engine/gapi/gl/Query.cpp
+        src/engine/gapi/gl/Query.hpp
+        src/engine/gapi/gl/Texture.cpp
+        src/engine/gapi/gl/Texture.hpp
+        src/engine/gapi/gl/MeshShader.cpp
+        src/engine/gapi/gl/MeshShader.hpp
+        src/engine/gapi/gl/ProgramGLImpl.cpp
+        src/engine/gapi/gl/ProgramGLImpl.hpp
+        src/engine/gapi/Buffer.cpp
+        src/engine/gapi/Buffer.hpp
+        src/engine/gapi/Factory.cpp
+        src/engine/gapi/Factory.hpp
+        src/engine/gapi/Renderer.hpp
+        src/engine/gapi/Renderer.cpp
+        src/engine/gapi/Program.cpp
+        src/engine/gapi/Program.hpp
         src/engine/injector/CreateAndStore.hpp
         src/engine/injector/Injectable.cpp
         src/engine/injector/Injectable.hpp
@@ -144,11 +160,14 @@ set(SOURCES
         src/engine/object/Entity3D.hpp
         src/engine/property/Properties.cpp
         src/engine/property/Properties.hpp
+        src/engine/scene/Components.cpp
         src/engine/scene/Components.hpp
         src/engine/scene/Entity.cpp
         src/engine/scene/Entity.hpp
         src/engine/scene/Scene.cpp
         src/engine/scene/Scene.hpp
+        src/engine/scene/ScriptableEntity.cpp
+        src/engine/scene/ScriptableEntity.hpp
         src/engine/service/TextureService.cpp
         src/engine/service/TextureService.hpp
         src/engine/time/Time.cpp

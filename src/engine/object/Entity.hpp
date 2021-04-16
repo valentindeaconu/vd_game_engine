@@ -6,7 +6,7 @@
 #define VD_GAME_ENGINE_ENTITY_HPP
 
 #include <engine/math/Transform.hpp>
-#include <engine/api/gl/Buffer.hpp>
+#include <engine/gapi/gl/wrappers/Buffer.hpp>
 
 namespace vd::object {
     class Entity {
@@ -18,12 +18,12 @@ namespace vd::object {
         math::Transform& LocalTransform();
         math::Transform& WorldTransform();
 
-        gl::BufferPtrVec& Buffers();
+        gl::wrappers::BufferPtrVec& Buffers();
     private:
         math::Transform m_LocalTransform;
         math::Transform m_WorldTransform;
 
-        gl::BufferPtrVec m_Buffers;
+        gl::wrappers::BufferPtrVec m_Buffers;
     };
     typedef std::shared_ptr<Entity>	EntityPtr;
 }

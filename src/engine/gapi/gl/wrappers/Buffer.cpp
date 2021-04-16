@@ -4,7 +4,7 @@
 
 #include "Buffer.hpp"
 
-namespace vd::gl:wrappers {
+namespace vd::gl::wrappers {
     inline std::string ToString(BufferType t) {
         switch (t) {
             case eArrayBuffer: return "ARRAY BUFFER";
@@ -125,11 +125,15 @@ namespace vd::gl:wrappers {
         Unbind();
     }
 
+    bool Buffer::HasBuffer(BufferType type) const {
+        return m_Buffers.contains(type);
+    }
+
     void Buffer::AttributeArray(uint32_t index,
-                                size_t bufferIndex, 
-                                int32_t size, 
-                                DataType dataType, 
-                                uint32_t stride, 
+                                size_t bufferIndex,
+                                int32_t size,
+                                DataType dataType,
+                                uint32_t stride,
                                 const void *ptr) {
         PassIfCreated();
 
@@ -138,7 +142,7 @@ namespace vd::gl:wrappers {
         }
 
         if (bufferIndex >= m_Buffers[eArrayBuffer].size()) {
-            throw RuntimeError("Buffer of type " + ToString(eArrayBuffer) + " with index " + std::to_string(bufferIndex) + " does not exists");            
+            throw RuntimeError("Buffer of type " + ToString(eArrayBuffer) + " with index " + std::to_string(bufferIndex) + " does not exists");
         }
 
         Bind();
@@ -156,11 +160,11 @@ namespace vd::gl:wrappers {
     }
 
     void Buffer::InstanceAttributeArray(uint32_t index,
-                                        size_t bufferIndex,  
-                                        int32_t size, 
-                                        DataType dataType, 
-                                        uint32_t stride, 
-                                        uint32_t divisor, 
+                                        size_t bufferIndex,
+                                        int32_t size,
+                                        DataType dataType,
+                                        uint32_t stride,
+                                        uint32_t divisor,
                                         const void *ptr) {
         PassIfCreated();
 
@@ -169,7 +173,7 @@ namespace vd::gl:wrappers {
         }
 
         if (bufferIndex >= m_Buffers[eArrayBuffer].size()) {
-            throw RuntimeError("Buffer of type " + ToString(eArrayBuffer) + " with index " + std::to_string(bufferIndex) + " does not exists");            
+            throw RuntimeError("Buffer of type " + ToString(eArrayBuffer) + " with index " + std::to_string(bufferIndex) + " does not exists");
         }
 
         Bind();
@@ -201,17 +205,18 @@ namespace vd::gl:wrappers {
 
     void Buffer::DrawArrays(PrimitiveType type, size_t count) {
         PassIfCreated();
-        
+
         Bind();
 
         glDrawArrays(type, 0, count);
-        
+
         Unbind();
     }
 
+
     void Buffer::DrawArraysInstanced(PrimitiveType type, size_t count, size_t instanceCount) {
         PassIfCreated();
-        
+
         Bind();
 
         glDrawArraysInstanced(type, 0, count, instanceCount);
@@ -230,7 +235,6 @@ namespace vd::gl:wrappers {
         Unbind();
     }
 
-    
     void Buffer::DrawElementsInstanced(PrimitiveType type, size_t count, DataType dataType, size_t instanceCount) {
         PassIfCreated();
 

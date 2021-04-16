@@ -17,11 +17,11 @@ namespace mod::water {
 
         std::string vsSource;
         vd::loader::ShaderLoader::Load("./resources/shaders/water/water_VS.glsl", vsSource);
-        AddShader(vsSource, vd::gl::Shader::eVertexShader);
+        AddShader(vsSource, vd::gl::wrappers::Shader::eVertexShader);
 
         std::string fsSource;
         vd::loader::ShaderLoader::Load("./resources/shaders/water/water_FS.glsl", fsSource);
-        AddShader(fsSource, vd::gl::Shader::eFragmentShader);
+        AddShader(fsSource, vd::gl::wrappers::Shader::eFragmentShader);
 
         Compile();
 
@@ -88,7 +88,7 @@ namespace mod::water {
 
         auto& pSun = m_pLightManager->Sun();
 
-        SetUniform("sunDirection", pSun->Direction());
+        SetUniform("sunDirection", pSun->Position());
         SetUniform("sunColor", pSun->Color());
 
         SetUniform("moveFactor", pWater->GetMoveFactor());

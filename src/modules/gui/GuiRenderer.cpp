@@ -41,22 +41,42 @@ namespace mod::gui {
         switch (m_Type) {
             case eQuad:
                 m_pShader->UpdateUniforms(m_pGuiEntity, 0, 0);
-                m_pGuiEntity->Buffers()[0]->DrawElements(vd::gl::eTriangles, 6, vd::gl::eUnsignedInt);
+                m_pGuiEntity->Meshes()[0]->Draw();
                 break;
             case eText: {
-                vd::model::Mesh2DPtr& mesh = m_pGuiEntity->Meshes()[0];
-                vd::model::Mesh2D::VertexVec& vertices = mesh->Vertices();
+                auto pGuiText = std::dynamic_pointer_cast<GuiText>(m_pGuiEntity);
+
+                vd::model::MeshPtr& mesh = m_pGuiEntity->Meshes()[0];
+
+                for (size_t i = 0; i < pGuiText->LetterMeshes().size(); ++i) {
+                    auto& letterMesh = pGuiText->LetterMeshes()[i];
+                    auto vertices = std::vector<vd::model::Vertex>(letterMesh.begin(), letterMesh.end());
+
+                    m_pShader->UpdateUniforms(m_pGuiEntity, 0, i);
+
+                    mesh->DynamicSetVertexData(vertices, false);
+                    mesh->Draw();
+                }
+
+                /*
                 vd::gl::BufferPtr& buffer = m_pGuiEntity->Buffers()[0];
-                for (int i = 0; i < vertices.size(); i += 6) {
+
+                // TODO: Not optimal, vertices are rebuilt each frame
+                for (int i = 0; i < mesh->VertexCount(); i += 6) {
                     std::vector<glm::vec4> glyph(6);
                     for (int j = 0; j < 6; ++j) {
-                        glyph[j] = glm::vec4(vertices[i + j].Position, vertices[i + j].TexCoords);
+                        auto vertex = mesh->VertexAtIndex(i + j);
+
+                        const auto& position = vertex.Attribute<glm::vec2>(0);
+                        const auto& texCoords = vertex.Attribute<glm::vec2>(1);
+                        glyph[j] = glm::vec4(position, texCoords);
                     }
 
                     m_pShader->UpdateUniforms(m_pGuiEntity, 0, i / 6);
                     buffer->UpdateBufferData(vd::gl::eArrayBuffer, 96, &glyph[0]); // 96 = 6 vertices * 4 floats each * 4 bytes per float
                     buffer->DrawArrays(vd::gl::eTriangles, 6);
                 }
+                 */
                 break;
             }
         }

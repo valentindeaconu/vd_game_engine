@@ -5,7 +5,8 @@
 #ifndef VD_GAME_ENGINE_BOUNDS_HPP
 #define VD_GAME_ENGINE_BOUNDS_HPP
 
-#include <engine/model/Mesh.hpp>
+#include <engine/defines/Macros.hpp>
+#include <engine/model/Vertex.hpp>
 
 #include <algorithm>
 
@@ -36,9 +37,9 @@ namespace vd::math {
     public:
         Bounds2();
         Bounds2(const glm::vec2& left, const glm::vec2& right);
-        explicit Bounds2(const model::Mesh2DPtr& meshPtr);
+        explicit Bounds2(const std::vector<model::Vertex>& vertices);
 
-        void WrapMesh(const model::Mesh2DPtr& meshPtr);
+        void WrapVertices(const std::vector<model::Vertex>& vertices);
     };
     typedef std::vector<Bounds2>    Bounds2Vec;
 
@@ -46,9 +47,9 @@ namespace vd::math {
     public:
         Bounds3();
         Bounds3(const glm::vec3& left, const glm::vec3& right);
-        explicit Bounds3(const model::Mesh3DPtr& meshPtr);
+        explicit Bounds3(const std::vector<model::Vertex>& vertices);
 
-        void WrapMesh(const model::Mesh3DPtr& meshPtr);
+        void WrapVertices(const std::vector<model::Vertex>& vertices);
 
         [[nodiscard]] Bounds3 WithTransform(const Transform& transform) const;
     };

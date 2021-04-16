@@ -14,6 +14,7 @@ namespace vd::loader {
     namespace impl {
         class IShaderLoader {
         public:
+            virtual void Prepare() = 0;
             virtual void Load(const std::string& path, std::string& output) = 0;
         };
         typedef std::shared_ptr<IShaderLoader>  IShaderLoaderPtr;

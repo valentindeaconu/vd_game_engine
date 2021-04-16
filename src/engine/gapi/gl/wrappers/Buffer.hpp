@@ -10,8 +10,8 @@
 #include <unordered_map>
 #include <vector>
 
-#include "Enums.hpp"
-#include "Component.hpp"
+#include <engine/gapi/gl/Enums.hpp>
+#include <engine/gapi/gl/Component.hpp>
 
 namespace vd::gl::wrappers {
 
@@ -25,6 +25,7 @@ namespace vd::gl::wrappers {
         uint32_t AddBuffer(BufferType type, size_t size, const void* data, BufferUsageType usage);
         void UpdateBufferData(BufferType type, size_t count, const void* data, size_t bufferIndex = 0);
         void RemoveBuffer(BufferType type, size_t bufferIndex = 0);
+        bool HasBuffer(BufferType type) const;
 
         void AttributeArray(uint32_t index, 
                             size_t bufferIndex, 

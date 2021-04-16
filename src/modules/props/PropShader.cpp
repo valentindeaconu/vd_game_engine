@@ -16,11 +16,11 @@ namespace mod::props {
 
         std::string vsSource;
         vd::loader::ShaderLoader::Load("./resources/shaders/entity/entity_VS.glsl", vsSource);
-        AddShader(vsSource, vd::gl::Shader::eVertexShader);
+        AddShader(vsSource, vd::gl::wrappers::Shader::eVertexShader);
 
         std::string fsSource;
         vd::loader::ShaderLoader::Load("./resources/shaders/entity/entity_FS.glsl", fsSource);
-        AddShader(fsSource, vd::gl::Shader::eFragmentShader);
+        AddShader(fsSource, vd::gl::wrappers::Shader::eFragmentShader);
 
         Compile();
 
@@ -48,28 +48,27 @@ namespace mod::props {
 
     void PropShader::UpdateUniforms(vd::object::Entity3DPtr pEntity, uint64_t levelOfDetail, uint32_t meshIndex) {
         glm::mat4 model = pEntity->WorldTransform().Get();
-        glm::mat3 normalMatrix = glm::transpose(glm::inverse(glm::mat3(model)));
+        glm::mat4 view = m_pCamera->ViewMatrix();
+        glm::mat3 normalMatrix = glm::transpose(glm::inverse(glm::mat3(view * model)));
 
         SetUniform("model", model);
         SetUniform("normalMatrix", normalMatrix);
 
-        SetUniform("view", m_pCamera->ViewMatrix());
+        SetUniform("view", view);
         SetUniform("projection", m_pWindow->ProjectionMatrix());
 
-        const vd::model::Mesh3DPtr& pMesh = pEntity->Meshes(levelOfDetail)[meshIndex];
+        const vd::model::MeshPtr& pMesh = pEntity->Meshes(levelOfDetail)[meshIndex];
 
-        if (!pMesh->Materials().empty()) {
-            vd::model::Material& meshMaterial = pMesh->Materials().front();
+        vd::model::Material& meshMaterial = pMesh->Material();
 
-            if (meshMaterial.DiffuseMap() != nullptr) {
-                meshMaterial.DiffuseMap()->BindToUnit(0);
-                SetUniform("diffuseMap", 0);
-            }
+        if (meshMaterial.DiffuseMap() != nullptr) {
+            meshMaterial.DiffuseMap()->BindToUnit(0);
+            SetUniform("diffuseMap", 0);
+        }
 
-            if (meshMaterial.SpecularMap() != nullptr) {
-                meshMaterial.SpecularMap()->BindToUnit(1);
-                SetUniform("specularMap", 1);
-            }
+        if (meshMaterial.SpecularMap() != nullptr) {
+            meshMaterial.SpecularMap()->BindToUnit(1);
+            SetUniform("specularMap", 1);
         }
 
         SetUniform("clipPlane", m_pContext->ClipPlane());

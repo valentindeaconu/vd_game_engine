@@ -5,8 +5,8 @@
 #ifndef VD_GAME_ENGINE_SPLATMAPBUILDER_HPP
 #define VD_GAME_ENGINE_SPLATMAPBUILDER_HPP
 
-#include <engine/api/gl/Texture.hpp>
-#include <engine/api/gl/Shader.hpp>
+#include <engine/gapi/gl/Texture.hpp>
+#include <engine/gapi/gl/wrappers/Shader.hpp>
 #include <engine/loader/ShaderLoader.hpp>
 
 #include <engine/service/TextureService.hpp>
@@ -30,7 +30,7 @@ namespace mod::biomes::splatmap {
                     SplatMapBuilder::data_t& outData);
         void CleanUp();
     private:
-        vd::gl::ShaderPtr m_pShader;
+        vd::gl::wrappers::ShaderPtr m_pShader;
     };
     typedef std::shared_ptr<SplatMapBuilder>   SplatMapBuilderPtr;
 }

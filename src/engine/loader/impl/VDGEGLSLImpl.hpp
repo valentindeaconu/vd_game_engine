@@ -10,6 +10,7 @@
 
 #include <fstream>
 #include <unordered_map>
+#include <unordered_set>
 
 #include <engine/loader/FileLoader.hpp>
 
@@ -17,13 +18,13 @@ namespace vd::loader::impl {
     class VDGEGLSLImpl : public IShaderLoader {
     public:
         VDGEGLSLImpl();
-        ~VDGEGLSLImpl();
 
+        void Prepare() override;
         void Load(const std::string& path, std::string& output) override;
     private:
-        std::string m_IncludeDirectory;
-        std::unordered_map<std::string, std::string> m_ConstantMap;
-
+        std::string                                     m_IncludeDirectory;
+        std::unordered_set<std::string>                 m_Defines;
+        std::unordered_map<std::string, std::string>    m_ConstantMap;
     };
     typedef std::shared_ptr<VDGEGLSLImpl>   VDGEGLSLImplPtr;
 }

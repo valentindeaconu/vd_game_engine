@@ -6,16 +6,20 @@
 
 namespace vd::scene {
 
-    Entity::Entity() 
+    Entity::Entity()
         : m_Handle(entt::null)
         , m_Scene(nullptr)
     {
     }
 
-    Entity::Entity(entt::entity handle, Scene* scene) 
+    Entity::Entity(entt::entity handle, Scene* scene)
         : m_Handle(handle)
-        , m_Scene(scene) 
+        , m_Scene(scene)
     {
+    }
+
+    uint32_t Entity::Id() const {
+        return uint32_t(m_Handle);
     }
 
 }

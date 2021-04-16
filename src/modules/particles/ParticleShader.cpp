@@ -16,15 +16,15 @@ namespace mod::particles {
 
         std::string vsSource;
         vd::loader::ShaderLoader::Load("./resources/shaders/particle/particle_VS.glsl", vsSource);
-        AddShader(vsSource, vd::gl::Shader::eVertexShader);
+        AddShader(vsSource, vd::gl::wrappers::Shader::eVertexShader);
 
         std::string gSource;
         vd::loader::ShaderLoader::Load("./resources/shaders/particle/particle_GS.glsl", gSource);
-        AddShader(gSource, vd::gl::Shader::eGeometryShader);
+        AddShader(gSource, vd::gl::wrappers::Shader::eGeometryShader);
 
         std::string fsSource;
         vd::loader::ShaderLoader::Load("./resources/shaders/particle/particle_FS.glsl", fsSource);
-        AddShader(fsSource, vd::gl::Shader::eFragmentShader);
+        AddShader(fsSource, vd::gl::wrappers::Shader::eFragmentShader);
 
         Compile();
 

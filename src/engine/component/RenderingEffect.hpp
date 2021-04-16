@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include <engine/api/gl/FrameBuffer.hpp>
+#include <engine/gapi/gl/FrameBuffer.hpp>
 
 namespace vd::component {
     class IRenderingEffect {

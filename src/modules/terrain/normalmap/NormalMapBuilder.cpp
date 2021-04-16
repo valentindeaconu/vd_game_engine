@@ -7,13 +7,13 @@
 namespace mod::terrain::normalmap {
 
     NormalMapBuilder::NormalMapBuilder() {
-        m_pShader = std::make_shared<vd::gl::Shader>();
+        m_pShader = std::make_shared<vd::gl::wrappers::Shader>();
 
         m_pShader->Create();
 
         std::string csSource;
         vd::loader::ShaderLoader::Load("./resources/shaders/terrain/cs/NormalMap.glsl", csSource);
-        m_pShader->AddShader(csSource, vd::gl::Shader::eComputeShader);
+        m_pShader->AddShader(csSource, vd::gl::wrappers::Shader::eComputeShader);
 
         m_pShader->Compile();
     }

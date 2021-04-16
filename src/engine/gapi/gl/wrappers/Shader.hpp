@@ -12,10 +12,10 @@
 
 #include <engine/exception/Exceptions.hpp>
 
-#include "Context.hpp"
-#include "Component.hpp"
+#include <engine/gapi/gl/Context.hpp>
+#include <engine/gapi/gl/Component.hpp>
 
-namespace vd::gl {
+namespace vd::gl::wrappers {
     namespace exception {
         struct ShaderError : public CustomException {
             explicit ShaderError(const std::string& stage, const std::string& message);

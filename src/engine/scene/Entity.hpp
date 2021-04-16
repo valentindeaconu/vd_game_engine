@@ -17,6 +17,8 @@ namespace vd::scene {
         Entity();
         Entity(entt::entity handle, Scene* scene);
 
+        [[nodiscard]] uint32_t Id() const;
+
         template <typename T>
         bool HasComponent() {
             return m_Scene->m_Registry.any_of<T>(m_Handle);
@@ -53,7 +55,6 @@ namespace vd::scene {
         entt::entity    m_Handle;
         Scene*          m_Scene;
     };
-
 }
 
 #endif //VDGE_ENTITY_HPP

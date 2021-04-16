@@ -7,13 +7,13 @@
 
 #include <engine/component/IManager.hpp>
 
-#include <engine/api/gl/Texture.hpp>
+#include <engine/gapi/gl/Texture.hpp>
 
 #include <engine/injector/CreateAndStore.hpp>
 #include <engine/injector/Injectable.hpp>
 #include <engine/light/LightManager.hpp>
 
-#include <engine/api/gl/FrameBuffer.hpp>
+#include <engine/gapi/gl/FrameBuffer.hpp>
 
 #include <engine/property/Properties.hpp>
 #include <engine/loader/PropertiesLoader.hpp>

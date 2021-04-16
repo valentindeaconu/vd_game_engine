@@ -12,11 +12,11 @@ namespace mod::gui {
 
             std::string vsSource;
             vd::loader::ShaderLoader::Load("./resources/shaders/gui/gui_VS.glsl", vsSource);
-            AddShader(vsSource, vd::gl::Shader::eVertexShader);
+            AddShader(vsSource, vd::gl::wrappers::Shader::eVertexShader);
 
             std::string fsSource;
             vd::loader::ShaderLoader::Load("./resources/shaders/gui/gui_FS.glsl", fsSource);
-            AddShader(fsSource, vd::gl::Shader::eFragmentShader);
+            AddShader(fsSource, vd::gl::wrappers::Shader::eFragmentShader);
 
             Compile();
 
@@ -34,7 +34,8 @@ namespace mod::gui {
     void GuiShader::UpdateUniforms(vd::object::Entity2DPtr pEntity, uint64_t levelOfDetail, uint32_t meshIndex) {
         SetUniform("transform", pEntity->LocalTransform().Get());
 
-        pEntity->Meshes()[meshIndex]->Materials()[0].DiffuseMap()->BindToUnit(1);
+        auto& pMesh = pEntity->Meshes()[meshIndex];
+        pMesh->Material().DiffuseMap()->BindToUnit(1);
         SetUniform("diffuseMap", 1);
     }
 }

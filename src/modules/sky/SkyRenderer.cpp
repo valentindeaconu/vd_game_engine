@@ -39,10 +39,11 @@ namespace mod::sky {
         auto& meshes = m_pSky->Meshes(levelOfDetail);
         auto& bufferIndices = m_pSky->BufferIndices(levelOfDetail);
 
-        vd::gl::BufferPtrVec& buffers = m_pSky->Buffers();
+        // vd::gl::BufferPtrVec& buffers = m_pSky->Buffers();
         for (size_t meshIndex = 0; meshIndex < meshes.size(); ++meshIndex) {
             pShader->UpdateUniforms(m_pSky, levelOfDetail, meshIndex);
-            buffers[ bufferIndices[meshIndex] ]->DrawElements(vd::gl::eTriangles, 36, vd::gl::eUnsignedInt);
+            //buffers[ bufferIndices[meshIndex] ]->DrawElements(vd::gl::eTriangles, 36, vd::gl::eUnsignedInt);
+            meshes[meshIndex]->Draw();
         }
 
         pShader->Unbind();

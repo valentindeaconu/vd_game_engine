@@ -98,10 +98,11 @@ namespace mod::props {
 
                 for (int meshIndex = 0; meshIndex < meshes.size(); ++meshIndex) {
                     pShader->UpdateUniforms(Prop, Level, meshIndex);
-                    const int count = meshes[meshIndex]->Indices().size();
-                    buffers[bufferIndices[meshIndex]]->DrawElements(vd::gl::eTriangles,
+                    // const int count = meshes[meshIndex]->Indices().size();
+                    /*buffers[bufferIndices[meshIndex]]->DrawElements(vd::gl::eTriangles,
                                                                     count,
-                                                                    vd::gl::eUnsignedInt);
+                                                                    vd::gl::eUnsignedInt);*/
+                    meshes[meshIndex]->Draw();
                 }
             }
         }
