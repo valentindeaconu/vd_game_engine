@@ -12,6 +12,7 @@ namespace vd::object::primitive {
                 .emplace_back(
                     std::make_shared<vd::model::Mesh>(
                         vd::gapi::AttributeTypeVec({
+                            vd::gapi::AttributeType::FLOAT_2,
                             vd::gapi::AttributeType::FLOAT_2
                         })
                     )
@@ -19,10 +20,10 @@ namespace vd::object::primitive {
 
         pMesh->Assign(vd::gapi::DataFragmentation::eAsTriangleStrip,
                       {
-                            vd::model::Vertex(std::vector<float>({ -1.0f, 1.0f })),
-                            vd::model::Vertex(std::vector<float>({ -1.0f, -1.0f })),
-                            vd::model::Vertex(std::vector<float>({ 1.0f, 1.0f })),
-                            vd::model::Vertex(std::vector<float>({ 1.0f, -1.0f }))
+                            vd::model::Vertex(std::vector<float>({ -1.0f, 1.0f, 0.0f, 0.0f })),
+                            vd::model::Vertex(std::vector<float>({ -1.0f, -1.0f, 1.0f, 0.0f })),
+                            vd::model::Vertex(std::vector<float>({ 1.0f, 1.0f, 0.0f, 1.0f })),
+                            vd::model::Vertex(std::vector<float>({ 1.0f, -1.0f, 1.0f, 1.0f }))
                       });
 
         /*vd::gl::wrappers::BufferPtr& pBuffer = Buffers().emplace_back(std::move(std::make_shared<vd::gl::wrappers::Buffer>()));

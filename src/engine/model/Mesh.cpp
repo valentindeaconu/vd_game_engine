@@ -4,10 +4,12 @@
 
 #include "Mesh.hpp"
 
+
 namespace vd::model {
 
-    Mesh::Mesh(const gapi::AttributeTypeVec& vertexAttributes)
-        : m_VertexAttributes(vertexAttributes)
+    Mesh::Mesh(gapi::AttributeTypeVec vertexAttributes)
+        : m_VertexAttributes(std::move(vertexAttributes))
+        , m_DynamicData(false)
     {
     }
 

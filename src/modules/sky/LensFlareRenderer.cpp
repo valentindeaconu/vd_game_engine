@@ -127,16 +127,17 @@ namespace mod::sky {
 
             m_pQuery->End();
             m_pQuery->Finish();
+
+            // TODO: Solved Lens Flare flickering for now using glFinish(), but this is so wrong...
+            glFinish();
         }
 
         for (size_t i = 0; i < m_TextureCount; ++i) {
             m_pShader->Bind();
             m_pShader->UpdateUniforms(m_Textures[i], m_TexturesPositionScale[i], m_Brightness);
 
-            glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
             // m_pQuad->Buffers()[0]->DrawArrays(vd::gl::eTriangleStrip, 4);
             m_pQuad->Meshes()[0]->Draw();
-            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
             m_pShader->Unbind();
         }

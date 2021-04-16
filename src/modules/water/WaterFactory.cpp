@@ -20,7 +20,7 @@ namespace mod::water {
         };
 
         vd::Consumer reflectionPassBefore = [w = pWater.get(), ctx = pContext.get(), c = pCamera.get()] {
-            ctx->ClipPlane() = glm::vec4(0.0f, 1.0f, 0.0f, -w->GetHeight() + 1.0f);
+            ctx->ClipPlane() = glm::vec4(0.0f, 1.0f, 0.0f, -w->GetHeight() - 0.5f);
             glEnable(GL_CLIP_DISTANCE0);
 
             c->Reflect(vd::camera::Camera::eY, w->GetHeight());
@@ -44,7 +44,7 @@ namespace mod::water {
         pEngine->Add(reflectionPass);
 
         vd::Consumer refractionPassBefore = [w = pWater.get(), ctx = pContext.get()] {
-            ctx->ClipPlane() = glm::vec4(0.0f, -1.0f, 0.0f, w->GetHeight() + 1.0f);
+            ctx->ClipPlane() = glm::vec4(0.0f, -1.0f, 0.0f, w->GetHeight() + 0.5f);
             glEnable(GL_CLIP_DISTANCE0);
         };
 

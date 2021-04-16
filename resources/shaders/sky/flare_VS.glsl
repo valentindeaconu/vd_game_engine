@@ -9,7 +9,7 @@ uniform vec4 transform;
 
 void main() {
     vec2 position = vPosition * 0.5f;
-    fTexCoords = position + 0.5f;
+    fTexCoords = vTexCoords; // position + 0.5f;
 
     vec2 screenCoords = position * transform.zw + transform.xy;
     

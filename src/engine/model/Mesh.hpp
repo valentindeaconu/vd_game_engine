@@ -21,7 +21,7 @@ namespace vd::model {
 
     class Mesh {
     public:
-        explicit Mesh(const gapi::AttributeTypeVec& vertexAttributes);
+        explicit Mesh(gapi::AttributeTypeVec  vertexAttributes);
 
         Mesh(const Mesh&) = default;
 
